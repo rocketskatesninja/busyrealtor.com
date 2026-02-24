@@ -74,7 +74,8 @@ class AppointmentController extends Controller
         ]);
 
         // Always notify the account owner
-        $ownerEmail = $tenant->email;
+        $settings   = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
+        $ownerEmail = $settings?->contact_email ?: $tenant->email;
         $subject    = 'New Appointment Request from ' . $request->visitor_name;
         $body       = "New appointment request from {$request->visitor_name} ({$request->visitor_email})\n" .
                       "Phone: {$request->visitor_phone}\n" .
@@ -96,6 +97,12 @@ class AppointmentController extends Controller
     {
         $tenant = app('tenant');
         $appt   = Appointment::where('tenant_id', $tenant->id)->findOrFail($id);
+
+        if ($request->status === 'delete') {
+            $appt->delete();
+            return redirect()->back()->with('success', 'Appointment deleted.');
+        }
+
         $appt->update(['status' => $request->status]);
 
         // Send confirmation email to visitor

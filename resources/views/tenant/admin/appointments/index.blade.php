@@ -21,6 +21,23 @@
         </form>
     </div>
 
+    {{-- Bulk delete cancelled --}}
+    @php $cancelledCount = \App\Models\Appointment::where('tenant_id', $tenant->id)->where('status','cancelled')->count(); @endphp
+    @if($cancelledCount > 0)
+    <form method="POST" action="{{ route('tenant.admin.appointments.bulk', $account) }}" class="mb-4"
+          onsubmit="return confirm('Delete all {{ $cancelledCount }} cancelled appointment(s)? This cannot be undone.')">
+        @csrf
+        @foreach(\App\Models\Appointment::where('tenant_id', $tenant->id)->where('status','cancelled')->pluck('id') as $cid)
+            <input type="hidden" name="ids[]" value="{{ $cid }}">
+        @endforeach
+        <input type="hidden" name="action" value="delete">
+        <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Delete all cancelled ({{ $cancelledCount }})
+        </button>
+    </form>
+    @endif
+
     {{-- Appointments Grid --}}
     @if($appointments->count())
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -46,12 +63,19 @@
             @endif
             @if($appt->property)
             <div class="text-xs text-gray-500 mb-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg px-3 py-2">
-                Property: {{ Str::limit($appt->property->title, 40) }}
+                {{ Str::limit($appt->property->title, 40) }}<br>{{ $appt->property->address_street }}, {{ $appt->property->address_city }}
             </div>
             @endif
-            @if($appt->notes)
-            <p class="text-sm text-gray-600 mb-4 leading-relaxed">{{ Str::limit($appt->notes, 100) }}</p>
-            @endif
+            <div class="flex items-center gap-2 mb-3">
+                @if($appt->source === 'chatbot')
+                <span class="text-xs px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400">via chatbot</span>
+                @elseif($appt->source === 'public_form')
+                <span class="text-xs px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400">via website</span>
+                @endif
+                @if($appt->notes)
+                <p class="text-sm text-gray-600 leading-relaxed truncate" title="{{ $appt->notes }}">{{ Str::limit($appt->notes, 80) }}</p>
+                @endif
+            </div>
             <div class="flex flex-wrap gap-2 border-t pt-3">
                 @if($appt->status === 'pending')
                 <form method="POST" action="{{ route('tenant.admin.appointments.action', [$account, $appt->id]) }}">
@@ -69,6 +93,13 @@
                     <button type="submit" class="px-3 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg text-xs font-semibold hover:bg-red-200 dark:hover:bg-red-900/50 transition">Cancel</button>
                 </form>
                 @endif
+                <form method="POST" action="{{ route('tenant.admin.appointments.action', [$account, $appt->id]) }}"
+                      onsubmit="return confirm('Delete this appointment? This cannot be undone.')">
+                    @csrf <input type="hidden" name="status" value="delete">
+                    <button type="submit" class="ml-auto px-3 py-1.5 text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 rounded-lg text-xs transition" title="Delete">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </form>
             </div>
         </div>
         @endforeach

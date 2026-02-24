@@ -16,7 +16,7 @@ function initPropertyMap() {
         center: loc, zoom: 15,
         mapTypeControl: false, streetViewControl: true, fullscreenControl: true
     });
-    new google.maps.Marker({ position: loc, map: map, title: {{ json_encode($property->title) }} });
+    new google.maps.Marker({ position: loc, map: map, title: {!! json_encode($property->title) !!} });
 
     var streetViewDiv = document.getElementById('propertyStreetView');
     var panorama = new google.maps.StreetViewPanorama(streetViewDiv, {

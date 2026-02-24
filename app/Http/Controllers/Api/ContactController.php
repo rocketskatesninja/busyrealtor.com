@@ -39,7 +39,7 @@ class ContactController extends Controller
 
         if ($notifyEnabled) {
             // Always notify the account owner
-            $ownerEmail = $tenant->email;
+            $ownerEmail = $settings?->contact_email ?: $tenant->email;
             $subject    = 'New Contact Message from ' . $request->name;
             $body       = "New contact message from {$request->name} ({$request->email}):\nPhone: {$request->phone}\n\n{$request->message}";
             TenantMailer::send($tenant->id, $ownerEmail, $subject, $body);
