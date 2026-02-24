@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', $settings->site_title ?? 'BusyRealtor')</title>
+    <meta name="description" content="@yield('meta_description', $settings->meta_description ?? '')">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        // Apply dark mode immediately to prevent flash
+        (function() {
+            var saved = localStorage.getItem('theme');
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (!saved && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: "class" }</script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/intersect@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    @php
+        $titleFont = $settings->title_font ?? 'Poppins';
+        $primaryColor = $settings->primary_color ?? '#3B82F6';
+        $r = hexdec(substr(ltrim($primaryColor,'#'), 0, 2));
+        $g = hexdec(substr(ltrim($primaryColor,'#'), 2, 2));
+        $b = hexdec(substr(ltrim($primaryColor,'#'), 4, 2));
+    @endphp
+    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($titleFont) }}:wght@600;700;800&display=block" rel="stylesheet">
+    <style>
+        [x-cloak] { display: none !important; }
+        :root {
+            --primary: {{ $primaryColor }};
+            --primary-rgb: {{ $r }}, {{ $g }}, {{ $b }};
+        }
+        .nav-active { color: var(--primary) !important; }
+        .hover-primary:hover { color: var(--primary) !important; }
+        .btn-primary { background-color: var(--primary); color: white; }
+        .btn-primary:hover { opacity: 0.9; }
+
+        /* ===================== DARK MODE ===================== */
+        .dark, .dark body { color-scheme: dark; }
+        .dark body { background-color: #0f172a !important; color: #f1f5f9; }
+
+        /* Backgrounds */
+        .dark .bg-white       { background-color: #1e293b !important; }
+        .dark .bg-gray-50     { background-color: #0f172a !important; }
+        .dark .bg-gray-100    { background-color: #1e293b !important; }
+        .dark .bg-gray-200    { background-color: #334155 !important; }
+        .dark .bg-gray-800    { background-color: #020617 !important; }
+        .dark .bg-gray-900    { background-color: #020617 !important; }
+
+        /* Text */
+        .dark .text-gray-900  { color: #f1f5f9 !important; }
+        .dark .text-gray-800  { color: #e2e8f0 !important; }
+        .dark .text-gray-700  { color: #cbd5e1 !important; }
+        .dark .text-gray-600  { color: #94a3b8 !important; }
+        .dark .text-gray-500  { color: #64748b !important; }
+        .dark .text-gray-400  { color: #94a3b8 !important; }
+
+        /* Borders */
+        .dark .border-gray-50  { border-color: #1e293b !important; }
+        .dark .border-gray-100 { border-color: #1e293b !important; }
+        .dark .border-gray-200 { border-color: #334155 !important; }
+        .dark .border-gray-300 { border-color: #475569 !important; }
+        .dark .border-t,
+        .dark .border-b,
+        .dark .border-l,
+        .dark .border-r,
+        .dark .border         { border-color: #334155; }
+
+        /* Divide */
+        .dark .divide-y > * + *,
+        .dark .divide-x > * + * { border-color: #334155; }
+
+        /* Inputs, selects, textareas */
+        .dark input:not([type=checkbox]):not([type=radio]):not([type=range]),
+        .dark select,
+        .dark textarea {
+            background-color: #334155 !important;
+            color: #f1f5f9 !important;
+            border-color: #475569 !important;
+        }
+        .dark input::placeholder,
+        .dark textarea::placeholder { color: #64748b !important; }
+
+        /* Hover states */
+        .dark .hover\:bg-gray-50:hover  { background-color: #1e293b !important; }
+        .dark .hover\:bg-gray-100:hover { background-color: #334155 !important; }
+        .dark .hover\:bg-gray-200:hover { background-color: #475569 !important; }
+
+        /* Tables */
+        .dark table thead { background-color: #1e293b !important; }
+        .dark table tbody tr { border-color: #334155; }
+        .dark table tbody tr:hover { background-color: #1e293b !important; }
+
+        /* Status badges — soften */
+        .dark .bg-green-100  { background-color: rgba(16,185,129,0.15) !important; }
+        .dark .bg-yellow-100 { background-color: rgba(234,179,8,0.15) !important; }
+        .dark .bg-blue-100   { background-color: rgba(59,130,246,0.15) !important; }
+        .dark .bg-red-100    { background-color: rgba(239,68,68,0.15) !important; }
+        .dark .bg-purple-100 { background-color: rgba(168,85,247,0.15) !important; }
+        .dark .bg-indigo-100 { background-color: rgba(99,102,241,0.15) !important; }
+
+        /* Shadows become softer */
+        .dark .shadow-sm   { box-shadow: 0 1px 2px rgba(0,0,0,0.5) !important; }
+        .dark .shadow      { box-shadow: 0 1px 6px rgba(0,0,0,0.5) !important; }
+        .dark .shadow-lg   { box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important; }
+        .dark .shadow-xl   { box-shadow: 0 8px 30px rgba(0,0,0,0.7) !important; }
+
+        /* Rings */
+        .dark .ring-1,
+        .dark .ring-2 { --tw-ring-color: #475569; }
+
+        /* Opacity-variant white backgrounds (hero search box uses bg-white/95) */
+        .dark .bg-white\/95,
+        .dark .bg-white\/90,
+        .dark .bg-white\/80 { background-color: rgba(30, 41, 59, 0.95) !important; }
+
+        /* Gradient color stops (used in property image placeholder fallbacks) */
+        .dark .from-gray-100 { --tw-gradient-from: #1e293b; }
+        .dark .from-gray-200 { --tw-gradient-from: #334155; }
+        .dark .to-gray-100   { --tw-gradient-to: #1e293b; }
+        .dark .to-gray-200   { --tw-gradient-to: #334155; }
+
+        /* Footer */
+        .dark footer { background-color: #0f172a !important; border-color: #1e293b !important; }
+        .dark footer .text-gray-800 { color: #e2e8f0 !important; }
+        .dark footer .text-gray-600 { color: #94a3b8 !important; }
+        .dark footer .text-gray-500 { color: #64748b !important; }
+        .dark footer .bg-gray-100   { background-color: #1e293b !important; }
+        .dark footer .bg-gray-200   { background-color: #334155 !important; }
+
+        /* Nav */
+        .dark header.bg-white { background-color: #1e293b !important; }
+        .dark nav a.text-gray-700 { color: #cbd5e1 !important; }
+        /* Chatbot widget */
+        .dark #chatbot-modal { background-color: #1e293b !important; color: #f1f5f9; }
+        .dark #chatbot-messages { background-color: #0f172a !important; }
+        .dark #chatbot-modal .bg-white { background-color: #1e293b !important; }
+        .dark #chatbot-modal .border-t { border-color: #334155; }
+        .dark #chatbot-input { background-color: #334155 !important; border-color: #475569 !important; color: #f1f5f9 !important; }
+        .dark #chatbot-input::placeholder { color: #64748b !important; }
+        .dark #chatbot-modal .text-gray-400 { color: #64748b !important; }
+
+        /* Contact widget */
+        .dark #contact-modal { background-color: #1e293b !important; color: #f1f5f9; }
+        .dark #contact-modal .border-t { border-color: #334155; }
+        .dark #contact-modal input,
+        .dark #contact-modal textarea { background-color: #334155 !important; border-color: #475569 !important; color: #f1f5f9 !important; }
+        .dark #contact-modal input::placeholder,
+        .dark #contact-modal textarea::placeholder { color: #64748b !important; }
+        .dark #contact-modal label { color: #cbd5e1 !important; }
+
+        /* ===================== END DARK MODE ===================== */
+        @yield('styles')
+    </style>
+    @yield('head')
+</head>
+<body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
+
+@php
+    $headerMode = $settings->header_mode ?? 'default';
+    // Gallery and map always use the sticky default header — only homepage uses hero mode
+    if (request()->routeIs('tenant.gallery') || request()->routeIs('tenant.map')) {
+        $headerMode = 'default';
+    }
+    $headerDisplayMode = $settings->header_display_mode ?? 'both';
+    $titleColorType = $settings->title_color_type ?? 'gradient';
+    $gradStart = $settings->title_gradient_start ?? '#3B82F6';
+    $gradVia = $settings->title_gradient_via ?? '#8B5CF6';
+    $gradEnd = $settings->title_gradient_end ?? '#1E40AF';
+    $solidColor = $settings->title_color_solid ?? '#3B82F6';
+    $titleSize = match($settings->site_title_font_size ?? '3xl') { 'xl' => '1.25rem', '2xl' => '1.5rem', '4xl' => '2.25rem', default => '1.875rem' };
+    $titleWeight = $settings->site_title_font_weight ?? '800';
+    $titleTracking = $settings->site_title_letter_spacing ?? 'normal';
+    $titleStyle = "font-family: '{$titleFont}', sans-serif; font-size: {$titleSize}; font-weight: {$titleWeight}; letter-spacing: " . match($titleTracking) { 'tight' => '-0.05em', 'wide' => '0.05em', default => 'normal' } . ";";
+    if ($titleColorType === 'gradient') {
+        $titleStyle .= " background: linear-gradient(135deg, {$gradStart}, {$gradVia}, {$gradEnd}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;";
+    } else {
+        $titleStyle .= " color: {$solidColor};";
+    }
+    $account = app('tenant')->slug;
+    // Active page detection
+    $isGallery = request()->routeIs('tenant.gallery');
+    $isMap     = request()->routeIs('tenant.map');
+    $isLogin   = request()->routeIs('login');
+    // Preserve filters when switching between gallery and map
+    $qs = ($isGallery || $isMap) && count(request()->query()) > 0
+        ? '?' . http_build_query(request()->query()) : '';
+    $galleryUrl = route('tenant.gallery', $account) . $qs;
+    $mapUrl     = route('tenant.map',     $account) . $qs;
+    // Primary RGB for active state backgrounds
+    $pc = $settings->primary_color ?? '#3B82F6';
+    $pr = hexdec(substr($pc, 1, 2));
+    $pg = hexdec(substr($pc, 3, 2));
+    $pb = hexdec(substr($pc, 5, 2));
+@endphp
+
+{{-- Flash Notification --}}
+@if(session('success') || session('error'))
+<div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
+     class="{{ session('success') ? 'bg-green-100 border-green-500 text-green-700' : 'bg-red-100 border-red-500 text-red-700' }} border-l-4 p-4 relative z-50">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+        <span>{{ session('success') ?? session('error') }}</span>
+        <button @click="show = false" class="ml-4 opacity-70 hover:opacity-100">&times;</button>
+    </div>
+</div>
+@endif
+
+{{-- HERO MODE HEADER --}}
+@unless(View::hasSection('hide_header'))
+@if($headerMode === 'hero')
+<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        x-data="{ scrolled: window.pageYOffset > 50, open: false }"
+        x-on:scroll.window="scrolled = (window.pageYOffset > 50)"
+        :class="scrolled ? 'bg-white shadow-lg py-3' : 'bg-transparent py-4'">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between">
+            <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3" :style="scrolled ? '' : 'filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))'">
+                @if($headerDisplayMode !== 'text_only' && $settings->logo_image)
+                    <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto object-contain">
+                @endif
+                @if($headerDisplayMode !== 'logo_only')
+                    <span style="{{ $titleStyle }}">{{ $settings->site_title ?? config('app.name') }}</span>
+                @endif
+            </a>
+            <nav class="hidden md:flex items-center space-x-6 transition-all duration-300" style="opacity:0;pointer-events:none" :style="scrolled ? 'opacity:1;pointer-events:auto' : 'opacity:0;pointer-events:none'">
+                <a href="{{ $galleryUrl }}" class="font-medium transition-colors hover-primary" :class="scrolled ? 'text-gray-700' : 'text-white/90 hover:text-white'" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
+                <a href="{{ $mapUrl }}" class="font-medium transition-colors hover-primary" :class="scrolled ? 'text-gray-700' : 'text-white/90 hover:text-white'" @if($isMap) style="color: var(--primary);" @endif>Map</a>
+                <a href="{{ route('login') }}" class="font-medium transition-colors hover-primary" :class="scrolled ? 'text-gray-700' : 'text-white/90 hover:text-white'" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
+                <button @click="$store.theme.toggle()" class="p-1 rounded-full" :class="scrolled ? 'text-gray-600' : 'text-white'">
+                    <svg x-show="!$store.theme.dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </button>
+            </nav>
+            <button @click="open = !open" class="md:hidden p-2 rounded transition-all duration-300" :class="scrolled ? 'text-gray-700' : 'text-white'" style="opacity:0;pointer-events:none" :style="scrolled ? 'opacity:1;pointer-events:auto' : 'opacity:0;pointer-events:none'">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+        </div>
+    </div>
+    <div x-show="open" x-cloak
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-2"
+         class="md:hidden border-t bg-white shadow-lg">
+        <nav class="px-4 py-3 space-y-1">
+            <a href="{{ $galleryUrl }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isGallery) text-white @else text-gray-700 hover:bg-gray-100 @endif" @if($isGallery) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 @if($isGallery) @else text-gray-500 @endif" style="@if($isGallery) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Gallery
+            </a>
+            <a href="{{ $mapUrl }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isMap) @else text-gray-700 hover:bg-gray-100 @endif" @if($isMap) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 @if($isMap) @else text-gray-500 @endif" style="@if($isMap) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                Map
+            </a>
+            <div class="border-t my-2"></div>
+            <button onclick="document.getElementById('chatbot-widget')?.querySelector('button[\x40click]')?.click()" class="flex w-full items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                Chat Assistant
+            </button>
+            <div class="border-t my-2"></div>
+            <a href="{{ route('login') }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isLogin) @else text-gray-700 hover:bg-gray-100 @endif" @if($isLogin) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 @if($isLogin) @else text-gray-500 @endif" style="@if($isLogin) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                Login
+            </a>
+        </nav>
+    </div>
+</header>
+<div class="h-0"></div>
+
+@else
+{{-- DEFAULT MODE HEADER --}}
+<header class="bg-white shadow-lg sticky top-0 z-50" x-data="{ open: false }">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex items-center justify-between py-4">
+            <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3 drop-shadow-lg hover:opacity-80 transition-opacity">
+                @if($headerDisplayMode !== 'text_only' && $settings->logo_image)
+                    <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto object-contain">
+                @endif
+                @if($headerDisplayMode !== 'logo_only')
+                    <span style="{{ $titleStyle }}">{{ $settings->site_title ?? config('app.name') }}</span>
+                @endif
+            </a>
+            <nav class="hidden md:flex items-center space-x-6">
+                <a href="{{ $galleryUrl }}" class="font-medium transition-colors hover-primary @if(!$isGallery) text-gray-700 @endif" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
+                <a href="{{ $mapUrl }}" class="font-medium transition-colors hover-primary @if(!$isMap) text-gray-700 @endif" @if($isMap) style="color: var(--primary);" @endif>Map</a>
+                <a href="{{ route('login') }}" class="font-medium transition-colors hover-primary @if(!$isLogin) text-gray-700 @endif" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
+                <button @click="$store.theme.toggle()" class="p-1 rounded-full text-gray-600 hover:text-gray-900">
+                    <svg x-show="!$store.theme.dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                </button>
+            </nav>
+            <button @click="open = !open" class="md:hidden p-2 rounded text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+        </div>
+    </div>
+    <div x-show="open" x-cloak
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-2"
+         class="md:hidden border-t bg-white">
+        <nav class="px-4 py-3 space-y-1">
+            <a href="{{ $galleryUrl }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isGallery) @else text-gray-700 hover:bg-gray-100 @endif" @if($isGallery) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 @if($isGallery) @else text-gray-500 @endif" style="@if($isGallery) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Gallery
+            </a>
+            <a href="{{ $mapUrl }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isMap) @else text-gray-700 hover:bg-gray-100 @endif" @if($isMap) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 @if($isMap) @else text-gray-500 @endif" style="@if($isMap) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+                Map
+            </a>
+            <div class="border-t my-2"></div>
+            <button onclick="document.getElementById('chatbot-widget')?.querySelector('button[\x40click]')?.click()" class="flex w-full items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                Chat Assistant
+            </button>
+            <div class="border-t my-2"></div>
+            <a href="{{ route('login') }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isLogin) @else text-gray-700 hover:bg-gray-100 @endif" @if($isLogin) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 @if($isLogin) @else text-gray-500 @endif" style="@if($isLogin) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                Login
+            </a>
+        </nav>
+    </div>
+</header>
+@endif
+@endunless
+
+<main class="flex-1">
+    @yield('content')
+</main>
+
+{{-- FOOTER --}}
+@if(View::hasSection('show_footer'))
+<footer class="bg-gray-100 border-t mt-auto">
+    <div class="max-w-7xl mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+            {{-- Brand --}}
+            <div class="md:col-span-2">
+                <div class="flex items-center space-x-3 mb-4">
+                    @if($settings->logo_image)
+                        <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto">
+                    @endif
+                    <span class="text-xl font-bold text-gray-800">{{ $settings->site_title ?? config('app.name') }}</span>
+                </div>
+                @if($settings->tagline)
+                    <p class="text-gray-600 text-sm mb-4">{{ $settings->tagline }}</p>
+                @endif
+                <div class="flex space-x-3">
+                    @foreach([['url' => $settings->facebook_url ?? null, 'label' => 'Facebook', 'path' => 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z'], ['url' => $settings->instagram_url ?? null, 'label' => 'Instagram', 'path' => 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z'], ['url' => $settings->twitter_url ?? null, 'label' => 'Twitter', 'path' => 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'], ['url' => $settings->linkedin_url ?? null, 'label' => 'LinkedIn', 'path' => 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z']] as $social)
+                        @if($social['url'])
+                        <a href="{{ $social['url'] }}" target="_blank" rel="noopener" aria-label="{{ $social['label'] }}" class="w-9 h-9 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center transition-colors">
+                            <svg class="w-4 h-4 text-gray-600" fill="currentColor" viewBox="0 0 24 24"><path d="{{ $social['path'] }}"/></svg>
+                        </a>
+                        @endif
+                    @endforeach
+                </div>
+            </div>
+            {{-- Quick Links --}}
+            <div>
+                <h3 class="font-semibold text-gray-800 mb-4">Quick Links</h3>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li><a href="{{ route('login') }}" class="hover-primary transition-colors">Login</a></li>
+                    <li><a href="{{ route('tenant.gallery', $account) }}" class="hover-primary transition-colors">Properties</a></li>
+                    <li><a href="{{ route('tenant.map', $account) }}" class="hover-primary transition-colors">Map Search</a></li>
+                </ul>
+            </div>
+            {{-- Legal --}}
+            <div>
+                <h3 class="font-semibold text-gray-800 mb-4">Legal</h3>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li><a href="{{ route('tenant.privacy', $account) }}" class="hover-primary transition-colors">Privacy Policy</a></li>
+                    <li><a href="{{ route('tenant.terms', $account) }}" class="hover-primary transition-colors">Terms of Service</a></li>
+                </ul>
+            </div>
+            {{-- Affiliates --}}
+            <div>
+                <h3 class="font-semibold text-gray-800 mb-4">Affiliates</h3>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li><a href="https://punchlistify.com" target="_blank" rel="noopener" class="hover-primary transition-colors">Punchlistify</a></li>
+                    <li><a href="https://punchlistlabs.com" target="_blank" rel="noopener" class="hover-primary transition-colors">Punchlist Labs</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t mt-8 pt-6 flex flex-col md:flex-row items-center justify-between text-sm text-gray-500">
+            <p>&copy; {{ date('Y') }} {{ $settings->site_title ?? config('app.name') }}. All rights reserved.</p>
+            <p>Powered by <a href="https://busyrealtor.com" class="hover-primary transition-colors">BusyRealtor</a></p>
+        </div>
+    </div>
+</footer>
+@endif
+
+{{-- Chatbot Widget --}}
+@unless(View::hasSection('hide_chatbot'))
+@if($settings->chatbot_enabled ?? false)
+@php $chatbotApiUrl = route('tenant.api.chatbot', $account); @endphp
+<div id="chatbot-root"></div>
+<script>
+(function() {
+    const API_URL = '{{ $chatbotApiUrl }}';
+    const CSRF = () => document.querySelector('meta[name=csrf-token]')?.content || '';
+    const STORAGE_KEY = 'chatbot_position';
+    let state = { isOpen: false, sessionId: null, isLoading: false, messages: [], isDragging: false, position: null };
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    function init() { loadPosition(); createWidget(); loadConversation(); }
+
+    function loadPosition() {
+        try { const s = localStorage.getItem(STORAGE_KEY); if (s) state.position = JSON.parse(s); } catch(e) {}
+        if (!state.position) state.position = { right: 24, bottom: 24 };
+    }
+    function savePosition() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.position)); }
+
+    function esc(t) {
+        return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').split('\n').join('<br>');
+    }
+
+    function createWidget() {
+        document.getElementById('chatbot-root').innerHTML = `
+<button id="chatbot-btn" class="fixed w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white z-50 cursor-grab active:cursor-grabbing select-none" style="background-color:var(--primary);right:24px;bottom:24px">
+    <svg id="chatbot-icon-chat" class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+    </svg>
+    <svg id="chatbot-icon-x" class="w-6 h-6 pointer-events-none hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+</button>
+<div id="chatbot-modal" class="fixed w-96 bg-white rounded-xl shadow-2xl z-50 hidden" style="height:480px;max-height:calc(100vh - 80px);max-width:calc(100vw - 2rem);display:none;flex-direction:column">
+    <div class="flex items-center justify-between p-4 border-b rounded-t-xl shrink-0" style="background-color:var(--primary)">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+            </div>
+            <div class="text-white">
+                <div class="font-semibold text-sm">Chat Assistant</div>
+                <div class="text-xs opacity-80">Online</div>
+            </div>
+        </div>
+        <button id="chatbot-close" class="text-white/80 hover:text-white hover:bg-white/20 rounded p-1 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+    <div id="chatbot-messages" class="flex-1 overflow-y-auto p-4 space-y-3" style="background:#f7f8fa"></div>
+    <div class="p-3 border-t bg-white rounded-b-xl shrink-0">
+        <form id="chatbot-form" class="flex gap-2">
+            <input type="text" id="chatbot-input" placeholder="Type a message..." autocomplete="off"
+                   class="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button type="submit" id="chatbot-send" class="px-4 py-2 rounded-full text-white text-sm font-medium shrink-0" style="background-color:var(--primary)">Send</button>
+        </form>
+        <div id="chatbot-typing" class="hidden text-xs text-gray-400 mt-2 px-1">Typing...</div>
+    </div>
+</div>`;
+
+        // Keep chatbot-messages background in sync with dark mode
+        const messagesEl = document.getElementById('chatbot-messages');
+        function syncChatDark() {
+            messagesEl.style.background = document.documentElement.classList.contains('dark') ? '#0f172a' : '#f7f8fa';
+        }
+        syncChatDark();
+        new MutationObserver(syncChatDark).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
+        const btn = document.getElementById('chatbot-btn');
+        const modal = document.getElementById('chatbot-modal');
+        applyPosition(btn);
+        makeDraggable(btn, () => { if (state.isOpen) positionModal(btn, modal); });
+        btn.addEventListener('click', () => { if (!state.isDragging) toggle(); });
+        document.getElementById('chatbot-close').addEventListener('click', close);
+        document.getElementById('chatbot-form').addEventListener('submit', handleSubmit);
+    }
+
+    function applyPosition(el) {
+        el.style.left   = state.position.left   !== undefined ? state.position.left   + 'px' : 'auto';
+        el.style.right  = state.position.right  !== undefined ? state.position.right  + 'px' : 'auto';
+        el.style.top    = state.position.top    !== undefined ? state.position.top    + 'px' : 'auto';
+        el.style.bottom = state.position.bottom !== undefined ? state.position.bottom + 'px' : 'auto';
+    }
+
+    function makeDraggable(el, onMove) {
+        let startX, startY, startLeft, startTop, moved;
+        el.addEventListener('mousedown', ds);
+        el.addEventListener('touchstart', ds, { passive: false });
+        function ds(e) {
+            moved = false; state.isDragging = false;
+            const t = e.touches ? e.touches[0] : e;
+            startX = t.clientX; startY = t.clientY;
+            const r = el.getBoundingClientRect(); startLeft = r.left; startTop = r.top;
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('mouseup', de); document.addEventListener('touchend', de);
+        }
+        function drag(e) {
+            e.preventDefault();
+            const t = e.touches ? e.touches[0] : e;
+            const dx = t.clientX - startX, dy = t.clientY - startY;
+            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) { moved = true; state.isDragging = true; }
+            if (!moved) return;
+            let nl = Math.max(0, Math.min(startLeft + dx, window.innerWidth  - el.offsetWidth));
+            let nt = Math.max(0, Math.min(startTop  + dy, window.innerHeight - el.offsetHeight));
+            const cx = nl + el.offsetWidth/2, cy = nt + el.offsetHeight/2;
+            state.position = {};
+            if (cx < window.innerWidth/2)  state.position.left   = nl; else state.position.right  = window.innerWidth  - nl - el.offsetWidth;
+            if (cy < window.innerHeight/2) state.position.top    = nt; else state.position.bottom = window.innerHeight - nt - el.offsetHeight;
+            applyPosition(el); if (onMove) onMove();
+        }
+        function de() {
+            document.removeEventListener('mousemove', drag); document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', de);    document.removeEventListener('touchend', de);
+            if (moved) { savePosition(); setTimeout(() => { state.isDragging = false; }, 10); }
+        }
+    }
+
+    function positionModal(btn, modal) {
+        const r = btn.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
+        const cx = r.left + r.width/2, cy = r.top + r.height/2;
+        modal.style.left = modal.style.right = modal.style.top = modal.style.bottom = 'auto';
+        if (cx > vw/2) modal.style.right = (vw - r.left + 8) + 'px'; else modal.style.left = (r.right + 8) + 'px';
+        if (cy > vh/2) modal.style.bottom = (vh - r.top  + 8) + 'px'; else modal.style.top  = (r.bottom + 8) + 'px';
+        requestAnimationFrame(() => {
+            const mr = modal.getBoundingClientRect();
+            if (mr.left < 8) modal.style.left = '8px';
+            if (mr.right  > vw - 8) { modal.style.left = 'auto'; modal.style.right  = '8px'; }
+            if (mr.top  < 8) modal.style.top  = '8px';
+            if (mr.bottom > vh - 8) { modal.style.top  = 'auto'; modal.style.bottom = '8px'; }
+        });
+    }
+
+    function toggle() {
+        state.isOpen = !state.isOpen;
+        const btn = document.getElementById('chatbot-btn');
+        const modal = document.getElementById('chatbot-modal');
+        document.getElementById('chatbot-icon-chat').classList.toggle('hidden', state.isOpen);
+        document.getElementById('chatbot-icon-x').classList.toggle('hidden', !state.isOpen);
+        if (state.isOpen) {
+            modal.style.display = 'flex';
+            positionModal(btn, modal);
+            if (state.messages.length === 0) addMessage("Hi! I'm your AI real estate assistant. How can I help you today?", 'bot');
+            document.getElementById('chatbot-input').focus();
+        } else {
+            modal.style.display = 'none';
+        }
+    }
+
+    function close() {
+        state.isOpen = false;
+        document.getElementById('chatbot-icon-chat').classList.remove('hidden');
+        document.getElementById('chatbot-icon-x').classList.add('hidden');
+        document.getElementById('chatbot-modal').style.display = 'none';
+    }
+
+    function addMessage(text, sender) {
+        const container = document.getElementById('chatbot-messages');
+        const div = document.createElement('div');
+        div.className = sender === 'user' ? 'flex justify-end' : 'flex justify-start';
+        div.innerHTML = '<div class="max-w-[85%] px-3 py-2 rounded-lg text-sm ' +
+            (sender === 'user' ? 'text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none shadow-sm') +
+            '" ' + (sender === 'user' ? 'style="background-color:var(--primary)"' : '') + '>' + esc(text) + '</div>';
+        container.appendChild(div);
+        state.messages.push({ text, sender, ts: Date.now() });
+        saveConversation();
+        setTimeout(() => { container.scrollTop = container.scrollHeight; }, 10);
+    }
+
+    function showTyping(show) {
+        document.getElementById('chatbot-typing').classList.toggle('hidden', !show);
+        document.getElementById('chatbot-send').disabled = show;
+        document.getElementById('chatbot-input').disabled = show;
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const input = document.getElementById('chatbot-input');
+        const msg = input.value.trim();
+        if (!msg || state.isLoading) return;
+        input.value = '';
+        addMessage(msg, 'user');
+        showTyping(true); state.isLoading = true;
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF() },
+                body: JSON.stringify({ message: msg, session_id: state.sessionId })
+            });
+            const data = await res.json();
+            if (data.session_id) state.sessionId = data.session_id;
+            addMessage(data.reply || 'Sorry, something went wrong.', 'bot');
+        } catch(err) {
+            addMessage("Sorry, I'm having trouble connecting. Please try again.", 'bot');
+        } finally {
+            state.isLoading = false; showTyping(false);
+            document.getElementById('chatbot-input').focus();
+        }
+    }
+
+    function saveConversation() {
+        sessionStorage.setItem('chatbot_conv', JSON.stringify({ id: state.sessionId, msgs: state.messages }));
+    }
+    function loadConversation() {
+        try {
+            const data = JSON.parse(sessionStorage.getItem('chatbot_conv') || 'null');
+            if (!data) return;
+            state.sessionId = data.id;
+            state.messages = data.msgs || [];
+            const container = document.getElementById('chatbot-messages');
+            state.messages.forEach(m => {
+                const div = document.createElement('div');
+                div.className = m.sender === 'user' ? 'flex justify-end' : 'flex justify-start';
+                div.innerHTML = '<div class="max-w-[85%] px-3 py-2 rounded-lg text-sm ' +
+                    (m.sender === 'user' ? 'text-white rounded-br-none' : 'bg-white text-gray-800 rounded-bl-none shadow-sm') +
+                    '" ' + (m.sender === 'user' ? 'style="background-color:var(--primary)"' : '') + '>' + esc(m.text) + '</div>';
+                container.appendChild(div);
+            });
+        } catch(e) {}
+    }
+
+    window.chatbotWidget = { open: toggle, close };
+})();
+</script>
+@endif
+@endunless
+
+{{-- Contact Modal Widget (always shown on public pages) --}}
+@unless(View::hasSection('hide_contact_widget'))
+@php $contactApiUrl = route('tenant.api.contact', $account); @endphp
+<div id="contact-widget-root"></div>
+<script>
+(function() {
+    const CONTACT_URL = '{{ $contactApiUrl ?? "" }}';
+    const STORAGE_KEY = 'contact_position';
+    let state = { isOpen: false, propertyId: null, isDragging: false, position: null };
+
+    document.addEventListener('DOMContentLoaded', init);
+
+    function init() { loadPosition(); createWidget(); setupPropertyContext(); }
+
+    function loadPosition() {
+        try { const s = localStorage.getItem(STORAGE_KEY); if (s) state.position = JSON.parse(s); } catch(e) {}
+        if (!state.position) state.position = { left: 16, bottom: 16 };
+    }
+    function savePosition() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state.position)); }
+
+    function createWidget() {
+        const root = document.getElementById('contact-widget-root');
+        root.innerHTML = `
+<button id="contact-btn" class="fixed w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white z-50 cursor-grab active:cursor-grabbing select-none" style="background-color:var(--primary);left:16px;bottom:16px">
+    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+    </svg>
+</button>
+<div id="contact-modal" class="fixed w-96 bg-white rounded-xl shadow-2xl z-50 hidden" style="max-width:calc(100vw - 2rem)">
+    <div class="flex items-center justify-between p-4 border-b rounded-t-xl" style="background-color:var(--primary)">
+        <div class="text-white">
+            <div class="font-semibold">Contact Agent</div>
+            <div class="text-xs opacity-90">We'll respond within 24 hours</div>
+        </div>
+        <button id="contact-close" class="text-white hover:bg-white/20 rounded p-1">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+    </div>
+    <div class="p-4">
+        <form id="contact-form" class="space-y-3">
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
+            <input type="text" id="contact-name" name="name" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+            <input type="email" id="contact-email" name="email" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <input type="tel" id="contact-phone" name="phone" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-1">Message *</label>
+            <textarea id="contact-message" name="message" rows="3" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea></div>
+            <input type="hidden" id="contact-property-id" name="property_id" value="">
+            <div id="contact-error" class="hidden text-red-600 text-sm"></div>
+            <div id="contact-success" class="hidden text-green-600 text-sm font-medium"></div>
+            <button type="submit" id="contact-submit" class="w-full py-2.5 rounded-lg text-white font-medium text-sm" style="background-color:var(--primary)">Send Message</button>
+        </form>
+    </div>
+</div>`;
+        const btn = document.getElementById('contact-btn');
+        const modal = document.getElementById('contact-modal');
+        applyPosition(btn);
+        makeDraggable(btn, () => { if (state.isOpen) positionModal(btn, modal); });
+        btn.addEventListener('click', () => { if (!state.isDragging) toggle(); });
+        document.getElementById('contact-close').addEventListener('click', close);
+        document.getElementById('contact-form').addEventListener('submit', handleSubmit);
+    }
+
+    function applyPosition(el) {
+        el.style.left   = state.position.left   !== undefined ? state.position.left   + 'px' : 'auto';
+        el.style.right  = state.position.right  !== undefined ? state.position.right  + 'px' : 'auto';
+        el.style.top    = state.position.top    !== undefined ? state.position.top    + 'px' : 'auto';
+        el.style.bottom = state.position.bottom !== undefined ? state.position.bottom + 'px' : 'auto';
+    }
+
+    function makeDraggable(el, onMove) {
+        let startX, startY, startLeft, startTop, moved;
+        el.addEventListener('mousedown', ds);
+        el.addEventListener('touchstart', ds, { passive: false });
+        function ds(e) {
+            moved = false; state.isDragging = false;
+            const t = e.touches ? e.touches[0] : e;
+            startX = t.clientX; startY = t.clientY;
+            const r = el.getBoundingClientRect(); startLeft = r.left; startTop = r.top;
+            document.addEventListener('mousemove', drag);
+            document.addEventListener('touchmove', drag, { passive: false });
+            document.addEventListener('mouseup', de);
+            document.addEventListener('touchend', de);
+        }
+        function drag(e) {
+            e.preventDefault();
+            const t = e.touches ? e.touches[0] : e;
+            const dx = t.clientX - startX, dy = t.clientY - startY;
+            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) { moved = true; state.isDragging = true; }
+            if (!moved) return;
+            let nl = Math.max(0, Math.min(startLeft + dx, window.innerWidth  - el.offsetWidth));
+            let nt = Math.max(0, Math.min(startTop  + dy, window.innerHeight - el.offsetHeight));
+            const mx = window.innerWidth / 2, my = window.innerHeight / 2;
+            const cx = nl + el.offsetWidth / 2, cy = nt + el.offsetHeight / 2;
+            state.position = {};
+            if (cx < mx) state.position.left = nl; else state.position.right  = window.innerWidth  - nl - el.offsetWidth;
+            if (cy < my) state.position.top  = nt; else state.position.bottom = window.innerHeight - nt - el.offsetHeight;
+            applyPosition(el); if (onMove) onMove();
+        }
+        function de() {
+            document.removeEventListener('mousemove', drag); document.removeEventListener('touchmove', drag);
+            document.removeEventListener('mouseup', de);    document.removeEventListener('touchend', de);
+            if (moved) { savePosition(); setTimeout(() => { state.isDragging = false; }, 10); }
+        }
+    }
+
+    function positionModal(btn, modal) {
+        const r = btn.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
+        const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+        modal.style.left = modal.style.right = modal.style.top = modal.style.bottom = 'auto';
+        if (cx > vw / 2) modal.style.right = (vw - r.left + 8) + 'px'; else modal.style.left = (r.right + 8) + 'px';
+        if (cy > vh / 2) modal.style.bottom = (vh - r.top  + 8) + 'px'; else modal.style.top  = (r.bottom + 8) + 'px';
+        requestAnimationFrame(() => {
+            const mr = modal.getBoundingClientRect();
+            if (mr.left < 8) modal.style.left = '8px';
+            if (mr.right  > vw - 8) { modal.style.left = 'auto'; modal.style.right  = '8px'; }
+            if (mr.top  < 8) modal.style.top  = '8px';
+            if (mr.bottom > vh - 8) { modal.style.top  = 'auto'; modal.style.bottom = '8px'; }
+        });
+    }
+
+    function toggle() {
+        state.isOpen = !state.isOpen;
+        const btn = document.getElementById('contact-btn');
+        const modal = document.getElementById('contact-modal');
+        if (state.isOpen) { modal.classList.remove('hidden'); positionModal(btn, modal); document.getElementById('contact-name').focus(); }
+        else modal.classList.add('hidden');
+    }
+    function close() { state.isOpen = false; document.getElementById('contact-modal').classList.add('hidden'); }
+
+    function setupPropertyContext() {
+        const m = location.pathname.match(/\/property\/(\d+)/);
+        if (m) {
+            state.propertyId = m[1];
+            document.getElementById('contact-property-id').value = m[1];
+            const addr = document.querySelector('[data-property-address]')?.textContent;
+            if (addr) document.getElementById('contact-message').value =
+                `Hi, I'm interested in the property at ${addr}. I'd like to schedule a viewing.`;
+        }
+    }
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('contact-submit');
+        const errDiv = document.getElementById('contact-error');
+        const okDiv  = document.getElementById('contact-success');
+        errDiv.classList.add('hidden'); okDiv.classList.add('hidden');
+        submitBtn.disabled = true; submitBtn.textContent = 'Sending...';
+        const fd = new FormData(e.target);
+        try {
+            const res = await fetch(CONTACT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]')?.content || '' },
+                body: JSON.stringify({ name: fd.get('name'), email: fd.get('email'), phone: fd.get('phone'), message: fd.get('message'), property_id: fd.get('property_id') || null })
+            });
+            const data = await res.json();
+            if (!data.success) throw new Error(data.error || 'Failed to send');
+            okDiv.textContent = "Message sent! We'll be in touch soon.";
+            okDiv.classList.remove('hidden');
+            e.target.reset();
+            setTimeout(() => { close(); okDiv.classList.add('hidden'); }, 3000);
+        } catch(err) {
+            errDiv.textContent = err.message;
+            errDiv.classList.remove('hidden');
+        } finally { submitBtn.disabled = false; submitBtn.textContent = 'Send Message'; }
+    }
+
+    window.contactWidget = { open: toggle, close };
+})();
+</script>
+@endunless
+
+<script>
+document.addEventListener('alpine:init', () => {
+    Alpine.store('theme', {
+        dark: document.documentElement.classList.contains('dark'),
+        toggle() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('theme', this.dark ? 'dark' : 'light'); }
+    });
+});
+
+@yield('scripts')
+</script>
+</body>
+</html>
