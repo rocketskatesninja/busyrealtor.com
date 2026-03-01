@@ -1,5 +1,4 @@
 {{-- Shared filter form fields — included in gallery sidebar and map panel --}}
-{{-- All fields use GET params matching the original site --}}
 
 {{-- Property Type --}}
 <div>

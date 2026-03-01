@@ -182,7 +182,7 @@ $activeFilters = collect(['type','status','price_min','price_max','beds','baths'
                 <svg class="w-5 h-5 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
             </button>
         </div>
-        <div x-show="open" x-transition class="overflow-y-auto flex-1 px-5 pb-2">
+        <div x-show="open" x-transition class="overflow-y-auto flex-1 px-5 pb-2 scrollbar-hide">
             <form id="map-filter" class="space-y-4">
                 @include('tenant.partials.filter-fields', ['filterSuffix' => '_map'])
             </form>

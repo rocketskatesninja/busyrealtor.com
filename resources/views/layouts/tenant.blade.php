@@ -157,6 +157,9 @@
         .dark #contact-modal label { color: #cbd5e1 !important; }
 
         /* ===================== END DARK MODE ===================== */
+        /* Hide scrollbar while preserving scroll behaviour */
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
         @yield('styles')
     </style>
     @yield('head')
