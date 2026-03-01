@@ -215,7 +215,7 @@
 {{-- HERO MODE HEADER --}}
 @unless(View::hasSection('hide_header'))
 @if($headerMode === 'hero')
-<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent py-4"
         x-data="{ scrolled: window.pageYOffset > 50, open: false }"
         x-on:scroll.window="scrolled = (window.pageYOffset > 50)"
         :class="scrolled ? 'bg-white shadow-lg py-3' : 'bg-transparent py-4'">

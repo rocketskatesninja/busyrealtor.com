@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\ImpersonationController;
 use App\Http\Controllers\SuperAdmin\SystemSettingsController;
+use App\Http\Controllers\SuperAdmin\FeedbackController as SuperFeedbackController;
+use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\StaffController;
@@ -56,6 +58,10 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin'])->name('super.'
     Route::post('/stop-impersonate', [ImpersonationController::class, 'stop'])->name('stop-impersonate');
     Route::get('/settings', [SystemSettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [SystemSettingsController::class, 'update'])->name('settings.update');
+    Route::get('/feedback', [SuperFeedbackController::class, 'index'])->name('feedback');
+    Route::get('/feedback/{id}', [SuperFeedbackController::class, 'show'])->name('feedback.show');
+    Route::get('/feedback/{id}/screenshot', [SuperFeedbackController::class, 'screenshot'])->name('feedback.screenshot');
+    Route::delete('/feedback/{id}', [SuperFeedbackController::class, 'destroy'])->name('feedback.destroy');
 });
 
 // Tenant routes
@@ -129,6 +135,9 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
 
         // Billing (accessible even if subscription expired)
         Route::get('/billing', [BillingController::class, 'show'])->name('billing');
+        Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback');
+        Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+        Route::get('/feedback/thanks', [FeedbackController::class, 'thanks'])->name('feedback.thanks');
         Route::post('/billing/subscribe', [BillingController::class, 'subscribe'])->name('billing.subscribe');
         Route::get('/billing/portal', [BillingController::class, 'portal'])->name('billing.portal');
     });
