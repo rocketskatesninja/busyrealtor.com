@@ -14,9 +14,10 @@ function initPropertyMap() {
 
     var map = new google.maps.Map(document.getElementById('propertyMap'), {
         center: loc, zoom: 15,
-        mapTypeControl: false, streetViewControl: true, fullscreenControl: true
+        mapTypeControl: false, streetViewControl: true, fullscreenControl: true,
+        mapId: 'DEMO_MAP_ID'
     });
-    new google.maps.Marker({ position: loc, map: map, title: {!! json_encode($property->title) !!} });
+    new google.maps.marker.AdvancedMarkerElement({ position: loc, map: map, title: {!! json_encode($property->title) !!} });
 
     var streetViewDiv = document.getElementById('propertyStreetView');
     var panorama = new google.maps.StreetViewPanorama(streetViewDiv, {
@@ -38,7 +39,7 @@ function initPropertyMap() {
     });
 }
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ $mapsKey }}&callback=initPropertyMap"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key={{ $mapsKey }}&callback=initPropertyMap&loading=async&libraries=marker"></script>
 @endif
 @endsection
 
@@ -48,17 +49,31 @@ function initPropertyMap() {
 <div class="max-w-7xl mx-auto px-4 py-10">
     <div class="mb-6">
         <nav class="flex items-center gap-2 text-sm text-gray-500">
+            @auth
+            @if(auth()->user()->tenant_id === app('tenant')->id || auth()->user()->is_super_admin)
+            <a href="{{ route('tenant.admin.dashboard', $account) }}" class="hover-primary transition">Home</a>
+            @else
             <a href="{{ route('tenant.home', $account) }}" class="hover-primary transition">Home</a>
+            @endif
+            @else
+            <a href="{{ route('tenant.home', $account) }}" class="hover-primary transition">Home</a>
+            @endauth
             <span>/</span>
+            @auth
+            @if(auth()->user()->tenant_id === app('tenant')->id || auth()->user()->is_super_admin)
+            <a href="{{ route('tenant.admin.properties.index', $account) }}" class="hover-primary transition">Properties</a>
+            @else
             <a href="{{ route('tenant.gallery', $account) }}" class="hover-primary transition">Properties</a>
+            @endif
+            @else
+            <a href="{{ route('tenant.gallery', $account) }}" class="hover-primary transition">Properties</a>
+            @endauth
             <span>/</span>
             <span class="text-gray-800">{{ Str::limit($property->title, 40) }}</span>
         </nav>
     </div>
 
     <div>
-        {{-- Left: Images + Details --}}
-        <div>
             {{-- Image Gallery --}}
             @php $images = $property->images->sortByDesc('is_primary'); @endphp
             @if($images->count())
@@ -111,64 +126,87 @@ function initPropertyMap() {
             @endif
 
             {{-- Property Details --}}
-            <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
-                <div class="flex flex-wrap items-start justify-between gap-4 mb-4">
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900 mb-1">{{ $property->title }}</h1>
-                        @if($property->address) <p class="text-gray-500">{{ $property->address }}{{ $property->city ? ', ' . $property->city : '' }}{{ $property->state ? ', ' . $property->state : '' }} {{ $property->zip }}</p> @endif
-                    </div>
-                    <div class="text-right">
-                        <p class="text-3xl font-bold" style="color: var(--primary)">${{ number_format($property->price) }}</p>
-                        <span class="inline-block text-xs font-semibold text-white px-3 py-1 rounded-full mt-1" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
-                            {{ ucfirst($property->listing_status) }}
-                        </span>
-                        {{-- Share buttons --}}
-                        @php $shareUrl = urlencode(request()->fullUrl()); $shareText = urlencode(($property->title ?: $property->address) . ($property->price ? ' — $' . number_format($property->price) : '')); @endphp
-                        <div class="flex items-center justify-end gap-2 mt-3" x-data="{ copied: false }">
-                            {{-- Copy link --}}
-                            <button type="button" title="Copy link"
-                                    @click="navigator.clipboard.writeText(window.location.href).then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
-                                    class="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
-                                <svg x-show="!copied" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-                                <svg x-show="copied" x-cloak class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                                <span x-show="copied" x-cloak class="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs bg-gray-800 text-white px-2 py-1 rounded whitespace-nowrap z-10">Copied!</span>
-                            </button>
-                            {{-- Facebook --}}
-                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}"
-                               target="_blank" rel="noopener" title="Share on Facebook"
-                               class="p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors">
-                                <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/></svg>
-                            </a>
-                            {{-- X / Twitter --}}
-                            <a href="https://twitter.com/intent/tweet?text={{ $shareText }}&url={{ $shareUrl }}"
-                               target="_blank" rel="noopener" title="Share on X"
-                               class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
-                                <svg class="w-4 h-4 text-gray-800" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                            </a>
-                            {{-- Email --}}
-                            <a href="mailto:?subject={{ urlencode('Check out this property: ' . ($property->title ?: $property->address)) }}&body={{ urlencode(($property->title ?: $property->address) . ($property->price ? '
-$' . number_format($property->price) : '') . '
+            @php
+                $shareUrl  = urlencode(request()->fullUrl());
+                $shareText = urlencode(($property->title ?: $property->address) . ($property->price ? ' — $' . number_format($property->price) : ''));
+                $shareMailSubject = urlencode('Check out this property: ' . ($property->title ?: $property->address));
+                $shareMailBody = urlencode(($property->title ?: $property->address) . ($property->price ? "
+$" . number_format($property->price) : '') . "
 
-' . request()->fullUrl()) }}"
-                               title="Share via Email"
-                               class="p-2 rounded-full bg-green-100 hover:bg-green-200 transition-colors">
-                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                            </a>
-                        </div>
+" . request()->fullUrl());
+            @endphp
+            <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
+
+                {{-- Status + Share row --}}
+                <div class="flex items-center justify-between mb-4">
+                    <span class="inline-flex items-center text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
+                        {{ ucfirst($property->listing_status) }}
+                    </span>
+                    <div class="flex items-center gap-1.5" x-data="{ copied: false }">
+                        <span class="text-xs text-gray-400 mr-1 hidden sm:inline">Share:</span>
+                        <button type="button" title="Copy link"
+                                @click="navigator.clipboard.writeText(window.location.href).then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                class="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                            <svg x-show="!copied" class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                            <svg x-show="copied" x-cloak class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                            <span x-show="copied" x-cloak class="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs bg-gray-800 text-white px-2 py-1 rounded whitespace-nowrap z-10">Copied!</span>
+                        </button>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}" target="_blank" rel="noopener" title="Share on Facebook" class="p-2 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors">
+                            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/></svg>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?text={{ $shareText }}&amp;url={{ $shareUrl }}" target="_blank" rel="noopener" title="Share on X" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                            <svg class="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        <a href="mailto:?subject={{ $shareMailSubject }}&amp;body={{ $shareMailBody }}" title="Share via Email" class="p-2 rounded-full bg-green-50 hover:bg-green-100 transition-colors">
+                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        </a>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y border-gray-100">
-                    @if($property->bedrooms) <div class="text-center"><p class="text-2xl font-bold text-gray-800">{{ $property->bedrooms }}</p><p class="text-xs text-gray-500">Bedrooms</p></div> @endif
-                    @if($property->bathrooms) <div class="text-center"><p class="text-2xl font-bold text-gray-800">{{ $property->bathrooms }}</p><p class="text-xs text-gray-500">Bathrooms</p></div> @endif
-                    @if($property->sqft) <div class="text-center"><p class="text-2xl font-bold text-gray-800">{{ number_format($property->sqft) }}</p><p class="text-xs text-gray-500">Sq Ft</p></div> @endif
-                    @if($property->property_type) <div class="text-center"><p class="text-lg font-bold text-gray-800 capitalize">{{ str_replace('-', ' ', $property->property_type) }}</p><p class="text-xs text-gray-500">Type</p></div> @endif
+
+                {{-- Title + Address + Price --}}
+                <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-900 leading-tight">{{ $property->title }}</h1>
+                        @if($property->address)
+                        <p class="flex items-center gap-1.5 text-gray-500 text-sm mt-1">
+                            <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            {{ $property->address }}{{ $property->city ? ', ' . $property->city : '' }}{{ $property->state ? ', ' . $property->state : '' }}{{ $property->zip ? ' ' . $property->zip : '' }}
+                        </p>
+                        @endif
+                    </div>
+                    @if($property->price)
+                    <p class="text-3xl font-bold whitespace-nowrap" style="color: var(--primary)">${{ number_format($property->price) }}</p>
+                    @endif
                 </div>
-                @if($property->description)
-                <div class="mt-4">
-                    <h3 class="font-semibold text-gray-800 mb-3">About This Property</h3>
-                    <p class="text-gray-600 leading-relaxed whitespace-pre-wrap">{{ $property->description }}</p>
+
+                {{-- Quick Stats --}}
+                @php $stats = array_filter([
+                    $property->bedrooms  ? ['val' => $property->bedrooms,                  'label' => 'Beds']   : null,
+                    $property->bathrooms ? ['val' => $property->bathrooms,                 'label' => 'Baths']  : null,
+                    $property->sqft      ? ['val' => number_format($property->sqft),       'label' => 'Sq Ft']  : null,
+                    $property->year_built? ['val' => $property->year_built,               'label' => 'Built']  : null,
+                    $property->garage    ? ['val' => $property->garage,                   'label' => 'Garage'] : null,
+                    $property->property_type ? ['val' => ucfirst(str_replace('-',' ',$property->property_type)), 'label' => 'Type'] : null,
+                ]); @endphp
+                @if(count($stats))
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-px bg-gray-100 rounded-xl overflow-hidden border border-gray-100 mb-5">
+                    @foreach($stats as $stat)
+                    <div class="bg-white text-center px-3 py-3">
+                        <p class="text-lg font-bold text-gray-900">{{ $stat['val'] }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ $stat['label'] }}</p>
+                    </div>
+                    @endforeach
                 </div>
                 @endif
+
+                {{-- Description --}}
+                @if($property->description)
+                <div class="border-t border-gray-100 pt-4">
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">About This Property</h3>
+                    <p class="text-gray-700 leading-relaxed whitespace-pre-wrap text-sm">{{ $property->description }}</p>
+                </div>
+                @endif
+
             </div>
 
             @if($property->amenities && count($property->amenities))
@@ -191,8 +229,174 @@ $' . number_format($property->price) : '') . '
                 </a>
             </div>
             @endif
+
+
+    {{-- Appointment Booking Form --}}
+    @php $isPro = $tenant->isPro(); @endphp
+    <div class="bg-white rounded-2xl p-6 mt-8 shadow-sm border border-gray-100">
+        @if($isPro)
+        {{-- Pro / Trial: full booking form --}}
+        <div x-data="{
+            submitting: false,
+            success: false,
+            error: '',
+            form: {
+                visitor_name: '',
+                visitor_email: '',
+                visitor_phone: '',
+                appointment_date: '',
+                appointment_time: '09:00',
+                appointment_type: 'showing',
+                message: '',
+                property_id: {{ $property->id }}
+            },
+            async submit() {
+                this.submitting = true;
+                this.error = '';
+                try {
+                    const res = await fetch('{{ route('tenant.appointments.store', $account) }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify(this.form)
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        this.success = true;
+                    } else {
+                        this.error = data.message || 'Something went wrong. Please try again.';
+                    }
+                } catch (e) {
+                    this.error = 'Network error. Please try again.';
+                } finally {
+                    this.submitting = false;
+                }
+            }
+        }">
+            <h2 class="text-xl font-semibold text-gray-800 mb-1">Schedule a Showing</h2>
+            <p class="text-sm text-gray-500 mb-6">Fill out the form below and we'll be in touch to confirm your appointment.</p>
+
+            {{-- Success state --}}
+            <div x-show="success" x-cloak class="flex flex-col items-center justify-center py-10 text-center">
+                <div class="w-16 h-16 rounded-full flex items-center justify-center mb-4" style="background-color: rgba(var(--primary-rgb), 0.1)">
+                    <svg class="w-8 h-8" style="color: var(--primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800 mb-1">Request Sent!</h3>
+                <p class="text-gray-500 text-sm">We've received your appointment request and will be in touch shortly to confirm.</p>
+            </div>
+
+            {{-- Form --}}
+            <form x-show="!success" @submit.prevent="submit" class="space-y-4">
+                {{-- Error banner --}}
+                <div x-show="error" x-cloak class="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-lg" x-text="error"></div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
+                        <input type="text" x-model="form.visitor_name" required placeholder="Jane Smith"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+                               style="--tw-ring-color: var(--primary)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                        <input type="email" x-model="form.visitor_email" required placeholder="jane@example.com"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+                               style="--tw-ring-color: var(--primary)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                        <input type="tel" x-model="form.visitor_phone" placeholder="(555) 123-4567"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+                               style="--tw-ring-color: var(--primary)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Request Type</label>
+                        <select x-model="form.appointment_type"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:border-transparent transition"
+                                style="--tw-ring-color: var(--primary)">
+                            <option value="showing">In-Person Showing</option>
+                            <option value="virtual">Virtual Tour</option>
+                            <option value="info">More Information</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Date <span class="text-red-500">*</span></label>
+                        <input type="date" x-model="form.appointment_date" required
+                               :min="new Date().toISOString().split('T')[0]"
+                               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+                               style="--tw-ring-color: var(--primary)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Preferred Time</label>
+                        <select x-model="form.appointment_time"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:border-transparent transition"
+                                style="--tw-ring-color: var(--primary)">
+                            <option value="08:00">8:00 AM</option>
+                            <option value="09:00">9:00 AM</option>
+                            <option value="10:00">10:00 AM</option>
+                            <option value="11:00">11:00 AM</option>
+                            <option value="12:00">12:00 PM</option>
+                            <option value="13:00">1:00 PM</option>
+                            <option value="14:00">2:00 PM</option>
+                            <option value="15:00">3:00 PM</option>
+                            <option value="16:00">4:00 PM</option>
+                            <option value="17:00">5:00 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                    <textarea x-model="form.message" rows="3" placeholder="Any questions or special requests..."
+                              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition resize-none"
+                              style="--tw-ring-color: var(--primary)"></textarea>
+                </div>
+
+                <button type="submit"
+                        :disabled="submitting"
+                        class="w-full sm:w-auto btn-primary px-8 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                    <svg x-show="submitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                    </svg>
+                    <span x-text="submitting ? 'Sending...' : 'Request Appointment'"></span>
+                </button>
+            </form>
         </div>
 
+        @else
+        {{-- Starter plan: show contact details instead --}}
+        <h2 class="text-xl font-semibold text-gray-800 mb-1">Interested in This Property?</h2>
+        <p class="text-sm text-gray-500 mb-6">Contact us directly to schedule a showing or ask any questions.</p>
+        <div class="flex flex-col sm:flex-row gap-3">
+            @if($settings->contact_phone)
+            <a href="tel:{{ $settings->contact_phone }}"
+               class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm text-white transition hover:opacity-90"
+               style="background-color: var(--primary)">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                </svg>
+                {{ $settings->contact_phone }}
+            </a>
+            @endif
+            @if($settings->contact_email)
+            <a href="mailto:{{ $settings->contact_email }}?subject=Inquiry: {{ $property->title }}"
+               class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+                Email Us
+            </a>
+            @endif
+        </div>
+        @endif
+    </div>
 
     {{-- Location: Map & Street View --}}
     @if($property->latitude && $property->longitude)

@@ -240,23 +240,75 @@
     </div>
 
     {{-- Mobile menu --}}
-    <div x-show="open" x-cloak class="md:hidden bg-white border-t">
+    @php
+        $isDash     = request()->routeIs('tenant.admin.dashboard');
+        $isProps    = request()->routeIs('tenant.admin.properties.*');
+        $isStaff    = request()->routeIs('tenant.admin.staff.*');
+        $isAppts    = request()->routeIs('tenant.admin.appointments.*');
+        $isMsgs     = request()->routeIs('tenant.admin.messages.*');
+        $isSettings = request()->routeIs('tenant.admin.settings*');
+    @endphp
+    <div x-show="open" x-cloak
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 -translate-y-2"
+         class="md:hidden border-t bg-white shadow-lg">
         <nav class="px-4 py-3 space-y-1">
-            <a href="{{ route('tenant.admin.dashboard', $account) }}" class="block px-3 py-2 rounded text-gray-700 hover:bg-gray-100 font-medium">Dashboard</a>
-            <a href="{{ route('tenant.admin.properties.index', $account) }}" class="block px-3 py-2 rounded text-gray-700 hover:bg-gray-100 font-medium">Properties</a>
+            <a href="{{ route('tenant.admin.dashboard', $account) }}" class="flex items-center px-3 py-2 rounded-lg font-medium {{ $isDash ? '' : 'text-gray-700 hover:bg-gray-100' }}" @if($isDash) style="background-color: rgba({{ $r }},{{ $g }},{{ $b }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 {{ $isDash ? '' : 'text-gray-500' }}" style="{{ $isDash ? 'color:var(--primary)' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
+                Dashboard
+            </a>
+            <a href="{{ route('tenant.admin.properties.index', $account) }}" class="flex items-center px-3 py-2 rounded-lg font-medium {{ $isProps ? '' : 'text-gray-700 hover:bg-gray-100' }}" @if($isProps) style="background-color: rgba({{ $r }},{{ $g }},{{ $b }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 {{ $isProps ? '' : 'text-gray-500' }}" style="{{ $isProps ? 'color:var(--primary)' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Properties
+            </a>
             @if($tenant->isPro())
-            <a href="{{ route('tenant.admin.staff.index', $account) }}" class="block px-3 py-2 rounded text-gray-700 hover:bg-gray-100 font-medium">Staff</a>
-            @endif
-            @if($tenant->isPro())
-            <a href="{{ route('tenant.admin.appointments.index', $account) }}" class="flex items-center justify-between px-3 py-2 rounded text-gray-700 hover:bg-gray-100 font-medium">
-                Appointments @if(($pendingAppointments ?? 0) > 0) <span class="bg-yellow-500 text-white text-xs rounded-full px-2 py-0.5">{{ $pendingAppointments }}</span> @endif
+            <a href="{{ route('tenant.admin.staff.index', $account) }}" class="flex items-center px-3 py-2 rounded-lg font-medium {{ $isStaff ? '' : 'text-gray-700 hover:bg-gray-100' }}" @if($isStaff) style="background-color: rgba({{ $r }},{{ $g }},{{ $b }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 {{ $isStaff ? '' : 'text-gray-500' }}" style="{{ $isStaff ? 'color:var(--primary)' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                Staff
             </a>
             @endif
-            <a href="{{ route('tenant.admin.messages.index', $account) }}" class="flex items-center justify-between px-3 py-2 rounded text-gray-700 hover:bg-gray-100 font-medium">
-                Messages @if(($unreadMessages ?? 0) > 0) <span class="text-white text-xs rounded-full px-2 py-0.5" style="background-color:var(--primary)">{{ $unreadMessages }}</span> @endif
+            @if($tenant->isPro())
+            <a href="{{ route('tenant.admin.appointments.index', $account) }}" class="flex items-center justify-between px-3 py-2 rounded-lg font-medium {{ $isAppts ? '' : 'text-gray-700 hover:bg-gray-100' }}" @if($isAppts) style="background-color: rgba({{ $r }},{{ $g }},{{ $b }},0.1); color: var(--primary);" @endif>
+                <span class="flex items-center">
+                    <svg class="w-5 h-5 mr-3 {{ $isAppts ? '' : 'text-gray-500' }}" style="{{ $isAppts ? 'color:var(--primary)' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    Appointments
+                </span>
+                @if(($pendingAppointments ?? 0) > 0)
+                <span class="bg-yellow-500 text-white text-xs rounded-full px-2 py-0.5">{{ $pendingAppointments }}</span>
+                @endif
             </a>
-            <a href="{{ route('tenant.admin.settings', $account) }}" class="block px-3 py-2 rounded text-gray-700 hover:bg-gray-100 font-medium">Settings</a>
-            <form method="POST" action="{{ route('logout') }}">@csrf<button type="submit" class="block w-full text-left px-3 py-2 rounded text-red-600 hover:bg-red-50 font-medium">Logout</button></form>
+            @endif
+            <a href="{{ route('tenant.admin.messages.index', $account) }}" class="flex items-center justify-between px-3 py-2 rounded-lg font-medium {{ $isMsgs ? '' : 'text-gray-700 hover:bg-gray-100' }}" @if($isMsgs) style="background-color: rgba({{ $r }},{{ $g }},{{ $b }},0.1); color: var(--primary);" @endif>
+                <span class="flex items-center">
+                    <svg class="w-5 h-5 mr-3 {{ $isMsgs ? '' : 'text-gray-500' }}" style="{{ $isMsgs ? 'color:var(--primary)' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Messages
+                </span>
+                @if(($unreadMessages ?? 0) > 0)
+                <span class="text-white text-xs rounded-full px-2 py-0.5" style="background-color:var(--primary)">{{ $unreadMessages }}</span>
+                @endif
+            </a>
+            <div class="border-t my-2"></div>
+            <a href="{{ route('tenant.admin.settings', $account) }}" class="flex items-center px-3 py-2 rounded-lg font-medium {{ $isSettings ? '' : 'text-gray-700 hover:bg-gray-100' }}" @if($isSettings) style="background-color: rgba({{ $r }},{{ $g }},{{ $b }},0.1); color: var(--primary);" @endif>
+                <svg class="w-5 h-5 mr-3 {{ $isSettings ? '' : 'text-gray-500' }}" style="{{ $isSettings ? 'color:var(--primary)' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                Settings
+            </a>
+            <button @click="$store.theme.toggle()" class="flex items-center w-full px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+                <svg x-show="!$store.theme.dark" class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span x-text="$store.theme.dark ? 'Light Mode' : 'Dark Mode'"></span>
+            </button>
+            <div class="border-t my-2"></div>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="flex items-center w-full px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 font-medium">
+                    <svg class="w-5 h-5 mr-3 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Logout
+                </button>
+            </form>
         </nav>
     </div>
 </header>

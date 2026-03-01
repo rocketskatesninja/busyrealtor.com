@@ -186,34 +186,36 @@ $iconPaths = [
         </div>
         {{-- Search form --}}
         <div class="bg-white/95 backdrop-blur rounded-2xl p-4 shadow-2xl max-w-3xl mx-auto hero-animate hero-d4">
-            <form action="{{ route('tenant.gallery', $account) }}" method="GET" class="flex flex-wrap gap-3 items-end">
-                <div class="flex-1 min-w-40">
+            <form action="{{ route('tenant.gallery', $account) }}" method="GET" class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:items-end">
+                <div class="flex-1 sm:min-w-40">
                     <label class="block text-xs font-medium text-gray-600 mb-1">Search</label>
                     <input type="text" name="search" placeholder="Address, city, zip..." class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div class="w-36">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
-                    <select name="type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">All Types</option>
-                        <option value="house">House</option>
-                        <option value="condo">Condo</option>
-                        <option value="townhouse">Townhouse</option>
-                        <option value="land">Land</option>
-                        <option value="commercial">Commercial</option>
-                    </select>
+                <div class="flex gap-3 sm:contents">
+                    <div class="flex-1 sm:w-36 sm:flex-none">
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
+                        <select name="type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Types</option>
+                            <option value="house">House</option>
+                            <option value="condo">Condo</option>
+                            <option value="townhouse">Townhouse</option>
+                            <option value="land">Land</option>
+                            <option value="commercial">Commercial</option>
+                        </select>
+                    </div>
+                    <div class="flex-1 sm:w-32 sm:flex-none">
+                        <label class="block text-xs font-medium text-gray-600 mb-1">Max Price</label>
+                        <select name="max_price" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Any Price</option>
+                            <option value="250000">$250K</option>
+                            <option value="500000">$500K</option>
+                            <option value="750000">$750K</option>
+                            <option value="1000000">$1M</option>
+                            <option value="2000000">$2M+</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="w-32">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Max Price</label>
-                    <select name="max_price" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">Any Price</option>
-                        <option value="250000">$250K</option>
-                        <option value="500000">$500K</option>
-                        <option value="750000">$750K</option>
-                        <option value="1000000">$1M</option>
-                        <option value="2000000">$2M+</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn-primary px-6 py-2.5 rounded-lg font-semibold text-sm flex items-center gap-2">
+                <button type="submit" class="btn-primary w-full sm:w-auto px-6 py-2.5 rounded-lg font-semibold text-sm flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     Search
                 </button>

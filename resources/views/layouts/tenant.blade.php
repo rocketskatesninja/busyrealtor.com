@@ -261,10 +261,16 @@
                 Map
             </a>
             <div class="border-t my-2"></div>
-            <button onclick="document.getElementById('chatbot-widget')?.querySelector('button[\x40click]')?.click()" class="flex w-full items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+            <a href="{{ route('tenant.contact', $account) }}" class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Contact Us
+            </a>
+            @if($settings->chatbot_enabled ?? false)
+            <a href="{{ route('tenant.chat', $account) }}" class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
                 <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                 Chat Assistant
-            </button>
+            </a>
+            @endif
             <div class="border-t my-2"></div>
             <a href="{{ route('login') }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isLogin) @else text-gray-700 hover:bg-gray-100 @endif" @if($isLogin) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
                 <svg class="w-5 h-5 mr-3 @if($isLogin) @else text-gray-500 @endif" style="@if($isLogin) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
@@ -320,10 +326,16 @@
                 Map
             </a>
             <div class="border-t my-2"></div>
-            <button onclick="document.getElementById('chatbot-widget')?.querySelector('button[\x40click]')?.click()" class="flex w-full items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+            <a href="{{ route('tenant.contact', $account) }}" class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Contact Us
+            </a>
+            @if($settings->chatbot_enabled ?? false)
+            <a href="{{ route('tenant.chat', $account) }}" class="flex items-center px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
                 <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
                 Chat Assistant
-            </button>
+            </a>
+            @endif
             <div class="border-t my-2"></div>
             <a href="{{ route('login') }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isLogin) @else text-gray-700 hover:bg-gray-100 @endif" @if($isLogin) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
                 <svg class="w-5 h-5 mr-3 @if($isLogin) @else text-gray-500 @endif" style="@if($isLogin) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
@@ -403,7 +415,7 @@
 @unless(View::hasSection('hide_chatbot'))
 @if($settings->chatbot_enabled ?? false)
 @php $chatbotApiUrl = route('tenant.api.chatbot', $account); @endphp
-<div id="chatbot-root"></div>
+<div class="hidden md:block"><div id="chatbot-root"></div></div>
 <script>
 (function() {
     const API_URL = '{{ $chatbotApiUrl }}';
@@ -631,7 +643,7 @@
 {{-- Contact Modal Widget (always shown on public pages) --}}
 @unless(View::hasSection('hide_contact_widget'))
 @php $contactApiUrl = route('tenant.api.contact', $account); @endphp
-<div id="contact-widget-root"></div>
+<div class="hidden md:block"><div id="contact-widget-root"></div></div>
 <script>
 (function() {
     const CONTACT_URL = '{{ $contactApiUrl ?? "" }}';

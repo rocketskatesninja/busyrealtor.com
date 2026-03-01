@@ -22,9 +22,13 @@ class Tenant extends Model
         'plan',
         'trial_ends_at',
         'is_active',
-        'stripe_customer_id',
+        'stripe_id',
+        'pm_type',
+        'pm_last_four',
         'stripe_subscription_id',
         'stripe_subscription_status',
+        'trial_reminders_sent',
+        'payment_failed_at',
     ];
 
     protected $hidden = [
@@ -33,8 +37,10 @@ class Tenant extends Model
     ];
 
     protected $casts = [
-        'trial_ends_at' => 'datetime',
-        'is_active'     => 'boolean',
+        'trial_ends_at'        => 'datetime',
+        'payment_failed_at'    => 'datetime',
+        'is_active'            => 'boolean',
+        'trial_reminders_sent' => 'array',
     ];
 
     public function getRouteKeyName(): string

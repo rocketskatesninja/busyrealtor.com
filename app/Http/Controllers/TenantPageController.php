@@ -89,12 +89,29 @@ class TenantPageController extends Controller
             \Illuminate\Support\Facades\Log::error("PropertyView create failed: " . $e->getMessage());
         }
 
-        $related = Property::where('property_type', $property->property_type)
+        $related = Property::with('images')->where('property_type', $property->property_type)
             ->where('id', '!=', $property->id)
             ->where('listing_status', 'active')
             ->limit(3)->get();
 
         return view('tenant.property', compact('tenant', 'settings', 'property', 'related'));
+    }
+
+    public function contact($account)
+    {
+        $tenant   = app('tenant');
+        $settings = $this->getSettings();
+        return view('tenant.contact', compact('tenant', 'settings'));
+    }
+
+    public function chat($account)
+    {
+        $tenant   = app('tenant');
+        $settings = $this->getSettings();
+        if (!($settings->chatbot_enabled ?? false)) {
+            return redirect()->route('tenant.contact', $account);
+        }
+        return view('tenant.chat', compact('tenant', 'settings'));
     }
 
     public function privacy($account)

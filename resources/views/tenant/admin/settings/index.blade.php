@@ -8,9 +8,23 @@
 <div class="max-w-7xl mx-auto px-4">
     <h1 class="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
 
+    {{-- Mobile: horizontal scrollable tab strip --}}
+    <div class="md:hidden mb-4 -mx-4 px-4">
+        <div class="flex overflow-x-auto gap-1 pb-2 scrollbar-hide">
+            @foreach($tabs as $key => $info)
+            <a href="{{ route('tenant.admin.settings', $account) }}?tab={{ $key }}"
+               class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap {{ $tab === $key ? 'text-white' : 'bg-white text-gray-600 border border-gray-200' }}"
+               style="{{ $tab === $key ? 'background-color: var(--primary)' : '' }}">
+                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/></svg>
+                {{ $info['label'] }}
+            </a>
+            @endforeach
+        </div>
+    </div>
+
     <div class="flex gap-8">
-        {{-- Settings Sidebar --}}
-        <aside class="w-56 flex-shrink-0">
+        {{-- Settings Sidebar (desktop only) --}}
+        <aside class="hidden md:block w-56 flex-shrink-0">
             <nav class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 @php
                 $tabs = [

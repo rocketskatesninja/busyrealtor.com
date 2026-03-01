@@ -76,6 +76,8 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/privacy-policy', [TenantPageController::class, 'privacy'])->name('privacy');
         Route::get('/terms', [TenantPageController::class, 'terms'])->name('terms');
         Route::get('/confirm-appointment/{token}', [TenantPageController::class, 'confirmAppointment'])->name('confirm-appointment');
+        Route::get('/contact', [TenantPageController::class, 'contact'])->name('contact');
+        Route::get('/chat', [TenantPageController::class, 'chat'])->name('chat');
     });
 
     // Public APIs
@@ -140,5 +142,6 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/feedback/thanks', [FeedbackController::class, 'thanks'])->name('feedback.thanks');
         Route::post('/billing/subscribe', [BillingController::class, 'subscribe'])->name('billing.subscribe');
         Route::get('/billing/portal', [BillingController::class, 'portal'])->name('billing.portal');
+        Route::get('/billing/invoice/{invoice}', [BillingController::class, 'downloadInvoice'])->name('billing.invoice');
     });
 });
