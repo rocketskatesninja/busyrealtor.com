@@ -16,10 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'tenant'       => ResolveTenant::class,
-            'super.admin'  => EnsureSuperAdmin::class,
-            'tenant.active'=> EnsureTenantActive::class,
-            'impersonate'  => HandleImpersonation::class,
+            'tenant'               => ResolveTenant::class,
+            'super.admin'          => EnsureSuperAdmin::class,
+            'tenant.active'        => EnsureTenantActive::class,
+            'impersonate'          => HandleImpersonation::class,
+            'registrations.enabled'=> \App\Http\Middleware\CheckRegistrationsEnabled::class,
+            'site.lock'            => \App\Http\Middleware\CheckSiteLocked::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

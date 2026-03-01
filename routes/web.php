@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\ImpersonationController;
+use App\Http\Controllers\SuperAdmin\SystemSettingsController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\StaffController;
@@ -39,8 +40,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
 });
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
-Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+Route::middleware(['registrations.enabled'])->group(function () {
+    Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+});
 
 // Super admin routes
 Route::prefix('super-admin')->middleware(['auth', 'super.admin'])->name('super.')->group(function () {
@@ -51,19 +54,23 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin'])->name('super.'
     Route::delete('/tenants/{tenant}', [SuperAdminController::class, 'destroyTenant'])->name('tenants.destroy');
     Route::post('/impersonate/{tenant}', [ImpersonationController::class, 'impersonate'])->name('impersonate');
     Route::post('/stop-impersonate', [ImpersonationController::class, 'stop'])->name('stop-impersonate');
+    Route::get('/settings', [SystemSettingsController::class, 'index'])->name('settings');
+    Route::put('/settings', [SystemSettingsController::class, 'update'])->name('settings.update');
 });
 
 // Tenant routes
 Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.')->group(function () {
 
-    // Public pages
-    Route::get('/', [TenantPageController::class, 'home'])->name('home');
-    Route::get('/gallery', [TenantPageController::class, 'gallery'])->name('gallery');
-    Route::get('/map', [TenantPageController::class, 'map'])->name('map');
-    Route::get('/property/{id}', [TenantPageController::class, 'property'])->name('property');
-    Route::get('/privacy-policy', [TenantPageController::class, 'privacy'])->name('privacy');
-    Route::get('/terms', [TenantPageController::class, 'terms'])->name('terms');
-    Route::get('/confirm-appointment/{token}', [TenantPageController::class, 'confirmAppointment'])->name('confirm-appointment');
+    // Public pages (behind site.lock middleware)
+    Route::middleware(['site.lock'])->group(function () {
+        Route::get('/', [TenantPageController::class, 'home'])->name('home');
+        Route::get('/gallery', [TenantPageController::class, 'gallery'])->name('gallery');
+        Route::get('/map', [TenantPageController::class, 'map'])->name('map');
+        Route::get('/property/{id}', [TenantPageController::class, 'property'])->name('property');
+        Route::get('/privacy-policy', [TenantPageController::class, 'privacy'])->name('privacy');
+        Route::get('/terms', [TenantPageController::class, 'terms'])->name('terms');
+        Route::get('/confirm-appointment/{token}', [TenantPageController::class, 'confirmAppointment'])->name('confirm-appointment');
+    });
 
     // Public APIs
     Route::post('/api/contact', [ContactController::class, 'submit'])->middleware('throttle:10,1')->name('api.contact');
