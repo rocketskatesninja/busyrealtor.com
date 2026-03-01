@@ -5,7 +5,6 @@
 @section('content')
 <div class="max-w-2xl space-y-6">
 
-    {{-- Page header --}}
     <div>
         <h1 class="text-2xl font-bold text-white">System Settings</h1>
         <p class="mt-1 text-gray-400 text-sm">Global controls for the BusyRealtor platform.</p>
@@ -16,7 +15,8 @@
         @method('PUT')
 
         {{-- Registrations --}}
-        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6">
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6"
+             x-data="{ on: {{ $settings->registrations_enabled ? 'true' : 'false' }} }">
             <div class="px-6 py-4 border-b border-gray-700">
                 <h2 class="text-base font-semibold text-white flex items-center gap-2">
                     <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,29 +27,29 @@
                 <p class="text-gray-400 text-sm mt-1">Allow new realtors to sign up for an account.</p>
             </div>
             <div class="px-6 py-5">
-                <label class="flex items-center justify-between cursor-pointer">
+                <input type="hidden" name="registrations_enabled" :value="on ? '1' : '0'">
+                <div class="flex items-center justify-between">
                     <div>
                         <span class="text-sm font-medium text-gray-200">Enable Registrations</span>
                         <p class="text-gray-500 text-xs mt-0.5">When disabled, the /register page shows a "not accepting signups" message.</p>
                     </div>
-                    <div class="relative ml-6 flex-shrink-0" x-data="{ on: {{ $settings->registrations_enabled ? 'true' : 'false' }} }">
-                        <input type="hidden" name="registrations_enabled" value="0">
-                        <input type="checkbox" name="registrations_enabled" value="1" x-model="on"
-                               class="sr-only peer" id="reg_toggle" {{ $settings->registrations_enabled ? 'checked' : '' }}>
-                        <label for="reg_toggle"
-                               class="relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors"
-                               :class="on ? 'bg-blue-600' : 'bg-gray-600'"
-                               @click="on = !on">
-                            <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
-                                  :class="on ? 'translate-x-6' : 'translate-x-1'"></span>
-                        </label>
-                    </div>
-                </label>
+                    <button type="button" @click="on = !on"
+                            class="relative ml-6 flex-shrink-0 inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                            :class="on ? 'bg-blue-600' : 'bg-gray-600'"
+                            :aria-checked="on.toString()" role="switch">
+                        <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+                              :class="on ? 'translate-x-6' : 'translate-x-1'"></span>
+                    </button>
+                </div>
+                <p class="mt-2 text-xs" :class="on ? 'text-green-400' : 'text-yellow-400'">
+                    <span x-text="on ? 'Registrations are open.' : 'Registrations are closed.'"></span>
+                </p>
             </div>
         </div>
 
         {{-- Site Lock --}}
-        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6" x-data="{ locked: {{ $settings->site_locked ? 'true' : 'false' }} }">
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6"
+             x-data="{ locked: {{ $settings->site_locked ? 'true' : 'false' }} }">
             <div class="px-6 py-4 border-b border-gray-700">
                 <h2 class="text-base font-semibold text-white flex items-center gap-2">
                     <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -60,32 +60,29 @@
                 <p class="text-gray-400 text-sm mt-1">Immediately blocks all tenant public pages for non-super-admin users.</p>
             </div>
             <div class="px-6 py-5 space-y-4">
-                <label class="flex items-center justify-between cursor-pointer">
+                <input type="hidden" name="site_locked" :value="locked ? '1' : '0'">
+                <div class="flex items-center justify-between">
                     <div>
                         <span class="text-sm font-medium text-gray-200">Lock Site</span>
                         <p class="text-gray-500 text-xs mt-0.5">All tenant public pages will show the maintenance message below.</p>
                     </div>
-                    <div class="relative ml-6 flex-shrink-0">
-                        <input type="hidden" name="site_locked" value="0">
-                        <input type="checkbox" name="site_locked" value="1" x-model="locked"
-                               class="sr-only peer" id="lock_toggle" {{ $settings->site_locked ? 'checked' : '' }}>
-                        <label for="lock_toggle"
-                               class="relative inline-flex h-6 w-11 items-center rounded-full cursor-pointer transition-colors"
-                               :class="locked ? 'bg-red-600' : 'bg-gray-600'"
-                               @click="locked = !locked">
-                            <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
-                                  :class="locked ? 'translate-x-6' : 'translate-x-1'"></span>
-                        </label>
-                    </div>
-                </label>
+                    <button type="button" @click="locked = !locked"
+                            class="relative ml-6 flex-shrink-0 inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+                            :class="locked ? 'bg-red-600' : 'bg-gray-600'"
+                            :aria-checked="locked.toString()" role="switch">
+                        <span class="inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform"
+                              :class="locked ? 'translate-x-6' : 'translate-x-1'"></span>
+                    </button>
+                </div>
+                <p class="text-xs" :class="locked ? 'text-red-400' : 'text-green-400'">
+                    <span x-text="locked ? 'Site is LOCKED. Visitors see the maintenance message.' : 'Site is live and accessible.'"></span>
+                </p>
 
-                <div x-show="locked" x-cloak>
-                    <div class="rounded-lg bg-red-900/30 border border-red-700/50 px-4 py-3 mb-4 flex items-start gap-3">
-                        <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-                        </svg>
-                        <p class="text-red-300 text-sm">Site is currently <strong>LOCKED</strong>. All public tenant pages are showing the maintenance message.</p>
-                    </div>
+                <div x-show="locked" x-cloak class="rounded-lg bg-red-900/30 border border-red-700/50 px-4 py-3 flex items-start gap-3">
+                    <svg class="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <p class="text-red-300 text-sm">Site is currently <strong>LOCKED</strong>. All public tenant pages are showing the maintenance message below.</p>
                 </div>
 
                 <div>

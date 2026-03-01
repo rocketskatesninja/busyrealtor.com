@@ -3,58 +3,64 @@
 @section('content')
 @php $account = $tenant->slug; @endphp
 <div class="max-w-5xl mx-auto px-4">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Staff Members</h1>
 
-    {{-- Add/Edit Form --}}
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8" x-data="{ showForm: {{ $errors->any() ? 'true' : 'false' }}, editId: null }">
-        <div class="flex items-center justify-between mb-4">
-            <h3 class="font-semibold text-gray-800">Add Staff Member</h3>
-            <button @click="showForm = !showForm" class="btn-primary px-4 py-2 rounded-xl text-sm font-semibold hover:opacity-90 transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                Add Member
-            </button>
+    <div x-data="{ showForm: false }">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Staff Members</h1>
+        <button @click="showForm = !showForm"
+                class="btn-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Add Member
+        </button>
+    </div>
+
+    {{-- Add Form --}}
+    <div>
+        <div x-show="showForm" x-cloak class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
+            <h3 class="font-semibold text-gray-800 mb-4">Add Staff Member</h3>
+            <form method="POST" enctype="multipart/form-data" action="{{ route('tenant.admin.staff.store', $account) }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                @csrf
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                    <input type="text" name="name" value="{{ old('name') }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <input type="text" name="title" value="{{ old('title') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" name="email" value="{{ old('email') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input type="tel" name="phone" value="{{ old('phone') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                    <textarea name="bio" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ old('bio') }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
+                    <input type="file" name="profile_image" accept="image/*" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
+                </div>
+                <div class="flex flex-col gap-3 justify-center">
+                    <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input type="checkbox" name="display_on_homepage" value="1" class="rounded" {{ old('display_on_homepage') ? 'checked' : '' }}>
+                        Display on Homepage
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input type="checkbox" name="accepts_appointments" value="1" class="rounded" {{ old('accepts_appointments') ? 'checked' : '' }}>
+                        Accepts Appointments
+                    </label>
+                </div>
+                <div class="md:col-span-2 flex justify-end gap-3">
+                    <button type="button" @click="showForm = false" class="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Add Member</button>
+                </div>
+            </form>
         </div>
-        <form x-show="showForm" x-cloak method="POST" enctype="multipart/form-data" action="{{ route('tenant.admin.staff.store', $account) }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            @csrf
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                <input type="text" name="name" value="{{ old('name') }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                <input type="text" name="title" value="{{ old('title') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" name="email" value="{{ old('email') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                <input type="tel" name="phone" value="{{ old('phone') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-                <textarea name="bio" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ old('bio') }}</textarea>
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
-                <input type="file" name="profile_image" accept="image/*" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
-            </div>
-            <div class="flex flex-col gap-3 justify-center">
-                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                    <input type="checkbox" name="display_on_homepage" value="1" class="rounded" {{ old('display_on_homepage') ? 'checked' : '' }}>
-                    Display on Homepage
-                </label>
-                <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-                    <input type="checkbox" name="accepts_appointments" value="1" class="rounded" {{ old('accepts_appointments') ? 'checked' : '' }}>
-                    Accepts Appointments
-                </label>
-            </div>
-            <div class="md:col-span-2 flex justify-end gap-3">
-                <button type="button" @click="showForm = false" class="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
-                <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Add Member</button>
-            </div>
-        </form>
+    </div>
     </div>
 
     {{-- Staff List --}}

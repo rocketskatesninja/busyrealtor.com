@@ -102,6 +102,12 @@
         .dark .hover\:bg-gray-50:hover  { background-color: #1e293b !important; }
         .dark .hover\:bg-gray-100:hover { background-color: #334155 !important; }
         .dark .hover\:bg-gray-200:hover { background-color: #475569 !important; }
+        .dark .hover\:bg-blue-50:hover  { background-color: rgba(59,130,246,0.15) !important; }
+        .dark .hover\:bg-red-50:hover   { background-color: rgba(239,68,68,0.15) !important; }
+        .dark .hover\:bg-green-50:hover { background-color: rgba(16,185,129,0.15) !important; }
+        .dark .hover\:text-blue-600:hover { color: #93c5fd !important; }
+        .dark .hover\:text-red-600:hover  { color: #fca5a5 !important; }
+        .dark .hover\:text-gray-600:hover { color: #94a3b8 !important; }
 
         /* Tables */
         .dark table thead { background-color: #1e293b !important; }
