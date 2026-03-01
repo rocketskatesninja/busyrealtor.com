@@ -122,6 +122,39 @@ function initPropertyMap() {
                         <span class="inline-block text-xs font-semibold text-white px-3 py-1 rounded-full mt-1" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
                             {{ ucfirst($property->listing_status) }}
                         </span>
+                        {{-- Share buttons --}}
+                        @php $shareUrl = urlencode(request()->fullUrl()); $shareText = urlencode(($property->title ?: $property->address) . ($property->price ? ' — $' . number_format($property->price) : '')); @endphp
+                        <div class="flex items-center justify-end gap-2 mt-3" x-data="{ copied: false }">
+                            {{-- Copy link --}}
+                            <button type="button" title="Copy link"
+                                    @click="navigator.clipboard.writeText(window.location.href).then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+                                    class="relative p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                                <svg x-show="!copied" class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                <svg x-show="copied" x-cloak class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                                <span x-show="copied" x-cloak class="absolute -bottom-8 left-1/2 -translate-x-1/2 text-xs bg-gray-800 text-white px-2 py-1 rounded whitespace-nowrap z-10">Copied!</span>
+                            </button>
+                            {{-- Facebook --}}
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ $shareUrl }}"
+                               target="_blank" rel="noopener" title="Share on Facebook"
+                               class="p-2 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors">
+                                <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 24 24"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/></svg>
+                            </a>
+                            {{-- X / Twitter --}}
+                            <a href="https://twitter.com/intent/tweet?text={{ $shareText }}&url={{ $shareUrl }}"
+                               target="_blank" rel="noopener" title="Share on X"
+                               class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                                <svg class="w-4 h-4 text-gray-800" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            </a>
+                            {{-- Email --}}
+                            <a href="mailto:?subject={{ urlencode('Check out this property: ' . ($property->title ?: $property->address)) }}&body={{ urlencode(($property->title ?: $property->address) . ($property->price ? '
+$' . number_format($property->price) : '') . '
+
+' . request()->fullUrl()) }}"
+                               title="Share via Email"
+                               class="p-2 rounded-full bg-green-100 hover:bg-green-200 transition-colors">
+                                <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            </a>
+                        </div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 py-4 border-y border-gray-100">

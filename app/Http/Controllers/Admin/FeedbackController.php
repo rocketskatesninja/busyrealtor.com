@@ -11,7 +11,8 @@ class FeedbackController extends Controller
 {
     public function create($account)
     {
-        return view('tenant.admin.feedback');
+        $tenant = app('tenant');
+        return view('tenant.admin.feedback', compact('tenant'));
     }
 
     public function store($account, Request $request)
@@ -45,6 +46,7 @@ class FeedbackController extends Controller
 
     public function thanks($account)
     {
-        return view('tenant.admin.feedback-thanks');
+        $tenant = app('tenant');
+        return view('tenant.admin.feedback-thanks', compact('tenant'));
     }
 }
