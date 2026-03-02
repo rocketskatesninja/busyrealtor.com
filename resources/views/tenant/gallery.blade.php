@@ -11,15 +11,12 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
 <div class="relative" x-data="{ mobileOpen: false }">
 
     {{-- Desktop Floating Filter Panel (hidden on mobile) --}}
-    <div class="hidden md:flex absolute top-4 left-4 z-10 bg-white rounded-2xl shadow-xl w-72 max-h-[calc(100vh-120px)] flex-col" x-data="{ open: true }">
+    <div class="hidden md:flex absolute top-4 left-4 z-10 bg-white rounded-2xl shadow-xl w-72 max-h-[calc(100vh-120px)] flex-col">
         <div class="flex items-center gap-2 p-4 flex-shrink-0">
             <button type="submit" form="gallery-filter" class="btn-primary flex-1 py-2 rounded-xl font-semibold text-sm hover:opacity-90 transition">Apply Filters</button>
             <a href="{{ route('tenant.gallery', $account) }}" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition">Clear</a>
-            <button @click="open = !open" class="text-gray-400 hover:text-gray-600 flex-shrink-0">
-                <svg class="w-5 h-5 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </button>
         </div>
-        <div x-show="open" x-transition class="overflow-y-auto flex-1 px-5 pb-2 scrollbar-hide">
+        <div class="overflow-y-auto flex-1 px-5 pb-[18px] scrollbar-hide">
             <form id="gallery-filter" method="GET" action="{{ route('tenant.gallery', $account) }}" class="space-y-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
@@ -62,7 +59,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
         @if($properties->count())
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @foreach($properties as $property)
-            <a href="{{ route('tenant.property', [$account, $property->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow group">
+            <a href="{{ route('tenant.property', [$account, $property->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-xl transition-shadow group">
                 <div class="relative h-48 bg-gray-200 overflow-hidden">
                     @if($property->primaryImage)
                         <img src="{{ asset('storage/'.$property->primaryImage->image_path) }}" alt="{{ $property->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -91,7 +88,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
         </div>
         <div class="mt-8">{{ $properties->links() }}</div>
         @else
-        <div class="text-center py-24 bg-white rounded-2xl border border-gray-100">
+        <div class="text-center py-24 bg-white rounded-2xl shadow border border-gray-200">
             <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             <h3 class="text-xl font-semibold text-gray-700 mb-2">No Properties Found</h3>
             <p class="text-gray-400 mb-6">Try adjusting your filters.</p>

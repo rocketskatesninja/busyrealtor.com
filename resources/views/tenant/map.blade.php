@@ -165,6 +165,37 @@ function applyMapFilterFromMobile() {
 </style>
 <script src="https://maps.googleapis.com/maps/api/js?key={{ $mapsKey }}&callback=initMap" async defer></script>
 @endif
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var panel  = document.getElementById('map-filter-panel');
+    var handle = document.getElementById('map-filter-handle');
+    if (!panel || !handle) return;
+    var dragging = false, startX, startY, startLeft, startTop;
+    handle.addEventListener('mousedown', function (e) {
+        if (e.target.closest('button')) return;
+        dragging  = true;
+        startX    = e.clientX;
+        startY    = e.clientY;
+        startLeft = panel.offsetLeft;
+        startTop  = panel.offsetTop;
+        handle.style.cursor = 'grabbing';
+        e.preventDefault();
+    });
+    document.addEventListener('mousemove', function (e) {
+        if (!dragging) return;
+        var container = panel.parentElement;
+        var maxLeft = container.offsetWidth  - panel.offsetWidth;
+        var maxTop  = container.offsetHeight - panel.offsetHeight;
+        panel.style.left = Math.max(0, Math.min(maxLeft, startLeft + e.clientX - startX)) + 'px';
+        panel.style.top  = Math.max(0, Math.min(maxTop,  startTop  + e.clientY - startY)) + 'px';
+    });
+    document.addEventListener('mouseup', function () {
+        if (!dragging) return;
+        dragging = false;
+        handle.style.cursor = 'grab';
+    });
+});
+</script>
 @endsection
 
 @section('content')
@@ -174,20 +205,17 @@ $activeFilters = collect(['type','status','price_min','price_max','beds','baths'
 @endphp
 <div class="relative" style="height: calc(100vh - 80px)" x-data="{ mobileOpen: false }">
     {{-- Desktop Map Filter Panel (hidden on mobile) --}}
-    <div class="hidden md:flex absolute top-4 left-4 z-10 bg-white rounded-2xl shadow-xl w-72 max-h-[calc(100vh-120px)] flex-col" x-data="{ open: true }">
-        <div class="flex items-center gap-2 p-4 flex-shrink-0">
+    <div id="map-filter-panel" class="hidden md:flex absolute top-16 left-4 z-10 bg-white rounded-2xl shadow-xl w-72 max-h-[calc(100vh-120px)] flex-col">
+        <div id="map-filter-handle" class="flex items-center gap-2 p-4 flex-shrink-0 cursor-grab select-none">
             <button type="button" onclick="applyMapFilter()" class="btn-primary flex-1 py-2 rounded-xl font-semibold text-sm hover:opacity-90 transition">Apply Filters</button>
             <button type="button" onclick="clearMapFilter()" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition">Clear</button>
-            <button @click="open = !open" class="text-gray-400 hover:text-gray-600 flex-shrink-0">
-                <svg class="w-5 h-5 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-            </button>
         </div>
-        <div x-show="open" x-transition class="overflow-y-auto flex-1 px-5 pb-2 scrollbar-hide">
+        <div class="overflow-y-auto flex-1 px-5 pb-2 scrollbar-hide">
             <form id="map-filter" class="space-y-4">
                 @include('tenant.partials.filter-fields', ['filterSuffix' => '_map'])
             </form>
         </div>
-        <div x-show="open" class="p-5 pt-3 flex-shrink-0 border-t">
+        <div class="p-5 pt-3 flex-shrink-0 border-t">
             <p class="text-xs text-gray-500 font-medium mb-1">Properties on map: <span id="prop-count">{{ $properties->count() }}</span></p>
             <a href="{{ route('tenant.gallery', $account) }}" class="text-xs transition" style="color: var(--primary)">View as list →</a>
         </div>

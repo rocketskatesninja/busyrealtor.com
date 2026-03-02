@@ -11,17 +11,6 @@
     </select>
 </div>
 
-{{-- Listing Status --}}
-<div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-    <select name="status" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <option value="">All Statuses</option>
-        <option value="active"  {{ request('status') === 'active'  ? 'selected' : '' }}>Active</option>
-        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-        <option value="sold"    {{ request('status') === 'sold'    ? 'selected' : '' }}>Sold</option>
-    </select>
-</div>
-
 {{-- Price Range --}}
 <div>
     <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
@@ -66,19 +55,6 @@
     </div>
 </div>
 
-{{-- Year Built --}}
-<div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">Year Built</label>
-    <div class="grid grid-cols-2 gap-2">
-        <input type="number" name="year_min" value="{{ request('year_min') }}" placeholder="From"
-               min="1800" max="{{ date('Y') }}"
-               class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <input type="number" name="year_max" value="{{ request('year_max') }}" placeholder="To"
-               min="1800" max="{{ date('Y') }}"
-               class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-    </div>
-</div>
-
 {{-- Garage & HOA --}}
 <div class="pt-4 border-t grid grid-cols-2 gap-2">
     <div>
@@ -109,7 +85,7 @@
 <div class="pt-4 border-t">
     <label class="block text-sm font-medium text-gray-700 mb-3">Features</label>
     <div class="grid grid-cols-2 gap-2">
-        @foreach(['pool' => 'Pool', 'garage' => 'Garage', 'fireplace' => 'Fireplace', 'basement' => 'Basement'] as $fVal => $fLabel)
+        @foreach(['pool' => 'Pool', 'waterfront' => 'Waterfront', 'fireplace' => 'Fireplace', 'basement' => 'Basement'] as $fVal => $fLabel)
         <label class="flex items-center gap-2 cursor-pointer">
             <input type="checkbox" name="features[]" value="{{ $fVal }}"
                    {{ in_array($fVal, (array) request('features', [])) ? 'checked' : '' }}

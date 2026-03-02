@@ -259,7 +259,7 @@ $iconPaths = [
         @if($featured->count())
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($featured as $property)
-            <a href="{{ route('tenant.property', [$account, $property->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-shadow group reveal" style="transition-delay: {{ $loop->index * 0.1 }}s">
+            <a href="{{ route('tenant.property', [$account, $property->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-xl transition-shadow group reveal" style="transition-delay: {{ $loop->index * 0.1 }}s">
                 <div class="relative h-52 bg-gray-200 overflow-hidden">
                     @if($property->primaryImage)
                         <img src="{{ asset('storage/' . $property->primaryImage->image_path) }}" alt="{{ $property->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -324,7 +324,7 @@ $iconPaths = [
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @foreach($servicesItems as $item)
-            <div class="border border-gray-100 rounded-2xl p-8 hover:shadow-lg transition-shadow text-center group reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
+            <div class="bg-white rounded-2xl p-8 shadow border border-gray-200 hover:shadow-lg transition-shadow text-center group reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-all group-hover:scale-110" style="background-color: rgba(var(--primary-rgb), 0.1)">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $iconPaths[$item['icon'] ?? 'star'] ?? $iconPaths['star'] }}"/>
@@ -349,7 +349,7 @@ $iconPaths = [
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($staff as $member)
-            <div class="bg-white rounded-2xl p-6 text-center shadow-sm hover:shadow-lg transition-shadow reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
+            <div class="bg-white rounded-2xl p-6 text-center shadow border border-gray-200 hover:shadow-lg transition-shadow reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gray-100">
                     @if($member->profile_image)
                         <img src="{{ asset('storage/' . $member->profile_image) }}" alt="{{ $member->name }}" class="w-full h-full object-cover">
@@ -382,7 +382,7 @@ $iconPaths = [
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @foreach($testimonialsItems as $t)
-            <div class="bg-gray-50 rounded-2xl p-8 reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
+            <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200 reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="flex mb-4">
                     @for($s = 0; $s < ($t['rating'] ?? 5); $s++)
                     <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
@@ -406,7 +406,7 @@ $iconPaths = [
         </div>
         <div class="space-y-4" x-data="{ open: null }">
             @foreach($faqItems as $i => $faq)
-            <div class="bg-white rounded-xl border border-gray-100 overflow-hidden">
+            <div class="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
                 <button @click="open === {{ $i }} ? open = null : open = {{ $i }}"
                         class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-gray-800 hover:bg-gray-50 transition-colors">
                     {{ $faq['question'] ?? '' }}
