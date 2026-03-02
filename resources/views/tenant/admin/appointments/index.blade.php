@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 @section('title', 'Appointments')
+@section('page-subtitle', 'Scheduling requests from clients')
 @section('content')
 @php $account = $tenant->slug; @endphp
 <div class="max-w-7xl mx-auto px-4">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Appointments</h1>
 
     {{-- Filters --}}
     <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">

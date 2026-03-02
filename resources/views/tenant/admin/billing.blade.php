@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 @section('title', 'Billing')
+@section('page-subtitle', 'Manage your plan and subscription')
 @section('content')
 @php $account = $tenant->slug; @endphp
 <div class="max-w-3xl mx-auto px-4">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Billing & Subscription</h1>
 
     {{-- Success message after subscribing --}}
     @if(request('subscribed'))

@@ -194,14 +194,21 @@
 <header class="bg-white shadow-lg sticky top-0 z-50" x-data="{ open: false, userOpen: false }">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex items-center justify-between py-4">
-            <a href="{{ route('tenant.home', $account) }}" target="_blank" class="flex items-center space-x-3 drop-shadow-lg hover:opacity-80 transition-opacity">
-                @if($headerDisplayMode !== 'text_only' && $settings->logo_image)
-                    <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto object-contain">
-                @endif
-                @if($headerDisplayMode !== 'logo_only')
-                    <span style="{{ $titleStyle }}">{{ $settings->site_title ?? $tenant->name }}</span>
-                @endif
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('tenant.home', $account) }}" target="_blank" class="drop-shadow hover:opacity-80 transition-opacity flex-shrink-0" title="View public site">
+                    @if($headerDisplayMode !== 'text_only' && $settings->logo_image)
+                        <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto object-contain">
+                    @else
+                        <svg class="w-6 h-6 text-gray-400 hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    @endif
+                </a>
+                <div>
+                    <p class="text-xl font-bold text-gray-900 dark:text-white leading-tight">@yield('title', 'Admin')</p>
+                    @hasSection('page-subtitle')
+                    <p class="text-xs text-gray-500 dark:text-gray-400 leading-tight">@yield('page-subtitle')</p>
+                    @endif
+                </div>
+            </div>
 
             {{-- Desktop Nav --}}
             <div class="hidden md:flex items-center space-x-6">

@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('title', 'Settings')
+@section('page-subtitle', 'Configure your site, branding, and integrations')
 @section('head')
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Playfair+Display:wght@700&family=Montserrat:wght@700&family=Inter:wght@700&family=Lato:wght@700&family=Raleway:wght@700&family=Open+Sans:wght@700&family=Oswald:wght@700&family=Roboto:wght@700&display=swap" rel="stylesheet">
 @endsection
@@ -10,16 +11,16 @@ $tabs = [
     'account'      => ['label' => 'Account',     'icon' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
     'dashboard'    => ['label' => 'Dashboard',   'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
     'appearance'   => ['label' => 'Appearance',  'icon' => 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01'],
+    'homepage'     => ['label' => 'Homepage',    'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
+    'social'       => ['label' => 'Social Media', 'icon' => 'M7 20l4-16m2 16l4-16M6 9h14M4 15h14'],
     'messages'     => ['label' => 'Messages',    'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
     'integrations' => ['label' => 'Third Party', 'icon' => 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z'],
     'data'         => ['label' => 'Data',        'icon' => 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4'],
     'legal'        => ['label' => 'Legal',       'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
     'seo'          => ['label' => 'SEO',         'icon' => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'],
-    'homepage'     => ['label' => 'Homepage',    'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
 ];
 @endphp
 <div class="max-w-7xl mx-auto px-4">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
 
     {{-- Mobile: horizontal scrollable tab strip --}}
     <div class="md:hidden mb-4 -mx-4 px-4">
@@ -942,6 +943,149 @@ $tabs = [
                         </div>
                     </div>
                 </div>
+                @elseif($tab === 'social')
+                {{-- SOCIAL MEDIA TAB --}}
+                @php
+                $fb = $integrations['facebook'] ?? null;
+                $tw = $integrations['twitter'] ?? null;
+                $fbConfig = $fb?->config ?? [];
+                $twConfig = $tw?->config ?? [];
+                @endphp
+
+                {{-- Facebook --}}
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#1877F2">
+                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-900">Facebook</h2>
+                            <p class="text-xs text-gray-500">Auto-post listings to your Facebook Page</p>
+                        </div>
+                        <div class="ml-auto flex items-center gap-2">
+                            <span class="text-sm text-gray-600">Enable</span>
+                            <input type="hidden" name="fb_enabled" value="0">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="fb_enabled" value="1" class="sr-only peer" {{ ($fb?->is_active) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Page Access Token</label>
+                                <input type="password" name="fb_access_token" placeholder="{{ $fb ? '••••••••••••••••' : 'Paste your Page Access Token' }}"
+                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                <p class="text-xs text-gray-400 mt-1">Leave blank to keep existing token. Get a long-lived token from the Facebook Developer Console.</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Facebook Page ID</label>
+                                <input type="text" name="fb_page_id" value="{{ $fbConfig['page_id'] ?? '' }}"
+                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="e.g. 123456789012345">
+                                <p class="text-xs text-gray-400 mt-1">Found in your Facebook Page &rarr; About &rarr; Page ID.</p>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700 mb-2">Auto-post on:</p>
+                            <div class="flex flex-wrap gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="hidden" name="fb_post_new_listing" value="0">
+                                    <input type="checkbox" name="fb_post_new_listing" value="1" class="rounded" {{ !empty($fbConfig['post_on_new_listing']) ? 'checked' : '' }}>
+                                    <span class="text-sm text-gray-700">New Listings</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="hidden" name="fb_post_sold" value="0">
+                                    <input type="checkbox" name="fb_post_sold" value="1" class="rounded" {{ !empty($fbConfig['post_on_sold']) ? 'checked' : '' }}>
+                                    <span class="text-sm text-gray-700">Sold Properties</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                            <p class="text-xs text-blue-800 font-medium mb-1">How to get a Page Access Token:</p>
+                            <ol class="text-xs text-blue-700 space-y-1 list-decimal list-inside">
+                                <li>Go to <strong>developers.facebook.com</strong> &rarr; My Apps &rarr; your app</li>
+                                <li>Open <strong>Tools &rarr; Graph API Explorer</strong></li>
+                                <li>Select your Page from the dropdown, grant <code>pages_manage_posts</code> &amp; <code>pages_read_engagement</code></li>
+                                <li>Click <strong>Generate Access Token</strong> and exchange it for a long-lived token via the token debugger</li>
+                                <li>For permanent tokens, use a <strong>System User</strong> in Business Manager</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Twitter / X --}}
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-5">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-black">
+                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.734l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-900">X (Twitter)</h2>
+                            <p class="text-xs text-gray-500">Auto-post listings to your X account</p>
+                        </div>
+                        <div class="ml-auto flex items-center gap-2">
+                            <span class="text-sm text-gray-600">Enable</span>
+                            <input type="hidden" name="tw_enabled" value="0">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="tw_enabled" value="1" class="sr-only peer" {{ ($tw?->is_active) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-black peer-focus:ring-2 peer-focus:ring-gray-400 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">API Key (Consumer Key)</label>
+                                <input type="password" name="tw_api_key" placeholder="{{ $tw ? '••••••••••••••••' : 'API Key' }}"
+                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">API Secret (Consumer Secret)</label>
+                                <input type="password" name="tw_api_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'API Secret' }}"
+                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Access Token</label>
+                                <input type="password" name="tw_access_token" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token' }}"
+                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Access Token Secret</label>
+                                <input type="password" name="tw_access_token_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token Secret' }}"
+                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-400">Leave fields blank to keep existing credentials. All 4 values are required when setting up for the first time.</p>
+                        <div>
+                            <p class="text-sm font-medium text-gray-700 mb-2">Auto-post on:</p>
+                            <div class="flex flex-wrap gap-4">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="hidden" name="tw_post_new_listing" value="0">
+                                    <input type="checkbox" name="tw_post_new_listing" value="1" class="rounded" {{ !empty($twConfig['post_on_new_listing']) ? 'checked' : '' }}>
+                                    <span class="text-sm text-gray-700">New Listings</span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="hidden" name="tw_post_sold" value="0">
+                                    <input type="checkbox" name="tw_post_sold" value="1" class="rounded" {{ !empty($twConfig['post_on_sold']) ? 'checked' : '' }}>
+                                    <span class="text-sm text-gray-700">Sold Properties</span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                            <p class="text-xs text-gray-700 font-medium mb-1">How to get your X API credentials:</p>
+                            <ol class="text-xs text-gray-600 space-y-1 list-decimal list-inside">
+                                <li>Go to <strong>developer.twitter.com</strong> &rarr; Projects &amp; Apps &rarr; your app</li>
+                                <li>Under <strong>Keys and Tokens</strong>, generate API Key &amp; Secret</li>
+                                <li>Generate Access Token &amp; Secret with <strong>Read and Write</strong> permissions</li>
+                                <li>Ensure your app has <strong>OAuth 1.0a</strong> enabled with Read/Write access</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
                 @endif
 
                 @if(!in_array($tab, ['data']))

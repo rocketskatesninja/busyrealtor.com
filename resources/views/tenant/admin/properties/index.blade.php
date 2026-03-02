@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('title', 'Properties')
+@section('page-subtitle', 'Manage your listings')
 @section('content')
 @php
     $account       = $tenant->slug;
@@ -29,8 +30,7 @@
     </div>
     @endif
 
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Properties</h1>
+    <div class="flex justify-end mb-6">
         @if($atLimit)
         <a href="{{ route('tenant.admin.billing', $account) }}" class="bg-orange-500 hover:bg-orange-600 text-white px-5 py-2.5 rounded-xl font-semibold text-sm transition flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>

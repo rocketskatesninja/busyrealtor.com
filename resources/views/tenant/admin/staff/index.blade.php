@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 @section('title', 'Staff')
+@section('page-subtitle', 'Manage your team')
 @section('content')
 @php $account = $tenant->slug; @endphp
 <div class="max-w-7xl mx-auto px-4">
 
     <div x-data="{ showForm: false }">
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-2xl font-bold text-gray-900">Staff Members</h1>
+    <div class="flex justify-end mb-6">
         <button @click="showForm = !showForm"
                 class="btn-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>

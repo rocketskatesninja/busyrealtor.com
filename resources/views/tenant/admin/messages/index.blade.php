@@ -1,9 +1,9 @@
 @extends('layouts.admin')
 @section('title', 'Messages')
+@section('page-subtitle', 'Incoming contact form submissions')
 @section('content')
 @php $account = $tenant->slug; @endphp
 <div class="max-w-7xl mx-auto px-4">
-    <h1 class="text-2xl font-bold text-gray-900 mb-6">Messages</h1>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Messages List --}}

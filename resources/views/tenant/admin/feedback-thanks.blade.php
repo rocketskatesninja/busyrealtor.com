@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('title', 'Thank You')
+@section('page-subtitle', 'Your feedback has been received')
 @section('content')
 @php $account = app('tenant')->slug; @endphp
 <div class="max-w-lg mx-auto px-4 text-center py-16">
@@ -8,7 +9,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
     </div>
-    <h1 class="text-2xl font-bold text-gray-900 mb-3">Thanks for your feedback!</h1>
     <p class="text-gray-500 mb-8">We've received your submission. Our team will review it and reach out if we need more information.</p>
     <div class="flex items-center justify-center gap-3">
         <a href="{{ route('tenant.admin.dashboard', $account) }}" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">

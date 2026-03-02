@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('title', 'Dashboard')
+@section('page-subtitle', 'Welcome back, ' . explode(' ', auth()->user()->name)[0])
 
 @section('styles')
 /* Stat card icon backgrounds in dark mode — per-color overrides */
@@ -25,14 +26,6 @@
 @php $account = $tenant->slug; @endphp
 <div class="max-w-7xl mx-auto px-4">
 
-    {{-- Header --}}
-    <div class="flex items-center justify-between mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-            <p class="text-gray-500 text-sm mt-1">Welcome back, {{ explode(' ', auth()->user()->name)[0] }}</p>
-        </div>
-
-    </div>
 
     {{-- Action Items Alert --}}
     @php

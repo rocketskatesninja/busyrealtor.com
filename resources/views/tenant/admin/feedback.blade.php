@@ -1,17 +1,15 @@
 @extends('layouts.admin')
 @section('title', 'Submit Feedback')
+@section('page-subtitle', 'Report a bug, suggest a feature, or share your thoughts')
 @section('content')
 @php $account = app('tenant')->slug; @endphp
 <div class="max-w-2xl mx-auto px-4">
 
-    <div class="flex items-center gap-4 mb-6">
-        <a href="{{ route('tenant.admin.dashboard', $account) }}" class="text-gray-400 hover:text-gray-600 transition">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+    <div class="mb-6">
+        <a href="{{ route('tenant.admin.dashboard', $account) }}" class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+            Back to Dashboard
         </a>
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Submit Feedback</h1>
-            <p class="text-gray-500 text-sm mt-0.5">Report a bug, request a feature, or share any feedback with the BusyRealtor team.</p>
-        </div>
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
