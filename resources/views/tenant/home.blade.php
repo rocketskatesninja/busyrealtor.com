@@ -252,15 +252,9 @@ $iconPaths = [
 @elseif($key === 'listings')
 <section class="py-20 bg-gray-50">
     <div class="max-w-7xl mx-auto px-4">
-        <div class="flex items-center justify-between mb-12">
-            <div>
-                <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 reveal">Featured Listings</h2>
-                <p class="text-gray-500">Handpicked properties just for you</p>
-            </div>
-            <a href="{{ route('tenant.gallery', $account) }}" class="hidden md:flex items-center gap-2 font-semibold transition-colors hover-primary" style="color: var(--primary)">
-                View All
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
-            </a>
+        <div class="text-center mb-14">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-2 reveal">Featured Listings</h2>
+            <p class="text-gray-500">Handpicked properties just for you</p>
         </div>
         @if($featured->count())
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

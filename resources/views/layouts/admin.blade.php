@@ -53,7 +53,7 @@
         .btn-primary:hover { opacity: 0.9; }
 
         /* Light mode: make white panels stand out against the gray-50 background */
-        body:not(.dark) .border-gray-100 {
+        html:not(.dark) .border-gray-100 {
             border-color: #d1d5db !important; /* gray-300 */
             box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
         }
@@ -149,7 +149,30 @@
         /* Nav */
         .dark header.bg-white { background-color: #1e293b !important; }
         .dark nav a.text-gray-700 { color: #cbd5e1 !important; }
+
+        /* Colored bg-50 variants (export buttons etc.) */
+        .dark .bg-blue-50   { background-color: rgba(59,130,246,0.12) !important; }
+        .dark .bg-green-50  { background-color: rgba(16,185,129,0.12) !important; }
+        .dark .bg-purple-50 { background-color: rgba(168,85,247,0.12) !important; }
+        .dark .bg-orange-50 { background-color: rgba(249,115,22,0.12)  !important; }
+
+        /* Colored text-700 variants (export buttons) */
+        .dark .text-blue-700   { color: #93c5fd !important; }
+        .dark .text-green-700  { color: #86efac !important; }
+        .dark .text-purple-700 { color: #c4b5fd !important; }
+        .dark .text-orange-700 { color: #fdba74 !important; }
+
+        /* Colored hover-bg-100 variants (export button hovers) */
+        .dark .hover\:bg-blue-100:hover   { background-color: rgba(59,130,246,0.22) !important; }
+        .dark .hover\:bg-green-100:hover  { background-color: rgba(16,185,129,0.22) !important; }
+        .dark .hover\:bg-purple-100:hover { background-color: rgba(168,85,247,0.22) !important; }
+        .dark .hover\:bg-orange-100:hover { background-color: rgba(249,115,22,0.22)  !important; }
         /* ===================== END DARK MODE ===================== */
+
+        /* ── Console (data tab): light mode overrides ── */
+        html:not(.dark) .console-wrap     { border-color: #e2e8f0 !important; }
+        html:not(.dark) #data-console-hdr { background-color: #f1f5f9 !important; }
+        html:not(.dark) #data-console     { background-color: #f9fafb !important; }
         @yield('styles')
     </style>
     @yield('head')
