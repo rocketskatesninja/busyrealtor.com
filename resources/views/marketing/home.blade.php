@@ -132,7 +132,7 @@
                 ['step'=>'3','data-delay'=>'0.3','title'=>'Connect with clients','desc'=>'Share your link. Clients search properties, chat with your AI assistant, and book showings — all on autopilot.','icon'=>'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z'],
             ] as $s)
             <div class="relative reveal" style="transition-delay: {{ $s['data-delay'] ?? '0' }}s">
-                <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700 h-full">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 h-full">
                     <div class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center font-black text-lg mb-5 shadow-md">{{ $s['step'] }}</div>
                     <h3 class="font-bold text-gray-900 dark:text-white text-lg mb-3">{{ $s['title'] }}</h3>
                     <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ $s['desc'] }}</p>
@@ -170,7 +170,7 @@
             ];
             @endphp
             @foreach($features as $f)
-            <div class="bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl p-6 hover:shadow-md hover:-translate-y-0.5 transition-all reveal" style="transition-delay: {{ ($loop->index % 4) * 0.1 }}s">
+            <div class="bg-white dark:bg-gray-800 border border-gray-200 rounded-2xl p-6 hover:shadow-md hover:-translate-y-0.5 transition-all reveal" style="transition-delay: {{ ($loop->index % 4) * 0.1 }}s">
                 <div class="{{ $f['bg'] }} w-11 h-11 rounded-xl flex items-center justify-center mb-4 dark:opacity-80">
                     <svg class="w-5 h-5 {{ $f['ic'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $f['icon'] }}"/></svg>
                 </div>

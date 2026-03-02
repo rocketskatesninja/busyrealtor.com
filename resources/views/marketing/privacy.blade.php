@@ -76,7 +76,7 @@
                 <div class="space-y-10">
 
                     {{-- 1 --}}
-                    <section id="overview" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="overview" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">1</span>
                             Overview
@@ -89,7 +89,7 @@
                     </section>
 
                     {{-- 2 --}}
-                    <section id="data-collected" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="data-collected" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">2</span>
                             Information We Collect
@@ -123,7 +123,7 @@
                     </section>
 
                     {{-- 3 --}}
-                    <section id="how-we-use" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="how-we-use" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">3</span>
                             How We Use Your Information
@@ -152,7 +152,7 @@
                     </section>
 
                     {{-- 4 --}}
-                    <section id="sharing" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="sharing" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">4</span>
                             How We Share Your Information
@@ -181,7 +181,7 @@
                     </section>
 
                     {{-- 5 --}}
-                    <section id="cookies" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="cookies" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">5</span>
                             Cookies &amp; Tracking
@@ -206,7 +206,7 @@
                     </section>
 
                     {{-- 6 --}}
-                    <section id="security" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="security" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">6</span>
                             Data Security
@@ -233,7 +233,7 @@
                     </section>
 
                     {{-- 7 --}}
-                    <section id="retention" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="retention" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">7</span>
                             Data Retention
@@ -251,7 +251,7 @@
                     </section>
 
                     {{-- 8 --}}
-                    <section id="your-rights" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="your-rights" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">8</span>
                             Your Rights
@@ -279,14 +279,14 @@
                     </section>
 
                     {{-- 9 --}}
-                    <section id="third-parties" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="third-parties" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">9</span>
                             Third-Party Services
                         </h2>
                         <div class="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
                             <p class="mb-4">The Service integrates with the following third-party providers. Each has its own privacy policy:</p>
-                            <div class="divide-y divide-gray-100 dark:divide-gray-700 border border-gray-100 dark:border-gray-700 rounded-xl overflow-hidden">
+                            <div class="divide-y divide-gray-200 border border-gray-200 rounded-xl overflow-hidden">
                                 @php $vendors = [
                                     ['name'=>'Stripe',           'purpose'=>'Payment processing and subscription billing',     'url'=>'https://stripe.com/privacy'],
                                     ['name'=>'Google Maps',      'purpose'=>'Interactive property map (requires API key)',      'url'=>'https://policies.google.com/privacy'],
@@ -308,7 +308,7 @@
                     </section>
 
                     {{-- 10 --}}
-                    <section id="children" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="children" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">10</span>
                             Children's Privacy
@@ -319,7 +319,7 @@
                     </section>
 
                     {{-- 11 --}}
-                    <section id="changes" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="changes" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">11</span>
                             Changes to This Policy
@@ -336,7 +336,7 @@
                     </section>
 
                     {{-- 12 --}}
-                    <section id="contact" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="contact" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">12</span>
                             Contact Us

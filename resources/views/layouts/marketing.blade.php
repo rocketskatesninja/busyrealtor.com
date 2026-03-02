@@ -97,10 +97,55 @@
         .reveal-left.is-visible,
         .reveal-right.is-visible,
         .reveal-scale.is-visible { opacity: 1; transform: none; }
+
+        /* ═══════════════════ DARK MODE — SLATE PALETTE (matches admin) ═══ */
+        .dark .bg-white       { background-color: #1e293b !important; }
+        .dark .bg-gray-50     { background-color: #0f172a !important; }
+        .dark .bg-gray-100    { background-color: #1e293b !important; }
+        .dark .bg-gray-200    { background-color: #334155 !important; }
+        .dark .bg-gray-800    { background-color: #020617 !important; }
+        .dark .bg-gray-900    { background-color: #020617 !important; }
+        .dark .bg-gray-950    { background-color: #020617 !important; }
+        .dark .text-gray-900  { color: #f1f5f9 !important; }
+        .dark .text-gray-800  { color: #e2e8f0 !important; }
+        .dark .text-gray-700  { color: #cbd5e1 !important; }
+        .dark .text-gray-600  { color: #94a3b8 !important; }
+        .dark .text-gray-500  { color: #64748b !important; }
+        .dark .text-gray-400  { color: #475569 !important; }
+        .dark .border-gray-50  { border-color: #1e293b !important; }
+        .dark .border-gray-100 { border-color: #1e293b !important; }
+        .dark .border-gray-200 { border-color: #334155 !important; }
+        .dark .border-gray-300 { border-color: #475569 !important; }
+        .dark .border-t, .dark .border-b,
+        .dark .border-l, .dark .border-r,
+        .dark .border         { border-color: #334155; }
+        .dark .divide-y > * + *, .dark .divide-x > * + * { border-color: #334155; }
+        .dark .hover\:bg-gray-50:hover  { background-color: #1e293b !important; }
+        .dark .hover\:bg-gray-100:hover { background-color: #334155 !important; }
+        .dark .hover\:bg-gray-200:hover { background-color: #475569 !important; }
+        .dark .hover\:bg-blue-50:hover  { background-color: rgba(59,130,246,0.15) !important; }
+        .dark .bg-blue-50     { background-color: rgba(59,130,246,0.12) !important; }
+        .dark .bg-blue-100    { background-color: rgba(59,130,246,0.15) !important; }
+        .dark .bg-indigo-50   { background-color: rgba(99,102,241,0.12) !important; }
+        .dark .bg-violet-50   { background-color: rgba(139,92,246,0.12) !important; }
+        .dark .bg-purple-50   { background-color: rgba(168,85,247,0.12) !important; }
+        .dark .bg-sky-50      { background-color: rgba(14,165,233,0.12)  !important; }
+        .dark .bg-emerald-50  { background-color: rgba(16,185,129,0.12)  !important; }
+        .dark .bg-orange-50   { background-color: rgba(249,115,22,0.12)  !important; }
+        .dark .bg-rose-50     { background-color: rgba(244,63,94,0.12)   !important; }
+        .dark .bg-green-50    { background-color: rgba(16,185,129,0.12)  !important; }
+        .dark .bg-red-100     { background-color: rgba(239,68,68,0.15)   !important; }
+        .dark .text-blue-700  { color: #93c5fd !important; }
+        .dark .text-blue-800  { color: #bfdbfe !important; }
+        .dark .shadow-sm  { box-shadow: 0 1px 2px rgba(0,0,0,0.5) !important; }
+        .dark .shadow     { box-shadow: 0 1px 6px rgba(0,0,0,0.5) !important; }
+        .dark .shadow-lg  { box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important; }
+        .dark .shadow-xl  { box-shadow: 0 8px 30px rgba(0,0,0,0.7) !important; }
+        .dark .shadow-2xl { box-shadow: 0 12px 40px rgba(0,0,0,0.8) !important; }
     </style>
     @yield('head')
 </head>
-<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased">
+<body class="bg-gray-50 text-gray-900 antialiased">
     @yield('content')
 <script>
 (function () {

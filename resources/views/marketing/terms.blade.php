@@ -79,7 +79,7 @@
                 <div class="space-y-10">
 
                     {{-- 1 --}}
-                    <section id="acceptance" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="acceptance" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">1</span>
                             Acceptance of Terms
@@ -96,7 +96,7 @@
                     </section>
 
                     {{-- 2 --}}
-                    <section id="description" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="description" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">2</span>
                             Service Description
@@ -114,7 +114,7 @@
                     </section>
 
                     {{-- 3 --}}
-                    <section id="accounts" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="accounts" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">3</span>
                             Accounts &amp; Registration
@@ -132,7 +132,7 @@
                     </section>
 
                     {{-- 4 --}}
-                    <section id="billing" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="billing" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">4</span>
                             Billing &amp; Subscriptions
@@ -166,7 +166,7 @@
                     </section>
 
                     {{-- 5 --}}
-                    <section id="acceptable" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="acceptable" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">5</span>
                             Acceptable Use
@@ -198,7 +198,7 @@
                     </section>
 
                     {{-- 6 --}}
-                    <section id="your-content" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="your-content" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">6</span>
                             Your Content &amp; Data
@@ -212,7 +212,7 @@
                     </section>
 
                     {{-- 7 --}}
-                    <section id="ip" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="ip" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">7</span>
                             Intellectual Property
@@ -225,7 +225,7 @@
                     </section>
 
                     {{-- 8 --}}
-                    <section id="privacy" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="privacy" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">8</span>
                             Privacy
@@ -237,7 +237,7 @@
                     </section>
 
                     {{-- 9 --}}
-                    <section id="disclaimers" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="disclaimers" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">9</span>
                             Disclaimers
@@ -251,7 +251,7 @@
                     </section>
 
                     {{-- 10 --}}
-                    <section id="liability" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="liability" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">10</span>
                             Limitation of Liability
@@ -264,7 +264,7 @@
                     </section>
 
                     {{-- 11 --}}
-                    <section id="indemnity" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="indemnity" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">11</span>
                             Indemnification
@@ -281,7 +281,7 @@
                     </section>
 
                     {{-- 12 --}}
-                    <section id="termination" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="termination" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">12</span>
                             Termination
@@ -294,7 +294,7 @@
                     </section>
 
                     {{-- 13 --}}
-                    <section id="governing-law" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="governing-law" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">13</span>
                             Governing Law &amp; Disputes
@@ -307,7 +307,7 @@
                     </section>
 
                     {{-- 14 --}}
-                    <section id="changes" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="changes" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">14</span>
                             Changes to These Terms
@@ -319,7 +319,7 @@
                     </section>
 
                     {{-- 15 --}}
-                    <section id="contact" class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-8 scroll-mt-24">
+                    <section id="contact" class="bg-white rounded-2xl border border-gray-200 p-8 scroll-mt-24">
                         <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-3">
                             <span class="w-7 h-7 bg-blue-600 text-white text-xs font-bold rounded-full flex items-center justify-center flex-shrink-0">15</span>
                             Contact Us
