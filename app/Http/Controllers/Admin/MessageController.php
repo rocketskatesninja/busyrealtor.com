@@ -28,7 +28,7 @@ class MessageController extends Controller
             $message = Message::where('tenant_id', $tenant->id)->findOrFail($request->view);
             if (!$message->is_read) $message->update(['is_read' => true]);
         }
-        $unreadCount = Message::where('is_read', false)->count();
+        $unreadCount = Message::where('tenant_id', $tenant->id)->where('is_read', false)->count();
 
         return view('tenant.admin.messages.index', compact('tenant', 'messages', 'message', 'unreadCount'));
     }

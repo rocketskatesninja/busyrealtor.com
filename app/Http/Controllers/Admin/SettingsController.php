@@ -145,6 +145,16 @@ class SettingsController extends Controller
                     Storage::disk('public')->put($dir . '/hero-bg.' . $ext, $img->toJpeg(85));
                     $heroData['hero_image'] = $dir . '/hero-bg.' . $ext;
                 }
+                if ($request->hasFile('map_office_image')) {
+                    if ($settings->map_office_image) Storage::disk('public')->delete($settings->map_office_image);
+                    $dir  = "tenants/{$tenant->id}";
+                    Storage::disk('public')->makeDirectory($dir);
+                    $file = $request->file('map_office_image');
+                    $ext  = $file->getClientOriginalExtension();
+                    $img  = Image::read($file)->scale(width: 800);
+                    Storage::disk('public')->put($dir . '/office.' . $ext, $img->toJpeg(85));
+                    $heroData['map_office_image'] = $dir . '/office.' . $ext;
+                }
                 $settings->update($heroData);
                 break;
 
@@ -173,6 +183,45 @@ class SettingsController extends Controller
                     $settings->update(['default_share_image' => $path]);
                 }
                 break;
+
+            case 'social':
+                // Facebook
+                $fbData = [
+                    'config'    => [
+                        'page_id'             => $request->fb_page_id,
+                        'post_on_new_listing' => $request->boolean('fb_post_new_listing'),
+                        'post_on_sold'        => $request->boolean('fb_post_sold'),
+                    ],
+                    'is_active' => $request->boolean('fb_enabled'),
+                ];
+                if ($request->filled('fb_access_token')) {
+                    $fbData['api_key'] = $request->fb_access_token;
+                }
+                Integration::updateOrCreate(
+                    ['tenant_id' => $tenant->id, 'integration_type' => 'facebook'],
+                    $fbData
+                );
+
+                // Twitter / X
+                $twData = [
+                    'config'    => [
+                        'api_secret'          => $request->tw_api_secret ?: (Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first()?->config['api_secret'] ?? null),
+                        'access_token'        => $request->tw_access_token ?: (Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first()?->config['access_token'] ?? null),
+                        'access_token_secret' => $request->tw_access_token_secret ?: (Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first()?->config['access_token_secret'] ?? null),
+                        'post_on_new_listing' => $request->boolean('tw_post_new_listing'),
+                        'post_on_sold'        => $request->boolean('tw_post_sold'),
+                    ],
+                    'is_active' => $request->boolean('tw_enabled'),
+                ];
+                if ($request->filled('tw_api_key')) {
+                    $twData['api_key'] = $request->tw_api_key;
+                }
+                Integration::updateOrCreate(
+                    ['tenant_id' => $tenant->id, 'integration_type' => 'twitter'],
+                    $twData
+                );
+                break;
+
         }
 
         return redirect()->back()->with('success', 'Settings saved.');

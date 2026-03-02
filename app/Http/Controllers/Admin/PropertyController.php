@@ -9,6 +9,7 @@ use App\Models\SiteSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
+use App\Jobs\PostPropertyToSocial;
 
 class PropertyController extends Controller
 {
@@ -51,6 +52,9 @@ class PropertyController extends Controller
         $data = $this->validateAndPrepare($request);
         $property = Property::create($data);
         $this->handleImages($request, $property);
+        if (($data['listing_status'] ?? '') === 'active') {
+            PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'new_listing');
+        }
         return redirect()->route('tenant.admin.properties.index', ['account' => app('tenant')->slug])
             ->with('success', 'Property created successfully.');
     }
@@ -64,11 +68,19 @@ class PropertyController extends Controller
 
     public function update($account, Request $request, $id)
     {
-        $tenant   = app('tenant');
-        $property = Property::where('tenant_id', $tenant->id)->findOrFail($id);
-        $data     = $this->validateAndPrepare($request);
+        $tenant    = app('tenant');
+        $property  = Property::where('tenant_id', $tenant->id)->findOrFail($id);
+        $oldStatus = $property->listing_status;
+        $data      = $this->validateAndPrepare($request);
         $property->update($data);
         $this->handleImages($request, $property);
+        if ($oldStatus !== $data['listing_status']) {
+            if ($data['listing_status'] === 'active') {
+                PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'new_listing');
+            } elseif ($data['listing_status'] === 'sold') {
+                PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'sold');
+            }
+        }
         return redirect()->route('tenant.admin.properties.index', ['account' => app('tenant')->slug])
             ->with('success', 'Property updated.');
     }

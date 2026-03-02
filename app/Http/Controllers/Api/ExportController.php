@@ -14,10 +14,12 @@ class ExportController extends Controller
         $format = request('format', 'json');
 
         if ($type === 'properties') {
-            $data = Property::with('images')->get()->toArray();
+            $tenant = app('tenant');
+            $data = Property::with('images')->where('tenant_id', $tenant->id)->get()->toArray();
             $filename = 'properties-export';
         } elseif ($type === 'messages') {
-            $data = Message::get()->toArray();
+            $tenant = app('tenant');
+            $data = Message::where('tenant_id', $tenant->id)->get()->toArray();
             $filename = 'messages-export';
         } else {
             abort(404);

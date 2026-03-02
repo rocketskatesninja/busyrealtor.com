@@ -616,6 +616,23 @@ $tabs = [
 
                                 @elseif($key === 'map')
                                 <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="?tab=integrations" class="text-blue-600 hover:underline">Integrations</a>.</p>
+                                <div class="mt-4 pt-4 border-t border-gray-100">
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Office Photo <span class="text-gray-400 font-normal">(optional)</span>
+                                    </label>
+                                    <p class="text-xs text-gray-400 mb-3">Upload a photo of your office or team to display alongside the location map.</p>
+                                    @if($settings->map_office_image)
+                                    <div class="rounded-lg overflow-hidden h-28 relative mb-3 border border-gray-200">
+                                        <img src="{{ asset('storage/' . $settings->map_office_image) }}" class="w-full h-full object-cover">
+                                        <div class="absolute inset-0 bg-black/25 flex items-end px-3 py-2">
+                                            <span class="text-white text-xs font-medium">Current office photo</span>
+                                        </div>
+                                    </div>
+                                    @endif
+                                    <input type="file" name="map_office_image" accept="image/*"
+                                        class="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                                    <p class="text-xs text-gray-400 mt-1">Leave blank to keep the current photo. Max 5MB.</p>
+                                </div>
 
                                 @else
                                 <p class="text-sm text-gray-500">This section displays on your homepage when enabled.</p>
@@ -654,6 +671,7 @@ $tabs = [
                                 'response_rate'    => 'Response Rate',
                                 'days_on_market'   => 'Avg Days Listed',
                                 'pending_listings' => 'Pending Listings',
+                                'views_month'      => 'Views (30 Days)',
                             ] as $widget => $label)
                             <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-xl p-3 transition">
                                 <input type="checkbox" name="dashboard_config[{{ $widget }}]" value="1" class="rounded" {{ ($dashConfig[$widget] ?? true) ? 'checked' : '' }}>
@@ -669,9 +687,16 @@ $tabs = [
                         <p class="text-xs text-gray-400 mb-4">Visual data breakdowns shown below the stat cards.</p>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
                             @foreach([
-                                'type_chart'   => 'Properties by Type',
-                                'status_chart' => 'Listing Status',
-                                'views_chart'  => 'Views by Property',
+                                'type_chart'        => 'Properties by Type',
+                                'status_chart'      => 'Listing Status',
+                                'views_chart'       => 'Views by Property',
+                                'views_30days'      => 'Daily Views (30 Days)',
+                                'messages_7days'    => 'Daily Messages (7 Days)',
+                                'price_distribution'=> 'Price Range Distribution',
+                                'listings_over_time'=> 'Listings Added (12 Mo)',
+                                'revenue_trend'     => 'Revenue Trend (12 Mo)',
+                                'appt_status'       => 'Appointment Status',
+                                'message_sources'   => 'Message Sources',
                             ] as $widget => $label)
                             <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-xl p-3 transition">
                                 <input type="checkbox" name="dashboard_config[{{ $widget }}]" value="1" class="rounded" {{ ($dashConfig[$widget] ?? true) ? 'checked' : '' }}>
@@ -692,6 +717,7 @@ $tabs = [
                                 'upcoming_appts'   => 'Upcoming Appointments',
                                 'recent_properties'=> 'Recently Added',
                                 'needs_attention'  => 'Needs Attention',
+                                'starred_messages' => 'Starred Messages',
                             ] as $widget => $label)
                             <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-xl p-3 transition">
                                 <input type="checkbox" name="dashboard_config[{{ $widget }}]" value="1" class="rounded" {{ ($dashConfig[$widget] ?? true) ? 'checked' : '' }}>

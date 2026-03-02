@@ -26,13 +26,13 @@ class BackupController extends Controller
         ]));
 
         // JSON data
-        $zip->addFromString('data/properties.json',   \App\Models\Property::with('images')->get()->toJson());
-        $zip->addFromString('data/messages.json',     \App\Models\Message::get()->toJson());
-        $zip->addFromString('data/staff.json',        \App\Models\StaffMember::get()->toJson());
-        $zip->addFromString('data/appointments.json', \App\Models\Appointment::get()->toJson());
-        $zip->addFromString('data/legal_pages.json',  \App\Models\LegalPage::get()->toJson());
+        $zip->addFromString('data/properties.json',   \App\Models\Property::with('images')->where('tenant_id', $tenant->id)->get()->toJson());
+        $zip->addFromString('data/messages.json',     \App\Models\Message::where('tenant_id', $tenant->id)->get()->toJson());
+        $zip->addFromString('data/staff.json',        \App\Models\StaffMember::where('tenant_id', $tenant->id)->get()->toJson());
+        $zip->addFromString('data/appointments.json', \App\Models\Appointment::where('tenant_id', $tenant->id)->get()->toJson());
+        $zip->addFromString('data/legal_pages.json',  \App\Models\LegalPage::where('tenant_id', $tenant->id)->get()->toJson());
 
-        $settings = \App\Models\SiteSettings::first();
+        $settings = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
         if ($settings) {
             $zip->addFromString('data/settings.json', $settings->toJson());
         }

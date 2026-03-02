@@ -79,6 +79,7 @@ class SiteSettings extends Model
         'hero_background_type',
         'hero_preset',
         'hero_image',
+        'map_office_image',
         'hero_gradient_start',
         'hero_gradient_end',
     ];

@@ -45,8 +45,8 @@ class RegisterController extends Controller
             'contact_email'=> $request->email,
         ]);
 
-        LegalPage::create(['tenant_id' => $tenant->id, 'type' => 'privacy',  'content' => 'Privacy Policy content here.']);
-        LegalPage::create(['tenant_id' => $tenant->id, 'type' => 'terms',    'content' => 'Terms of Service content here.']);
+        LegalPage::create(['tenant_id' => $tenant->id, 'page_type' => 'privacy',  'content' => 'Privacy Policy content here.']);
+        LegalPage::create(['tenant_id' => $tenant->id, 'page_type' => 'terms',    'content' => 'Terms of Service content here.']);
 
         $user = User::create([
             'name'      => $request->name,

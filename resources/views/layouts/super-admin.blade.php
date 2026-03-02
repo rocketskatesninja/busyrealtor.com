@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Super Admin') — BusyRealtor</title>
-    <script>tailwind.config = { darkMode: "class" }</script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: "class" }</script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         [x-cloak] { display: none !important; }
@@ -135,10 +135,6 @@
             Settings
         </a>
         <div class="border-t border-gray-700 my-2"></div>
-        <a href="{{ url('/') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Back to Site
-        </a>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="flex items-center w-full px-3 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors">
@@ -182,10 +178,6 @@
             Settings
         </a>
         <div class="border-t border-gray-700 my-3"></div>
-        <a href="{{ url('/') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Back to Site
-        </a>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit" class="flex items-center w-full px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-700 hover:text-white transition-colors">

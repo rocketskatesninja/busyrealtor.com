@@ -506,6 +506,58 @@ $iconPaths = [
         </div>
     </div>
 </section>
+
+{{-- MAP --}}
+@elseif($key === 'map')
+@php
+    $mapAddress  = trim($settings->contact_address ?? '');
+    $officePhoto = $settings->map_office_image ?? null;
+    $hasMap      = (bool) $mapAddress;
+    $hasPhoto    = (bool) $officePhoto;
+@endphp
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-bold text-gray-900 mb-3">Our Location</h2>
+            @if($mapAddress)
+            <p class="text-gray-500">{{ $mapAddress }}</p>
+            @endif
+        </div>
+
+        @if($hasMap || $hasPhoto)
+        <div class="{{ ($hasMap && $hasPhoto) ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : '' }}">
+
+            @if($hasMap)
+            <div class="rounded-2xl overflow-hidden shadow border border-gray-200" style="height: 420px">
+                <iframe width="100%" height="100%" frameborder="0" style="border:0"
+                    src="https://maps.google.com/maps?q={{ urlencode($mapAddress) }}&output=embed&iwloc=&z=14"
+                    allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+            @endif
+
+            @if($hasPhoto)
+            <div class="rounded-2xl overflow-hidden shadow border border-gray-200" style="height: 420px">
+                <img src="{{ asset('storage/' . $officePhoto) }}"
+                     alt="Our office"
+                     class="w-full h-full object-cover">
+            </div>
+            @endif
+
+        </div>
+        @else
+        <div class="rounded-2xl bg-gray-50 border border-gray-200 shadow flex flex-col items-center justify-center py-20 text-center">
+            <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <p class="text-gray-500 mb-1 font-medium">No address configured</p>
+            <p class="text-gray-400 text-sm mb-4">Add your office address in Settings &rarr; Contact to display the map.</p>
+            <a href="{{ route('tenant.map', $account) }}" class="btn-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Browse Property Map</a>
+        </div>
+        @endif
+    </div>
+</section>
 @endif
 @endforeach
 

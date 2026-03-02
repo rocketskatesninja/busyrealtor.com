@@ -10,7 +10,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
             <a href="/" class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                <div class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center">
                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                 </div>
                 <span :class="scrolled ? 'text-gray-900' : 'text-white'" class="font-bold text-lg transition-colors">BusyRealtor</span>
@@ -22,7 +22,7 @@
             </nav>
             <div class="hidden md:flex items-center gap-3">
                 <a href="/login" :class="scrolled ? 'text-gray-600 dark:text-gray-300 hover:text-blue-600' : 'text-blue-100 hover:text-white'" class="text-sm font-medium transition-colors">Sign In</a>
-                <a href="/register" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">Get Started Free</a>
+                <a href="/register" class="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">Get Started Free</a>
             </div>
             <button @click="open = !open" :class="scrolled ? 'text-gray-600 dark:text-gray-300' : 'text-white'" class="md:hidden p-2">
                 <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -37,7 +37,7 @@
             <a href="#pricing" @click="open=false" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Pricing</a>
             <div class="pt-2 border-t border-gray-100 flex gap-3">
                 <a href="/login" class="flex-1 text-center py-2 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-200 dark:border-gray-700">Sign In</a>
-                <a href="/register" class="flex-1 text-center py-2 bg-blue-600 text-white font-semibold rounded-lg">Get Started</a>
+                <a href="/register" class="flex-1 text-center py-2 bg-orange-500 text-white font-semibold rounded-lg">Get Started</a>
             </div>
         </div>
     </div>
@@ -54,18 +54,18 @@
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             <div>
                 <div class="inline-flex items-center gap-2 bg-blue-800/50 border border-blue-500/30 text-blue-200 text-xs font-semibold px-3 py-1.5 rounded-full mb-6 hero-animate hero-d1">
-                    <span class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"></span>
+                    <span class="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></span>
                     A Punchlist Labs Product
                 </div>
                 <h1 class="text-5xl sm:text-6xl font-black text-white leading-tight mb-6 hero-animate hero-d2">
                     Your Real Estate<br>Business,<br>
-                    <span style="background: linear-gradient(135deg, #93c5fd, #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Online in Minutes</span>
+                    <span style="background: linear-gradient(135deg, #fdba74, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Online in Minutes</span>
                 </h1>
                 <p class="text-blue-100 text-xl leading-relaxed mb-8 max-w-lg hero-animate hero-d3">
                     Launch a stunning property website with AI-powered chatbot, interactive map search, and a full admin suite — no developers, no headaches.
                 </p>
                 <div class="flex flex-wrap gap-4 mb-6 hero-animate hero-d4">
-                    <a href="/register" class="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-7 py-4 rounded-xl shadow-lg hover:bg-blue-50 transition-colors text-base btn-glow-white">
+                    <a href="/register" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-7 py-4 rounded-xl shadow-lg transition-colors text-base">
                         Start Free Trial
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                     </a>
@@ -96,7 +96,7 @@
                         <a href="/demo-realty" target="_blank"
                            class="absolute inset-0 flex items-end justify-center pb-5"
                            style="background: linear-gradient(to top, rgba(30,58,138,0.7) 0%, transparent 50%);">
-                            <span class="bg-white text-blue-700 font-bold text-sm px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
+                            <span class="bg-white text-orange-600 font-bold text-sm px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
                                 Open Full Demo
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                             </span>
@@ -111,10 +111,10 @@
 {{-- ════════════════════════════════════════════════════════ STATS BAR ═══ --}}
 <section class="bg-gray-900 text-white py-10">
     <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-        <div><div class="text-3xl font-black text-blue-400 mb-1"><span class="count-up">10 min</span></div><div class="text-gray-400 text-sm">Average setup time</div></div>
-        <div><div class="text-3xl font-black text-blue-400 mb-1">24/7</div><div class="text-gray-400 text-sm">AI chatbot availability</div></div>
-        <div><div class="text-3xl font-black text-blue-400 mb-1">∞</div><div class="text-gray-400 text-sm">Listings on Pro plan</div></div>
-        <div><div class="text-3xl font-black text-blue-400 mb-1">14 days</div><div class="text-gray-400 text-sm">Free trial, no card needed</div></div>
+        <div><div class="text-3xl font-black text-orange-400 mb-1"><span class="count-up">10 min</span></div><div class="text-gray-400 text-sm">Average setup time</div></div>
+        <div><div class="text-3xl font-black text-orange-400 mb-1">24/7</div><div class="text-gray-400 text-sm">AI chatbot availability</div></div>
+        <div><div class="text-3xl font-black text-orange-400 mb-1">∞</div><div class="text-gray-400 text-sm">Listings on Pro plan</div></div>
+        <div><div class="text-3xl font-black text-orange-400 mb-1">14 days</div><div class="text-gray-400 text-sm">Free trial, no card needed</div></div>
     </div>
 </section>
 
@@ -122,7 +122,7 @@
 <section class="py-24 bg-gray-50 dark:bg-gray-900">
     <div class="max-w-5xl mx-auto px-4">
         <div class="text-center mb-16">
-            <p class="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Simple by design</p>
+            <p class="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Simple by design</p>
             <h2 class="text-4xl font-black text-gray-900 dark:text-white reveal" style="transition-delay:0.1s">Up and running in minutes</h2>
         </div>
         <div class="grid md:grid-cols-3 gap-8 relative">
@@ -133,7 +133,7 @@
             ] as $s)
             <div class="relative reveal" style="transition-delay: {{ $s['data-delay'] ?? '0' }}s">
                 <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 h-full">
-                    <div class="w-12 h-12 bg-blue-600 text-white rounded-xl flex items-center justify-center font-black text-lg mb-5 shadow-md">{{ $s['step'] }}</div>
+                    <div class="w-12 h-12 bg-orange-500 text-white rounded-xl flex items-center justify-center font-black text-lg mb-5 shadow-md">{{ $s['step'] }}</div>
                     <h3 class="font-bold text-gray-900 dark:text-white text-lg mb-3">{{ $s['title'] }}</h3>
                     <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ $s['desc'] }}</p>
                 </div>
@@ -152,7 +152,7 @@
 <section id="features" class="py-24 bg-white dark:bg-gray-950">
     <div class="max-w-6xl mx-auto px-4">
         <div class="text-center mb-16">
-            <p class="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Everything included</p>
+            <p class="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Everything included</p>
             <h2 class="text-4xl font-black text-gray-900 dark:text-white mb-4 reveal" style="transition-delay:0.1s">All the tools you need to grow</h2>
             <p class="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto reveal" style="transition-delay:0.2s">One platform for your entire online presence — from the client-facing website to your back-office admin tools.</p>
         </div>
@@ -187,7 +187,7 @@
     <div class="max-w-6xl mx-auto px-4">
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-                <p class="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Live preview</p>
+                <p class="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Live preview</p>
                 <h2 class="text-4xl font-black text-gray-900 dark:text-white mb-5 reveal" style="transition-delay:0.1s">See it in action</h2>
                 <p class="text-gray-500 dark:text-gray-400 text-lg leading-relaxed mb-6 reveal" style="transition-delay:0.2s">Explore Demo Realty Group — a fully working BusyRealtor site with real listings, an interactive map, AI chatbot, and everything your future clients will experience.</p>
                 <ul class="space-y-3 mb-8">
@@ -199,12 +199,12 @@
                         'Request a showing appointment',
                     ] as $item)
                     <li class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                        <svg class="w-5 h-5 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <svg class="w-5 h-5 text-orange-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
                         {{ $item }}
                     </li>
                     @endforeach
                 </ul>
-                <a href="/demo-realty" target="_blank" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-6 py-3.5 rounded-xl transition-colors shadow-md">
+                <a href="/demo-realty" target="_blank" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3.5 rounded-xl transition-colors shadow-md">
                     Open Live Demo
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 </a>
@@ -233,7 +233,7 @@
 <section id="pricing" class="py-24 bg-white dark:bg-gray-950">
     <div class="max-w-4xl mx-auto px-4">
         <div class="text-center mb-16">
-            <p class="text-blue-600 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Simple pricing</p>
+            <p class="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Simple pricing</p>
             <h2 class="text-4xl font-black text-gray-900 dark:text-white mb-4 reveal" style="transition-delay:0.1s">Pick the plan that fits</h2>
             <p class="text-gray-500 dark:text-gray-400 text-lg">Start free for 14 days. No credit card required.</p>
         </div>
@@ -253,17 +253,17 @@
                 </ul>
             </div>
             <div class="rounded-2xl p-8 relative shadow-xl reveal dark:bg-gray-900" style="border: 2px solid #2563eb; transition-delay:0.25s">
-                <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow">Most Popular</div>
+                <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow">Most Popular</div>
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Pro</h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm mb-5">For agents ready to scale with AI-powered tools.</p>
                 <div class="flex items-end gap-1 mb-6">
                     <span class="text-5xl font-black text-blue-600">$59</span>
                     <span class="text-gray-500 dark:text-gray-400 mb-2">/month</span>
                 </div>
-                <a href="/register" class="block text-center text-white font-bold py-3.5 rounded-xl mb-7 transition-colors shadow-md" style="background: #2563eb;">Start Free Trial</a>
+                <a href="/register" class="block text-center text-white font-bold py-3.5 rounded-xl mb-7 transition-colors shadow-md" style="background: #f97316;">Start Free Trial</a>
                 <ul class="space-y-3">
                     @foreach(['Unlimited active listings','Everything in Starter','Appointment scheduling & management','AI-powered chatbot (Claude / OpenAI)','AI listing description generator','Google Maps & Analytics integration','Staff management & profiles','Priority support'] as $item)
-                    <li class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm"><svg class="w-4 h-4 text-blue-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>{{ $item }}</li>
+                    <li class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm"><svg class="w-4 h-4 text-orange-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>{{ $item }}</li>
                     @endforeach
                 </ul>
             </div>
@@ -273,12 +273,12 @@
 </section>
 
 {{-- ══════════════════════════════════════════════════════ FINAL CTA ═══ --}}
-<section style="background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 45%, #4338ca 100%);" class="py-20">
+<section class="py-20 bg-blue-700">
     <div class="max-w-3xl mx-auto px-4 text-center">
         <h2 class="text-4xl font-black text-white mb-4 reveal">Ready to launch your real estate website?</h2>
         <p class="text-blue-200 text-lg mb-8 reveal" style="transition-delay:0.15s">Join agents already using BusyRealtor to win more clients online.</p>
         <div class="flex flex-wrap justify-center gap-4 reveal" style="transition-delay:0.3s">
-            <a href="/register" class="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-8 py-4 rounded-xl shadow-lg hover:bg-blue-50 transition-colors text-lg">
+            <a href="/register" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition-colors text-lg">
                 Start Free Trial
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
@@ -294,17 +294,17 @@
         <div class="grid md:grid-cols-4 gap-8 mb-10">
             <div class="md:col-span-2">
                 <div class="flex items-center gap-2 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                    <div class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center">
                         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                     </div>
                     <span class="text-white font-bold text-lg">BusyRealtor</span>
                 </div>
-                <p class="text-sm leading-relaxed max-w-xs">The complete real estate website platform for modern agents. Built by <a href="https://punchlistlabs.com" class="text-blue-400 hover:text-blue-300 transition-colors">Punchlist Labs</a>.</p>
+                <p class="text-sm leading-relaxed max-w-xs">The complete real estate website platform for modern agents. Built by <a href="https://punchlistlabs.com" class="text-orange-400 hover:text-orange-300 transition-colors">Punchlist Labs</a>.</p>
                 <div class="mt-4 text-xs text-gray-500">
                     Sister products:
-                    <a href="https://routepilot.pro" class="text-blue-400 hover:text-blue-300 transition-colors ml-1">RoutePilot</a>
+                    <a href="https://routepilot.pro" class="text-orange-400 hover:text-orange-300 transition-colors ml-1">RoutePilot</a>
                     <span class="mx-1">·</span>
-                    <a href="https://punchlistify.com" class="text-blue-400 hover:text-blue-300 transition-colors">Punchlistify</a>
+                    <a href="https://punchlistify.com" class="text-orange-400 hover:text-orange-300 transition-colors">Punchlistify</a>
                 </div>
             </div>
             <div>

@@ -135,7 +135,7 @@ $" . number_format($property->price) : '') . "
 
 " . request()->fullUrl());
             @endphp
-            <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
+            <div class="bg-white rounded-2xl p-6 mb-6 shadow border border-gray-200">
 
                 {{-- Status + Share row --}}
                 <div class="flex items-center justify-between mb-4">
@@ -210,7 +210,7 @@ $" . number_format($property->price) : '') . "
             </div>
 
             @if($property->amenities && count($property->amenities))
-            <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
+            <div class="bg-white rounded-2xl p-6 mb-6 shadow border border-gray-200">
                 <h3 class="font-semibold text-gray-800 mb-4">Amenities & Features</h3>
                 <div class="flex flex-wrap gap-2">
                     @foreach((array)$property->amenities as $amenity)
@@ -221,7 +221,7 @@ $" . number_format($property->price) : '') . "
             @endif
 
             @if($property->virtual_tour_url)
-            <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
+            <div class="bg-white rounded-2xl p-6 mb-6 shadow border border-gray-200">
                 <h3 class="font-semibold text-gray-800 mb-3">Virtual Tour</h3>
                 <a href="{{ $property->virtual_tour_url }}" target="_blank" class="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
@@ -233,7 +233,7 @@ $" . number_format($property->price) : '') . "
 
     {{-- Appointment Booking Form --}}
     @php $isPro = $tenant->isPro(); @endphp
-    <div class="bg-white rounded-2xl p-6 mt-8 shadow-sm border border-gray-100">
+    <div class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
         @if($isPro)
         {{-- Pro / Trial: full booking form --}}
         <div x-data="{
@@ -400,7 +400,7 @@ $" . number_format($property->price) : '') . "
 
     {{-- Location: Map & Street View --}}
     @if($property->latitude && $property->longitude)
-    <div class="bg-white rounded-2xl p-6 mt-8 shadow-sm border border-gray-100">
+    <div class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Location</h2>
         @if(isset($mapsKey) && $mapsKey)
         <div class="grid md:grid-cols-2 gap-4">
@@ -431,7 +431,7 @@ $" . number_format($property->price) : '') . "
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Similar Properties</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach($related as $rel)
-            <a href="{{ route('tenant.property', [$account, $rel->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow group">
+            <a href="{{ route('tenant.property', [$account, $rel->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-lg transition-shadow group">
                 <div class="h-40 bg-gray-100 overflow-hidden">
                     @if($rel->primaryImage)
                         <img src="{{ asset('storage/'.$rel->primaryImage->image_path) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">

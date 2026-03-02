@@ -16,6 +16,7 @@
 .dark .stat-icon.bg-cyan-50    { background-color: rgba(21,94,117,0.2);  }  .dark .stat-icon.bg-cyan-50    svg { color: #67e8f9; }
 .dark .stat-icon.bg-slate-50   { background-color: rgba(30,41,59,0.4);   }  .dark .stat-icon.bg-slate-50   svg { color: #94a3b8; }
 .dark .stat-icon.bg-amber-50   { background-color: rgba(120,53,15,0.2);  }  .dark .stat-icon.bg-amber-50   svg { color: #fcd34d; }
+.dark .stat-icon.bg-violet-50  { background-color: rgba(76,29,149,0.2);  }  .dark .stat-icon.bg-violet-50  svg { color: #c4b5fd; }
 @endsection
 
 @section('head')
@@ -25,7 +26,6 @@
 @section('content')
 @php $account = $tenant->slug; @endphp
 <div class="max-w-7xl mx-auto px-4">
-
 
     {{-- Action Items Alert --}}
     @php
@@ -51,6 +51,7 @@
         $show('portfolio_value')  ? ['label'=>'Portfolio Value',  'value'=>'$'.number_format($stats['portfolio_value']),      'icon'=>'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', 'color'=>'green']  : null,
         $show('unread_messages')  ? ['label'=>'Unread Messages',  'value'=>number_format($stats['unread_messages']),          'icon'=>'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z', 'color'=>'yellow'] : null,
         $show('pending_appts')    ? ['label'=>'Pending Appts',    'value'=>number_format($stats['appointments']),             'icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z', 'color'=>'purple']  : null,
+        $show('views_month')      ? ['label'=>'Views (30 Days)',  'value'=>number_format($stats['views_month']),              'icon'=>'M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', 'color'=>'violet'] : null,
         $show('total_properties') ? ['label'=>'Total Properties', 'value'=>number_format($stats['total_properties']),         'icon'=>'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10', 'color'=>'indigo']  : null,
         $show('sold_properties')  ? ['label'=>'Sold Properties',  'value'=>number_format($stats['sold_properties']),          'icon'=>'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'color'=>'emerald']                                        : null,
         $show('new_this_week')    ? ['label'=>'New This Week',    'value'=>number_format($stats['new_this_week']),             'icon'=>'M13 10V3L4 14h7v7l9-11h-7z', 'color'=>'orange']                                                          : null,
@@ -75,10 +76,10 @@
     </div>
     @endif
 
-    {{-- Charts --}}
-    @php $anyChart = $show('type_chart') || $show('status_chart') || $show('views_chart'); @endphp
-    @if($anyChart)
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+    {{-- Charts: row 1 — type / status / views-by-property --}}
+    @php $anyChart1 = $show('type_chart') || $show('status_chart') || $show('views_chart'); @endphp
+    @if($anyChart1)
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         @if($show('type_chart'))
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <h3 class="font-semibold text-gray-800 mb-4">Properties by Type</h3>
@@ -106,6 +107,81 @@
                 <p class="text-gray-400 text-sm text-center py-16">No views tracked yet.</p>
             @else
                 <canvas id="viewsChart" height="200"></canvas>
+            @endif
+        </div>
+        @endif
+    </div>
+    @endif
+
+    {{-- Charts: row 2 — daily views (30d) + daily messages (7d) --}}
+    @php $anyChart2 = $show('views_30days') || $show('messages_7days'); @endphp
+    @if($anyChart2)
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        @if($show('views_30days'))
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h3 class="font-semibold text-gray-800 mb-4">Property Views — Last 30 Days</h3>
+            <canvas id="views30Chart" height="140"></canvas>
+        </div>
+        @endif
+        @if($show('messages_7days'))
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h3 class="font-semibold text-gray-800 mb-4">Messages — Last 7 Days</h3>
+            <canvas id="msgs7Chart" height="140"></canvas>
+        </div>
+        @endif
+    </div>
+    @endif
+
+    {{-- Charts: row 3 — price distribution + listings over time + revenue trend --}}
+    @php $anyChart3 = $show('price_distribution') || $show('listings_over_time') || $show('revenue_trend'); @endphp
+    @if($anyChart3)
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        @if($show('price_distribution'))
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h3 class="font-semibold text-gray-800 mb-4">Price Range Distribution</h3>
+            @if($priceDistribution->sum() === 0)
+                <p class="text-gray-400 text-sm text-center py-16">No data yet.</p>
+            @else
+                <canvas id="priceChart" height="200"></canvas>
+            @endif
+        </div>
+        @endif
+        @if($show('listings_over_time'))
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h3 class="font-semibold text-gray-800 mb-4">Listings Added (12 Months)</h3>
+            <canvas id="listingsTimeChart" height="200"></canvas>
+        </div>
+        @endif
+        @if($show('revenue_trend'))
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h3 class="font-semibold text-gray-800 mb-4">Revenue Trend (12 Months)</h3>
+            <canvas id="revenueChart" height="200"></canvas>
+        </div>
+        @endif
+    </div>
+    @endif
+
+    {{-- Charts: row 4 — appointment status + message sources --}}
+    @php $anyChart4 = $show('appt_status') || $show('message_sources'); @endphp
+    @if($anyChart4)
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        @if($show('appt_status'))
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h3 class="font-semibold text-gray-800 mb-4">Appointment Status</h3>
+            @if($apptByStatus->isEmpty())
+                <p class="text-gray-400 text-sm text-center py-16">No appointments yet.</p>
+            @else
+                <canvas id="apptStatusChart" height="200"></canvas>
+            @endif
+        </div>
+        @endif
+        @if($show('message_sources'))
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+            <h3 class="font-semibold text-gray-800 mb-4">Message Sources</h3>
+            @if($messageSources->isEmpty())
+                <p class="text-gray-400 text-sm text-center py-16">No messages yet.</p>
+            @else
+                <canvas id="msgSourcesChart" height="200"></canvas>
             @endif
         </div>
         @endif
@@ -172,6 +248,35 @@
         </div>
         @endif
 
+        @if($show('starred_messages'))
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between p-5 border-b">
+                <h3 class="font-semibold text-gray-800">Starred Messages</h3>
+                <a href="{{ route('tenant.admin.messages.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
+            </div>
+            <div class="divide-y">
+                @forelse($starredMessages as $msg)
+                <div class="flex items-start gap-3 p-4">
+                    <div class="w-9 h-9 rounded-full bg-yellow-50 flex items-center justify-center flex-shrink-0 text-sm font-semibold text-yellow-600">
+                        {{ strtoupper(substr($msg->sender_name ?? 'U', 0, 1)) }}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-800 text-sm truncate">{{ $msg->sender_name }}</p>
+                        <p class="text-xs text-gray-500 truncate">{{ Str::limit($msg->message, 65) }}</p>
+                    </div>
+                    <svg class="w-4 h-4 text-yellow-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                </div>
+                @empty
+                <div class="p-8 text-center">
+                    <svg class="w-10 h-10 text-gray-200 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                    <p class="text-gray-400 text-sm">No starred messages.</p>
+                    <p class="text-gray-300 text-xs mt-1">Star important messages to pin them here.</p>
+                </div>
+                @endforelse
+            </div>
+        </div>
+        @endif
+
         @if($show('upcoming_appts'))
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
             <div class="flex items-center justify-between p-5 border-b">
@@ -199,6 +304,7 @@
         @endif
 
         @if($show('recent_properties'))
+        @php $sc = ['active'=>'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400','pending'=>'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400','sold'=>'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300']; @endphp
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100">
             <div class="flex items-center justify-between p-5 border-b">
                 <h3 class="font-semibold text-gray-800">Recently Added</h3>
@@ -215,7 +321,6 @@
                         <p class="font-medium text-gray-800 text-sm truncate">{{ $p->title }}</p>
                         <p class="text-xs text-gray-500">${{ number_format($p->price) }} · {{ $p->created_at->diffForHumans() }}</p>
                     </div>
-                    @php $sc = ['active'=>'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400','pending'=>'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400','sold'=>'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300']; @endphp
                     <span class="text-xs px-2 py-1 rounded-full {{ $sc[$p->listing_status] ?? 'bg-gray-100 text-gray-600' }}">{{ ucfirst($p->listing_status) }}</span>
                 </a>
                 @empty
@@ -225,29 +330,47 @@
         </div>
         @endif
 
-        @if($show('needs_attention') && $needsAttention->count() > 0)
-        <div class="bg-white rounded-2xl shadow-sm border border-amber-200 dark:border-amber-700/50 lg:col-span-2">
+        @if($show('needs_attention'))
+        <div class="bg-white rounded-2xl shadow-sm border border-amber-200 dark:border-amber-700/50">
             <div class="flex items-center justify-between p-5 border-b border-amber-100 dark:border-amber-700/30">
                 <div class="flex items-center gap-2">
                     <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
                     <h3 class="font-semibold text-gray-800">Needs Attention</h3>
                 </div>
-                <span class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">Active listings with low visibility</span>
+                @if($needsAttention->count() > 0)
+                <span class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">{{ $needsAttention->count() }} active {{ Str::plural('listing', $needsAttention->count()) }}</span>
+                @endif
             </div>
             <div class="divide-y">
-                @foreach($needsAttention as $p)
+                @forelse($needsAttention as $p)
                 @php $img = $p->images->first(); @endphp
                 <a href="{{ route('tenant.admin.properties.edit', [$account, $p->id]) }}" class="flex items-center gap-4 p-4 hover:bg-amber-50/50 dark:hover:bg-amber-900/10 transition">
                     <div class="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
-                        @if($img)<img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">@else<div class="w-full h-full flex items-center justify-center"><svg class="w-5 h-5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>@endif
+                        @if($img)
+                            <img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">
+                        @else
+                            <div class="w-full h-full flex items-center justify-center bg-amber-50">
+                                <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            </div>
+                        @endif
                     </div>
                     <div class="flex-1 min-w-0">
                         <p class="font-medium text-gray-800 text-sm truncate">{{ $p->title }}</p>
                         <p class="text-xs text-gray-500">${{ number_format($p->price) }} · Listed {{ $p->created_at->diffForHumans() }}</p>
                     </div>
-                    <span class="text-xs text-amber-600 dark:text-amber-400">{{ $p->view_count }} views</span>
+                    <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                        @foreach($p->attention_reasons as $reason)
+                        <span class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-0.5 rounded-full whitespace-nowrap">{{ $reason }}</span>
+                        @endforeach
+                    </div>
                 </a>
-                @endforeach
+                @empty
+                <div class="p-8 text-center">
+                    <svg class="w-10 h-10 text-gray-200 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <p class="text-gray-400 text-sm">All listings look good!</p>
+                    <p class="text-gray-300 text-xs mt-1">Active listings with low views, missing photos, or other issues will appear here.</p>
+                </div>
+                @endforelse
             </div>
         </div>
         @endif
@@ -258,16 +381,37 @@
 
 @section('scripts')
 @php
-$typeLabels  = $propertiesByType->keys()->map(fn($k) => ucfirst(str_replace('-', ' ', $k)))->values()->toArray();
-$typeData    = $propertiesByType->values()->toArray();
-$statusLabels = $propertiesByStatus->keys()->map(fn($k) => ucfirst($k))->values()->toArray();
-$statusData   = $propertiesByStatus->values()->toArray();
-$viewLabels   = $viewsByProperty->map(fn($p) => Str::limit($p->title ?: $p->address_street, 20))->toArray();
-$viewData     = $viewsByProperty->pluck('view_count')->toArray();
+$typeLabels     = $propertiesByType->keys()->map(fn($k) => ucfirst(str_replace('-', ' ', $k)))->values()->toArray();
+$typeData       = $propertiesByType->values()->toArray();
+$statusLabels   = $propertiesByStatus->keys()->map(fn($k) => ucfirst($k))->values()->toArray();
+$statusData     = $propertiesByStatus->values()->toArray();
+$viewLabels     = $viewsByProperty->map(fn($p) => Str::limit($p->title ?: $p->address_street, 20))->toArray();
+$viewData       = $viewsByProperty->pluck('view_count')->toArray();
+$v30Labels      = $views30days->pluck('label')->toArray();
+$v30Data        = $views30days->pluck('count')->toArray();
+$msg7Labels     = $messages7days->pluck('label')->toArray();
+$msg7Data       = $messages7days->pluck('count')->toArray();
+$priceLabels    = $priceDistribution->keys()->toArray();
+$priceData      = $priceDistribution->values()->toArray();
+$ltLabels       = $listingsOverTime->pluck('label')->toArray();
+$ltData         = $listingsOverTime->pluck('count')->toArray();
+$revLabels      = $revenueTrend->pluck('label')->toArray();
+$revData        = $revenueTrend->pluck('revenue')->toArray();
+$apptLabels     = $apptByStatus->keys()->map(fn($k) => ucfirst($k))->values()->toArray();
+$apptData       = $apptByStatus->values()->toArray();
+$srcLabels      = $messageSources->keys()->map(fn($k) => ucfirst($k))->values()->toArray();
+$srcData        = $messageSources->values()->toArray();
 @endphp
 const isDark = document.documentElement.classList.contains('dark');
 const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3b82f6';
 const chartLegendColor = isDark ? '#94a3b8' : '#6b7280';
+const gridColor = isDark ? '#334155' : '#f3f4f6';
+const tickColor = isDark ? '#94a3b8' : '#6b7280';
+const scaleDefaults = {
+    y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0, color: tickColor } },
+    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: tickColor } }
+};
+
 @if($show('type_chart') && !$propertiesByType->isEmpty())
 new Chart(document.getElementById('typeChart'), {
     type: 'doughnut',
@@ -285,18 +429,64 @@ new Chart(document.getElementById('statusChart'), {
 @if($show('views_chart') && !$viewsByProperty->isEmpty())
 new Chart(document.getElementById('viewsChart'), {
     type: 'bar',
-    data: {
-        labels: {!! json_encode($viewLabels) !!},
-        datasets: [{ label: 'Views', data: {!! json_encode($viewData) !!}, backgroundColor: primaryColor, borderRadius: 6 }]
-    },
+    data: { labels: {!! json_encode($viewLabels) !!}, datasets: [{ label: 'Views', data: {!! json_encode($viewData) !!}, backgroundColor: primaryColor, borderRadius: 6 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+});
+@endif
+@if($show('views_30days'))
+new Chart(document.getElementById('views30Chart'), {
+    type: 'line',
+    data: { labels: {!! json_encode($v30Labels) !!}, datasets: [{ label: 'Views', data: {!! json_encode($v30Data) !!}, borderColor: primaryColor, backgroundColor: primaryColor + '22', fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+});
+@endif
+@if($show('messages_7days'))
+new Chart(document.getElementById('msgs7Chart'), {
+    type: 'bar',
+    data: { labels: {!! json_encode($msg7Labels) !!}, datasets: [{ label: 'Messages', data: {!! json_encode($msg7Data) !!}, backgroundColor: '#8b5cf6', borderRadius: 6 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+});
+@endif
+@if($show('price_distribution') && $priceDistribution->sum() > 0)
+new Chart(document.getElementById('priceChart'), {
+    type: 'bar',
+    data: { labels: {!! json_encode($priceLabels) !!}, datasets: [{ label: 'Properties', data: {!! json_encode($priceData) !!}, backgroundColor: '#10b981', borderRadius: 6 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+});
+@endif
+@if($show('listings_over_time'))
+new Chart(document.getElementById('listingsTimeChart'), {
+    type: 'line',
+    data: { labels: {!! json_encode($ltLabels) !!}, datasets: [{ label: 'Listings Added', data: {!! json_encode($ltData) !!}, borderColor: '#f59e0b', backgroundColor: '#f59e0b22', fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2 }] },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+});
+@endif
+@if($show('revenue_trend'))
+new Chart(document.getElementById('revenueChart'), {
+    type: 'bar',
+    data: { labels: {!! json_encode($revLabels) !!}, datasets: [{ label: 'Revenue', data: {!! json_encode($revData) !!}, backgroundColor: '#10b981', borderRadius: 6 }] },
     options: {
         responsive: true,
         plugins: { legend: { display: false } },
         scales: {
-            y: { beginAtZero: true, grid: { color: isDark ? '#334155' : '#f3f4f6' }, ticks: { precision: 0, color: isDark ? '#94a3b8' : '#6b7280' } },
-            x: { grid: { display: false }, ticks: { font: { size: 10 }, color: isDark ? '#94a3b8' : '#6b7280' } }
+            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: tickColor, callback: function(v) { return '$' + (v >= 1000000 ? (v/1000000).toFixed(1)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v); } } },
+            x: { grid: { display: false }, ticks: { font: { size: 10 }, color: tickColor } }
         }
     }
+});
+@endif
+@if($show('appt_status') && !$apptByStatus->isEmpty())
+new Chart(document.getElementById('apptStatusChart'), {
+    type: 'doughnut',
+    data: { labels: {!! json_encode($apptLabels) !!}, datasets: [{ data: {!! json_encode($apptData) !!}, backgroundColor: ['#8b5cf6','#10b981','#ef4444','#f59e0b','#6b7280'] }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, color: chartLegendColor } } } }
+});
+@endif
+@if($show('message_sources') && !$messageSources->isEmpty())
+new Chart(document.getElementById('msgSourcesChart'), {
+    type: 'doughnut',
+    data: { labels: {!! json_encode($srcLabels) !!}, datasets: [{ data: {!! json_encode($srcData) !!}, backgroundColor: ['#3b82f6','#f59e0b','#10b981','#ef4444','#8b5cf6'] }] },
+    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, color: chartLegendColor } } } }
 });
 @endif
 @endsection
