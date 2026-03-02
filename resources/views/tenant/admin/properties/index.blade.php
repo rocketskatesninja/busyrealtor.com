@@ -46,8 +46,8 @@
 
     {{-- Filters --}}
     <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">
-        <form method="GET" class="flex flex-wrap gap-3 items-end">
-            <div class="flex-1 min-w-40">
+        <form method="GET" class="flex flex-wrap gap-3 items-end justify-center md:justify-start">
+            <div class="w-full md:flex-1 md:min-w-40">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search properties..." class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             </div>
             <select name="type" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -73,13 +73,62 @@
         </form>
     </div>
 
-    {{-- Table --}}
+    {{-- List --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-5 py-4 border-b flex items-center justify-between">
             <p class="text-sm text-gray-500">{{ $properties->total() }} {{ Str::plural('property', $properties->total()) }}</p>
         </div>
         @if($properties->count())
-        <div class="overflow-x-auto">
+
+        {{-- Mobile cards --}}
+        <div class="md:hidden divide-y divide-gray-100">
+            @foreach($properties as $property)
+            @php
+                $statusClass = $property->listing_status === 'active'
+                    ? 'bg-green-100 text-green-700'
+                    : ($property->listing_status === 'pending'
+                        ? 'bg-yellow-100 text-yellow-700'
+                        : ($property->listing_status === 'sold'
+                            ? 'bg-gray-100 text-gray-600'
+                            : 'bg-red-100 text-red-600'));
+            @endphp
+            <div class="p-4 flex items-start gap-3">
+                <div class="w-16 h-12 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                    @if($property->primaryImage)
+                        <img src="{{ asset('storage/'.$property->primaryImage->image_path) }}" class="w-full h-full object-cover">
+                    @endif
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="font-medium text-gray-800 text-sm truncate">{{ Str::limit($property->title, 40) }}</p>
+                    <p class="text-xs text-gray-500">{{ $property->city }}{{ $property->state ? ', '.$property->state : '' }}</p>
+                    <div class="flex items-center flex-wrap gap-2 mt-1">
+                        <span class="font-semibold text-gray-800 text-sm">${{ number_format($property->price) }}</span>
+                        <span class="text-gray-300 text-xs">·</span>
+                        <span class="text-xs text-gray-500 capitalize">{{ str_replace('-', ' ', $property->property_type) }}</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $statusClass }}">{{ ucfirst($property->listing_status) }}</span>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-0.5">{{ number_format($property->view_count) }} views · {{ $property->created_at->format('M j, Y') }}</p>
+                </div>
+                <div class="flex gap-1 flex-shrink-0">
+                    <a href="{{ route('tenant.property', [$account, $property->id]) }}" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100" title="View">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    </a>
+                    <a href="{{ route('tenant.admin.properties.edit', [$account, $property->id]) }}" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50" title="Edit">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </a>
+                    <form method="POST" action="{{ route('tenant.admin.properties.destroy', [$account, $property->id]) }}" x-data onsubmit="return confirm('Delete this property?')">
+                        @csrf @method('DELETE')
+                        <button type="submit" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50" title="Delete">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            @endforeach
+        </div>
+
+        {{-- Desktop table --}}
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50 text-xs font-medium text-gray-500 uppercase">
                     <tr>
@@ -138,6 +187,7 @@
                 </tbody>
             </table>
         </div>
+
         <div class="px-5 py-4 border-t">{{ $properties->links() }}</div>
         @else
         <div class="text-center py-16">
