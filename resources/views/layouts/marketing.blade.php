@@ -5,7 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'BusyRealtor — Real Estate Websites for Modern Agents')</title>
     <meta name="description" content="@yield('description', 'Launch a stunning real estate website with AI chatbot, interactive property map, and powerful admin tools — in minutes.')">
+    <script>
+        (function() {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.classList.add('dark');
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+                e.matches ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark');
+            });
+        })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class' }</script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -89,7 +100,7 @@
     </style>
     @yield('head')
 </head>
-<body class="bg-white text-gray-900 antialiased">
+<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 antialiased">
     @yield('content')
 <script>
 (function () {
