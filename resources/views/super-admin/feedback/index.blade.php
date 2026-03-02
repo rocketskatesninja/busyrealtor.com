@@ -7,8 +7,7 @@
 
     <div class="flex items-center justify-between">
         <div>
-            <h1 class="text-2xl font-bold text-white">Feedback</h1>
-            <p class="text-gray-400 text-sm mt-0.5">Submissions from realtors</p>
+            <p class="text-gray-400 text-sm">Submissions from realtors</p>
         </div>
         @if($newCount > 0)
         <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-600 text-white">

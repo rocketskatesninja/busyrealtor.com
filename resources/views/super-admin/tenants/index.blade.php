@@ -1,10 +1,10 @@
 @extends('layouts.super-admin')
 @section('title', 'Tenants')
+@section('page-title', 'Tenants')
 @section('content')
 <div class="space-y-6">
     <div>
-        <h1 class="text-2xl font-bold text-white">Tenants</h1>
-        <p class="text-gray-400 text-sm mt-0.5">Manage all realtor accounts on the platform</p>
+        <p class="text-gray-400 text-sm">Manage all realtor accounts on the platform</p>
     </div>
 
     {{-- Header + Search --}}

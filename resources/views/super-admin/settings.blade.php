@@ -6,8 +6,7 @@
 <div class="max-w-2xl space-y-6">
 
     <div>
-        <h1 class="text-2xl font-bold text-white">System Settings</h1>
-        <p class="mt-1 text-gray-400 text-sm">Global controls for the BusyRealtor platform.</p>
+        <p class="text-gray-400 text-sm">Global controls for the BusyRealtor platform.</p>
     </div>
 
     <form method="POST" action="{{ route('super.settings.update') }}">
