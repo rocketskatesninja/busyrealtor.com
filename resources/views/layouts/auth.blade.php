@@ -29,24 +29,35 @@
         .dark .shadow-2xl     { box-shadow: 0 8px 30px rgba(0,0,0,0.7) !important; }
     </style>
 </head>
-<body class="bg-white dark:bg-gray-50 min-h-screen flex items-center justify-center py-12 px-4">
-    <div class="w-full max-w-md">
-        <div class="text-center mb-8">
-            <a href="/" class="text-3xl font-bold text-gray-900 dark:text-white">BusyRealtor</a>
-            <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">Real Estate Management Platform</p>
+<body class="bg-white dark:bg-gray-50 min-h-screen flex flex-col">
+    {{-- Flash banners --}}
+    @if(session('error'))
+    <div x-data="{ show: true }" x-show="show" class="bg-red-100 border-l-4 border-red-700 text-red-700 p-4 dark:bg-red-600 dark:border-red-800 dark:text-white">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <span>{{ session('error') }}</span>
+            <button @click="show = false" class="ml-4 opacity-70 hover:opacity-100">&times;</button>
         </div>
-        <div class="bg-white rounded-2xl shadow-2xl p-8">
-            @if(session('status'))
-                <div class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-            @if($errors->any())
-                <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                    <ul class="list-disc list-inside space-y-1">
-                        @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-                    </ul>
-                </div>
-            @endif
-            @yield('content')
+    </div>
+    @endif
+    @if(session('status'))
+    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 dark:bg-green-600 dark:border-green-600 dark:text-white">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <span>{{ session('status') }}</span>
+            <button @click="show = false" class="ml-4 opacity-70 hover:opacity-100">&times;</button>
+        </div>
+    </div>
+    @endif
+
+    {{-- Centered card --}}
+    <div class="flex-1 flex items-center justify-center py-12 px-4">
+        <div class="w-full max-w-md">
+            <div class="text-center mb-8">
+                <a href="/" class="text-3xl font-bold text-gray-900 dark:text-white">BusyRealtor</a>
+                <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">Real Estate Management Platform</p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-2xl p-8">
+                @yield('content')
+            </div>
         </div>
     </div>
 </body>

@@ -16,6 +16,8 @@ class User extends Authenticatable
         'password',
         'tenant_id',
         'is_super_admin',
+        'failed_login_attempts',
+        'locked_until',
     ];
 
     protected $hidden = [
@@ -24,9 +26,11 @@ class User extends Authenticatable
     ];
 
     protected $casts = [
-        'is_super_admin'    => 'boolean',
-        'email_verified_at' => 'datetime',
-        'password'          => 'hashed',
+        'is_super_admin'         => 'boolean',
+        'email_verified_at'      => 'datetime',
+        'password'               => 'hashed',
+        'failed_login_attempts'  => 'integer',
+        'locked_until'           => 'datetime',
     ];
 
     public function tenant(): BelongsTo
