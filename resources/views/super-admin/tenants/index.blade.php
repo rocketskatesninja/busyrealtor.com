@@ -2,6 +2,11 @@
 @section('title', 'Tenants')
 @section('content')
 <div class="space-y-6">
+    <div>
+        <h1 class="text-2xl font-bold text-white">Tenants</h1>
+        <p class="text-gray-400 text-sm mt-0.5">Manage all realtor accounts on the platform</p>
+    </div>
+
     {{-- Header + Search --}}
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <form method="GET" class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:items-end">

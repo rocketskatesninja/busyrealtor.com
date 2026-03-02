@@ -52,6 +52,12 @@
         .btn-primary { background-color: var(--primary); color: white; }
         .btn-primary:hover { opacity: 0.9; }
 
+        /* Light mode: make white panels stand out against the gray-50 background */
+        body:not(.dark) .border-gray-100 {
+            border-color: #d1d5db !important; /* gray-300 */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07) !important;
+        }
+
         /* ===================== DARK MODE ===================== */
         .dark, .dark body { color-scheme: dark; }
         .dark body { background-color: #0f172a !important; color: #f1f5f9; }
@@ -315,7 +321,7 @@
 
 {{-- Flash messages --}}
 @if(session('success'))
-<div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4">
+<div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 dark:bg-green-600 dark:border-green-600 dark:text-white">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <span>{{ session('success') }}</span>
         <button @click="show = false" class="ml-4 opacity-70 hover:opacity-100">&times;</button>
@@ -323,7 +329,7 @@
 </div>
 @endif
 @if(session('error'))
-<div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4">
+<div x-data="{ show: true }" x-show="show" class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 dark:bg-red-600 dark:border-red-600 dark:text-white">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
         <span>{{ session('error') }}</span>
         <button @click="show = false" class="ml-4 opacity-70 hover:opacity-100">&times;</button>

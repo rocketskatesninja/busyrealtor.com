@@ -95,6 +95,82 @@
             </div>
         </div>
 
+
+        {{-- Stripe / Billing --}}
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-700">
+                <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+                    </svg>
+                    Stripe / Billing
+                </h2>
+                <p class="text-gray-400 text-sm mt-1">Configure Stripe API keys and subscription price IDs.</p>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Publishable Key <span class="text-gray-500 text-xs">(pk_live_... or pk_test_...)</span></label>
+                        <input type="text" name="stripe_key"
+                               value="{{ $settings->stripe_key ? '••••••••' . substr($settings->stripe_key, -6) : '' }}"
+                               placeholder="pk_live_..."
+                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
+                        <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing key. Paste full key to update.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Secret Key <span class="text-gray-500 text-xs">(sk_live_... or sk_test_...)</span></label>
+                        <input type="text" name="stripe_secret"
+                               value="{{ $settings->stripe_secret ? '••••••••' . substr($settings->stripe_secret, -6) : '' }}"
+                               placeholder="sk_live_..."
+                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
+                        <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing key. Paste full key to update.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Webhook Secret <span class="text-gray-500 text-xs">(whsec_...)</span></label>
+                        <input type="text" name="stripe_webhook_secret"
+                               value="{{ $settings->stripe_webhook_secret ? '••••••••' . substr($settings->stripe_webhook_secret, -6) : '' }}"
+                               placeholder="whsec_..."
+                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
+                        <p class="text-gray-500 text-xs mt-1">Found in Stripe Dashboard → Webhooks. Point webhook to <code class="text-purple-300 bg-gray-900 px-1 rounded">{{ url('/stripe/webhook') }}</code></p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-700 pt-4">
+                    <p class="text-sm font-medium text-gray-300 mb-3">Subscription Price IDs <span class="text-gray-500 text-xs">(from Stripe Dashboard → Products)</span></p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Starter Plan Price ID</label>
+                            <input type="text" name="stripe_starter_price_id"
+                                   value="{{ $settings->stripe_starter_price_id }}"
+                                   placeholder="price_..."
+                                   class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Pro Plan Price ID</label>
+                            <input type="text" name="stripe_pro_price_id"
+                                   value="{{ $settings->stripe_pro_price_id }}"
+                                   placeholder="price_..."
+                                   class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
+                        </div>
+                    </div>
+                </div>
+
+                @if($settings->hasStripe())
+                <div class="flex items-center gap-2 text-green-400 text-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Stripe keys are configured.
+                </div>
+                @else
+                <div class="flex items-center gap-2 text-yellow-400 text-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Stripe is not yet configured. Realtors cannot subscribe until keys and price IDs are set.
+                </div>
+                @endif
+
+            </div>
+        </div>
+
         {{-- Save --}}
         <div class="flex justify-end">
             <button type="submit"
