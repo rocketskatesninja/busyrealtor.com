@@ -45,11 +45,11 @@ class SettingsController extends Controller
                     'tagline'       => $request->tagline,
                     'contact_email' => $request->contact_email,
                     'contact_phone' => $request->contact_phone,
-                    'address'       => $request->address,
-                    'facebook_url'  => $request->facebook_url,
-                    'instagram_url' => $request->instagram_url,
-                    'twitter_url'   => $request->twitter_url,
-                    'linkedin_url'  => $request->linkedin_url,
+                    'contact_address'  => $request->contact_address,
+                    'social_facebook'  => $request->social_facebook,
+                    'social_instagram' => $request->social_instagram,
+                    'social_twitter'   => $request->social_twitter,
+                    'social_linkedin'  => $request->social_linkedin,
                 ]);
                 $tenant->update(['name' => $request->name, 'email' => $request->email]);
                 if ($request->filled('new_password')) {
@@ -160,7 +160,18 @@ class SettingsController extends Controller
                 break;
 
             case 'seo':
-                $settings->update($request->only(['meta_title','meta_description','meta_keywords','og_image']));
+                $settings->update([
+                    'site_description'         => $request->site_description,
+                    'google_site_verification' => $request->google_site_verification,
+                    'search_engine_visibility' => $request->boolean('search_engine_visibility'),
+                ]);
+                if ($request->hasFile('default_share_image')) {
+                    if ($settings->default_share_image) Storage::disk('public')->delete($settings->default_share_image);
+                    $dir  = "tenants/{$tenant->id}/branding";
+                    Storage::disk('public')->makeDirectory($dir);
+                    $path = $request->file('default_share_image')->store($dir, 'public');
+                    $settings->update(['default_share_image' => $path]);
+                }
                 break;
         }
 

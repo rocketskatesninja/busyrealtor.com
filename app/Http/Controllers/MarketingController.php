@@ -19,4 +19,14 @@ class MarketingController extends Controller
 
         return view('marketing.home');
     }
+
+    public function privacy()
+    {
+        return view('marketing.privacy');
+    }
+
+    public function terms()
+    {
+        return view('marketing.terms');
+    }
 }

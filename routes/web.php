@@ -25,12 +25,15 @@ use App\Http\Controllers\Api\PropertyImagesController;
 use App\Http\Controllers\Api\GenerateDescriptionController;
 use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\BackupController;
+use App\Http\Controllers\Api\RestoreController;
 use App\Http\Controllers\Api\TestEmailController;
 use App\Http\Controllers\MarketingController;
 
 
 // Root — marketing page (authenticated users are redirected inside the controller)
 Route::get('/', [MarketingController::class, 'index'])->name('root');
+Route::get('/privacy-policy', [MarketingController::class, 'privacy'])->name('privacy');
+Route::get('/terms', [MarketingController::class, 'terms'])->name('terms');
 
 // Auth routes (no tenant)
 Route::middleware('guest')->group(function () {
@@ -133,6 +136,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         // Export/Backup/Test Email
         Route::get('/api/export/{type}', [ExportController::class, 'export'])->name('api.export');
         Route::post('/api/backup', [BackupController::class, 'create'])->name('api.backup');
+        Route::post('/api/restore', [RestoreController::class, 'restore'])->name('api.restore');
         Route::post('/api/test-email', [TestEmailController::class, 'send'])->name('api.test-email');
 
         // Billing (accessible even if subscription expired)

@@ -87,13 +87,13 @@ $tabs = [
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Business Address</label>
-                            <input type="text" name="address" value="{{ $settings->address }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="contact_address" value="{{ $settings->contact_address }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
                     <div class="mt-5 border-t pt-5">
                         <h3 class="font-medium text-gray-800 mb-3">Social Media</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @foreach(['facebook_url'=>'Facebook URL','instagram_url'=>'Instagram URL','twitter_url'=>'Twitter/X URL','linkedin_url'=>'LinkedIn URL'] as $field=>$label)
+                            @foreach(['social_facebook'=>'Facebook URL','social_instagram'=>'Instagram URL','social_twitter'=>'Twitter/X URL','social_linkedin'=>'LinkedIn URL'] as $field=>$label)
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ $label }}</label>
                                 <input type="url" name="{{ $field }}" value="{{ $settings->$field }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://...">
@@ -819,21 +819,78 @@ $tabs = [
                 @elseif($tab === 'data')
                 {{-- DATA TAB --}}
                 <div class="space-y-6">
+
+                    {{-- Export --}}
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">Export Data</h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-4">Export Data</h2>
                         <div class="flex flex-wrap gap-3">
-                            <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=json" class="px-5 py-2.5 bg-blue-100 text-blue-700 rounded-xl text-sm font-semibold hover:bg-blue-200 transition">Export Properties (JSON)</a>
-                            <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=csv" class="px-5 py-2.5 bg-green-100 text-green-700 rounded-xl text-sm font-semibold hover:bg-green-200 transition">Export Properties (CSV)</a>
-                            <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=json" class="px-5 py-2.5 bg-purple-100 text-purple-700 rounded-xl text-sm font-semibold hover:bg-purple-200 transition">Export Messages (JSON)</a>
-                            <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=csv" class="px-5 py-2.5 bg-orange-100 text-orange-700 rounded-xl text-sm font-semibold hover:bg-orange-200 transition">Export Messages (CSV)</a>
+                            <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=json" class="px-5 py-2.5 bg-blue-50 text-blue-700 rounded-xl text-sm font-semibold hover:bg-blue-100 transition">Export Properties (JSON)</a>
+                            <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=csv" class="px-5 py-2.5 bg-green-50 text-green-700 rounded-xl text-sm font-semibold hover:bg-green-100 transition">Export Properties (CSV)</a>
+                            <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=json" class="px-5 py-2.5 bg-purple-50 text-purple-700 rounded-xl text-sm font-semibold hover:bg-purple-100 transition">Export Messages (JSON)</a>
+                            <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=csv" class="px-5 py-2.5 bg-orange-50 text-orange-700 rounded-xl text-sm font-semibold hover:bg-orange-100 transition">Export Messages (CSV)</a>
                         </div>
                     </div>
+
+                    {{-- Backup & Restore --}}
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">Backup</h2>
-                        <p class="text-gray-500 text-sm mb-4">Create a backup of your properties and messages data.</p>
-                        <button type="button" onclick="createBackup()" class="px-5 py-2.5 btn-primary rounded-xl text-sm font-semibold hover:opacity-90 transition">Create Backup</button>
-                        <span id="backup-status" class="ml-3 text-sm text-gray-500"></span>
+                        <h2 class="text-lg font-bold text-gray-900 mb-6">Backup & Restore</h2>
+
+                        <div class="grid md:grid-cols-2 gap-6 mb-6">
+
+                            {{-- Backup --}}
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Backup</h3>
+                                </div>
+                                <p class="text-sm text-gray-500 leading-relaxed">Download a <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">.zip</code> containing all properties, staff, appointments, messages, site settings, and image files. <span class="text-amber-600 font-medium">The backup contains sensitive data (e.g. SMTP password) — store it securely.</span></p>
+                                <button id="backup-btn" type="button" onclick="doBackup()"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 btn-primary rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                    Download Backup
+                                </button>
+                            </div>
+
+                            {{-- Restore --}}
+                            <div class="space-y-3 md:border-l md:border-gray-100 md:pl-6">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
+                                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Restore</h3>
+                                </div>
+                                <p class="text-sm text-gray-500 leading-relaxed">Upload a <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">.zip</code> backup to restore all data and image files. Existing records are updated; new ones are created. <span class="text-amber-600 font-medium">Site settings will be fully overwritten.</span></p>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <label class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold cursor-pointer transition">
+                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                        Choose .zip file
+                                        <input type="file" id="restore-file" accept=".zip" class="sr-only" onchange="updateRestoreFile(this)">
+                                    </label>
+                                    <span id="restore-filename" class="text-sm text-gray-400 italic truncate max-w-[160px]">No file chosen</span>
+                                </div>
+                                <button id="restore-btn" type="button" onclick="doRestore()"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
+                                    Restore Backup
+                                </button>
+                            </div>
+                        </div>
+
+                        {{-- Console --}}
+                        <div class="console-wrap rounded-xl overflow-hidden border border-gray-700/50">
+                            <div id="data-console-hdr" class="bg-gray-800 px-4 py-2 flex items-center justify-between">
+                                <div class="flex items-center gap-1.5">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-red-400/70 inline-block"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/70 inline-block"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-green-400/70 inline-block"></span>
+                                    <span class="ml-2 text-gray-400 text-xs font-mono">console</span>
+                                </div>
+                                <button type="button" onclick="clearDataConsole()" class="text-gray-500 hover:text-gray-300 text-xs font-mono transition">clear</button>
+                            </div>
+                            <div id="data-console" class="bg-gray-950 px-4 py-3 h-44 overflow-y-auto font-mono text-xs leading-5">
+                                <div style="color:#9ca3af">— Ready. No operations yet. —</div>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
 
                 @elseif($tab === 'legal')
@@ -856,18 +913,32 @@ $tabs = [
                     <h2 class="text-lg font-bold text-gray-900 mb-5">SEO Settings</h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
-                            <input type="text" name="meta_title" value="{{ $settings->meta_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <p class="text-xs text-gray-400 mt-1">Recommended: 50-60 characters</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Site Description</label>
+                            <textarea name="site_description" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ $settings->site_description }}</textarea>
+                            <p class="text-xs text-gray-400 mt-1">Used as the meta description for search engines. Recommended: 150-160 characters.</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
-                            <textarea name="meta_description" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ $settings->meta_description }}</textarea>
-                            <p class="text-xs text-gray-400 mt-1">Recommended: 150-160 characters</p>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Default Share Image</label>
+                            <div class="flex items-center gap-3">
+                                @if($settings->default_share_image)
+                                <img src="{{ asset('storage/' . $settings->default_share_image) }}" class="h-14 w-auto rounded object-contain shrink-0 border border-gray-100 p-1 bg-white">
+                                @endif
+                                <input type="file" name="default_share_image" accept="image/*" class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none">
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Shown when pages are shared on social media (Open Graph image). Recommended: 1200×630px.</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Meta Keywords</label>
-                            <input type="text" name="meta_keywords" value="{{ $settings->meta_keywords }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="real estate, homes for sale, ...">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Google Site Verification</label>
+                            <input type="text" name="google_site_verification" value="{{ $settings->google_site_verification }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="abc123...">
+                            <p class="text-xs text-gray-400 mt-1">The content value from the Google Search Console verification meta tag.</p>
+                        </div>
+                        <div>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="hidden" name="search_engine_visibility" value="0">
+                                <input type="checkbox" name="search_engine_visibility" value="1" class="rounded" {{ ($settings->search_engine_visibility ?? true) ? 'checked' : '' }}>
+                                <span class="text-sm text-gray-700">Allow search engines to index this site</span>
+                            </label>
+                            <p class="text-xs text-gray-400 mt-1 ml-7">Uncheck to add a <code>noindex, nofollow</code> robots tag to all pages.</p>
                         </div>
                     </div>
                 </div>
@@ -904,35 +975,106 @@ document.getElementById('test-email-btn')?.addEventListener('click', async () =>
     btn.textContent = 'Send Test Email';
 });
 
-async function createBackup() {
-    const btn = event.target;
-    const status = document.getElementById('backup-status');
-    btn.disabled = true; btn.textContent = 'Creating...';
-    try {
-        const r = await fetch('{{ route('tenant.admin.api.backup', $account) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } });
-        const blob = await r.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = 'backup.zip'; a.click();
-        status.textContent = 'Backup downloaded!';
-    } catch(e) { status.textContent = 'Backup failed.'; }
-    btn.disabled = false; btn.textContent = 'Create Backup';
+// ── Backup & Restore ─────────────────────────────────────────────────────────
+const _buUrl  = '{{ route('tenant.admin.api.backup',  $account) }}';
+const _reUrl  = '{{ route('tenant.admin.api.restore', $account) }}';
+const _csrf   = '{{ csrf_token() }}';
+const _spin   = '<svg class="w-4 h-4 animate-spin inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>';
+
+function dclog(msg, type) {
+    const el   = document.getElementById('data-console');
+    if (!el) return;
+    const dark = document.documentElement.classList.contains('dark');
+    const ts   = new Date().toTimeString().slice(0, 8);
+    const tsColor = dark ? '#4b5563' : '#9ca3af';
+    const cols = dark
+        ? { info: '#94a3b8', success: '#4ade80', error: '#f87171', warn: '#fbbf24' }
+        : { info: '#4b5563', success: '#16a34a', error: '#dc2626', warn: '#d97706' };
+    const col = cols[type || 'info'];
+    const pre = { success: '✓', error: '✗', warn: '⚠', info: '›' }[type || 'info'];
+    const d = document.createElement('div');
+    d.style.marginBottom = '1px';
+    d.innerHTML = `<span style="color:${tsColor};user-select:none">[${ts}]</span> <span style="color:${col}">${pre} ${msg}</span>`;
+    el.appendChild(d);
+    el.scrollTop = el.scrollHeight;
 }
 
-// Test email
-async function createBackup() {
-    const btn = event.target;
-    const status = document.getElementById('backup-status');
-    btn.disabled = true; btn.textContent = 'Creating...';
+function clearDataConsole() {
+    const el = document.getElementById('data-console');
+    if (el) el.innerHTML = '<div style="color:#9ca3af">— Cleared. —</div>';
+}
+
+function updateRestoreFile(input) {
+    const el = document.getElementById('restore-filename');
+    if (el) el.textContent = input.files[0] ? input.files[0].name : 'No file chosen';
+}
+
+async function doBackup() {
+    const btn = document.getElementById('backup-btn');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = _spin + ' Creating...';
+    clearDataConsole();
+    dclog('Starting backup...');
     try {
-        const r = await fetch('{{ route('tenant.admin.api.backup', $account) }}', { method: 'POST', headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } });
+        dclog('Requesting archive from server...');
+        const r = await fetch(_buUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': _csrf } });
+        if (!r.ok) throw new Error('Server error: ' + r.status);
         const blob = await r.blob();
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = 'backup.zip'; a.click();
-        status.textContent = 'Backup downloaded!';
-    } catch(e) { status.textContent = 'Backup failed.'; }
-    btn.disabled = false; btn.textContent = 'Create Backup';
+        const kb   = (blob.size / 1024).toFixed(1);
+        dclog('Archive ready — ' + kb + ' KB');
+        const date     = new Date().toISOString().slice(0, 10);
+        const filename = 'backup-' + date + '.zip';
+        const url      = URL.createObjectURL(blob);
+        const a        = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        dclog('Download started: ' + filename, 'success');
+        dclog('Backup complete.', 'success');
+    } catch (e) {
+        dclog('Backup failed: ' + e.message, 'error');
+    }
+    btn.disabled = false;
+    btn.innerHTML = orig;
+}
+
+async function doRestore() {
+    const fileInput = document.getElementById('restore-file');
+    const btn       = document.getElementById('restore-btn');
+    if (!fileInput.files[0]) { dclog('No file selected — choose a .zip backup first.', 'warn'); return; }
+    const file = fileInput.files[0];
+    const orig = btn.innerHTML;
+    btn.disabled  = true;
+    btn.innerHTML = _spin + ' Restoring...';
+    clearDataConsole();
+    dclog('File: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)');
+    const fd = new FormData();
+    fd.append('backup', file);
+    fd.append('_token', _csrf);
+    try {
+        dclog('Uploading to server...');
+        const r = await fetch(_reUrl, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: fd });
+        dclog('Processing archive...');
+        const d = await r.json();
+        if (!r.ok || !d.success) throw new Error(d.message || 'Restore failed');
+        dclog('Properties restored: ' + d.properties, 'success');
+        if (d.images)       dclog('Property images restored: ' + d.images, 'success');
+        if (d.staff)        dclog('Staff members restored: ' + d.staff, 'success');
+        if (d.appointments) dclog('Appointments restored: ' + d.appointments, 'success');
+        if (d.messages)     dclog('Messages restored: ' + d.messages, 'success');
+        if (d.legal_pages)  dclog('Legal pages restored: ' + d.legal_pages, 'success');
+        if (d.settings)     dclog('Site settings restored.', 'success');
+        if (d.files)        dclog('Image files restored: ' + d.files, 'success');
+        dclog('Restore complete.', 'success');
+        fileInput.value = '';
+        const fn = document.getElementById('restore-filename');
+        if (fn) fn.textContent = 'No file chosen';
+    } catch (e) {
+        dclog('Restore failed: ' + e.message, 'error');
+    }
+    btn.disabled  = false;
+    btn.innerHTML = orig;
 }
 
 // ── Homepage section ordering ─────────────────────────────────────────────────

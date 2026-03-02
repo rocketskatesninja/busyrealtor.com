@@ -320,8 +320,8 @@
             <div>
                 <h4 class="text-white font-semibold text-sm mb-4">Legal</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="/demo-realty/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                    <li><a href="/demo-realty/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
+                    <li><a href="/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                    <li><a href="/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
                 </ul>
             </div>
         </div>
