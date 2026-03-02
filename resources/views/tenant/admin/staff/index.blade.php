@@ -106,8 +106,20 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="px-5 py-4 text-sm text-gray-600">{{ $member->email ?? '—' }}</td>
-                        <td class="px-5 py-4 text-sm text-gray-600">{{ $member->phone ?? '—' }}</td>
+                        <td class="px-5 py-4 text-sm">
+                            @if($member->email)
+                                <a href="mailto:{{ $member->email }}" class="text-blue-600 hover:underline">{{ $member->email }}</a>
+                            @else
+                                <span class="text-gray-400">—</span>
+                            @endif
+                        </td>
+                        <td class="px-5 py-4 text-sm">
+                            @if($member->phone)
+                                <a href="tel:{{ $member->phone }}" class="text-blue-600 hover:underline">{{ $member->phone }}</a>
+                            @else
+                                <span class="text-gray-400">—</span>
+                            @endif
+                        </td>
                         <td class="px-5 py-4">
                             <div class="flex items-center gap-2">
                                 @if($member->display_on_homepage) <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Homepage</span> @endif
