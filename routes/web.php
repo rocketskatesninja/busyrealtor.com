@@ -38,16 +38,16 @@ Route::get('/terms', [MarketingController::class, 'terms'])->name('terms');
 // Auth routes (no tenant)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.submit');
     Route::get('/forgot-password', [PasswordResetController::class, 'showForm'])->name('password.request');
-    Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])->name('password.email');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])->middleware('throttle:3,1')->name('password.email');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
-    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->name('password.update');
+    Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
 });
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
 Route::middleware(['registrations.enabled'])->group(function () {
     Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
-    Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+    Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:3,1')->name('register.submit');
 });
 
 // Super admin routes
@@ -89,7 +89,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
     Route::get('/api/properties', [PropertyApiController::class, 'index'])->name('api.properties');
 
     // Appointment booking (public, no auth)
-    Route::post('/appointments', [AppointmentController::class, 'storePublic'])->name('appointments.store');
+    Route::post('/appointments', [AppointmentController::class, 'storePublic'])->middleware('throttle:10,1')->name('appointments.store');
 
     // Admin routes
     Route::prefix('admin')->middleware(['auth', 'tenant.active'])->name('admin.')->group(function () {
