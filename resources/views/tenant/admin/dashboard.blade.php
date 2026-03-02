@@ -101,12 +101,14 @@
         </div>
         @endif
         @if($show('views_chart'))
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col">
             <h3 class="font-semibold text-gray-800 mb-4">Views by Property</h3>
             @if($viewsByProperty->isEmpty())
                 <p class="text-gray-400 text-sm text-center py-16">No views tracked yet.</p>
             @else
-                <canvas id="viewsChart" height="200"></canvas>
+                <div class="flex-1 min-h-0 relative" style="min-height:200px">
+                    <canvas id="viewsChart" class="w-full h-full"></canvas>
+                </div>
             @endif
         </div>
         @endif
@@ -430,7 +432,7 @@ new Chart(document.getElementById('statusChart'), {
 new Chart(document.getElementById('viewsChart'), {
     type: 'bar',
     data: { labels: {!! json_encode($viewLabels) !!}, datasets: [{ label: 'Views', data: {!! json_encode($viewData) !!}, backgroundColor: primaryColor, borderRadius: 6 }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
 });
 @endif
 @if($show('views_30days'))
