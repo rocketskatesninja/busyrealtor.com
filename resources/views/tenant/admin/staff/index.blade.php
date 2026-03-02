@@ -2,7 +2,7 @@
 @section('title', 'Staff')
 @section('content')
 @php $account = $tenant->slug; @endphp
-<div class="max-w-5xl mx-auto px-4">
+<div class="max-w-7xl mx-auto px-4">
 
     <div x-data="{ showForm: false }">
     <div class="flex items-center justify-between mb-6">
@@ -63,49 +63,75 @@
     </div>
     </div>
 
-    {{-- Staff List --}}
+    {{-- Staff Table --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-5 py-4 border-b">
+        <div class="px-5 py-4 border-b flex items-center justify-between">
             <p class="text-sm text-gray-500">{{ $staff->count() }} {{ Str::plural('member', $staff->count()) }} — drag to reorder</p>
         </div>
         @if($staff->count())
-        <div id="staff-list" class="divide-y">
-            @foreach($staff as $member)
-            <div class="flex items-center gap-4 p-5 hover:bg-gray-50 transition-colors" data-id="{{ $member->id }}">
-                <div class="cursor-grab text-gray-300 hover:text-gray-500">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
-                </div>
-                <div class="w-14 h-14 rounded-xl overflow-hidden bg-gray-100 flex-shrink-0">
-                    @if($member->profile_image)
-                        <img src="{{ asset('storage/'.$member->profile_image) }}" class="w-full h-full object-cover">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center" style="background-color: rgba(var(--primary-rgb), 0.1)">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                        </div>
-                    @endif
-                </div>
-                <div class="flex-1">
-                    <p class="font-semibold text-gray-800">{{ $member->name }}</p>
-                    @if($member->title) <p class="text-sm text-gray-500">{{ $member->title }}</p> @endif
-                    <div class="flex items-center gap-3 mt-1">
-                        @if($member->display_on_homepage) <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Homepage</span> @endif
-                        @if($member->accepts_appointments) <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Appointments</span> @endif
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="editMember({{ $member->id }}, '{{ addslashes($member->name) }}', '{{ addslashes($member->title ?? '') }}', '{{ addslashes($member->bio ?? '') }}', '{{ $member->email ?? '' }}', '{{ $member->phone ?? '' }}', {{ $member->display_on_homepage ? 'true' : 'false' }}, {{ $member->accepts_appointments ? 'true' : 'false' }})"
-                            class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition" title="Edit">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                    </button>
-                    <form method="POST" action="{{ route('tenant.admin.staff.destroy', [$account, $member->id]) }}" onsubmit="return confirm('Remove this staff member?')">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition" title="Delete">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                        </button>
-                    </form>
-                </div>
-            </div>
-            @endforeach
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50 text-xs font-medium text-gray-500 uppercase">
+                    <tr>
+                        <th class="px-4 py-3 text-left w-8"></th>
+                        <th class="px-5 py-3 text-left">Staff Member</th>
+                        <th class="px-5 py-3 text-left">Email</th>
+                        <th class="px-5 py-3 text-left">Phone</th>
+                        <th class="px-5 py-3 text-left">Flags</th>
+                        <th class="px-5 py-3 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="staff-list" class="divide-y divide-gray-100">
+                    @foreach($staff as $member)
+                    <tr class="hover:bg-gray-50 transition-colors" data-id="{{ $member->id }}">
+                        <td class="px-4 py-4">
+                            <div class="cursor-grab text-gray-300 hover:text-gray-500">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8h16M4 16h16"/></svg>
+                            </div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-14 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                                    @if($member->profile_image)
+                                        <img src="{{ asset('storage/'.$member->profile_image) }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center" style="background-color: rgba(var(--primary-rgb), 0.1)">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-800 text-sm">{{ $member->name }}</p>
+                                    @if($member->title) <p class="text-xs text-gray-500">{{ $member->title }}</p> @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-5 py-4 text-sm text-gray-600">{{ $member->email ?? '—' }}</td>
+                        <td class="px-5 py-4 text-sm text-gray-600">{{ $member->phone ?? '—' }}</td>
+                        <td class="px-5 py-4">
+                            <div class="flex items-center gap-2">
+                                @if($member->display_on_homepage) <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Homepage</span> @endif
+                                @if($member->accepts_appointments) <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Appointments</span> @endif
+                            </div>
+                        </td>
+                        <td class="px-5 py-4">
+                            <div class="flex items-center justify-end gap-2">
+                                <button onclick="editMember({{ $member->id }}, '{{ addslashes($member->name) }}', '{{ addslashes($member->title ?? '') }}', '{{ addslashes($member->bio ?? '') }}', '{{ $member->email ?? '' }}', '{{ $member->phone ?? '' }}', {{ $member->display_on_homepage ? 'true' : 'false' }}, {{ $member->accepts_appointments ? 'true' : 'false' }})"
+                                        class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition" title="Edit">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                                </button>
+                                <form method="POST" action="{{ route('tenant.admin.staff.destroy', [$account, $member->id]) }}" onsubmit="return confirm('Remove this staff member?')">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition" title="Delete">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
         @else
         <div class="text-center py-16 text-gray-400">
@@ -116,7 +142,7 @@
     </div>
 </div>
 
-{{-- Edit modal hidden form --}}
+{{-- Edit modal --}}
 <div id="edit-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-6 w-full max-w-lg shadow-2xl">
         <h3 class="font-bold text-gray-800 text-lg mb-4">Edit Staff Member</h3>
