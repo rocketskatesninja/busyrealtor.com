@@ -231,6 +231,47 @@ $" . number_format($property->price) : '') . "
             @endif
 
 
+    {{-- Your Agent card --}}
+    @if($property->staffMember)
+    <div class="mt-8">
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Your Agent</p>
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6 flex items-start gap-4">
+            <div class="w-14 h-14 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
+                @if($property->staffMember->photo_url)
+                    <img src="{{ asset('storage/' . $property->staffMember->photo_url) }}" alt="{{ $property->staffMember->name }}" class="w-full h-full object-cover">
+                @else
+                    <div class="w-full h-full flex items-center justify-center" style="background-color: rgba(var(--primary-rgb), 0.1)">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </div>
+                @endif
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-semibold text-gray-800 text-sm">{{ $property->staffMember->name }}</p>
+                @if($property->staffMember->title)
+                    <p class="text-xs text-gray-500 mb-1">{{ $property->staffMember->title }}</p>
+                @endif
+                <div class="flex flex-wrap gap-3 text-xs mt-1">
+                    @if($property->staffMember->email)
+                        <a href="mailto:{{ $property->staffMember->email }}" class="text-blue-600 hover:underline flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            {{ $property->staffMember->email }}
+                        </a>
+                    @endif
+                    @if($property->staffMember->phone)
+                        <a href="tel:{{ $property->staffMember->phone }}" class="text-blue-600 hover:underline flex items-center gap-1">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            {{ $property->staffMember->phone }}
+                        </a>
+                    @endif
+                </div>
+                @if($property->staffMember->bio)
+                    <p class="text-xs text-gray-500 mt-2 leading-relaxed">{{ Str::limit($property->staffMember->bio, 100) }}</p>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
     {{-- Appointment Booking Form --}}
     @php $isPro = $tenant->isPro(); @endphp
     <div class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">

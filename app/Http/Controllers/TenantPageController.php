@@ -79,7 +79,7 @@ class TenantPageController extends Controller
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
-        $property = Property::with('images')->findOrFail($id);
+        $property = Property::with(['images', 'staffMember'])->findOrFail($id);
 
         // Increment view count (simple, no rate limiting needed for MVP)
         try {

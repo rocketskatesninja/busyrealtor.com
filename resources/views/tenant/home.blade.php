@@ -351,8 +351,8 @@ $iconPaths = [
             @foreach($staff as $member)
             <div class="bg-white rounded-2xl p-6 text-center shadow border border-gray-200 hover:shadow-lg transition-shadow reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gray-100">
-                    @if($member->profile_image)
-                        <img src="{{ asset('storage/' . $member->profile_image) }}" alt="{{ $member->name }}" class="w-full h-full object-cover">
+                    @if($member->photo_url)
+                        <img src="{{ asset('storage/' . $member->photo_url) }}" alt="{{ $member->name }}" class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full flex items-center justify-center" style="background-color: rgba(var(--primary-rgb), 0.1)">
                             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
