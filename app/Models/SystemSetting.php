@@ -15,6 +15,8 @@ class SystemSetting extends Model
         'stripe_webhook_secret',
         'stripe_starter_price_id',
         'stripe_pro_price_id',
+        'starter_price',
+        'pro_price',
     ];
 
     protected $casts = [
@@ -31,6 +33,8 @@ class SystemSetting extends Model
             'registrations_enabled' => true,
             'site_locked'           => false,
             'lock_message'          => 'We are currently performing maintenance. Please check back soon.',
+            'starter_price'         => 29.00,
+            'pro_price'             => 59.00,
         ]);
     }
 

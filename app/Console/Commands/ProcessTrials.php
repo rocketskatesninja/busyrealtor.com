@@ -39,7 +39,7 @@ class ProcessTrials extends Command
                         . "{$billingUrl}\n\n"
                         . "The BusyRealtor Team";
 
-            TenantMailer::send($tenant->id, $tenant->email, $subject, $body);
+            TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
         }
 
         $this->line("Deactivated {$expired->count()} expired trial(s).");
@@ -71,7 +71,7 @@ class ProcessTrials extends Command
                       . "{$billingUrl}\n\n"
                       . "The BusyRealtor Team";
 
-                TenantMailer::send($tenant->id, $tenant->email, $subject, $body);
+                TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
 
                 $sent   = $tenant->trial_reminders_sent ?? [];
                 $sent[] = $days;

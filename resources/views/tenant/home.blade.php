@@ -71,9 +71,10 @@ $sections = $settings->homepage_sections ?? [
     ['key' => 'stats', 'enabled' => true, 'order' => 3],
     ['key' => 'services', 'enabled' => false, 'order' => 4],
     ['key' => 'team', 'enabled' => true, 'order' => 5],
-    ['key' => 'testimonials', 'enabled' => false, 'order' => 6],
-    ['key' => 'faq', 'enabled' => true, 'order' => 7],
-    ['key' => 'contact', 'enabled' => true, 'order' => 8],
+    ['key' => 'agent', 'enabled' => true, 'order' => 6],
+    ['key' => 'testimonials', 'enabled' => false, 'order' => 7],
+    ['key' => 'faq', 'enabled' => true, 'order' => 8],
+    ['key' => 'contact', 'enabled' => true, 'order' => 9],
 ];
 usort($sections, fn($a,$b) => ($a['order']??0) <=> ($b['order']??0));
 
@@ -410,6 +411,98 @@ $iconPaths = [
                 </a>
             </div>
             @endforeach
+        </div>
+    </div>
+</section>
+@endif
+
+{{-- AGENT SPOTLIGHT --}}
+@elseif($key === 'agent')
+@if($settings->owner_photo || $settings->owner_bio || $settings->owner_name)
+<section class="py-20 bg-gray-50">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {{-- Section header --}}
+        <div class="text-center mb-14">
+            <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color:var(--primary)">Meet Your Agent</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Personal Service You Can Count On</h2>
+            <p class="mt-3 text-gray-500 max-w-xl mx-auto">Real estate is personal. I'm here to guide you every step of the way.</p>
+        </div>
+
+        {{-- Card --}}
+        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+            <div class="flex flex-col md:flex-row">
+
+                {{-- Photo column --}}
+                <div class="md:w-72 flex-shrink-0 flex items-center justify-center p-10 md:p-12" style="background-color: rgba(var(--primary-rgb), 0.06)">
+                    @if($settings->owner_photo)
+                    <img src="{{ asset('storage/' . $settings->owner_photo) }}"
+                         alt="{{ $settings->owner_name }}"
+                         class="w-44 h-44 rounded-full object-cover shadow-xl ring-4 ring-white">
+                    @else
+                    <div class="w-44 h-44 rounded-full flex items-center justify-center shadow-xl ring-4 ring-white bg-gray-100">
+                        <svg class="w-20 h-20 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+                        </svg>
+                    </div>
+                    @endif
+                </div>
+
+                {{-- Info column --}}
+                <div class="flex-1 p-8 md:p-10 flex flex-col justify-center">
+                    @if($settings->owner_name)
+                    <h3 class="text-2xl md:text-3xl font-black text-gray-900">{{ $settings->owner_name }}</h3>
+                    @endif
+                    <p class="text-sm font-semibold mt-1" style="color:var(--primary)">{{ $settings->site_title ?? 'Licensed Real Estate Agent' }}</p>
+
+                    @if($settings->owner_bio)
+                    <p class="mt-4 text-gray-600 leading-relaxed text-base">{{ $settings->owner_bio }}</p>
+                    @endif
+
+                    {{-- Credential badges --}}
+                    <div class="flex flex-wrap gap-3 mt-6">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                            Licensed &amp; Certified
+                        </span>
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            Local Market Expert
+                        </span>
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Free Consultation
+                        </span>
+                    </div>
+
+                    {{-- Social links --}}
+                    @if($settings->social_facebook || $settings->social_instagram || $settings->social_linkedin || $settings->social_twitter)
+                    <div class="flex items-center gap-3 mt-4">
+                        @if($settings->social_facebook)
+                        <a href="{{ $settings->social_facebook }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 hover:bg-blue-600 hover:text-white text-gray-500 transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                        </a>
+                        @endif
+                        @if($settings->social_instagram)
+                        <a href="{{ $settings->social_instagram }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 hover:bg-pink-500 hover:text-white text-gray-500 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                        </a>
+                        @endif
+                        @if($settings->social_linkedin)
+                        <a href="{{ $settings->social_linkedin }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 hover:bg-blue-700 hover:text-white text-gray-500 transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                        </a>
+                        @endif
+                        @if($settings->social_twitter)
+                        <a href="{{ $settings->social_twitter }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-900 hover:text-white text-gray-500 transition-colors">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                        </a>
+                        @endif
+                    </div>
+                    @endif
+
+                </div>
+            </div>
         </div>
     </div>
 </section>

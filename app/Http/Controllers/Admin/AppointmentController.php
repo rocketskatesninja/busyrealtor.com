@@ -108,12 +108,11 @@ class AppointmentController extends Controller
         // Send confirmation email to visitor
         if ($request->status === 'confirmed' && $appt->visitor_email) {
             $tenant = app('tenant');
-            $link   = url("/{$tenant->slug}/confirm-appointment/{$appt->confirmation_token}");
             TenantMailer::send(
                 $tenant->id,
                 $appt->visitor_email,
                 'Appointment Confirmed',
-                "Your appointment has been confirmed!\nDate: {$appt->appointment_date}\n\nConfirm here: {$link}"
+                "Your appointment has been confirmed!\nDate: {$appt->appointment_date}\n\nWe look forward to seeing you. Please reply to this email if you need to make any changes."
             );
         }
 

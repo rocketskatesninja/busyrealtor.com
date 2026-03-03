@@ -242,7 +242,7 @@
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Starter</h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm mb-5">Perfect for solo agents getting started online.</p>
                 <div class="flex items-end gap-1 mb-6">
-                    <span class="text-5xl font-black text-gray-900 dark:text-white">$29</span>
+                    <span class="text-5xl font-black text-gray-900 dark:text-white">${{ number_format($settings->starter_price ?? 29, 2) }}</span>
                     <span class="text-gray-500 dark:text-gray-400 mb-2">/month</span>
                 </div>
                 <a href="/register" class="block text-center bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl mb-7 transition-colors">Start Free Trial</a>
@@ -257,7 +257,7 @@
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Pro</h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm mb-5">For agents ready to scale with AI-powered tools.</p>
                 <div class="flex items-end gap-1 mb-6">
-                    <span class="text-5xl font-black text-blue-600">$59</span>
+                    <span class="text-5xl font-black text-blue-600">${{ number_format($settings->pro_price ?? 59, 2) }}</span>
                     <span class="text-gray-500 dark:text-gray-400 mb-2">/month</span>
                 </div>
                 <a href="/register" class="block text-center text-white font-bold py-3.5 rounded-xl mb-7 transition-colors shadow-md" style="background: #f97316;">Start Free Trial</a>

@@ -19,7 +19,8 @@ class SuperAdminController extends Controller
         $newThisMonth  = Tenant::whereMonth('created_at', now()->month)
                                 ->whereYear('created_at', now()->year)->count();
         $activeSubs    = Tenant::where('stripe_subscription_status', 'active')->count();
-        $mrr           = ($starterCount * 29) + ($proCount * 79);
+        $sys           = \App\Models\SystemSetting::get();
+        $mrr           = ($starterCount * $sys->starter_price) + ($proCount * $sys->pro_price);
 
         $stats = [
             'total_tenants'        => $totalTenants,

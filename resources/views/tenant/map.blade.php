@@ -51,7 +51,7 @@ function initMap() {
             var statusBg = statusColors[p.status] || '#6b7280';
             var details = [p.beds ? p.beds+'bd' : '', p.baths ? p.baths+'ba' : '', p.sqft ? p.sqft.toLocaleString()+' sqft' : ''].filter(Boolean).join(' · ');
             infoWindow.setContent(
-                '<div style="width:240px;font-family:system-ui,-apple-system,sans-serif;border-radius:8px;overflow:hidden;margin:-11px -12px">' +
+                '<div style="width:240px;font-family:system-ui,-apple-system,sans-serif;border-radius:8px;overflow:hidden">' +
                 (p.image ? '<img src="'+p.image+'" style="width:100%;height:130px;object-fit:cover;display:block" onerror="this.style.display=\'none\'">' : '') +
                 '<div style="padding:12px">' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
@@ -75,15 +75,15 @@ function initMap() {
 function applyMapFilter() {
     var form = document.getElementById('map-filter');
     var type       = form.querySelector('[name=type]').value;
-    var status     = form.querySelector('[name=status]').value;
+    var status     = form.querySelector('[name=status]')?.value || '';
     var priceMin   = parseFloat(form.querySelector('[name=price_min]').value) || 0;
     var priceMax   = parseFloat(form.querySelector('[name=price_max]').value) || Infinity;
     var beds       = parseFloat(form.querySelector('[name=beds]').value) || 0;
     var baths      = parseFloat(form.querySelector('[name=baths]').value) || 0;
     var sqftMin    = parseFloat(form.querySelector('[name=sqft_min]').value) || 0;
     var sqftMax    = parseFloat(form.querySelector('[name=sqft_max]').value) || Infinity;
-    var yearMin    = parseInt(form.querySelector('[name=year_min]').value) || 0;
-    var yearMax    = parseInt(form.querySelector('[name=year_max]').value) || Infinity;
+    var yearMin    = parseInt(form.querySelector('[name=year_min]')?.value) || 0;
+    var yearMax    = parseInt(form.querySelector('[name=year_max]')?.value) || Infinity;
     var garage     = parseFloat(form.querySelector('[name=garage_spaces]').value) || 0;
     var hoa        = form.querySelector('[name=hoa]').value;
     var hoaMaxEl   = form.querySelector('[name=hoa_max]');
@@ -154,12 +154,14 @@ function applyMapFilterFromMobile() {
 }
 </script>
 <style>
-/* Google Maps InfoWindow — dark mode overrides */
+/* Google Maps InfoWindow — remove default scrollbars and padding */
+.gm-style-iw-d { overflow: hidden !important; }
+.gm-style-iw-c { padding: 0 !important; }
+/* Dark mode overrides */
 .dark .gm-style-iw-c {
     background-color: #1e293b !important;
     box-shadow: 0 4px 24px rgba(0,0,0,0.6) !important;
 }
-.dark .gm-style-iw-d { overflow: auto !important; }
 .dark .gm-style-iw-t::after { background: #1e293b !important; }
 .dark .gm-ui-hover-effect > span { background-color: #94a3b8 !important; }
 </style>

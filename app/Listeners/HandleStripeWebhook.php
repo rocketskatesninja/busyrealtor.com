@@ -108,7 +108,7 @@ class HandleStripeWebhook
                  . "Thank you for using BusyRealtor!\n\n"
                  . "The BusyRealtor Team";
 
-        TenantMailer::send($tenant->id, $tenant->email, $subject, $body);
+        TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
 
         Log::info('Billing receipt sent', ['tenant_id' => $tenant->id, 'amount' => $amount]);
     }
@@ -132,7 +132,7 @@ class HandleStripeWebhook
                  . "We'll retry automatically, but you can also update your card now to avoid any interruption.\n\n"
                  . "The BusyRealtor Team";
 
-        TenantMailer::send($tenant->id, $tenant->email, $subject, $body);
+        TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
 
         Log::warning('Stripe payment failed', [
             'tenant_id'  => $tenant->id,

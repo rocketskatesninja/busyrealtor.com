@@ -82,6 +82,9 @@ class SiteSettings extends Model
         'map_office_image',
         'hero_gradient_start',
         'hero_gradient_end',
+        'owner_name',
+        'owner_photo',
+        'owner_bio',
     ];
 
     protected $casts = [

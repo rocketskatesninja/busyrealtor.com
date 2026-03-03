@@ -23,7 +23,7 @@ class BillingController extends Controller
             }
         }
 
-        return view('tenant.admin.billing', compact('tenant', 'invoices'));
+        return view('tenant.admin.billing', compact('tenant', 'invoices', 'sys'));
     }
 
     public function subscribe($account, Request $request)

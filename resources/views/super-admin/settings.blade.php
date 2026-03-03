@@ -155,6 +155,24 @@
                     </div>
                 </div>
 
+                <div class="border-t border-gray-700 pt-4">
+                    <p class="text-sm font-medium text-gray-300 mb-3">Plan Pricing <span class="text-gray-500 text-xs">(displayed on billing page and marketing home)</span></p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Starter Monthly Price ($)</label>
+                            <input type="number" name="starter_price" min="0" step="0.01"
+                                   value="{{ old('starter_price', $settings->starter_price ?? 29) }}"
+                                   class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Pro Monthly Price ($)</label>
+                            <input type="number" name="pro_price" min="0" step="0.01"
+                                   value="{{ old('pro_price', $settings->pro_price ?? 59) }}"
+                                   class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
+                        </div>
+                    </div>
+                </div>
+
                 @if($settings->hasStripe())
                 <div class="flex items-center gap-2 text-green-400 text-xs">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>

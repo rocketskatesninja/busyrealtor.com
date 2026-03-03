@@ -81,6 +81,16 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Virtual Tour URL</label>
                     <input type="url" name="virtual_tour_url" value="{{ old('virtual_tour_url', $property->virtual_tour_url ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Assigned Agent / Staff</label>
+                    <select name="staff_member_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">— None —</option>
+                        @foreach($staffMembers as $sm)
+                        <option value="{{ $sm->id }}" {{ old('staff_member_id', $property->staff_member_id ?? '') == $sm->id ? 'selected' : '' }}>{{ $sm->name }}</option>
+                        @endforeach
+                    </select>
+                    <p class="text-xs text-gray-400 mt-1">This person receives email notifications for inquiries on this property.</p>
+                </div>
                 <div class="flex items-center gap-3">
                     <input type="checkbox" name="is_featured" id="is_featured" class="rounded" {{ old('is_featured', $property->is_featured ?? false) ? 'checked' : '' }}>
                     <label for="is_featured" class="text-sm font-medium text-gray-700">Featured on Homepage</label>

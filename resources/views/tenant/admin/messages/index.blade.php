@@ -35,7 +35,7 @@
                 @if($messages->count())
                 <div class="divide-y max-h-[600px] overflow-y-auto">
                     @foreach($messages as $msg)
-                    <a href="{{ route('tenant.admin.messages.index', $account) }}?view={{ $msg->id }}&{{ request()->getQueryString() }}"
+                    <a href="{{ route('tenant.admin.messages.index', $account) }}?{{ http_build_query(array_merge(array_filter(request()->except('view')), ['view' => $msg->id])) }}"
                        class="block p-4 hover:bg-gray-50 transition-colors
                               {{ request('view') == $msg->id ? 'bg-blue-50 dark:bg-blue-900/30 border-l-4 border-blue-500' : '' }}
                               {{ !$msg->is_read && request('view') != $msg->id ? 'bg-yellow-50/50 dark:bg-yellow-900/20' : '' }}">

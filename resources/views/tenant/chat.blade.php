@@ -7,7 +7,7 @@
 
 @section('content')
 @php $account = $tenant->slug; @endphp
-<div class="flex flex-col bg-gray-50" style="height: calc(100vh - 80px)">
+<div class="flex flex-col bg-gray-50" style="height: 100vh; height: 100dvh">
 
     {{-- Header --}}
     <div class="flex items-center gap-3 px-4 py-3 text-white shadow-sm flex-shrink-0" style="background-color: var(--primary)">
@@ -24,7 +24,7 @@
     </div>
 
     {{-- Messages --}}
-    <div id="chat-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+    <div id="chat-messages" class="flex-1 overflow-y-auto px-4 py-4 space-y-3" style="-webkit-overflow-scrolling: touch">
         {{-- Welcome message --}}
         <div class="flex items-start gap-2">
             <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 text-white" style="background-color: var(--primary)">
@@ -59,7 +59,7 @@
                       class="flex-1 px-4 py-2.5 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:border-transparent resize-none overflow-hidden"
                       style="--tw-ring-color: var(--primary); max-height: 120px"
                       onInput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
-                      onKeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); document.getElementById('chat-form').dispatchEvent(new Event('submit')); }"></textarea>
+                      onKeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); document.getElementById('chat-form').dispatchEvent(new Event('submit', {bubbles:true,cancelable:true})); }"></textarea>
             <button type="submit" id="chat-send"
                     class="w-10 h-10 rounded-full flex items-center justify-center text-white flex-shrink-0 transition hover:opacity-90 disabled:opacity-50"
                     style="background-color: var(--primary)">
@@ -71,7 +71,6 @@
 </div>
 
 @section('scripts')
-<script>
 (function() {
     const API_URL = '{{ route('tenant.api.chatbot', $account) }}';
     const CSRF    = document.querySelector('meta[name=csrf-token]')?.content || '';
@@ -83,6 +82,7 @@
 
     function scrollBottom() {
         messages.scrollTop = messages.scrollHeight;
+        setTimeout(() => { messages.scrollTop = messages.scrollHeight; }, 80);
     }
 
     function addMessage(text, isUser) {
@@ -144,6 +144,5 @@
 
     scrollBottom();
 })();
-</script>
 @endsection
 @endsection

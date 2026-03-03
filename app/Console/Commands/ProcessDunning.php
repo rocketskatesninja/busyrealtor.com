@@ -44,7 +44,7 @@ class ProcessDunning extends Command
                          . "Your data is safe and your account can be reactivated at any time.\n\n"
                          . "The BusyRealtor Team";
 
-                TenantMailer::send($tenant->id, $tenant->email, $subject, $body);
+                TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
                 Log::warning('Account suspended — payment unresolved', ['tenant_id' => $tenant->id, 'days_failed' => $daysFailed]);
                 $suspended++;
 
@@ -62,7 +62,7 @@ class ProcessDunning extends Command
                              . "{$billingUrl}\n\n"
                              . "The BusyRealtor Team";
 
-                    TenantMailer::send($tenant->id, $tenant->email, $subject, $body);
+                    TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
 
                     $sent[] = 'dunning_followup';
                     $tenant->update(['trial_reminders_sent' => $sent]);

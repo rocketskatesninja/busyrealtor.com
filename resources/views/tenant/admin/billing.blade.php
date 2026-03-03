@@ -45,7 +45,13 @@
     {{-- Plan cards (only shown if not on a paid plan) --}}
     @if(!$tenant->stripe_id || $tenant->plan === 'trial')
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        @foreach(['starter' => ['price' => '$29', 'features' => ['Up to 10 listings', 'Public website, gallery & map', 'Contact forms & messaging', 'SMTP custom email', 'Custom branding', 'Email support']], 'pro' => ['price' => '$59', 'features' => ['Unlimited listings', 'Appointment scheduling', 'AI chatbot (Claude / OpenAI)', 'AI listing descriptions', 'Google Maps & Analytics', 'Staff management', 'Priority support']]] as $plan => $details)
+        @php
+            $plans = [
+                'starter' => ['price' => '$' . number_format($sys->starter_price ?? 29, 2), 'features' => ['Up to 10 listings', 'Public website, gallery & map', 'Contact forms & messaging', 'SMTP custom email', 'Custom branding', 'Email support']],
+                'pro'     => ['price' => '$' . number_format($sys->pro_price ?? 59, 2),     'features' => ['Unlimited listings', 'Appointment scheduling', 'AI chatbot (Claude / OpenAI)', 'AI listing descriptions', 'Google Maps & Analytics', 'Staff management', 'Priority support']],
+            ];
+        @endphp
+        @foreach($plans as $plan => $details)
         <div class="bg-white rounded-2xl p-6 shadow-sm border {{ $plan === 'pro' ? 'border-blue-500 ring-2 ring-blue-500' : 'border-gray-100' }} relative">
             @if($plan === 'pro')<span class="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-full">Most Popular</span>@endif
             <h3 class="font-bold text-gray-800 text-xl capitalize mb-1">{{ $plan }}</h3>

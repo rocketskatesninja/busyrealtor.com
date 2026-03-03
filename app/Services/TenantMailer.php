@@ -10,11 +10,18 @@ use Illuminate\Support\Facades\Mail;
 class TenantMailer
 {
     /**
-     * Configure the mailer with tenant's SMTP settings and send a raw email.
+     * Configure the mailer with tenant's SMTP settings and send an HTML email.
      * Returns true on success, false on failure.
+     *
+     * @param string $template 'tenant' for agency-branded emails, 'platform' for BusyRealtor billing emails
      */
-    public static function send(int $tenantId, string $to, string $subject, string $body): bool
-    {
+    public static function send(
+        int $tenantId,
+        string $to,
+        string $subject,
+        string $body,
+        string $template = 'tenant'
+    ): bool {
         $smtp = Integration::where('tenant_id', $tenantId)
                     ->where('integration_type', 'smtp')
                     ->where('is_active', true)
@@ -42,8 +49,13 @@ class TenantMailer
         }
 
         try {
-            Log::info('TenantMailer sending', ['to' => $to, 'subject' => $subject, 'tenant_id' => $tenantId]);
-            Mail::raw($body, fn($m) => $m->to($to)->subject($subject));
+            Log::info('TenantMailer sending', ['to' => $to, 'subject' => $subject, 'tenant_id' => $tenantId, 'template' => $template]);
+
+            $settings = \App\Models\SiteSettings::where('tenant_id', $tenantId)->first();
+            $tenant   = \App\Models\Tenant::find($tenantId);
+            $html     = view("emails.{$template}", compact('subject', 'body', 'settings', 'tenant'))->render();
+
+            Mail::html($html, fn($m) => $m->to($to)->subject($subject));
             Log::info('TenantMailer sent OK', ['to' => $to]);
             return true;
         } catch (\Exception $e) {

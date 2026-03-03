@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 use App\Jobs\PostPropertyToSocial;
+use App\Models\StaffMember;
 
 class PropertyController extends Controller
 {
@@ -39,7 +40,8 @@ class PropertyController extends Controller
         $tenant        = app('tenant');
         $propertyLimit = $tenant->propertyLimit();
         $propertyCount = $propertyLimit !== null ? Property::count() : null;
-        return view('tenant.admin.properties.form', compact('tenant', 'propertyLimit', 'propertyCount'));
+        $staffMembers  = StaffMember::where('tenant_id', $tenant->id)->orderBy('name')->get();
+        return view('tenant.admin.properties.form', compact('tenant', 'propertyLimit', 'propertyCount', 'staffMembers'));
     }
 
     public function store($account, Request $request)
@@ -61,9 +63,10 @@ class PropertyController extends Controller
 
     public function edit($account, $id)
     {
-        $tenant   = app('tenant');
-        $property = Property::with('images')->where('tenant_id', $tenant->id)->findOrFail($id);
-        return view('tenant.admin.properties.form', compact('tenant', 'property'));
+        $tenant       = app('tenant');
+        $property     = Property::with('images')->where('tenant_id', $tenant->id)->findOrFail($id);
+        $staffMembers = StaffMember::where('tenant_id', $tenant->id)->orderBy('name')->get();
+        return view('tenant.admin.properties.form', compact('tenant', 'property', 'staffMembers'));
     }
 
     public function update($account, Request $request, $id)
@@ -132,6 +135,7 @@ class PropertyController extends Controller
             'virtual_tour_url'=> $request->virtual_tour_url,
             'amenities'       => $request->amenities ?? [],
             'is_featured'     => $request->boolean('is_featured'),
+            'staff_member_id' => $request->staff_member_id ?: null,
         ];
     }
 

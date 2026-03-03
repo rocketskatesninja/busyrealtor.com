@@ -7,18 +7,28 @@
 @section('content')
 @php
 $account = $tenant->slug;
-$tabs = [
-    'account'      => ['label' => 'Account',     'icon' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
-    'dashboard'    => ['label' => 'Dashboard',   'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
-    'appearance'   => ['label' => 'Appearance',  'icon' => 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01'],
-    'homepage'     => ['label' => 'Homepage',    'icon' => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'],
-    'social'       => ['label' => 'Social Media', 'icon' => 'M7 20l4-16m2 16l4-16M6 9h14M4 15h14'],
-    'messages'     => ['label' => 'Messages',    'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
-    'integrations' => ['label' => 'Third Party', 'icon' => 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z'],
-    'data'         => ['label' => 'Data',        'icon' => 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4'],
-    'legal'        => ['label' => 'Legal',       'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
-    'seo'          => ['label' => 'SEO',         'icon' => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'],
+$groups = [
+    'SITE' => [
+        'general'       => ['label' => 'General',        'icon' => 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z'],
+        'appearance'    => ['label' => 'Appearance',     'icon' => 'M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01'],
+        'homepage'      => ['label' => 'Homepage',       'icon' => 'M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z'],
+        'seo'           => ['label' => 'SEO',            'icon' => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'],
+        'legal'         => ['label' => 'Legal',          'icon' => 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'],
+    ],
+    'ACCOUNT' => [
+        'profile'       => ['label' => 'Profile',        'icon' => 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'],
+        'notifications' => ['label' => 'Notifications',  'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
+    ],
+    'INTEGRATIONS' => [
+        'connected'     => ['label' => 'Connected Apps', 'icon' => 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z'],
+        'chatbot'       => ['label' => 'Chatbot',        'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
+    ],
+    'TOOLS' => [
+        'dashboard'     => ['label' => 'Dashboard',      'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
+        'data'          => ['label' => 'Data',           'icon' => 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4'],
+    ],
 ];
+$tabs = array_merge(...array_values($groups));
 @endphp
 <div class="max-w-7xl mx-auto px-4">
 
@@ -38,15 +48,20 @@ $tabs = [
 
     <div class="flex gap-8">
         {{-- Settings Sidebar (desktop only) --}}
-        <aside class="hidden md:block w-56 flex-shrink-0">
-            <nav class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                @foreach($tabs as $key => $info)
-                <a href="{{ route('tenant.admin.settings', $account) }}?tab={{ $key }}"
-                   class="flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors border-l-4 {{ $tab === $key ? 'border-l-4 bg-blue-50 text-blue-700' : 'border-transparent text-gray-600 hover:bg-gray-50 hover:text-gray-900' }}"
-                   style="{{ $tab === $key ? 'border-color: var(--primary); color: var(--primary); background-color: rgba(var(--primary-rgb), 0.07)' : '' }}">
-                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/></svg>
-                    {{ $info['label'] }}
-                </a>
+        <aside class="hidden md:block w-64 flex-shrink-0 sticky top-6 self-start">
+            <nav class="bg-gray-50 border-r border-gray-200 py-2">
+                @foreach($groups as $groupLabel => $groupTabs)
+                <div class="mt-4 first:mt-0">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 mb-1">{{ $groupLabel }}</p>
+                    @foreach($groupTabs as $key => $info)
+                    <a href="{{ route('tenant.admin.settings', $account) }}?tab={{ $key }}"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium mx-1 transition-colors {{ $tab === $key ? '' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}"
+                       @if($tab === $key) style="background-color: var(--primary); color: #fff" @endif>
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/></svg>
+                        {{ $info['label'] }}
+                    </a>
+                    @endforeach
+                </div>
                 @endforeach
             </nav>
         </aside>
@@ -57,19 +72,11 @@ $tabs = [
                 @csrf
                 <input type="hidden" name="tab" value="{{ $tab }}">
 
-                @if($tab === 'account')
-                {{-- ACCOUNT TAB --}}
+                @if($tab === 'general')
+                {{-- GENERAL TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5">Account Settings</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-5">General Settings</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                            <input type="text" name="name" value="{{ auth()->user()->name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
-                            <input type="email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Site Title</label>
                             <input type="text" name="site_title" value="{{ $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -92,7 +99,7 @@ $tabs = [
                         </div>
                     </div>
                     <div class="mt-5 border-t pt-5">
-                        <h3 class="font-medium text-gray-800 mb-3">Social Media</h3>
+                        <h3 class="font-medium text-gray-800 mb-3">Social Links</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach(['social_facebook'=>'Facebook URL','social_instagram'=>'Instagram URL','social_twitter'=>'Twitter/X URL','social_linkedin'=>'LinkedIn URL'] as $field=>$label)
                             <div>
@@ -100,6 +107,22 @@ $tabs = [
                                 <input type="url" name="{{ $field }}" value="{{ $settings->$field }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://...">
                             </div>
                             @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                @elseif($tab === 'profile')
+                {{-- PROFILE TAB --}}
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-900 mb-5">Profile</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
+                            <input type="text" name="name" value="{{ auth()->user()->name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
+                            <input type="email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         </div>
                     </div>
                     <div class="mt-5 border-t pt-5">
@@ -112,6 +135,29 @@ $tabs = [
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
                                 <input type="password" name="new_password_confirmation" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 border-t pt-5">
+                        <h3 class="font-medium text-gray-800 mb-3">Agent Profile</h3>
+                        <p class="text-sm text-gray-500 mb-4">This public profile powers the Agent Spotlight section on your homepage and appears on property listings.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Agent Name</label>
+                                <input type="text" name="owner_name" value="{{ $settings->owner_name ?? auth()->user()->name }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your display name">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
+                                <div class="flex items-center gap-3">
+                                    @if($settings->owner_photo)
+                                    <img src="{{ asset('storage/'.$settings->owner_photo) }}" class="h-10 w-10 rounded-full object-cover flex-shrink-0 border border-gray-200">
+                                    @endif
+                                    <input type="file" name="owner_photo" accept="image/*" class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none">
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                                <textarea name="owner_bio" rows="4" maxlength="1000" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Share your expertise, years of experience, and the market areas you serve...">{{ $settings->owner_bio }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -251,6 +297,7 @@ $tabs = [
                     ['key'=>'stats',        'label'=>'Statistics',   'emoji'=>'📊', 'desc'=>'Show impressive numbers — properties sold, years of experience, etc.'],
                     ['key'=>'services',     'label'=>'Services',     'emoji'=>'🛠️', 'desc'=>'List all the real estate services you offer'],
                     ['key'=>'team',         'label'=>'Team',         'emoji'=>'👥', 'desc'=>'Showcase your staff (manage them in the Staff section)'],
+                    ['key'=>'agent',        'label'=>'Agent Spotlight','emoji'=>'🧑‍💼','desc'=>'Highlight the owner/broker with photo and bio (set in Profile settings)'],
                     ['key'=>'testimonials', 'label'=>'Testimonials', 'emoji'=>'💬', 'desc'=>'Build credibility with reviews from satisfied clients'],
                     ['key'=>'faq',          'label'=>'FAQ',          'emoji'=>'❓', 'desc'=>'Answer common questions visitors have about your services'],
                     ['key'=>'contact',      'label'=>'Contact',      'emoji'=>'📞', 'desc'=>'Contact form and office information'],
@@ -615,7 +662,7 @@ $tabs = [
                                 <p class="text-sm text-gray-500">Shows your contact form and office details. Update your phone, email, and address in <a href="?tab=general" class="text-blue-600 hover:underline">General settings</a>.</p>
 
                                 @elseif($key === 'map')
-                                <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="?tab=integrations" class="text-blue-600 hover:underline">Integrations</a>.</p>
+                                <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="?tab=connected" class="text-blue-600 hover:underline">Integrations</a>.</p>
                                 <div class="mt-4 pt-4 border-t border-gray-100">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         Office Photo <span class="text-gray-400 font-normal">(optional)</span>
@@ -728,8 +775,8 @@ $tabs = [
                     </div>
                 </div>
 
-                @elseif($tab === 'messages')
-                {{-- MESSAGES & SMTP TAB --}}
+                @elseif($tab === 'notifications')
+                {{-- NOTIFICATIONS TAB --}}
                 <div class="space-y-6">
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <h2 class="text-lg font-bold text-gray-900 mb-5">Email Notifications</h2>
@@ -759,31 +806,34 @@ $tabs = [
                             <span id="test-email-result" class="text-sm ml-3"></span>
                         </div>
                     </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">AI Chatbot</h2>
-                        <div class="space-y-4">
-                            <label class="flex items-center gap-3 cursor-pointer">
-                                <input type="checkbox" name="chatbot_enabled" value="1" class="rounded" {{ $settings->chatbot_enabled ? 'checked' : '' }}>
-                                <span class="text-sm text-gray-700">Enable chatbot widget on public site</span>
-                            </label>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Personality</label>
-                                <select name="chatbot_personality" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none">
-                                    @foreach(['friendly'=>'Friendly','professional'=>'Professional','concise'=>'Concise'] as $v=>$l)
-                                    <option value="{{ $v }}" {{ ($settings->chatbot_personality ?? 'professional') === $v ? 'selected' : '' }}>{{ $l }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Realtor Bio (provided as context to AI)</label>
-                                <textarea name="chatbot_realtor_bio" rows="4" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none resize-none" placeholder="Describe yourself, your expertise, and your market area...">{{ $settings->chatbot_realtor_bio }}</textarea>
-                            </div>
+                </div>
+
+                @elseif($tab === 'chatbot')
+                {{-- CHATBOT TAB --}}
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-900 mb-5">AI Chatbot</h2>
+                    <div class="space-y-4">
+                        <label class="flex items-center gap-3 cursor-pointer">
+                            <input type="checkbox" name="chatbot_enabled" value="1" class="rounded" {{ $settings->chatbot_enabled ? 'checked' : '' }}>
+                            <span class="text-sm text-gray-700">Enable chatbot widget on public site</span>
+                        </label>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Personality</label>
+                            <select name="chatbot_personality" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none">
+                                @foreach(['friendly'=>'Friendly','professional'=>'Professional','concise'=>'Concise'] as $v=>$l)
+                                <option value="{{ $v }}" {{ ($settings->chatbot_personality ?? 'professional') === $v ? 'selected' : '' }}>{{ $l }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">Realtor Bio (provided as context to AI)</label>
+                            <textarea name="chatbot_realtor_bio" rows="4" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none resize-none" placeholder="Describe yourself, your expertise, and your market area...">{{ $settings->chatbot_realtor_bio }}</textarea>
                         </div>
                     </div>
                 </div>
 
-                @elseif($tab === 'integrations')
-                {{-- THIRD PARTY TAB --}}
+                @elseif($tab === 'connected')
+                {{-- CONNECTED APPS TAB --}}
                 <div class="space-y-6">
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <h2 class="text-lg font-bold text-gray-900 mb-5">Google Maps</h2>
@@ -838,6 +888,142 @@ $tabs = [
                                     <input type="checkbox" name="ga_enabled" value="1" class="rounded" {{ $ga?->is_active ? 'checked' : '' }}>
                                     <span class="text-sm text-gray-700">Enabled</span>
                                 </label>
+                            </div>
+                        </div>
+                    </div>
+                    @php
+                    $fb = $integrations['facebook'] ?? null;
+                    $tw = $integrations['twitter'] ?? null;
+                    $fbConfig = $fb?->config ?? [];
+                    $twConfig = $tw?->config ?? [];
+                    @endphp
+                    {{-- Facebook --}}
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#1877F2">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-900">Facebook</h2>
+                                <p class="text-xs text-gray-500">Auto-post listings to your Facebook Page</p>
+                            </div>
+                            <div class="ml-auto flex items-center gap-2">
+                                <span class="text-sm text-gray-600">Enable</span>
+                                <input type="hidden" name="fb_enabled" value="0">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="fb_enabled" value="1" class="sr-only peer" {{ ($fb?->is_active) ? 'checked' : '' }}>
+                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Page Access Token</label>
+                                    <input type="password" name="fb_access_token" placeholder="{{ $fb ? '••••••••••••••••' : 'Paste your Page Access Token' }}"
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                    <p class="text-xs text-gray-400 mt-1">Leave blank to keep existing token. Get a long-lived token from the Facebook Developer Console.</p>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Facebook Page ID</label>
+                                    <input type="text" name="fb_page_id" value="{{ $fbConfig['page_id'] ?? '' }}"
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="e.g. 123456789012345">
+                                    <p class="text-xs text-gray-400 mt-1">Found in your Facebook Page &rarr; About &rarr; Page ID.</p>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-700 mb-2">Auto-post on:</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="hidden" name="fb_post_new_listing" value="0">
+                                        <input type="checkbox" name="fb_post_new_listing" value="1" class="rounded" {{ !empty($fbConfig['post_on_new_listing']) ? 'checked' : '' }}>
+                                        <span class="text-sm text-gray-700">New Listings</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="hidden" name="fb_post_sold" value="0">
+                                        <input type="checkbox" name="fb_post_sold" value="1" class="rounded" {{ !empty($fbConfig['post_on_sold']) ? 'checked' : '' }}>
+                                        <span class="text-sm text-gray-700">Sold Properties</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
+                                <p class="text-xs text-blue-800 font-medium mb-1">How to get a Page Access Token:</p>
+                                <ol class="text-xs text-blue-700 space-y-1 list-decimal list-inside">
+                                    <li>Go to <strong>developers.facebook.com</strong> &rarr; My Apps &rarr; your app</li>
+                                    <li>Open <strong>Tools &rarr; Graph API Explorer</strong></li>
+                                    <li>Select your Page from the dropdown, grant <code>pages_manage_posts</code> &amp; <code>pages_read_engagement</code></li>
+                                    <li>Click <strong>Generate Access Token</strong> and exchange it for a long-lived token via the token debugger</li>
+                                    <li>For permanent tokens, use a <strong>System User</strong> in Business Manager</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- Twitter / X --}}
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-black">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.734l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-900">X (Twitter)</h2>
+                                <p class="text-xs text-gray-500">Auto-post listings to your X account</p>
+                            </div>
+                            <div class="ml-auto flex items-center gap-2">
+                                <span class="text-sm text-gray-600">Enable</span>
+                                <input type="hidden" name="tw_enabled" value="0">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="tw_enabled" value="1" class="sr-only peer" {{ ($tw?->is_active) ? 'checked' : '' }}>
+                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-black peer-focus:ring-2 peer-focus:ring-gray-400 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">API Key (Consumer Key)</label>
+                                    <input type="password" name="tw_api_key" placeholder="{{ $tw ? '••••••••••••••••' : 'API Key' }}"
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">API Secret (Consumer Secret)</label>
+                                    <input type="password" name="tw_api_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'API Secret' }}"
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Access Token</label>
+                                    <input type="password" name="tw_access_token" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token' }}"
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Access Token Secret</label>
+                                    <input type="password" name="tw_access_token_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token Secret' }}"
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400">Leave fields blank to keep existing credentials. All 4 values are required when setting up for the first time.</p>
+                            <div>
+                                <p class="text-sm font-medium text-gray-700 mb-2">Auto-post on:</p>
+                                <div class="flex flex-wrap gap-4">
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="hidden" name="tw_post_new_listing" value="0">
+                                        <input type="checkbox" name="tw_post_new_listing" value="1" class="rounded" {{ !empty($twConfig['post_on_new_listing']) ? 'checked' : '' }}>
+                                        <span class="text-sm text-gray-700">New Listings</span>
+                                    </label>
+                                    <label class="flex items-center gap-2 cursor-pointer">
+                                        <input type="hidden" name="tw_post_sold" value="0">
+                                        <input type="checkbox" name="tw_post_sold" value="1" class="rounded" {{ !empty($twConfig['post_on_sold']) ? 'checked' : '' }}>
+                                        <span class="text-sm text-gray-700">Sold Properties</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+                                <p class="text-xs text-gray-700 font-medium mb-1">How to get your X API credentials:</p>
+                                <ol class="text-xs text-gray-600 space-y-1 list-decimal list-inside">
+                                    <li>Go to <strong>developer.twitter.com</strong> &rarr; Projects &amp; Apps &rarr; your app</li>
+                                    <li>Under <strong>Keys and Tokens</strong>, generate API Key &amp; Secret</li>
+                                    <li>Generate Access Token &amp; Secret with <strong>Read and Write</strong> permissions</li>
+                                    <li>Ensure your app has <strong>OAuth 1.0a</strong> enabled with Read/Write access</li>
+                                </ol>
                             </div>
                         </div>
                     </div>
@@ -966,148 +1152,6 @@ $tabs = [
                                 <span class="text-sm text-gray-700">Allow search engines to index this site</span>
                             </label>
                             <p class="text-xs text-gray-400 mt-1 ml-7">Uncheck to add a <code>noindex, nofollow</code> robots tag to all pages.</p>
-                        </div>
-                    </div>
-                </div>
-                @elseif($tab === 'social')
-                {{-- SOCIAL MEDIA TAB --}}
-                @php
-                $fb = $integrations['facebook'] ?? null;
-                $tw = $integrations['twitter'] ?? null;
-                $fbConfig = $fb?->config ?? [];
-                $twConfig = $tw?->config ?? [];
-                @endphp
-
-                {{-- Facebook --}}
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#1877F2">
-                            <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-gray-900">Facebook</h2>
-                            <p class="text-xs text-gray-500">Auto-post listings to your Facebook Page</p>
-                        </div>
-                        <div class="ml-auto flex items-center gap-2">
-                            <span class="text-sm text-gray-600">Enable</span>
-                            <input type="hidden" name="fb_enabled" value="0">
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="fb_enabled" value="1" class="sr-only peer" {{ ($fb?->is_active) ? 'checked' : '' }}>
-                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Page Access Token</label>
-                                <input type="password" name="fb_access_token" placeholder="{{ $fb ? '••••••••••••••••' : 'Paste your Page Access Token' }}"
-                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
-                                <p class="text-xs text-gray-400 mt-1">Leave blank to keep existing token. Get a long-lived token from the Facebook Developer Console.</p>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Facebook Page ID</label>
-                                <input type="text" name="fb_page_id" value="{{ $fbConfig['page_id'] ?? '' }}"
-                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="e.g. 123456789012345">
-                                <p class="text-xs text-gray-400 mt-1">Found in your Facebook Page &rarr; About &rarr; Page ID.</p>
-                            </div>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-gray-700 mb-2">Auto-post on:</p>
-                            <div class="flex flex-wrap gap-4">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="hidden" name="fb_post_new_listing" value="0">
-                                    <input type="checkbox" name="fb_post_new_listing" value="1" class="rounded" {{ !empty($fbConfig['post_on_new_listing']) ? 'checked' : '' }}>
-                                    <span class="text-sm text-gray-700">New Listings</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="hidden" name="fb_post_sold" value="0">
-                                    <input type="checkbox" name="fb_post_sold" value="1" class="rounded" {{ !empty($fbConfig['post_on_sold']) ? 'checked' : '' }}>
-                                    <span class="text-sm text-gray-700">Sold Properties</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                            <p class="text-xs text-blue-800 font-medium mb-1">How to get a Page Access Token:</p>
-                            <ol class="text-xs text-blue-700 space-y-1 list-decimal list-inside">
-                                <li>Go to <strong>developers.facebook.com</strong> &rarr; My Apps &rarr; your app</li>
-                                <li>Open <strong>Tools &rarr; Graph API Explorer</strong></li>
-                                <li>Select your Page from the dropdown, grant <code>pages_manage_posts</code> &amp; <code>pages_read_engagement</code></li>
-                                <li>Click <strong>Generate Access Token</strong> and exchange it for a long-lived token via the token debugger</li>
-                                <li>For permanent tokens, use a <strong>System User</strong> in Business Manager</li>
-                            </ol>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Twitter / X --}}
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <div class="flex items-center gap-3 mb-5">
-                        <div class="w-9 h-9 rounded-xl flex items-center justify-center bg-black">
-                            <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.734l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                        </div>
-                        <div>
-                            <h2 class="text-lg font-bold text-gray-900">X (Twitter)</h2>
-                            <p class="text-xs text-gray-500">Auto-post listings to your X account</p>
-                        </div>
-                        <div class="ml-auto flex items-center gap-2">
-                            <span class="text-sm text-gray-600">Enable</span>
-                            <input type="hidden" name="tw_enabled" value="0">
-                            <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="tw_enabled" value="1" class="sr-only peer" {{ ($tw?->is_active) ? 'checked' : '' }}>
-                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-black peer-focus:ring-2 peer-focus:ring-gray-400 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">API Key (Consumer Key)</label>
-                                <input type="password" name="tw_api_key" placeholder="{{ $tw ? '••••••••••••••••' : 'API Key' }}"
-                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">API Secret (Consumer Secret)</label>
-                                <input type="password" name="tw_api_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'API Secret' }}"
-                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Access Token</label>
-                                <input type="password" name="tw_access_token" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token' }}"
-                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Access Token Secret</label>
-                                <input type="password" name="tw_access_token_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token Secret' }}"
-                                    class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-400">Leave fields blank to keep existing credentials. All 4 values are required when setting up for the first time.</p>
-                        <div>
-                            <p class="text-sm font-medium text-gray-700 mb-2">Auto-post on:</p>
-                            <div class="flex flex-wrap gap-4">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="hidden" name="tw_post_new_listing" value="0">
-                                    <input type="checkbox" name="tw_post_new_listing" value="1" class="rounded" {{ !empty($twConfig['post_on_new_listing']) ? 'checked' : '' }}>
-                                    <span class="text-sm text-gray-700">New Listings</span>
-                                </label>
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="hidden" name="tw_post_sold" value="0">
-                                    <input type="checkbox" name="tw_post_sold" value="1" class="rounded" {{ !empty($twConfig['post_on_sold']) ? 'checked' : '' }}>
-                                    <span class="text-sm text-gray-700">Sold Properties</span>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
-                            <p class="text-xs text-gray-700 font-medium mb-1">How to get your X API credentials:</p>
-                            <ol class="text-xs text-gray-600 space-y-1 list-decimal list-inside">
-                                <li>Go to <strong>developer.twitter.com</strong> &rarr; Projects &amp; Apps &rarr; your app</li>
-                                <li>Under <strong>Keys and Tokens</strong>, generate API Key &amp; Secret</li>
-                                <li>Generate Access Token &amp; Secret with <strong>Read and Write</strong> permissions</li>
-                                <li>Ensure your app has <strong>OAuth 1.0a</strong> enabled with Read/Write access</li>
-                            </ol>
                         </div>
                     </div>
                 </div>

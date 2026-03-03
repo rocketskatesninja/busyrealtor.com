@@ -45,7 +45,7 @@ class ChatbotController extends Controller
         // Build system prompt
         $activeProps = Property::where('tenant_id', $tenant->id)
             ->where('listing_status', 'active')->limit(6)->get()
-            ->map(fn($p) => "- {$p->title} at {$p->address_street}, {$p->address_city} (\${$p->price})")->implode("\n");
+            ->map(fn($p) => "- [ID:{$p->id}] {$p->title} at {$p->address_street}, {$p->address_city} (\${$p->price})")->implode("\n");
 
         $sysPrompt  = "You are a friendly real estate assistant for {$tenant->name}. ";
         if ($settings?->chatbot_realtor_bio) {
@@ -58,9 +58,11 @@ class ChatbotController extends Controller
             $sysPrompt .= "Active listings:\n{$activeProps}\n";
         }
         $sysPrompt .= "\nWhen a visitor wants to schedule a showing, consultation, or any appointment, "
-                    . "collect their full name, email address, preferred date, and appointment type "
-                    . "(showing, consultation, virtual, or other). Ask for one missing piece of info at a time. "
-                    . "Once you have the required details, call the book_appointment tool immediately. "
+                    . "collect their full name, email address, preferred date, preferred time, appointment type "
+                    . "(showing, consultation, virtual, or other), and which property they are interested in "
+                    . "(use the listing IDs shown above — if they mention a property by name or address, match it to an ID). "
+                    . "Ask for one missing piece of info at a time. If there are active listings, ask which property. "
+                    . "Once you have all required details, call the book_appointment tool immediately. "
                     . "Do not ask for confirmation before calling it — just book it. Be concise and warm.";
 
         $messages = $history->map(fn($log) => [
@@ -137,10 +139,11 @@ class ChatbotController extends Controller
                     'visitor_phone'    => ['type' => 'string',  'description' => 'Phone number (optional)'],
                     'appointment_type' => ['type' => 'string',  'enum' => ['showing', 'consultation', 'virtual', 'other']],
                     'appointment_date' => ['type' => 'string',  'description' => 'Preferred date, YYYY-MM-DD'],
-                    'property_id'      => ['type' => 'integer', 'description' => 'ID of the property the visitor is interested in, if known'],
+                    'appointment_time' => ['type' => 'string',  'description' => 'Preferred time in HH:MM 24-hour format, e.g. 14:00'],
+                    'property_id'      => ['type' => 'integer', 'description' => 'ID of the property from the listings list (e.g. 3 for [ID:3])'],
                     'notes'            => ['type' => 'string',  'description' => 'Additional notes'],
                 ],
-                'required' => ['visitor_name', 'visitor_email', 'appointment_date', 'appointment_type'],
+                'required' => ['visitor_name', 'visitor_email', 'appointment_date', 'appointment_time', 'appointment_type'],
             ],
         ];
     }
@@ -192,10 +195,11 @@ class ChatbotController extends Controller
                         'visitor_phone'    => ['type' => 'string'],
                         'appointment_type' => ['type' => 'string', 'enum' => ['showing', 'consultation', 'virtual', 'other']],
                         'appointment_date' => ['type' => 'string', 'description' => 'YYYY-MM-DD'],
-                        'property_id'      => ['type' => 'integer', 'description' => 'ID of the property the visitor is interested in, if known'],
+                        'appointment_time' => ['type' => 'string', 'description' => 'Preferred time in HH:MM 24-hour format, e.g. 14:00'],
+                        'property_id'      => ['type' => 'integer', 'description' => 'ID of the property from the listings list (e.g. 3 for [ID:3])'],
                         'notes'            => ['type' => 'string'],
                     ],
-                    'required' => ['visitor_name', 'visitor_email', 'appointment_date', 'appointment_type'],
+                    'required' => ['visitor_name', 'visitor_email', 'appointment_date', 'appointment_time', 'appointment_type'],
                 ],
             ],
         ];
@@ -229,7 +233,7 @@ class ChatbotController extends Controller
                 'visitor_phone'    => $input['visitor_phone']    ?? null,
                 'appointment_type' => $input['appointment_type'] ?? 'showing',
                 'appointment_date' => $date->format('Y-m-d'),
-                'appointment_time' => '10:00:00',
+                'appointment_time' => isset($input['appointment_time']) ? $input['appointment_time'] . ':00' : '10:00:00',
                 'status'           => 'pending',
                 'notes'            => $this->buildNotes($input, $lastMessage),
                 'source'           => 'chatbot',
@@ -245,7 +249,8 @@ class ChatbotController extends Controller
                 $body .= "Email: {$appt->visitor_email}\n";
                 if ($appt->visitor_phone) $body .= "Phone: {$appt->visitor_phone}\n";
                 $body .= "Type:  {$typeLabel}\n";
-                $body .= "Date:  {$date->format('l, F j, Y')}\n";
+                $timeLabel = isset($input['appointment_time']) ? $input['appointment_time'] : '10:00';
+                $body .= "Date:  {$date->format('l, F j, Y')} at {$timeLabel}\n";
                 if ($property) $body .= "Property: {$property->title} — {$property->address_street}, {$property->address_city}\n";
                 if ($appt->notes) $body .= "Notes: {$appt->notes}\n";
                 $body .= "\nView in admin: " . url("/{$tenant->slug}/admin/appointments");
@@ -259,7 +264,8 @@ class ChatbotController extends Controller
                 TenantMailer::send($tenant->id, $staffEmail, "New {$typeLabel} Request — {$appt->visitor_name}", $bodyStaff);
             }
 
-            return "Your {$appt->appointment_type} has been requested for {$date->format('l, F j')}. "
+            $timeLabel = isset($input['appointment_time']) ? ' at ' . $input['appointment_time'] : '';
+            return "Your {$appt->appointment_type} has been requested for {$date->format('l, F j')}{$timeLabel}. "
                  . "{$tenant->name} will reach out to confirm — watch for an email at {$appt->visitor_email}. "
                  . "Is there anything else I can help with?";
 

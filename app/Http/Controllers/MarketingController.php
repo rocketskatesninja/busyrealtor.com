@@ -17,7 +17,8 @@ class MarketingController extends Controller
             }
         }
 
-        return view('marketing.home');
+        $settings = \App\Models\SystemSetting::get();
+        return view('marketing.home', compact('settings'));
     }
 
     public function privacy()

@@ -257,6 +257,25 @@ $" . number_format($property->price) : '') . "
             </div>
         </div>
     </div>
+    @elseif($settings->owner_photo || $settings->owner_bio || $settings->owner_name)
+    <div class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
+        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Your Agent</h3>
+        <div class="flex items-start gap-4">
+            @if($settings->owner_photo)
+            <img src="{{ asset('storage/' . $settings->owner_photo) }}"
+                 alt="{{ $settings->owner_name }}"
+                 class="w-16 h-16 rounded-full object-cover flex-shrink-0">
+            @endif
+            <div>
+                @if($settings->owner_name)
+                <p class="font-semibold text-gray-800 text-base">{{ $settings->owner_name }}</p>
+                @endif
+                @if($settings->owner_bio)
+                <p class="text-sm text-gray-500 mt-2 leading-relaxed">{{ Str::limit($settings->owner_bio, 100) }}</p>
+                @endif
+            </div>
+        </div>
+    </div>
     @endif
 
     {{-- Appointment Booking Form --}}

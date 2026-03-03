@@ -24,7 +24,7 @@ class SettingsController extends Controller
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
-        $tab      = $request->tab ?? 'account';
+        $tab      = $request->tab ?? 'general';
         $legal    = LegalPage::where('tenant_id', $tenant->id)->get()->keyBy('page_type');
         $integrations = Integration::where('tenant_id', $tenant->id)->get()->keyBy('integration_type');
 
@@ -35,27 +35,41 @@ class SettingsController extends Controller
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
-        $tab      = $request->tab ?? 'account';
+        $tab      = $request->tab ?? 'general';
 
         switch ($tab) {
-            case 'account':
-                $request->validate(['name' => 'required|string', 'email' => 'required|email']);
+            case 'general':
                 $settings->update([
-                    'site_title'    => $request->site_title,
-                    'tagline'       => $request->tagline,
-                    'contact_email' => $request->contact_email,
-                    'contact_phone' => $request->contact_phone,
+                    'site_title'       => $request->site_title,
+                    'tagline'          => $request->tagline,
+                    'contact_email'    => $request->contact_email,
+                    'contact_phone'    => $request->contact_phone,
                     'contact_address'  => $request->contact_address,
                     'social_facebook'  => $request->social_facebook,
                     'social_instagram' => $request->social_instagram,
                     'social_twitter'   => $request->social_twitter,
                     'social_linkedin'  => $request->social_linkedin,
                 ]);
+                break;
+
+            case 'profile':
+                $request->validate(['name' => 'required|string', 'email' => 'required|email']);
                 $tenant->update(['name' => $request->name, 'email' => $request->email]);
                 if ($request->filled('new_password')) {
                     $request->validate(['new_password' => 'min:8|confirmed']);
                     Auth::user()->update(['password' => Hash::make($request->new_password)]);
                 }
+                // Owner public profile
+                $profileData = ['owner_name' => $request->owner_name, 'owner_bio' => $request->owner_bio];
+                if ($request->hasFile('owner_photo')) {
+                    if ($settings->owner_photo) Storage::disk('public')->delete($settings->owner_photo);
+                    $dir = "tenants/{$tenant->id}";
+                    Storage::disk('public')->makeDirectory($dir);
+                    $img = Image::read($request->file('owner_photo'))->scale(width: 400);
+                    Storage::disk('public')->put($dir . '/owner.jpg', $img->toJpeg(85));
+                    $profileData['owner_photo'] = $dir . '/owner.jpg';
+                }
+                $settings->update($profileData);
                 break;
 
             case 'appearance':
@@ -84,14 +98,10 @@ class SettingsController extends Controller
                 $settings->update(['dashboard_config' => $request->dashboard_config ?? []]);
                 break;
 
-            case 'messages':
+            case 'notifications':
                 $settings->update([
                     'notify_on_contact'     => $request->boolean('notify_on_contact'),
                     'notify_on_appointment' => $request->boolean('notify_on_appointment'),
-                    'chatbot_enabled'       => $request->boolean('chatbot_enabled'),
-                    'chatbot_personality'   => $request->chatbot_personality,
-                    'chatbot_expiry_hours'  => $request->chatbot_expiry_hours,
-                    'chatbot_realtor_bio'   => $request->chatbot_realtor_bio,
                 ]);
                 // SMTP
                 if ($request->filled('smtp_host')) {
@@ -102,7 +112,15 @@ class SettingsController extends Controller
                 }
                 break;
 
-            case 'integrations':
+            case 'chatbot':
+                $settings->update([
+                    'chatbot_enabled'     => $request->boolean('chatbot_enabled'),
+                    'chatbot_personality' => $request->chatbot_personality,
+                    'chatbot_realtor_bio' => $request->chatbot_realtor_bio,
+                ]);
+                break;
+
+            case 'connected':
                 if ($request->filled('google_maps_key')) {
                     Integration::updateOrCreate(['tenant_id' => $tenant->id, 'integration_type' => 'google_maps'], ['api_key' => $request->google_maps_key, 'is_active' => true]);
                 }
@@ -112,6 +130,40 @@ class SettingsController extends Controller
                 if ($request->filled('ga_measurement_id')) {
                     Integration::updateOrCreate(['tenant_id' => $tenant->id, 'integration_type' => 'google_analytics'], ['api_key' => $request->ga_measurement_id, 'is_active' => $request->boolean('ga_enabled')]);
                 }
+                // Facebook
+                $fbData = [
+                    'config'    => [
+                        'page_id'             => $request->fb_page_id,
+                        'post_on_new_listing' => $request->boolean('fb_post_new_listing'),
+                        'post_on_sold'        => $request->boolean('fb_post_sold'),
+                    ],
+                    'is_active' => $request->boolean('fb_enabled'),
+                ];
+                if ($request->filled('fb_access_token')) {
+                    $fbData['api_key'] = $request->fb_access_token;
+                }
+                Integration::updateOrCreate(
+                    ['tenant_id' => $tenant->id, 'integration_type' => 'facebook'],
+                    $fbData
+                );
+                // Twitter / X
+                $twData = [
+                    'config'    => [
+                        'api_secret'          => $request->tw_api_secret ?: (Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first()?->config['api_secret'] ?? null),
+                        'access_token'        => $request->tw_access_token ?: (Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first()?->config['access_token'] ?? null),
+                        'access_token_secret' => $request->tw_access_token_secret ?: (Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first()?->config['access_token_secret'] ?? null),
+                        'post_on_new_listing' => $request->boolean('tw_post_new_listing'),
+                        'post_on_sold'        => $request->boolean('tw_post_sold'),
+                    ],
+                    'is_active' => $request->boolean('tw_enabled'),
+                ];
+                if ($request->filled('tw_api_key')) {
+                    $twData['api_key'] = $request->tw_api_key;
+                }
+                Integration::updateOrCreate(
+                    ['tenant_id' => $tenant->id, 'integration_type' => 'twitter'],
+                    $twData
+                );
                 break;
 
             case 'homepage':
@@ -182,44 +234,6 @@ class SettingsController extends Controller
                     $path = $request->file('default_share_image')->store($dir, 'public');
                     $settings->update(['default_share_image' => $path]);
                 }
-                break;
-
-            case 'social':
-                // Facebook
-                $fbData = [
-                    'config'    => [
-                        'page_id'             => $request->fb_page_id,
-                        'post_on_new_listing' => $request->boolean('fb_post_new_listing'),
-                        'post_on_sold'        => $request->boolean('fb_post_sold'),
-                    ],
-                    'is_active' => $request->boolean('fb_enabled'),
-                ];
-                if ($request->filled('fb_access_token')) {
-                    $fbData['api_key'] = $request->fb_access_token;
-                }
-                Integration::updateOrCreate(
-                    ['tenant_id' => $tenant->id, 'integration_type' => 'facebook'],
-                    $fbData
-                );
-
-                // Twitter / X
-                $twData = [
-                    'config'    => [
-                        'api_secret'          => $request->tw_api_secret ?: (Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first()?->config['api_secret'] ?? null),
-                        'access_token'        => $request->tw_access_token ?: (Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first()?->config['access_token'] ?? null),
-                        'access_token_secret' => $request->tw_access_token_secret ?: (Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first()?->config['access_token_secret'] ?? null),
-                        'post_on_new_listing' => $request->boolean('tw_post_new_listing'),
-                        'post_on_sold'        => $request->boolean('tw_post_sold'),
-                    ],
-                    'is_active' => $request->boolean('tw_enabled'),
-                ];
-                if ($request->filled('tw_api_key')) {
-                    $twData['api_key'] = $request->tw_api_key;
-                }
-                Integration::updateOrCreate(
-                    ['tenant_id' => $tenant->id, 'integration_type' => 'twitter'],
-                    $twData
-                );
                 break;
 
         }
