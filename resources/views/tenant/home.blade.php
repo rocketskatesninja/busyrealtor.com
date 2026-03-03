@@ -13,12 +13,6 @@
             0%, 100% { transform: translateY(0px); }
             50%       { transform: translateY(-14px); }
         }
-        @keyframes blobDrift {
-            0%   { transform: translate(0,0) scale(1); }
-            33%  { transform: translate(28px,-32px) scale(1.07); }
-            66%  { transform: translate(-18px,22px) scale(0.94); }
-            100% { transform: translate(0,0) scale(1); }
-        }
         @keyframes glowPulseWhite {
             0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.35); }
             50%       { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
@@ -42,10 +36,6 @@
         .hero-d3 { animation-delay: 0.35s; }
         .hero-d4 { animation-delay: 0.5s; }
         .hero-d5 { animation-delay: 0.68s; }
-        /* Background blobs */
-        .blob   { animation: blobDrift 11s ease-in-out infinite; }
-        .blob-2 { animation: blobDrift 15s ease-in-out infinite reverse; animation-delay: -4s; }
-        .blob-3 { animation: blobDrift 13s ease-in-out infinite; animation-delay: -7s; }
         /* Floating */
         .float       { animation: bobFloat 4.5s ease-in-out infinite; }
         .float-delay { animation: bobFloat 4.5s ease-in-out infinite; animation-delay: -2.25s; }
@@ -65,6 +55,11 @@
         .reveal-left.is-visible,
         .reveal-right.is-visible,
         .reveal-scale.is-visible { opacity: 1; transform: none; }
+        /* Dot-grid hero texture */
+        .hero-dot-grid {
+            background-image: radial-gradient(circle, rgba(255,255,255,0.13) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
 @endsection
 
 @php
@@ -145,17 +140,36 @@ $iconPaths = [
         }
     @endphp
     style="{{ $heroBg }}">
-    <div class="absolute inset-0 bg-black/40"></div>
-    <div class="relative z-10 text-center px-4 max-w-5xl mx-auto">
-        <h1 class="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg hero-animate hero-d1">
+
+    {{-- Dark overlay to dim the background image --}}
+    <div class="absolute inset-0 bg-black/45 pointer-events-none"></div>
+
+    {{-- Dot-grid texture --}}
+    <div class="absolute inset-0 hero-dot-grid pointer-events-none"></div>
+
+    {{-- Main content --}}
+    <div class="relative z-10 text-center px-4 max-w-5xl mx-auto py-24">
+
+        {{-- Trust badge --}}
+        <div class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur border border-white/20 rounded-full px-5 py-2 text-white/90 text-sm font-medium mb-8 hero-animate hero-d1">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+            </span>
+            Trusted Real Estate Experts
+        </div>
+
+        {{-- Headline --}}
+        <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl hero-animate hero-d2">
             {{ $settings->hero_title ?? 'Find Your Dream Home' }}
         </h1>
-        <p class="text-xl md:text-2xl text-white/90 mb-10 max-w-2xl mx-auto hero-animate hero-d2">
+
+        {{-- Subtitle --}}
+        <p class="text-xl md:text-2xl text-white/85 mb-10 max-w-2xl mx-auto leading-relaxed hero-animate hero-d3">
             {{ $settings->hero_subtitle ?? 'Professional real estate services to help you buy, sell, or rent the perfect property.' }}
         </p>
+
         @php
-            // Resolve a stored CTA path to an absolute tenant URL.
-            // If the path is relative (starts with /) and doesn't already include the account slug, prepend it.
             $resolveCta = function(string $link) use ($account): string {
                 if ($link === '' || str_starts_with($link, 'http') || str_starts_with($link, '//') || str_starts_with($link, '#')) {
                     return $link;
@@ -167,25 +181,28 @@ $iconPaths = [
                 return $link;
             };
         @endphp
-        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12 hero-animate hero-d3">
+
+        {{-- CTAs --}}
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10 hero-animate hero-d4">
             <a href="{{ $settings->cta_primary_link ? $resolveCta($settings->cta_primary_link) : route('tenant.gallery', $account) }}"
-               class="btn-primary px-8 py-4 rounded-xl font-semibold text-lg shadow-xl hover:opacity-90 transition">
+               class="btn-primary btn-glow-blue px-9 py-4 rounded-xl font-bold text-lg shadow-2xl hover:opacity-90 transition-all duration-200 hover:scale-105">
                 {{ $settings->cta_primary_text ?? 'View Listings' }}
             </a>
             @if($settings->cta_secondary_text)
             <a href="{{ $settings->cta_secondary_link ? $resolveCta($settings->cta_secondary_link) : route('tenant.map', $account) }}"
-               class="bg-white/20 backdrop-blur text-white border border-white/30 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/30 transition">
+               class="bg-white/15 backdrop-blur-sm text-white border border-white/30 px-9 py-4 rounded-xl font-bold text-lg hover:bg-white/25 transition-all duration-200 hover:scale-105">
                 {{ $settings->cta_secondary_text }}
             </a>
             @else
             <a href="{{ route('tenant.map', $account) }}"
-               class="bg-white/20 backdrop-blur text-white border border-white/30 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white/30 transition">
+               class="bg-white/15 backdrop-blur-sm text-white border border-white/30 px-9 py-4 rounded-xl font-bold text-lg hover:bg-white/25 transition-all duration-200 hover:scale-105">
                 Map Search
             </a>
             @endif
         </div>
+
         {{-- Search form --}}
-        <div class="bg-white/95 backdrop-blur rounded-2xl p-4 shadow-2xl max-w-3xl mx-auto hero-animate hero-d4">
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl max-w-3xl mx-auto hero-animate hero-d5 ring-1 ring-white/10">
             <form action="{{ route('tenant.gallery', $account) }}" method="GET" class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:items-end">
                 <div class="flex-1 sm:min-w-40">
                     <label class="block text-xs font-medium text-gray-600 mb-1">Search</label>
@@ -221,6 +238,31 @@ $iconPaths = [
                 </button>
             </form>
         </div>
+
+        {{-- Social proof row --}}
+        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-7 text-white/65 text-sm hero-animate hero-d5" style="animation-delay:0.85s">
+            <div class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <span>Locally Owned &amp; Operated</span>
+            </div>
+            <div class="hidden sm:block w-px h-4 bg-white/20"></div>
+            <span class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                Licensed &amp; Insured
+            </span>
+            <div class="hidden sm:block w-px h-4 bg-white/20"></div>
+            <span class="flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Same-Day Response
+            </span>
+        </div>
+    </div>
+
+    {{-- Scroll cue --}}
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-white/35 select-none pointer-events-none">
+        <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
+        </svg>
     </div>
 </section>
 
@@ -362,9 +404,10 @@ $iconPaths = [
                 <h3 class="font-bold text-gray-800 text-lg mb-1">{{ $member->name }}</h3>
                 @if($member->title) <p class="text-sm font-medium mb-2" style="color: var(--primary)">{{ $member->title }}</p> @endif
                 @if($member->bio) <p class="text-gray-500 text-sm leading-relaxed mb-4">{{ Str::limit($member->bio, 120) }}</p> @endif
-                @if($member->accepts_appointments)
-                <a href="#contact" class="btn-primary px-5 py-2 rounded-lg text-sm font-medium inline-block hover:opacity-90 transition">Contact</a>
-                @endif
+                <a href="{{ route('tenant.gallery', $account) }}" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium border transition hover:opacity-90" style="color: var(--primary); border-color: var(--primary)">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    View Listings
+                </a>
             </div>
             @endforeach
         </div>
