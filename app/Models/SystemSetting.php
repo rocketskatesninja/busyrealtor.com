@@ -17,6 +17,7 @@ class SystemSetting extends Model
         'stripe_pro_price_id',
         'starter_price',
         'pro_price',
+        'og_image',
     ];
 
     protected $casts = [

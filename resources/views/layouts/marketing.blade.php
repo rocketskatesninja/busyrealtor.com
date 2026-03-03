@@ -5,6 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'BusyRealtor — Real Estate Websites for Modern Agents')</title>
     <meta name="description" content="@yield('description', 'Launch a stunning real estate website with AI chatbot, interactive property map, and powerful admin tools — in minutes.')">
+    <link rel="canonical" href="{{ url()->current() }}">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <meta name="robots" content="index, follow">
+
+    {{-- Open Graph --}}
+    <meta property="og:type"        content="website">
+    <meta property="og:url"         content="{{ url()->current() }}">
+    <meta property="og:title"       content="@yield('title', 'BusyRealtor — Real Estate Websites for Modern Agents')">
+    <meta property="og:description" content="@yield('description', 'Launch a stunning real estate website with AI chatbot, interactive property map, and powerful admin tools — in minutes.')">
+    <meta property="og:site_name"   content="BusyRealtor">
+    <meta property="og:locale"      content="en_US">
+    @if(!empty($settings->og_image))
+    <meta property="og:image" content="{{ asset('storage/' . $settings->og_image) }}">
+    <meta name="twitter:image"  content="{{ asset('storage/' . $settings->og_image) }}">
+    @endif
+
+    {{-- Twitter Card --}}
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="@yield('title', 'BusyRealtor — Real Estate Websites for Modern Agents')">
+    <meta name="twitter:description" content="@yield('description', 'Launch a stunning real estate website with AI chatbot, interactive property map, and powerful admin tools — in minutes.')">
     <script>
         (function() {
             if (window.matchMedia('(prefers-color-scheme: dark)').matches) {

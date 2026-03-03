@@ -38,6 +38,17 @@ class AppServiceProvider extends ServiceProvider
             \App\Listeners\HandleStripeWebhook::class,
         );
 
+        View::composer('layouts.tenant', function ($view) {
+            $tenant = null;
+            try { $tenant = app('tenant'); } catch (\Exception $e) {}
+            if (!$tenant) return;
+            $ga = \App\Models\Integration::where('tenant_id', $tenant->id)
+                ->where('integration_type', 'google_analytics')
+                ->where('is_active', true)
+                ->first();
+            $view->with('ga', $ga);
+        });
+
         View::composer('layouts.admin', function ($view) {
             $tenant = null;
             try { $tenant = app('tenant'); } catch (\Exception $e) {}

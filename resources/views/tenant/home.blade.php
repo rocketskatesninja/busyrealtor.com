@@ -2,6 +2,20 @@
 @section('show_footer')@endsection
 @section('title', $settings->site_title ?? 'Home')
 
+@section('head')
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@type": "RealEstateAgent",
+  "name": {!! json_encode($settings->site_title ?? '') !!},
+  "url": "{{ url('/' . $tenant->slug . '/') }}"
+  @if(!empty($settings->logo_image))
+  ,"logo": "{{ asset('storage/' . $settings->logo_image) }}"
+  @endif
+}
+</script>
+@endsection
+
 @section('styles')
 
         /* ═══════════════════ ANIMATIONS ═══════════════════ */

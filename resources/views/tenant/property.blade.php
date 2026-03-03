@@ -1,6 +1,8 @@
 @extends('layouts.tenant')
 @section('hide_header')@endsection
 @section('title', $property->title . ' — ' . ($settings->site_title ?? 'BusyRealtor'))
+@section('meta_description', Str::limit(strip_tags($property->description ?? $settings->site_description ?? ''), 155))
+@section('og_image', $property->images->first() ? asset('storage/' . $property->images->first()->image_url) : '')
 
 @section('head')
 @php
@@ -41,6 +43,41 @@ function initPropertyMap() {
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key={{ $mapsKey }}&callback=initPropertyMap&loading=async&libraries=marker"></script>
 @endif
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@type": "RealEstateListing",
+  "name": {!! json_encode($property->title ?? $property->address_street) !!},
+  "url": "{{ url()->current() }}",
+  "description": {!! json_encode(Str::limit(strip_tags($property->description ?? ''), 200)) !!},
+  "address": {
+    "@@type": "PostalAddress",
+    "streetAddress": {!! json_encode($property->address_street) !!},
+    "addressLocality": {!! json_encode($property->address_city) !!},
+    "addressRegion": {!! json_encode($property->address_state) !!},
+    "postalCode": {!! json_encode($property->address_zip) !!}
+  },
+  "numberOfRooms": {{ $property->bedrooms ?? 'null' }},
+  "numberOfBathroomsTotal": {{ $property->bathrooms ?? 'null' }}
+  @if($property->square_feet)
+  ,"floorSize": {
+    "@@type": "QuantitativeValue",
+    "value": {{ $property->square_feet }},
+    "unitCode": "FTK"
+  }
+  @endif
+  @if($property->price)
+  ,"offers": {
+    "@@type": "Offer",
+    "price": "{{ $property->price }}",
+    "priceCurrency": "USD"
+  }
+  @endif
+  @if($property->images->first())
+  ,"image": {!! json_encode(asset('storage/' . $property->images->first()->image_url)) !!}
+  @endif
+}
+</script>
 @endsection
 
 
@@ -422,25 +459,14 @@ $" . number_format($property->price) : '') . "
         <h2 class="text-xl font-semibold text-gray-800 mb-1">Interested in This Property?</h2>
         <p class="text-sm text-gray-500 mb-6">Contact us directly to schedule a showing or ask any questions.</p>
         <div class="flex flex-col sm:flex-row gap-3">
-            @if($settings->contact_phone)
-            <a href="tel:{{ $settings->contact_phone }}"
+            <a href="{{ route('tenant.contact', $account) }}"
                class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm text-white transition hover:opacity-90"
                style="background-color: var(--primary)">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                </svg>
-                {{ $settings->contact_phone }}
-            </a>
-            @endif
-            @if($settings->contact_email)
-            <a href="mailto:{{ $settings->contact_email }}?subject=Inquiry: {{ $property->title }}"
-               class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm border border-gray-300 text-gray-700 hover:bg-gray-50 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
                 </svg>
-                Email Us
+                Contact Us
             </a>
-            @endif
         </div>
         @endif
     </div>

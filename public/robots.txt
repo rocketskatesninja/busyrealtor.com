@@ -1,2 +1,8 @@
 User-agent: *
-Disallow:
+Disallow: /super-admin/
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /*/admin/
+
+Sitemap: https://busyrealtor.com/sitemap.xml

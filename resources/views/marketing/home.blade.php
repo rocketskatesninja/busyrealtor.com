@@ -1,5 +1,46 @@
 @extends('layouts.marketing')
 @section('title', 'BusyRealtor — Real Estate Websites for Modern Agents')
+@section('description', 'Real estate website builder for agents & brokers. Launch in minutes with AI chatbot, property listings, interactive map, and appointment booking. 14-day free trial.')
+
+@section('head')
+<script type="application/ld+json">
+{
+  "@@context": "https://schema.org",
+  "@@graph": [
+    {
+      "@@type": "SoftwareApplication",
+      "name": "BusyRealtor",
+      "url": "https://busyrealtor.com",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "description": "Real estate website builder for agents and brokers. Launch a beautiful website with AI chatbot, property listings, interactive map, and appointment booking.",
+      "offers": [
+        {
+          "@@type": "Offer",
+          "name": "Starter",
+          "price": "{{ number_format($settings->starter_price ?? 29, 2) }}",
+          "priceCurrency": "USD",
+          "description": "Up to 10 active listings, public website, contact forms, admin dashboard, custom branding."
+        },
+        {
+          "@@type": "Offer",
+          "name": "Pro",
+          "price": "{{ number_format($settings->pro_price ?? 59, 2) }}",
+          "priceCurrency": "USD",
+          "description": "Unlimited listings, AI chatbot, appointment scheduling, Google Maps & Analytics, staff management."
+        }
+      ]
+    },
+    {
+      "@@type": "Organization",
+      "name": "BusyRealtor",
+      "url": "https://busyrealtor.com",
+      "description": "SaaS platform providing real estate websites for agents and brokers."
+    }
+  ]
+}
+</script>
+@endsection
 
 @section('content')
 
@@ -58,7 +99,7 @@
                     A Punchlist Labs Product
                 </div>
                 <h1 class="text-5xl sm:text-6xl font-black text-white leading-tight mb-6 hero-animate hero-d2">
-                    Your Real Estate<br>Business,<br>
+                    Your Real Estate <br>Business, <br>
                     <span style="background: linear-gradient(135deg, #fdba74, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Online in Minutes</span>
                 </h1>
                 <p class="text-blue-100 text-xl leading-relaxed mb-8 max-w-lg hero-animate hero-d3">
@@ -299,12 +340,12 @@
                     </div>
                     <span class="text-white font-bold text-lg">BusyRealtor</span>
                 </div>
-                <p class="text-sm leading-relaxed max-w-xs">The complete real estate website platform for modern agents. Built by <a href="https://punchlistlabs.com" class="text-orange-400 hover:text-orange-300 transition-colors">Punchlist Labs</a>.</p>
+                <p class="text-sm leading-relaxed max-w-xs">The complete real estate website platform for modern agents. Built by <a href="https://punchlistlabs.com" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 transition-colors">Punchlist Labs</a>.</p>
                 <div class="mt-4 text-xs text-gray-500">
                     Sister products:
-                    <a href="https://routepilot.pro" class="text-orange-400 hover:text-orange-300 transition-colors ml-1">RoutePilot</a>
+                    <a href="https://routepilot.pro" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 transition-colors ml-1">RoutePilot</a>
                     <span class="mx-1">·</span>
-                    <a href="https://punchlistify.com" class="text-orange-400 hover:text-orange-300 transition-colors">Punchlistify</a>
+                    <a href="https://punchlistify.com" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 transition-colors">Punchlistify</a>
                 </div>
             </div>
             <div>

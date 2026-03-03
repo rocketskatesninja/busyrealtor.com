@@ -9,7 +9,7 @@
         <p class="text-gray-400 text-sm">Global controls for the BusyRealtor platform.</p>
     </div>
 
-    <form method="POST" action="{{ route('super.settings.update') }}">
+    <form method="POST" action="{{ route('super.settings.update') }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -185,6 +185,34 @@
                 </div>
                 @endif
 
+            </div>
+        </div>
+
+        {{-- Marketing --}}
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-700">
+                <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/></svg>
+                    Marketing
+                </h2>
+                <p class="text-gray-400 text-sm mt-1">Assets used on the public marketing site.</p>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">
+                        OG / Social Share Image
+                        <span class="text-gray-500 font-normal text-xs ml-1">(og:image for busyrealtor.com)</span>
+                    </label>
+                    @if($settings->og_image)
+                    <div class="mb-2">
+                        <img src="{{ asset('storage/' . $settings->og_image) }}"
+                             alt="Current OG image" class="h-20 rounded border border-gray-600 object-cover bg-gray-900">
+                    </div>
+                    @endif
+                    <input type="file" name="og_image" accept="image/jpeg,image/png,image/webp"
+                           class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-300 px-3 py-2 text-sm file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-medium file:bg-gray-600 file:text-gray-200 hover:file:bg-gray-500 cursor-pointer">
+                    <p class="text-gray-500 text-xs mt-1">Shown when busyrealtor.com is shared on social media. Recommended: 1200×630 px, JPEG or PNG, max 2 MB.</p>
+                </div>
             </div>
         </div>
 

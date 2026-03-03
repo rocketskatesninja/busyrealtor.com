@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SystemSettingsController extends Controller
 {
@@ -25,6 +26,7 @@ class SystemSettingsController extends Controller
             'stripe_pro_price_id'     => ['nullable', 'regex:/^price_/'],
             'starter_price'           => 'nullable|numeric|min:0',
             'pro_price'               => 'nullable|numeric|min:0',
+            'og_image'                => 'nullable|image|mimes:jpeg,png,webp|max:2048',
         ], [
             'stripe_key.regex'              => 'Publishable key must start with pk_live_ or pk_test_',
             'stripe_secret.regex'           => 'Secret key must start with sk_live_ or sk_test_',
@@ -54,7 +56,15 @@ class SystemSettingsController extends Controller
             $data['stripe_webhook_secret'] = $request->stripe_webhook_secret;
         }
 
-        SystemSetting::get()->update($data);
+        $settings = SystemSetting::get();
+
+        if ($request->hasFile('og_image')) {
+            if ($settings->og_image) Storage::disk('public')->delete($settings->og_image);
+            Storage::disk('public')->makeDirectory('system');
+            $data['og_image'] = $request->file('og_image')->store('system', 'public');
+        }
+
+        $settings->update($data);
 
         return redirect()->route('super.settings')->with('success', 'Settings saved.');
     }

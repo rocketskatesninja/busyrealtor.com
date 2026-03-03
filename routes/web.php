@@ -34,6 +34,7 @@ use App\Http\Controllers\MarketingController;
 Route::get('/', [MarketingController::class, 'index'])->name('root');
 Route::get('/privacy-policy', [MarketingController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [MarketingController::class, 'terms'])->name('terms');
+Route::get('/sitemap.xml', [MarketingController::class, 'sitemap'])->name('sitemap');
 
 // Auth routes (no tenant)
 Route::middleware('guest')->group(function () {

@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', $settings->site_title ?? 'BusyRealtor')</title>
     <meta name="description" content="@yield('meta_description', $settings->site_description ?? '')">
+    <link rel="canonical" href="{{ url()->current() }}">
 
     {{-- Robots --}}
     @if(!($settings->search_engine_visibility ?? true))
@@ -21,16 +22,20 @@
     <meta property="og:url"         content="{{ url()->current() }}">
     <meta property="og:title"       content="@yield('title', $settings->site_title ?? 'BusyRealtor')">
     <meta property="og:description" content="@yield('meta_description', $settings->site_description ?? '')">
-    @if(!empty($settings->default_share_image))
-    <meta property="og:image" content="{{ Storage::disk('public')->url($settings->default_share_image) }}">
+    @php
+        $ogImage = trim($__env->yieldContent('og_image'))
+            ?: ($settings->default_share_image ? Storage::disk('public')->url($settings->default_share_image) : null);
+    @endphp
+    @if($ogImage)
+    <meta property="og:image" content="{{ $ogImage }}">
     @endif
 
     {{-- Twitter Card --}}
     <meta name="twitter:card"        content="summary_large_image">
     <meta name="twitter:title"       content="@yield('title', $settings->site_title ?? 'BusyRealtor')">
     <meta name="twitter:description" content="@yield('meta_description', $settings->site_description ?? '')">
-    @if(!empty($settings->default_share_image))
-    <meta name="twitter:image" content="{{ Storage::disk('public')->url($settings->default_share_image) }}">
+    @if($ogImage)
+    <meta name="twitter:image" content="{{ $ogImage }}">
     @endif
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <script>
@@ -190,6 +195,17 @@
         @yield('styles')
     </style>
     @yield('head')
+    @stack('head')
+    @if(!empty($ga) && $ga->api_key)
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga->api_key }}"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', '{{ $ga->api_key }}');
+    </script>
+    @endif
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
 

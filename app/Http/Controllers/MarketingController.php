@@ -23,11 +23,18 @@ class MarketingController extends Controller
 
     public function privacy()
     {
-        return view('marketing.privacy');
+        $settings = \App\Models\SystemSetting::get();
+        return view('marketing.privacy', compact('settings'));
     }
 
     public function terms()
     {
-        return view('marketing.terms');
+        $settings = \App\Models\SystemSetting::get();
+        return view('marketing.terms', compact('settings'));
+    }
+
+    public function sitemap()
+    {
+        return response()->view('marketing.sitemap')->header('Content-Type', 'text/xml');
     }
 }
