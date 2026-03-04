@@ -2,6 +2,9 @@
 @section('title', 'Settings')
 @section('page-subtitle', 'Configure your site, branding, and integrations')
 @section('head')
+<style>
+@keyframes hpFadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+</style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Nunito:wght@700&family=DM+Sans:wght@700&family=Urbanist:wght@700&family=Outfit:wght@700&family=Lato:wght@700&family=Open+Sans:wght@700&family=Roboto:wght@700&family=Oswald:wght@700&family=Playfair+Display:wght@700&family=Merriweather:wght@700&family=Lora:wght@700&family=Cormorant+Garamond:wght@700&family=EB+Garamond:wght@700&family=Libre+Baskerville:wght@700&family=Cinzel:wght@700&family=Bebas+Neue&family=Anton&family=Abril+Fatface&family=Righteous&display=swap" rel="stylesheet">
 @endsection
 @section('content')
@@ -169,15 +172,6 @@ $tabs = array_merge(...array_values($groups));
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Appearance</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Logo</label>
-                            <div class="flex items-center gap-3">
-                                @if($settings->logo_image)
-                                <img src="{{ asset('storage/'.$settings->logo_image) }}" class="h-10 w-auto rounded object-contain shrink-0 border border-gray-100 p-1 bg-white">
-                                @endif
-                                <input type="file" name="logo" accept="image/*" class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none">
-                            </div>
-                        </div>
-                        <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
                             <div class="flex gap-2 items-center">
                                 <input type="color" name="primary_color" value="{{ $settings->primary_color ?? '#3B82F6' }}" class="w-12 h-10 border-0 rounded cursor-pointer">
@@ -194,9 +188,9 @@ $tabs = array_merge(...array_values($groups));
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Header Display</label>
                             <select name="header_display_mode" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
-                                <option value="both" {{ ($settings->header_display_mode ?? 'both') === 'both' ? 'selected' : '' }}>Logo + Text</option>
-                                <option value="text_only" {{ ($settings->header_display_mode ?? '') === 'text_only' ? 'selected' : '' }}>Text Only</option>
-                                <option value="logo_only" {{ ($settings->header_display_mode ?? '') === 'logo_only' ? 'selected' : '' }}>Logo Only</option>
+                                <option value="favicon_only" {{ ($settings->header_display_mode ?? '') === 'favicon_only' ? 'selected' : '' }}>Icon Only</option>
+                                <option value="text_only" {{ ($settings->header_display_mode ?? '') === 'text_only' ? 'selected' : '' }}>Title Only</option>
+                                <option value="favicon_text" {{ ($settings->header_display_mode ?? 'favicon_text') === 'favicon_text' ? 'selected' : '' }}>Icon + Title</option>
                             </select>
                         </div>
                         <div>
@@ -315,14 +309,71 @@ $tabs = array_merge(...array_values($groups));
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Dark Mode</label>
-                            <label class="flex items-center gap-3 cursor-pointer mt-2">
-                                <input type="hidden" name="dark_mode_enabled" value="0">
-                                <input type="checkbox" name="dark_mode_enabled" value="1" class="rounded" {{ $settings->dark_mode_enabled ? 'checked' : '' }}>
-                                <span class="text-sm text-gray-600">Enable dark mode toggle</span>
-                            </label>
+                        {{-- Favicon & App Icon --}}
+                        @php
+                        $primaryColor = $settings->primary_color ?? '#3B82F6';
+                        $faviconGroups = [
+                            'Filled' => [
+                            'house' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="PCOLOR" d="M16 3 1 16h4v13h8v-8h6v8h8V16h4z"/></svg>',
+                            'key' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="10" cy="13" r="7" fill="none" stroke="PCOLOR" stroke-width="3.5"/><rect x="16" y="11.5" width="15" height="3" rx="1" fill="PCOLOR"/><rect x="24" y="14.5" width="3" height="5" rx="1" fill="PCOLOR"/><rect x="18.5" y="14.5" width="3" height="4" rx="1" fill="PCOLOR"/></svg>',
+                            'pin' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="PCOLOR" d="M16 1C9.9 1 5 5.9 5 12c0 8.5 11 19 11 19s11-10.5 11-19c0-6.1-4.9-11-11-11zm0 15a4 4 0 110-8 4 4 0 010 8z"/></svg>',
+                            'building' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="3" y="6" width="14" height="25" rx="1" fill="PCOLOR"/><rect x="19" y="12" width="10" height="19" rx="1" fill="PCOLOR" opacity=".75"/><rect x="6" y="10" width="3" height="3" rx=".5" fill="white" opacity=".8"/><rect x="11" y="10" width="3" height="3" rx=".5" fill="white" opacity=".8"/><rect x="6" y="16" width="3" height="3" rx=".5" fill="white" opacity=".8"/><rect x="11" y="16" width="3" height="3" rx=".5" fill="white" opacity=".8"/><rect x="22" y="16" width="4" height="3" rx=".5" fill="white" opacity=".8"/><rect x="6" y="22" width="3" height="3" rx=".5" fill="white" opacity=".8"/><rect x="11" y="22" width="3" height="3" rx=".5" fill="white" opacity=".8"/><rect x="22" y="22" width="4" height="3" rx=".5" fill="white" opacity=".8"/></svg>',
+                            'shield' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="PCOLOR" d="M16 2 3 8v9c0 7.8 5.6 13 13 15 7.4-2 13-7.2 13-15V8z"/><polyline points="10,16 14,20 22,12" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                            'star' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon fill="PCOLOR" points="16,2 20.2,11.5 31,13 23.5,20.3 25.4,31 16,26 6.6,31 8.5,20.3 1,13 11.8,11.5"/></svg>',
+                            'search' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="13" cy="13" r="8" fill="none" stroke="PCOLOR" stroke-width="3.5"/><line x1="19.5" y1="19.5" x2="28" y2="28" stroke="PCOLOR" stroke-width="3.5" stroke-linecap="round"/></svg>',
+                            'door' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="6" y="2" width="20" height="28" rx="1.5" fill="PCOLOR" opacity=".3"/><rect x="8" y="2" width="16" height="26" rx="1" fill="PCOLOR"/><circle cx="20.5" cy="16" r="2" fill="white" opacity=".85"/></svg>',
+                            'chart' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="2" y="16" width="6" height="14" rx="1" fill="PCOLOR"/><rect x="10" y="10" width="6" height="20" rx="1" fill="PCOLOR"/><rect x="18" y="5" width="6" height="25" rx="1" fill="PCOLOR"/><rect x="26" y="12" width="4" height="18" rx="1" fill="PCOLOR" opacity=".75"/></svg>',
+                            'leaf' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="PCOLOR" d="M6 26C7 14 16 5 28 4 27 16 18 25 6 26z"/><path fill="none" stroke="white" stroke-width="1.5" stroke-linecap="round" opacity=".6" d="M7 25Q18 14 27 5"/></svg>',
+                            'fence' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="PCOLOR" d="M2 9l3-5 3 5v15H2zM10 9l3-5 3 5v15h-6zM18 9l3-5 3 5v15h-6zM25 9l3-5 3 5v15h-6z"/><rect x="1" y="13" width="30" height="3" rx="1" fill="PCOLOR"/><rect x="1" y="19" width="30" height="3" rx="1" fill="PCOLOR"/></svg>',
+                            'garage' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="PCOLOR" d="M16 2L3 11v19h26V11z"/><rect x="8" y="15" width="16" height="15" rx="1" fill="white" opacity=".9"/><rect x="8" y="18.5" width="16" height="2" rx=".5" fill="PCOLOR" opacity=".35"/><rect x="8" y="22.5" width="16" height="2" rx=".5" fill="PCOLOR" opacity=".35"/><rect x="8" y="26.5" width="16" height="2" rx=".5" fill="PCOLOR" opacity=".35"/></svg>',
+                            'sofa' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="4" y="10" width="24" height="11" rx="2" fill="PCOLOR"/><rect x="1" y="17" width="30" height="8" rx="2" fill="PCOLOR" opacity=".8"/><rect x="1" y="14" width="5" height="11" rx="2" fill="PCOLOR"/><rect x="26" y="14" width="5" height="11" rx="2" fill="PCOLOR"/><rect x="5" y="25" width="3" height="5" rx="1" fill="PCOLOR"/><rect x="24" y="25" width="3" height="5" rx="1" fill="PCOLOR"/></svg>',
+                            'compass' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="none" stroke="PCOLOR" stroke-width="2.5"/><polygon fill="PCOLOR" points="16,5 19,16 16,14 13,16"/><polygon fill="PCOLOR" points="16,27 13,16 16,18 19,16" opacity=".35"/><circle cx="16" cy="16" r="2" fill="PCOLOR"/></svg>',
+                            ],
+                            'Outline' => [
+                            'house_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="PCOLOR" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" d="M16 4 2 15.5h3V28h8v-7h6v7h8V15.5h3z"/></svg>',
+                            'key_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="10" cy="13" r="7" fill="none" stroke="PCOLOR" stroke-width="2"/><line x1="17" y1="13" x2="30" y2="13" stroke="PCOLOR" stroke-width="2" stroke-linecap="round"/><line x1="26" y1="13" x2="26" y2="18" stroke="PCOLOR" stroke-width="2" stroke-linecap="round"/><line x1="22" y1="13" x2="22" y2="17" stroke="PCOLOR" stroke-width="2" stroke-linecap="round"/></svg>',
+                            'pin_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="PCOLOR" stroke-width="2" stroke-linejoin="round" d="M16 2C10 2 5 7 5 13c0 8.5 11 18 11 18s11-9.5 11-18c0-6-5-11-11-11z"/><circle cx="16" cy="13" r="3.5" fill="none" stroke="PCOLOR" stroke-width="2"/></svg>',
+                            'building_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="3" y="6" width="14" height="25" rx="1" fill="none" stroke="PCOLOR" stroke-width="2"/><rect x="19" y="12" width="10" height="19" rx="1" fill="none" stroke="PCOLOR" stroke-width="2"/><rect x="6" y="10" width="3" height="3" rx=".5" fill="PCOLOR"/><rect x="11" y="10" width="3" height="3" rx=".5" fill="PCOLOR"/><rect x="6" y="16" width="3" height="3" rx=".5" fill="PCOLOR"/><rect x="11" y="16" width="3" height="3" rx=".5" fill="PCOLOR"/><rect x="22" y="16" width="4" height="3" rx=".5" fill="PCOLOR"/></svg>',
+                            'shield_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="PCOLOR" stroke-width="2" stroke-linejoin="round" d="M16 3 3 9v9c0 7.8 5.6 12 13 14 7.4-2 13-6.2 13-14V9z"/><polyline points="10,16 14,20 22,12" fill="none" stroke="PCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+                            'star_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><polygon fill="none" stroke="PCOLOR" stroke-width="2" stroke-linejoin="round" points="16,2 20.2,11.5 31,13 23.5,20.3 25.4,31 16,26 6.6,31 8.5,20.3 1,13 11.8,11.5"/></svg>',
+                            'search_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="13" cy="13" r="8" fill="none" stroke="PCOLOR" stroke-width="2.5"/><line x1="19.5" y1="19.5" x2="28" y2="28" stroke="PCOLOR" stroke-width="2.5" stroke-linecap="round"/></svg>',
+                            'door_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="7" y="2" width="18" height="28" rx="1.5" fill="none" stroke="PCOLOR" stroke-width="2"/><circle cx="20.5" cy="16" r="2" fill="PCOLOR"/></svg>',
+                            'chart_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="2" y="16" width="6" height="14" rx="1" fill="none" stroke="PCOLOR" stroke-width="2"/><rect x="10" y="10" width="6" height="20" rx="1" fill="none" stroke="PCOLOR" stroke-width="2"/><rect x="18" y="5" width="6" height="25" rx="1" fill="none" stroke="PCOLOR" stroke-width="2"/><rect x="26" y="12" width="4" height="18" rx="1" fill="none" stroke="PCOLOR" stroke-width="2"/></svg>',
+                            'leaf_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="PCOLOR" stroke-width="2" stroke-linejoin="round" d="M6 26C7 14 16 5 28 4 27 16 18 25 6 26z"/><path fill="none" stroke="PCOLOR" stroke-width="1.5" stroke-linecap="round" d="M7 25Q18 14 27 5"/></svg>',
+                            'fence_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="PCOLOR" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M2 24V11l3-5 3 5v13M10 24V11l3-5 3 5v13M18 24V11l3-5 3 5v13M25 24V11l3-5 3 5v13"/><line x1="1" y1="14.5" x2="31" y2="14.5" stroke="PCOLOR" stroke-width="2" stroke-linecap="round"/><line x1="1" y1="20.5" x2="31" y2="20.5" stroke="PCOLOR" stroke-width="2" stroke-linecap="round"/></svg>',
+                            'garage_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><path fill="none" stroke="PCOLOR" stroke-width="2" stroke-linejoin="round" d="M16 2L3 11v19h26V11z"/><rect x="8" y="15" width="16" height="15" rx="1" fill="none" stroke="PCOLOR" stroke-width="1.5"/><line x1="8" y1="19" x2="24" y2="19" stroke="PCOLOR" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="23" x2="24" y2="23" stroke="PCOLOR" stroke-width="1.5" stroke-linecap="round"/><line x1="8" y1="27" x2="24" y2="27" stroke="PCOLOR" stroke-width="1.5" stroke-linecap="round"/></svg>',
+                            'sofa_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect x="4" y="10" width="24" height="11" rx="2" fill="none" stroke="PCOLOR" stroke-width="2"/><rect x="1" y="17" width="30" height="7" rx="2" fill="none" stroke="PCOLOR" stroke-width="2"/><rect x="1" y="14" width="5" height="10" rx="2" fill="none" stroke="PCOLOR" stroke-width="2"/><rect x="26" y="14" width="5" height="10" rx="2" fill="none" stroke="PCOLOR" stroke-width="2"/><line x1="5" y1="24" x2="5" y2="28" stroke="PCOLOR" stroke-width="2" stroke-linecap="round"/><line x1="27" y1="24" x2="27" y2="28" stroke="PCOLOR" stroke-width="2" stroke-linecap="round"/></svg>',
+                            'compass_outline' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="none" stroke="PCOLOR" stroke-width="2"/><path fill="none" stroke="PCOLOR" stroke-width="1.5" stroke-linejoin="round" d="M16 5l3 11-3-2-3 2z"/><path fill="none" stroke="PCOLOR" stroke-width="1.5" stroke-linejoin="round" d="M16 27l-3-11 3 2 3-2z"/><circle cx="16" cy="16" r="2" fill="PCOLOR"/></svg>',
+                            ],
+                        ];
+                        @endphp
+                        <div class="md:col-span-2 border-t border-gray-100 pt-5 mt-1"
+                             x-data="{ selectedPreset: '{{ $settings->favicon_preset ?? '' }}' }">
+                            <label class="block text-sm font-medium text-gray-700 mb-3">Site Icon</label>
+                            @foreach($faviconGroups as $groupLabel => $groupIcons)
+                            <div class="mb-4">
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 text-center">{{ $groupLabel }}</p>
+                                <div class="flex flex-wrap gap-2 justify-center">
+                                    @foreach($groupIcons as $pkey => $psvg)
+                                    @php $renderedSvg = str_replace('PCOLOR', $primaryColor, $psvg); @endphp
+                                    <label class="cursor-pointer" title="{{ ucfirst(str_replace(['_outline','_duotone'], '', $pkey)) }}"
+                                           @click="selectedPreset = '{{ $pkey }}'">
+                                        <input type="radio" name="favicon_preset" value="{{ $pkey }}"
+                                               x-model="selectedPreset"
+                                               class="sr-only">
+                                        <div class="w-12 h-12 rounded-xl border-2 flex items-center justify-center p-2 transition-all bg-white"
+                                             :style="selectedPreset === '{{ $pkey }}'
+                                                 ? 'border-color: {{ $primaryColor }}; box-shadow: 0 0 0 3px {{ $primaryColor }}33'
+                                                 : 'border-color: #e5e7eb'">
+                                            {!!  $renderedSvg !!}
+                                        </div>
+                                    </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endforeach
                         </div>
+
                     </div>
                 </div>
 
@@ -377,7 +428,7 @@ $tabs = array_merge(...array_values($groups));
                         <input type="hidden" name="stats_items"         :value="JSON.stringify(stats)">
                         <input type="hidden" name="faq_items"           :value="JSON.stringify(faq)">
 
-                        <div id="sections-container" class="space-y-2">
+                        <div id="sections-container" class="space-y-2" style="animation: hpFadeIn .25s ease both">
                         @foreach($orderedSections as $section)
                         @php $key = $section['key']; $isLocked = $section['locked'] ?? false; @endphp
                         <div class="section-item bg-gray-50 rounded-xl border-2 border-transparent hover:border-gray-200 transition-all {{ $isLocked ? 'locked-section' : '' }}"
@@ -421,7 +472,7 @@ $tabs = array_merge(...array_values($groups));
                                     <div class="relative w-9 h-5 rounded-full bg-gray-200 peer-checked:bg-blue-500 transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4" style="--tw-peer-checked-bg: var(--primary)"></div>
                                 </label>
                                 @else
-                                <span class="text-xs text-gray-400 bg-gray-200 px-2 py-1 rounded shrink-0">Always on</span>
+                                <span class="text-xs font-semibold rounded-full px-2 py-0.5 shrink-0" style="color:var(--primary);background:rgba(var(--primary-rgb),.12);border:1px solid rgba(var(--primary-rgb),.25)">Always on</span>
                                 @endif
                             </div>
 
@@ -467,7 +518,7 @@ $tabs = array_merge(...array_values($groups));
                                                 'countryside'=>'Countryside','cozy-interior'=>'Cozy Interior','urban-loft'=>'Urban Loft',
                                                 'minimalist'=>'Minimalist','beach'=>'Beach','mountain'=>'Mountain',
                                                 'desert'=>'Desert','woods'=>'Woods','river'=>'River',
-                                                'grassland'=>'Grassland','small-town'=>'Small Town','cityscape'=>'Cityscape',
+                                                'grassland'=>'Grassland','small-town'=>'Marshland','cityscape'=>'Cityscape',
                                             ];
                                             $savedPreset = $settings->hero_preset ?? 'modern-home';
                                             @endphp
@@ -793,7 +844,7 @@ $tabs = array_merge(...array_values($groups));
                                 'views_month'      => 'Views (30 Days)',
                             ] as $widget => $label)
                             <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-xl p-3 transition">
-                                <input type="checkbox" name="dashboard_config[{{ $widget }}]" value="1" class="rounded" {{ ($dashConfig[$widget] ?? true) ? 'checked' : '' }}>
+                                <input type="hidden" name="dashboard_config[{{ $widget }}]" value="0"><input type="checkbox" name="dashboard_config[{{ $widget }}]" value="1" class="rounded" {{ ($dashConfig[$widget] ?? true) ? 'checked' : '' }}>
                                 {{ $label }}
                             </label>
                             @endforeach
@@ -818,7 +869,7 @@ $tabs = array_merge(...array_values($groups));
                                 'message_sources'   => 'Message Sources',
                             ] as $widget => $label)
                             <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-xl p-3 transition">
-                                <input type="checkbox" name="dashboard_config[{{ $widget }}]" value="1" class="rounded" {{ ($dashConfig[$widget] ?? true) ? 'checked' : '' }}>
+                                <input type="hidden" name="dashboard_config[{{ $widget }}]" value="0"><input type="checkbox" name="dashboard_config[{{ $widget }}]" value="1" class="rounded" {{ ($dashConfig[$widget] ?? true) ? 'checked' : '' }}>
                                 {{ $label }}
                             </label>
                             @endforeach
@@ -839,7 +890,7 @@ $tabs = array_merge(...array_values($groups));
                                 'starred_messages' => 'Starred Messages',
                             ] as $widget => $label)
                             <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-xl p-3 transition">
-                                <input type="checkbox" name="dashboard_config[{{ $widget }}]" value="1" class="rounded" {{ ($dashConfig[$widget] ?? true) ? 'checked' : '' }}>
+                                <input type="hidden" name="dashboard_config[{{ $widget }}]" value="0"><input type="checkbox" name="dashboard_config[{{ $widget }}]" value="1" class="rounded" {{ ($dashConfig[$widget] ?? true) ? 'checked' : '' }}>
                                 {{ $label }}
                             </label>
                             @endforeach
@@ -1204,13 +1255,7 @@ $tabs = array_merge(...array_values($groups));
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Default Share Image</label>
-                            <div class="flex items-center gap-3">
-                                @if($settings->default_share_image)
-                                <img src="{{ asset('storage/' . $settings->default_share_image) }}" class="h-14 w-auto rounded object-contain shrink-0 border border-gray-100 p-1 bg-white">
-                                @endif
-                                <input type="file" name="default_share_image" accept="image/*" class="flex-1 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none">
-                            </div>
-                            <p class="text-xs text-gray-400 mt-1">Shown when pages are shared on social media (Open Graph image). Recommended: 1200×630px.</p>
+                            <p class="text-sm text-gray-500">Your selected icon is used as the default share image for social media.</p>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Google Site Verification</label>

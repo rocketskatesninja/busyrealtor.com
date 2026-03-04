@@ -4,6 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- Favicon --}}
+    @php
+    $faviconUrl = !empty($settings->favicon_preset)
+        ? url('/' . app('tenant')->slug . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp
+        : null;
+    @endphp
+    @if($faviconUrl)
+    <link rel="icon" type="image/svg+xml" href="{{ $faviconUrl }}">
+    <link rel="apple-touch-icon" href="{{ $faviconUrl }}">
+    @endif
     <title>@yield('title', 'Admin') — {{ $tenant->name ?? 'BusyRealtor' }}</title>
     <script>
         // Apply dark mode immediately to prevent flash
@@ -43,7 +53,7 @@
         $headerDisplayMode = $settings->header_display_mode ?? 'both';
         $account = $tenant->slug;
     @endphp
-    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($titleFont) }}:wght@600;700;800&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($titleFont) }}:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         [x-cloak] { display: none !important; }
         :root { --primary: {{ $primaryColor }}; --primary-rgb: {{ $r }}, {{ $g }}, {{ $b }}; }
@@ -196,8 +206,8 @@
         <div class="flex items-center justify-between py-4">
             <div class="flex items-center gap-3">
                 <a href="{{ route('tenant.home', $account) }}" target="_blank" class="drop-shadow hover:opacity-80 transition-opacity flex-shrink-0" title="View public site">
-                    @if($headerDisplayMode !== 'text_only' && $settings->logo_image)
-                        <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto object-contain">
+                    @if(!empty($settings->favicon_preset))
+                        <img src="{{ url('/' . app('tenant')->slug . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?? '' }}" class="h-8 w-8 object-contain rounded-lg">
                     @else
                         <svg class="w-6 h-6 text-gray-400 hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                     @endif

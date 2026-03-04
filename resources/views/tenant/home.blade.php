@@ -600,44 +600,70 @@ $iconPaths = [
 {{-- CONTACT --}}
 @elseif($key === 'contact')
 <section id="contact" class="py-20 bg-white">
-    <div class="max-w-7xl mx-auto px-4">
-        <div class="text-center mb-14">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Get in Touch</h2>
-            <p class="text-gray-500 max-w-2xl mx-auto">Ready to find your dream property? Contact us today.</p>
+    <div class="max-w-6xl mx-auto px-4">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Get in Touch</h2>
+            <p class="text-gray-500 max-w-xl mx-auto">Ready to find your dream property? We'd love to hear from you.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            <div>
-                <h3 class="text-xl font-semibold text-gray-800 mb-6">Contact Information</h3>
-                <div class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">
+
+            {{-- Left: contact info card --}}
+            <div class="md:col-span-2 rounded-2xl p-8 flex flex-col gap-6" style="background:rgba(var(--primary-rgb),.05);border:1px solid rgba(var(--primary-rgb),.15)">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-1">Contact Us</h3>
+                    <p class="text-sm text-gray-500">Reach out and we'll get back to you as soon as possible.</p>
+                </div>
+                <div class="space-y-5">
                     @if($settings->contact_phone)
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: rgba(var(--primary-rgb), 0.1)">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(var(--primary-rgb),.15)">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                         </div>
-                        <div><p class="text-sm text-gray-500">Phone</p><p class="font-medium text-gray-800">{{ $settings->contact_phone }}</p></div>
+                        <div><p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Phone</p><p class="font-semibold text-gray-800">{{ $settings->contact_phone }}</p></div>
                     </div>
                     @endif
                     @if($settings->contact_email)
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: rgba(var(--primary-rgb), 0.1)">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(var(--primary-rgb),.15)">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         </div>
-                        <div><p class="text-sm text-gray-500">Email</p><p class="font-medium text-gray-800">{{ $settings->contact_email }}</p></div>
+                        <div><p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Email</p><p class="font-semibold text-gray-800 break-all">{{ $settings->contact_email }}</p></div>
                     </div>
                     @endif
-                    @if($settings->address)
-                    <div class="flex items-center gap-4">
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0" style="background-color: rgba(var(--primary-rgb), 0.1)">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    @if($settings->contact_address)
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(var(--primary-rgb),.15)">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         </div>
-                        <div><p class="text-sm text-gray-500">Address</p><p class="font-medium text-gray-800">{{ $settings->address }}</p></div>
+                        <div><p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Address</p><p class="font-semibold text-gray-800">{{ $settings->contact_address }}</p></div>
                     </div>
                     @endif
                 </div>
+                @if($settings->social_facebook || $settings->social_instagram || $settings->social_twitter || $settings->social_linkedin)
+                <div class="mt-auto pt-5 border-t border-gray-200">
+                    <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Follow Us</p>
+                    <div class="flex gap-3">
+                        @if($settings->social_facebook)
+                        <a href="{{ $settings->social_facebook }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+                        @endif
+                        @if($settings->social_instagram)
+                        <a href="{{ $settings->social_instagram }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+                        @endif
+                        @if($settings->social_twitter)
+                        <a href="{{ $settings->social_twitter }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></a>
+                        @endif
+                        @if($settings->social_linkedin)
+                        <a href="{{ $settings->social_linkedin }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+                        @endif
+                    </div>
+                </div>
+                @endif
             </div>
-            <div x-data="{ sent: false, sending: false, name: '', email: '', phone: '', message: '' }">
-                <div x-show="!sent">
-                    <h3 class="text-xl font-semibold text-gray-800 mb-6">Send a Message</h3>
+
+            {{-- Right: form card --}}
+            <div class="md:col-span-3" x-data="{ sent: false, sending: false, name: '', email: '', phone: '', message: '' }">
+                <div x-show="!sent" class="bg-gray-50 rounded-2xl p-8 border border-gray-100 h-full">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">Send a Message</h3>
                     <form x-on:submit.prevent="
                         if (!name || !email || !message) return;
                         sending = true;
@@ -650,20 +676,20 @@ $iconPaths = [
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                                <input x-model="name" type="text" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition" style="--tw-ring-color: var(--primary)">
+                                <input x-model="name" type="text" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition bg-white">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                                <input x-model="phone" type="tel" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition">
+                                <input x-model="phone" type="tel" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition bg-white">
                             </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                            <input x-model="email" type="email" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition">
+                            <input x-model="email" type="email" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition bg-white">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Message *</label>
-                            <textarea x-model="message" rows="4" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition resize-none"></textarea>
+                            <textarea x-model="message" rows="5" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition resize-none bg-white"></textarea>
                         </div>
                         <button type="submit" :disabled="sending" class="btn-primary w-full py-3 rounded-xl font-semibold transition hover:opacity-90 disabled:opacity-70">
                             <span x-show="!sending">Send Message</span>
@@ -671,14 +697,15 @@ $iconPaths = [
                         </button>
                     </form>
                 </div>
-                <div x-show="sent" x-cloak class="text-center py-12">
-                    <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style="background-color: rgba(16, 185, 129, 0.1)">
+                <div x-show="sent" x-cloak class="bg-gray-50 rounded-2xl p-8 border border-gray-100 h-full flex flex-col items-center justify-center text-center">
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style="background:rgba(16,185,129,.1)">
                         <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     </div>
                     <h4 class="text-xl font-semibold text-gray-800 mb-2">Message Sent!</h4>
                     <p class="text-gray-500">We'll get back to you shortly.</p>
                 </div>
             </div>
+
         </div>
     </div>
 </section>

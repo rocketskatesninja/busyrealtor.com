@@ -7,6 +7,17 @@
     <meta name="description" content="@yield('meta_description', $settings->site_description ?? '')">
     <link rel="canonical" href="{{ url()->current() }}">
 
+    {{-- Favicon --}}
+    @php
+    $faviconUrl = !empty($settings->favicon_preset)
+        ? url('/' . app('tenant')->slug . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp
+        : null;
+    @endphp
+    @if($faviconUrl)
+    <link rel="icon" type="image/svg+xml" href="{{ $faviconUrl }}">
+    <link rel="apple-touch-icon" href="{{ $faviconUrl }}">
+    @endif
+
     {{-- Robots --}}
     @if(!($settings->search_engine_visibility ?? true))
     <meta name="robots" content="noindex, nofollow">
@@ -24,7 +35,9 @@
     <meta property="og:description" content="@yield('meta_description', $settings->site_description ?? '')">
     @php
         $ogImage = trim($__env->yieldContent('og_image'))
-            ?: ($settings->default_share_image ? Storage::disk('public')->url($settings->default_share_image) : null);
+            ?: (!empty($settings->favicon_preset)
+                ? url('/' . app('tenant')->slug . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp
+                : null);
     @endphp
     @if($ogImage)
     <meta property="og:image" content="{{ $ogImage }}">
@@ -62,7 +75,7 @@
         $g = hexdec(substr(ltrim($primaryColor,'#'), 2, 2));
         $b = hexdec(substr(ltrim($primaryColor,'#'), 4, 2));
     @endphp
-    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($titleFont) }}:wght@600;700;800&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($titleFont) }}:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         [x-cloak] { display: none !important; }
         :root {
@@ -277,10 +290,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between">
             <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3" :style="scrolled ? '' : 'filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))'">
-                @if($headerDisplayMode !== 'text_only' && $settings->logo_image)
-                    <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto object-contain">
+                @if(!empty($settings->favicon_preset) && $headerDisplayMode !== 'text_only')
+                    <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?? '' }}" class="h-8 w-8 object-contain rounded-lg">
                 @endif
-                @if($headerDisplayMode !== 'logo_only')
+                @if(in_array($headerDisplayMode, ['text_only', 'favicon_text', 'both']))
                     <span style="{{ $titleStyle }}">{{ $settings->site_title ?? config('app.name') }}</span>
                 @endif
             </a>
@@ -342,10 +355,10 @@
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex items-center justify-between py-4">
             <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3 drop-shadow-lg hover:opacity-80 transition-opacity">
-                @if($headerDisplayMode !== 'text_only' && $settings->logo_image)
-                    <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto object-contain">
+                @if(!empty($settings->favicon_preset) && $headerDisplayMode !== 'text_only')
+                    <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?? '' }}" class="h-8 w-8 object-contain rounded-lg">
                 @endif
-                @if($headerDisplayMode !== 'logo_only')
+                @if(in_array($headerDisplayMode, ['text_only', 'favicon_text', 'both']))
                     <span style="{{ $titleStyle }}">{{ $settings->site_title ?? config('app.name') }}</span>
                 @endif
             </a>

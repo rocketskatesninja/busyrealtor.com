@@ -81,16 +81,8 @@ class SettingsController extends Controller
                     'title_gradient_start','title_gradient_via','title_gradient_end',
                 ]);
                 $data['dark_mode_enabled'] = $request->boolean('dark_mode_enabled');
-                if ($request->hasFile('logo')) {
-                    if ($settings->logo_image) Storage::disk('public')->delete($settings->logo_image);
-                    $dir  = "tenants/{$tenant->id}";
-                    Storage::disk('public')->makeDirectory($dir);
-                    $file = $request->file('logo');
-                    $name = 'logo.' . $file->getClientOriginalExtension();
-                    $img  = Image::read($file)->scale(width: 400);
-                    Storage::disk('public')->put($dir . '/' . $name, $img->toPng());
-                    $data['logo_image'] = $dir . '/' . $name;
-                }
+                // Favicon
+                $data['favicon_preset'] = $request->input('favicon_preset');
                 $settings->update($data);
                 break;
 
@@ -234,13 +226,7 @@ class SettingsController extends Controller
                     'google_site_verification' => $request->google_site_verification,
                     'search_engine_visibility' => $request->boolean('search_engine_visibility'),
                 ]);
-                if ($request->hasFile('default_share_image')) {
-                    if ($settings->default_share_image) Storage::disk('public')->delete($settings->default_share_image);
-                    $dir  = "tenants/{$tenant->id}/branding";
-                    Storage::disk('public')->makeDirectory($dir);
-                    $path = $request->file('default_share_image')->store($dir, 'public');
-                    $settings->update(['default_share_image' => $path]);
-                }
+
                 break;
 
         }
