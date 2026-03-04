@@ -131,12 +131,21 @@
         .dark table tbody tr:hover { background-color: #1e293b !important; }
 
         /* Status badges — soften */
+        .dark .bg-green-50   { background-color: rgba(16,185,129,0.1) !important; }
         .dark .bg-green-100  { background-color: rgba(16,185,129,0.15) !important; }
+        .dark .bg-yellow-50  { background-color: rgba(234,179,8,0.1) !important; }
         .dark .bg-yellow-100 { background-color: rgba(234,179,8,0.15) !important; }
+        .dark .bg-blue-50    { background-color: rgba(59,130,246,0.1) !important; }
         .dark .bg-blue-100   { background-color: rgba(59,130,246,0.15) !important; }
+        .dark .bg-red-50     { background-color: rgba(239,68,68,0.1) !important; }
         .dark .bg-red-100    { background-color: rgba(239,68,68,0.15) !important; }
+        .dark .bg-purple-50  { background-color: rgba(168,85,247,0.1) !important; }
         .dark .bg-purple-100 { background-color: rgba(168,85,247,0.15) !important; }
+        .dark .bg-indigo-50  { background-color: rgba(99,102,241,0.1) !important; }
         .dark .bg-indigo-100 { background-color: rgba(99,102,241,0.15) !important; }
+        .dark .hover\:bg-blue-100:hover  { background-color: rgba(59,130,246,0.25) !important; }
+        .dark .hover\:bg-green-100:hover { background-color: rgba(16,185,129,0.25) !important; }
+        .dark .hover\:bg-red-100:hover   { background-color: rgba(239,68,68,0.25) !important; }
 
         /* Shadows become softer */
         .dark .shadow-sm   { box-shadow: 0 1px 2px rgba(0,0,0,0.5) !important; }
@@ -226,7 +235,7 @@
     $titleTracking = $settings->site_title_letter_spacing ?? 'normal';
     $titleStyle = "font-family: '{$titleFont}', sans-serif; font-size: {$titleSize}; font-weight: {$titleWeight}; letter-spacing: " . match($titleTracking) { 'tight' => '-0.05em', 'wide' => '0.05em', default => 'normal' } . ";";
     if ($titleColorType === 'gradient') {
-        $titleStyle .= " background: linear-gradient(135deg, {$gradStart}, {$gradVia}, {$gradEnd}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;";
+        $titleStyle .= " background: linear-gradient(to right, {$gradStart}, {$gradVia}, {$gradEnd}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent;";
     } else {
         $titleStyle .= " color: {$solidColor};";
     }

@@ -74,10 +74,44 @@
             background-image: radial-gradient(circle, rgba(255,255,255,0.13) 1px, transparent 1px);
             background-size: 30px 30px;
         }
+        /* Ken Burns */
+        @keyframes kenBurns {
+            0%   { transform: scale(1)    translateX(0)      translateY(0); }
+            33%  { transform: scale(1.06) translateX(-1%)    translateY(-0.5%); }
+            66%  { transform: scale(1.04) translateX(1.5%)   translateY(0.5%); }
+            100% { transform: scale(1.08) translateX(0)      translateY(-1%); }
+        }
+        .hero-ken-burns { animation: kenBurns 22s ease-in-out infinite alternate; }
+        /* Particles */
+        @keyframes particleRise {
+            0%   { transform: translateY(0)   translateX(0);   opacity: 0; }
+            8%   { opacity: 1; }
+            92%  { opacity: 0.5; }
+            100% { transform: translateY(-90vh) translateX(30px); opacity: 0; }
+        }
+        .hero-particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.5);
+            pointer-events: none;
+            animation: particleRise linear infinite;
+        }
 @endsection
 
 @php
 $account = $tenant->slug;
+$heroEffects = array_merge([
+    'entrance_animation' => true,
+    'dot_grid'           => true,
+    'dark_overlay'       => true,
+    'overlay_opacity'    => 45,
+    'cta_glow'           => true,
+    'scroll_cue'         => true,
+    'parallax'           => false,
+    'ken_burns'          => false,
+    'particles'          => false,
+], (array)($settings->hero_effects ?? []));
+$ea = $heroEffects['entrance_animation'] ?? true;
 $sections = $settings->homepage_sections ?? [
     ['key' => 'hero', 'enabled' => true, 'order' => 0],
     ['key' => 'features', 'enabled' => true, 'order' => 1],
@@ -138,7 +172,8 @@ $iconPaths = [
 
 {{-- HERO --}}
 @if($key === 'hero')
-<section class="relative min-h-screen flex items-center justify-center overflow-hidden"
+<section id="hero-section" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    {{-- Background layer — separate div so Ken Burns zoom doesn't scale the text --}}
     @php
         $heroBg = '';
         $heroType = $settings->hero_background_type ?? 'preset';
@@ -154,19 +189,28 @@ $iconPaths = [
             $heroBg = "background: url('/assets/images/hero-presets/{$preset}.jpg') center/cover no-repeat;";
         }
     @endphp
-    style="{{ $heroBg }}">
+    <div id="hero-bg" class="absolute inset-0 {{ ($heroEffects['ken_burns'] ?? false) ? 'hero-ken-burns' : '' }}" style="{{ $heroBg }}"></div>
 
-    {{-- Dark overlay to dim the background image --}}
-    <div class="absolute inset-0 bg-black/45 pointer-events-none"></div>
+    {{-- Dark overlay --}}
+    @if($heroEffects['dark_overlay'] ?? true)
+    <div class="absolute inset-0 pointer-events-none" style="background:rgba(0,0,0,{{ number_format(($heroEffects['overlay_opacity'] ?? 45)/100, 2) }});"></div>
+    @endif
 
     {{-- Dot-grid texture --}}
+    @if($heroEffects['dot_grid'] ?? true)
     <div class="absolute inset-0 hero-dot-grid pointer-events-none"></div>
+    @endif
+
+    {{-- Particles --}}
+    @if($heroEffects['particles'] ?? false)
+    <div id="hero-particles" class="absolute inset-0 overflow-hidden pointer-events-none z-[1]"></div>
+    @endif
 
     {{-- Main content --}}
     <div class="relative z-10 text-center px-4 max-w-5xl mx-auto py-24">
 
         {{-- Trust badge --}}
-        <div class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur border border-white/20 rounded-full px-5 py-2 text-white/90 text-sm font-medium mb-8 hero-animate hero-d1">
+        <div class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur border border-white/20 rounded-full px-5 py-2 text-white/90 text-sm font-medium mb-8 {{ $ea ? 'hero-animate hero-d1' : '' }}">
             <span class="relative flex h-2 w-2">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
@@ -175,49 +219,29 @@ $iconPaths = [
         </div>
 
         {{-- Headline --}}
-        <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl hero-animate hero-d2">
+        <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl {{ $ea ? 'hero-animate hero-d2' : '' }}">
             {{ $settings->hero_title ?? 'Find Your Dream Home' }}
         </h1>
 
         {{-- Subtitle --}}
-        <p class="text-xl md:text-2xl text-white/85 mb-10 max-w-2xl mx-auto leading-relaxed hero-animate hero-d3">
+        <p class="text-xl md:text-2xl text-white/85 mb-10 max-w-2xl mx-auto leading-relaxed {{ $ea ? 'hero-animate hero-d3' : '' }}">
             {{ $settings->hero_subtitle ?? 'Professional real estate services to help you buy, sell, or rent the perfect property.' }}
         </p>
 
-        @php
-            $resolveCta = function(string $link) use ($account): string {
-                if ($link === '' || str_starts_with($link, 'http') || str_starts_with($link, '//') || str_starts_with($link, '#')) {
-                    return $link;
-                }
-                $slug = '/' . ltrim($account, '/');
-                if (!str_starts_with($link, $slug . '/') && $link !== $slug) {
-                    return $slug . '/' . ltrim($link, '/');
-                }
-                return $link;
-            };
-        @endphp
-
         {{-- CTAs --}}
-        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10 hero-animate hero-d4">
-            <a href="{{ $settings->cta_primary_link ? $resolveCta($settings->cta_primary_link) : route('tenant.gallery', $account) }}"
-               class="btn-primary btn-glow-blue px-9 py-4 rounded-xl font-bold text-lg shadow-2xl hover:opacity-90 transition-all duration-200 hover:scale-105">
-                {{ $settings->cta_primary_text ?? 'View Listings' }}
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-10 {{ $ea ? 'hero-animate hero-d4' : '' }}">
+            <a href="{{ route('tenant.gallery', $account) }}"
+               class="btn-primary {{ ($heroEffects['cta_glow'] ?? true) ? 'btn-glow-blue' : '' }} px-9 py-4 rounded-xl font-bold text-lg shadow-2xl hover:opacity-90 transition-all duration-200 hover:scale-105">
+                View Gallery
             </a>
-            @if($settings->cta_secondary_text)
-            <a href="{{ $settings->cta_secondary_link ? $resolveCta($settings->cta_secondary_link) : route('tenant.map', $account) }}"
-               class="bg-white/15 backdrop-blur-sm text-white border border-white/30 px-9 py-4 rounded-xl font-bold text-lg hover:bg-white/25 transition-all duration-200 hover:scale-105">
-                {{ $settings->cta_secondary_text }}
-            </a>
-            @else
             <a href="{{ route('tenant.map', $account) }}"
                class="bg-white/15 backdrop-blur-sm text-white border border-white/30 px-9 py-4 rounded-xl font-bold text-lg hover:bg-white/25 transition-all duration-200 hover:scale-105">
-                Map Search
+                View Map
             </a>
-            @endif
         </div>
 
         {{-- Search form --}}
-        <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl max-w-3xl mx-auto hero-animate hero-d5 ring-1 ring-white/10">
+        <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl max-w-3xl mx-auto {{ $ea ? 'hero-animate hero-d5' : '' }} ring-1 ring-white/10">
             <form action="{{ route('tenant.gallery', $account) }}" method="GET" class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:items-end">
                 <div class="flex-1 sm:min-w-40">
                     <label class="block text-xs font-medium text-gray-600 mb-1">Search</label>
@@ -255,7 +279,7 @@ $iconPaths = [
         </div>
 
         {{-- Social proof row --}}
-        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-7 text-white/65 text-sm hero-animate hero-d5" style="animation-delay:0.85s">
+        <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-7 text-white/65 text-sm {{ $ea ? 'hero-animate hero-d5' : '' }}" style="animation-delay:0.85s">
             <div class="flex items-center gap-1.5">
                 <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 <span>Locally Owned &amp; Operated</span>
@@ -274,11 +298,13 @@ $iconPaths = [
     </div>
 
     {{-- Scroll cue --}}
+    @if($heroEffects['scroll_cue'] ?? true)
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-white/35 select-none pointer-events-none">
         <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
         </svg>
     </div>
+    @endif
 </section>
 
 {{-- FEATURES --}}
@@ -714,6 +740,36 @@ $iconPaths = [
 @endsection
 
 @section('scripts')
+@if($heroEffects['parallax'] ?? false)
+(function () {
+    const bg = document.getElementById('hero-bg');
+    if (!bg) return;
+    window.addEventListener('scroll', function () {
+        bg.style.backgroundPositionY = 'calc(50% + ' + (window.scrollY * 0.35) + 'px)';
+    }, { passive: true });
+})();
+@endif
+@if($heroEffects['particles'] ?? false)
+(function () {
+    const container = document.getElementById('hero-particles');
+    if (!container) return;
+    for (let i = 0; i < 22; i++) {
+        const el = document.createElement('div');
+        el.className = 'hero-particle';
+        const size = 2 + Math.random() * 4;
+        el.style.cssText = [
+            'left:'             + (Math.random() * 100) + '%',
+            'bottom:'           + (Math.random() * 40)  + '%',
+            'width:'            + size + 'px',
+            'height:'           + size + 'px',
+            'animation-duration:'+ (10 + Math.random() * 14) + 's',
+            'animation-delay:-' + (Math.random() * 18)  + 's',
+            'opacity:'          + (0.15 + Math.random() * 0.45),
+        ].join(';');
+        container.appendChild(el);
+    }
+})();
+@endif
 // ── Scroll reveal (Intersection Observer) ──────────────────────────────────
 (function () {
     const targets = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');

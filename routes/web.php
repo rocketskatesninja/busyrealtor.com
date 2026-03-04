@@ -35,6 +35,7 @@ Route::get('/', [MarketingController::class, 'index'])->name('root');
 Route::get('/privacy-policy', [MarketingController::class, 'privacy'])->name('privacy');
 Route::get('/terms', [MarketingController::class, 'terms'])->name('terms');
 Route::get('/sitemap.xml', [MarketingController::class, 'sitemap'])->name('sitemap');
+Route::get('/marketing-sitemap.xml', [MarketingController::class, 'sitemapPages'])->name('sitemap.pages');
 
 // Auth routes (no tenant)
 Route::middleware('guest')->group(function () {
@@ -82,12 +83,13 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/confirm-appointment/{token}', [TenantPageController::class, 'confirmAppointment'])->name('confirm-appointment');
         Route::get('/contact', [TenantPageController::class, 'contact'])->name('contact');
         Route::get('/chat', [TenantPageController::class, 'chat'])->name('chat');
+        Route::get('/sitemap.xml', [TenantPageController::class, 'sitemap'])->name('sitemap');
     });
 
     // Public APIs
     Route::post('/api/contact', [ContactController::class, 'submit'])->middleware('throttle:10,1')->name('api.contact');
     Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->middleware('throttle:20,1')->name('api.chatbot');
-    Route::get('/api/properties', [PropertyApiController::class, 'index'])->name('api.properties');
+    Route::get('/api/properties', [PropertyApiController::class, 'index'])->middleware('throttle:60,1')->name('api.properties');
 
     // Appointment booking (public, no auth)
     Route::post('/appointments', [AppointmentController::class, 'storePublic'])->middleware('throttle:10,1')->name('appointments.store');

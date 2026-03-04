@@ -35,6 +35,16 @@ class MarketingController extends Controller
 
     public function sitemap()
     {
-        return response()->view('marketing.sitemap')->header('Content-Type', 'text/xml');
+        $tenants = \App\Models\Tenant::where('is_active', true)->get(['slug']);
+        return response()
+            ->view('marketing.sitemap', compact('tenants'))
+            ->header('Content-Type', 'text/xml');
+    }
+
+    public function sitemapPages()
+    {
+        return response()
+            ->view('marketing.sitemap-pages')
+            ->header('Content-Type', 'text/xml');
     }
 }

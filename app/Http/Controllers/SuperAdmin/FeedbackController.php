@@ -12,19 +12,19 @@ class FeedbackController extends Controller
 {
     public function index()
     {
-        $feedback = Feedback::with(['tenant', 'user'])
+        $feedback = Feedback::withoutGlobalScopes()->with(['tenant', 'user'])
             ->orderByRaw("FIELD(status, 'new', 'reviewed')")
             ->orderByDesc('created_at')
             ->paginate(25);
 
-        $newCount = Feedback::where('status', 'new')->count();
+        $newCount = Feedback::withoutGlobalScopes()->where('status', 'new')->count();
 
         return view('super-admin.feedback.index', compact('feedback', 'newCount'));
     }
 
     public function show(int $id)
     {
-        $item = Feedback::with(['tenant', 'user'])->findOrFail($id);
+        $item = Feedback::withoutGlobalScopes()->with(['tenant', 'user'])->findOrFail($id);
 
         if ($item->status === 'new') {
             $item->update(['status' => 'reviewed']);
@@ -35,7 +35,7 @@ class FeedbackController extends Controller
 
     public function screenshot(int $id): StreamedResponse
     {
-        $item = Feedback::findOrFail($id);
+        $item = Feedback::withoutGlobalScopes()->findOrFail($id);
 
         abort_unless($item->hasScreenshot(), 404);
 
@@ -51,7 +51,7 @@ class FeedbackController extends Controller
 
     public function destroy(int $id)
     {
-        $item = Feedback::findOrFail($id);
+        $item = Feedback::withoutGlobalScopes()->findOrFail($id);
         $item->delete();
 
         return redirect()->route('super.feedback')->with('success', 'Feedback deleted.');

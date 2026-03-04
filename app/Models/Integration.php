@@ -22,8 +22,10 @@ class Integration extends Model
     ];
 
     protected $casts = [
-        'config'    => 'array',
-        'is_active' => 'boolean',
+        'config'        => 'array',
+        'is_active'     => 'boolean',
+        'api_key'       => 'encrypted',
+        'webhook_token' => 'encrypted',
     ];
 
     public function tenant(): BelongsTo
@@ -32,17 +34,10 @@ class Integration extends Model
     }
 
     /**
-     * Decrypt the stored API key (stored with Laravel encrypt()).
+     * Return the API key (decrypted automatically via 'encrypted' cast).
      */
     public function decryptKey(): ?string
     {
-        if (empty($this->api_key)) {
-            return null;
-        }
-        try {
-            return Crypt::decryptString($this->api_key);
-        } catch (\Throwable $e) {
-            return $this->api_key;
-        }
+        return $this->api_key ?: null;
     }
 }

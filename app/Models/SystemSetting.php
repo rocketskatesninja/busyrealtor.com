@@ -20,6 +20,8 @@ class SystemSetting extends Model
         'og_image',
     ];
 
+    protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret'];
+
     protected $casts = [
         'registrations_enabled' => 'boolean',
         'site_locked'           => 'boolean',

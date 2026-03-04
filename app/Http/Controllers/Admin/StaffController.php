@@ -24,11 +24,12 @@ class StaffController extends Controller
     public function store($account, Request $request)
     {
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'role'  => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:30',
-            'bio'   => 'nullable|string|max:2000',
+            'name'          => 'required|string|max:255',
+            'role'          => 'nullable|string|max:255',
+            'email'         => 'nullable|email|max:255',
+            'phone'         => 'nullable|string|max:30',
+            'bio'           => 'nullable|string|max:2000',
+            'profile_image' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
         ]);
 
         $tenant = app('tenant');
@@ -53,11 +54,12 @@ class StaffController extends Controller
         $member = StaffMember::where('tenant_id', $tenant->id)->findOrFail($id);
 
         $request->validate([
-            'name'  => 'required|string|max:255',
-            'role'  => 'nullable|string|max:255',
-            'email' => 'nullable|email|max:255',
-            'phone' => 'nullable|string|max:30',
-            'bio'   => 'nullable|string|max:2000',
+            'name'          => 'required|string|max:255',
+            'role'          => 'nullable|string|max:255',
+            'email'         => 'nullable|email|max:255',
+            'phone'         => 'nullable|string|max:30',
+            'bio'           => 'nullable|string|max:2000',
+            'profile_image' => 'nullable|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
         ]);
 
         $data = $request->only(['name', 'role', 'email', 'phone', 'bio', 'status']);

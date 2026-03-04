@@ -153,7 +153,7 @@
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-red-100">
         <h3 class="font-semibold text-red-700 mb-2">Danger Zone</h3>
         <p class="text-sm text-gray-500 mb-4">Permanently delete this tenant and all associated data. This cannot be undone.</p>
-        <form method="POST" action="{{ route('super.tenants.destroy', $tenant->slug) }}" onsubmit="return confirm('Delete {{ addslashes($tenant->name) }} and ALL data? This cannot be undone.')">
+        <form method="POST" action="{{ route('super.tenants.destroy', $tenant->slug) }}" onsubmit="return confirm('Delete ' + {{ json_encode($tenant->name) }} + ' and ALL data? This cannot be undone.')">
             @csrf @method('DELETE')
             <button type="submit" class="bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-red-700 transition">
                 Delete Tenant &amp; All Data

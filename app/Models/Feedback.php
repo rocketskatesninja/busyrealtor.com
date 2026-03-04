@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 
 class Feedback extends Model
 {
+    use BelongsToTenant;
+
     protected $table = 'feedback';
 
     protected $fillable = [

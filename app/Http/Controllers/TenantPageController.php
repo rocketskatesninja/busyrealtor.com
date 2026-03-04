@@ -130,11 +130,24 @@ class TenantPageController extends Controller
         return view('tenant.legal', compact('tenant', 'settings', 'page'));
     }
 
+    public function sitemap($account)
+    {
+        $tenant = \App\Models\Tenant::where('slug', $account)->firstOrFail();
+        $properties = \App\Models\Property::where('tenant_id', $tenant->id)
+            ->whereIn('listing_status', ['active', 'pending'])
+            ->get(['id', 'updated_at']);
+        return response()
+            ->view('tenant.sitemap', compact('account', 'properties'))
+            ->header('Content-Type', 'text/xml');
+    }
+
     public function confirmAppointment($account, $token)
     {
         $tenant      = app('tenant');
         $settings    = $this->getSettings();
-        $appointment = Appointment::where('confirmation_token', $token)->firstOrFail();
+        $appointment = Appointment::where('confirmation_token', $token)
+            ->where('tenant_id', $tenant->id)
+            ->firstOrFail();
         $appointment->update(['status' => 'confirmed']);
         return view('tenant.confirm-appointment', compact('tenant', 'settings', 'appointment'));
     }

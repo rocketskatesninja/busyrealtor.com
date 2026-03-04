@@ -178,14 +178,21 @@ class SettingsController extends Controller
                     'faq_items'            => json_decode($request->faq_items ?? '[]', true) ?? [],
                     'hero_title'           => $request->hero_title,
                     'hero_subtitle'        => $request->hero_subtitle,
-                    'cta_primary_text'     => $request->cta_primary_text,
-                    'cta_primary_link'     => $request->cta_primary_link,
-                    'cta_secondary_text'   => $request->cta_secondary_text,
-                    'cta_secondary_link'   => $request->cta_secondary_link,
                     'hero_background_type' => $request->hero_background_type,
                     'hero_preset'          => $request->hero_preset,
                     'hero_gradient_start'  => $request->hero_gradient_start,
                     'hero_gradient_end'    => $request->hero_gradient_end,
+                    'hero_effects'         => [
+                        'entrance_animation' => $request->boolean('hero_fx_entrance'),
+                        'dot_grid'           => $request->boolean('hero_fx_dot_grid'),
+                        'dark_overlay'       => $request->boolean('hero_fx_dark_overlay'),
+                        'overlay_opacity'    => (int) ($request->hero_fx_overlay_opacity ?? 45),
+                        'cta_glow'           => $request->boolean('hero_fx_cta_glow'),
+                        'scroll_cue'         => $request->boolean('hero_fx_scroll_cue'),
+                        'parallax'           => $request->boolean('hero_fx_parallax'),
+                        'ken_burns'          => $request->boolean('hero_fx_ken_burns'),
+                        'particles'          => $request->boolean('hero_fx_particles'),
+                    ],
                 ];
                 if ($request->hasFile('hero_image')) {
                     if ($settings->hero_image) Storage::disk('public')->delete($settings->hero_image);

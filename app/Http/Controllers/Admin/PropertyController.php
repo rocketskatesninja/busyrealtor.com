@@ -107,6 +107,8 @@ class PropertyController extends Controller
             'listing_status' => 'required|in:active,pending,sold,off-market',
             'property_type'  => 'required|string',
             'price'          => 'nullable|numeric',
+            'images'         => 'nullable|array|max:20',
+            'images.*'       => 'image|mimes:jpeg,jpg,png,gif,webp|max:10240',
         ]);
 
         $tenant = app('tenant');

@@ -78,6 +78,26 @@ function initPropertyMap() {
   @endif
 }
 </script>
+<style>
+@keyframes kenBurnsSlide {
+    0%   { transform: scale(1)    translate(0,     0);     }
+    25%  { transform: scale(1.04) translate(-0.5%, -0.3%); }
+    75%  { transform: scale(1.06) translate( 0.5%,  0.3%); }
+    100% { transform: scale(1)    translate(0,     0);     }
+}
+.carousel-img-active {
+    animation: kenBurnsSlide 12s ease-in-out infinite;
+}
+@media print {
+    header, footer, nav, .no-print,
+    #booking-section, #map-section, #related-section { display: none !important; }
+    .shadow, .shadow-sm { box-shadow: none !important; }
+    .max-w-7xl { max-width: 100% !important; padding: 0 !important; }
+    @page { margin: 1.5cm; size: letter; }
+    body { font-size: 11pt; color: #111; }
+    a { color: inherit !important; text-decoration: none !important; }
+}
+</style>
 @endsection
 
 
@@ -85,7 +105,7 @@ function initPropertyMap() {
 @php $account = $tenant->slug; @endphp
 <div class="max-w-7xl mx-auto px-4 py-10">
     <div class="mb-6">
-        <nav class="flex items-center gap-2 text-sm text-gray-500">
+        <nav class="flex items-center gap-2 text-sm text-gray-500 no-print">
             @auth
             @if(auth()->user()->tenant_id === app('tenant')->id || auth()->user()->is_super_admin)
             <a href="{{ route('tenant.admin.dashboard', $account) }}" class="hover-primary transition">Home</a>
@@ -114,27 +134,45 @@ function initPropertyMap() {
             {{-- Image Gallery --}}
             @php $images = $property->images->sortByDesc('is_primary'); @endphp
             @if($images->count())
-            <div x-data="{ current: 0, lightbox: false, lightboxIdx: 0 }" class="mb-8">
+            <div x-data="{
+                current: 0, lightbox: false, lightboxIdx: 0, touchX: 0,
+                swipe(e) {
+                    const diff = this.touchX - e.changedTouches[0].clientX;
+                    if (Math.abs(diff) > 40) {
+                        const last = {{ $images->count() - 1 }};
+                        this.current = diff > 0
+                            ? (this.current < last ? this.current + 1 : 0)
+                            : (this.current > 0 ? this.current - 1 : last);
+                    }
+                }
+            }" class="mb-8">
                 {{-- Main image --}}
-                <div class="relative rounded-2xl overflow-hidden bg-gray-100 mb-3 cursor-pointer" style="height: 450px" @click="lightbox = true; lightboxIdx = current">
+                <div class="relative rounded-2xl overflow-hidden bg-gray-100 mb-3 cursor-pointer" style="height: 450px" @click="lightbox = true; lightboxIdx = current" @touchstart.passive="touchX = $event.changedTouches[0].clientX" @touchend.passive="swipe($event)">
                     <template x-for="(img, idx) in {{ json_encode($images->values()->map(fn($i) => asset('storage/'.$i->image_path))) }}" :key="idx">
-                        <img :src="img" x-show="current === idx" class="w-full h-full object-cover absolute inset-0">
+                        <img :src="img" :class="current === idx ? 'opacity-100 carousel-img-active' : 'opacity-0'" class="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 ease-in-out">
                     </template>
                     @if($images->count() > 1)
-                    <button @click.stop="current = current > 0 ? current - 1 : {{ $images->count() - 1 }}" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70">
+                    <button @click.stop="current = current > 0 ? current - 1 : {{ $images->count() - 1 }}" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-sm text-white p-2.5 rounded-full hover:bg-black/60 transition-all hover:scale-110 shadow-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     </button>
-                    <button @click.stop="current = current < {{ $images->count() - 1 }} ? current + 1 : 0" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70">
+                    <button @click.stop="current = current < {{ $images->count() - 1 }} ? current + 1 : 0" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-sm text-white p-2.5 rounded-full hover:bg-black/60 transition-all hover:scale-110 shadow-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
-                    <div class="absolute bottom-3 right-3 bg-black/50 text-white text-xs px-3 py-1 rounded-full" x-text="`${current + 1} / {{ $images->count() }}`"></div>
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+                        @for($d = 0; $d < $images->count(); $d++)
+                        <button @click.stop="current = {{ $d }}"
+                                :class="current === {{ $d }} ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/70'"
+                                class="h-2 rounded-full transition-all duration-300 shadow-sm"></button>
+                        @endfor
+                    </div>
+                    <div class="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full shadow" x-text="`${current + 1} / {{ $images->count() }}`"></div>
                     @endif
                 </div>
                 {{-- Thumbnails --}}
                 @if($images->count() > 1)
                 <div class="flex gap-2 overflow-x-auto pb-1">
                     @foreach($images as $i => $img)
-                    <button @click="current = {{ $i }}" class="flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition" :class="current === {{ $i }} ? 'border-blue-500' : 'border-transparent'">
+                    <button @click="current = {{ $i }}" class="flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition" :class="current === {{ $i }} ? 'border-2' : 'border-transparent'" :style="current === {{ $i }} ? 'border-color: var(--primary)' : ''">
                         <img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">
                     </button>
                     @endforeach
@@ -179,7 +217,7 @@ $" . number_format($property->price) : '') . "
                     <span class="inline-flex items-center text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
                         {{ ucfirst($property->listing_status) }}
                     </span>
-                    <div class="flex items-center gap-1.5" x-data="{ copied: false }">
+                    <div class="flex items-center gap-1.5 no-print" x-data="{ copied: false }">
                         <span class="text-xs text-gray-400 mr-1 hidden sm:inline">Share:</span>
                         <button type="button" title="Copy link"
                                 @click="navigator.clipboard.writeText(window.location.href).then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
@@ -197,6 +235,10 @@ $" . number_format($property->price) : '') . "
                         <a href="mailto:?subject={{ $shareMailSubject }}&amp;body={{ $shareMailBody }}" title="Share via Email" class="p-2 rounded-full bg-green-50 hover:bg-green-100 transition-colors">
                             <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         </a>
+                        <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
+                        <button type="button" onclick="window.print()" title="Print property details" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                        </button>
                     </div>
                 </div>
 
@@ -268,6 +310,144 @@ $" . number_format($property->price) : '') . "
             @endif
 
 
+    {{-- Mortgage Calculator --}}
+    @if($property->price)
+    <div class="bg-white rounded-2xl p-6 mb-6 shadow border border-gray-200"
+         x-data="{
+             price: {{ (int)$property->price }},
+             downPct: 20,
+             downAmt: {{ (int)round($property->price * 0.2) }},
+             downMode: 'pct',
+             rate: 7.0,
+             term: 30,
+             get loanAmt() {
+                 return Math.max(0, this.price - (this.downMode === 'pct' ? this.price * this.downPct / 100 : this.downAmt));
+             },
+             get monthly() {
+                 const r = this.rate / 100 / 12;
+                 const n = this.term * 12;
+                 if (r === 0 || n === 0) return this.loanAmt / (n || 1);
+                 return this.loanAmt * r * Math.pow(1+r, n) / (Math.pow(1+r, n) - 1);
+             },
+             get totalPaid() { return this.monthly * this.term * 12; },
+             get totalInterest() { return Math.max(0, this.totalPaid - this.loanAmt); },
+             get principalPct() { return this.totalPaid > 0 ? (this.loanAmt / this.totalPaid * 100) : 0; },
+             fmt(n) { return isNaN(n) ? '$0' : new Intl.NumberFormat('en-US', {style:'currency',currency:'USD',maximumFractionDigits:0}).format(n); },
+             syncDown() {
+                 if (this.downMode === 'pct') {
+                     this.downAmt = Math.round(this.price * this.downPct / 100);
+                 } else {
+                     this.downPct = this.price > 0 ? Math.round(this.downAmt / this.price * 100) : 0;
+                 }
+             }
+         }">
+        <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            Mortgage Calculator
+        </h3>
+
+        <div class="grid sm:grid-cols-2 gap-4 mb-5">
+            {{-- Home Price --}}
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Home Price</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
+                    <input type="number" x-model.number="price" @input="syncDown()"
+                           class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+                           style="--tw-ring-color: var(--primary)" min="0" step="1000">
+                </div>
+            </div>
+
+            {{-- Down Payment --}}
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Down Payment</label>
+                <div class="flex gap-2">
+                    <div class="relative flex-1">
+                        <span x-show="downMode === 'pct'" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
+                        <span x-show="downMode === 'amt'" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">$</span>
+                        <input x-show="downMode === 'pct'" type="number" x-model.number="downPct" @input="syncDown()"
+                               class="w-full pr-7 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+                               style="--tw-ring-color: var(--primary)" min="0" max="100" step="1">
+                        <input x-show="downMode === 'amt'" type="number" x-model.number="downAmt" @input="syncDown()"
+                               class="w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+                               style="--tw-ring-color: var(--primary)" min="0" step="1000">
+                    </div>
+                    <button type="button" @click="downMode = downMode === 'pct' ? 'amt' : 'pct'; syncDown()"
+                            class="px-3 py-2 rounded-lg border border-gray-300 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition whitespace-nowrap">
+                        <span x-text="downMode === 'pct' ? '$ Amt' : '% Pct'"></span>
+                    </button>
+                </div>
+            </div>
+
+            {{-- Interest Rate --}}
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Interest Rate</label>
+                <div class="relative">
+                    <input type="number" x-model.number="rate"
+                           class="w-full pr-7 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
+                           style="--tw-ring-color: var(--primary)" min="0" max="30" step="0.05">
+                    <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
+                </div>
+            </div>
+
+            {{-- Loan Term --}}
+            <div>
+                <label class="block text-xs font-medium text-gray-500 mb-1">Loan Term</label>
+                <div class="flex rounded-lg border border-gray-300 overflow-hidden text-sm">
+                    <button type="button" @click="term = 30"
+                            class="flex-1 py-2 font-medium transition"
+                            :class="term === 30 ? 'text-white' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                            :style="term === 30 ? 'background-color: var(--primary)' : ''">30 yr</button>
+                    <button type="button" @click="term = 20"
+                            class="flex-1 py-2 font-medium border-l border-gray-300 transition"
+                            :class="term === 20 ? 'text-white' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                            :style="term === 20 ? 'background-color: var(--primary)' : ''">20 yr</button>
+                    <button type="button" @click="term = 15"
+                            class="flex-1 py-2 font-medium border-l border-gray-300 transition"
+                            :class="term === 15 ? 'text-white' : 'bg-white text-gray-600 hover:bg-gray-50'"
+                            :style="term === 15 ? 'background-color: var(--primary)' : ''">15 yr</button>
+                </div>
+            </div>
+        </div>
+
+        {{-- Results --}}
+        <div class="rounded-xl p-4" style="background-color: rgba(var(--primary-rgb), 0.06)">
+            <div class="flex items-end justify-between mb-3">
+                <div>
+                    <p class="text-xs text-gray-500 mb-0.5">Est. Monthly Payment</p>
+                    <p class="text-3xl font-bold" style="color: var(--primary)" x-text="fmt(monthly)"></p>
+                    <p class="text-xs text-gray-400 mt-0.5">Principal &amp; interest only</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-gray-500 text-xs">Loan Amount</p>
+                    <p class="font-semibold text-gray-800 text-sm" x-text="fmt(loanAmt)"></p>
+                </div>
+            </div>
+
+            {{-- Principal vs Interest bar --}}
+            <div class="mb-3">
+                <div class="h-2 rounded-full bg-gray-200 overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-300" style="background-color: var(--primary)"
+                         :style="`width: ${Math.max(2, principalPct)}%`"></div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-500 mt-1.5">
+                    <span>Principal <strong class="text-gray-700" x-text="fmt(loanAmt)"></strong></span>
+                    <span>Interest <strong class="text-gray-700" x-text="fmt(totalInterest)"></strong></span>
+                </div>
+            </div>
+
+            <p class="text-xs text-gray-400">
+                Total of <span class="font-medium text-gray-500" x-text="term * 12 + ' payments'"></span>:
+                <span class="font-medium text-gray-600" x-text="fmt(totalPaid)"></span>
+            </p>
+        </div>
+
+        <p class="text-xs text-gray-400 mt-3">* Estimate only. Does not include taxes, insurance, HOA, or PMI.</p>
+    </div>
+    @endif
+
     {{-- Your Agent card --}}
     @if($property->staffMember)
     <div class="mt-8">
@@ -317,7 +497,7 @@ $" . number_format($property->price) : '') . "
 
     {{-- Appointment Booking Form --}}
     @php $isPro = $tenant->isPro(); @endphp
-    <div class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
+    <div id="booking-section" class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
         @if($isPro)
         {{-- Pro / Trial: full booking form --}}
         <div x-data="{
@@ -473,7 +653,7 @@ $" . number_format($property->price) : '') . "
 
     {{-- Location: Map & Street View --}}
     @if($property->latitude && $property->longitude)
-    <div class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
+    <div id="map-section" class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
         <h2 class="text-xl font-semibold text-gray-800 mb-4">Location</h2>
         @if(isset($mapsKey) && $mapsKey)
         <div class="grid md:grid-cols-2 gap-4">
@@ -500,7 +680,7 @@ $" . number_format($property->price) : '') . "
 
     {{-- Related Properties --}}
     @if($related->count())
-    <div class="mt-12">
+    <div id="related-section" class="mt-12">
         <h2 class="text-2xl font-bold text-gray-900 mb-6">Similar Properties</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach($related as $rel)

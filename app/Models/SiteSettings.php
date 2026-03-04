@@ -82,6 +82,7 @@ class SiteSettings extends Model
         'map_office_image',
         'hero_gradient_start',
         'hero_gradient_end',
+        'hero_effects',
         'owner_name',
         'owner_photo',
         'owner_bio',
@@ -100,6 +101,7 @@ class SiteSettings extends Model
         'search_engine_visibility'   => 'boolean',
         'show_login_link'            => 'boolean',
         'dark_mode_enabled'          => 'boolean',
+        'hero_effects'               => 'array',
     ];
 
     public function tenant(): BelongsTo

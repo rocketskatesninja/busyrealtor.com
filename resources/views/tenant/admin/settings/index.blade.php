@@ -2,7 +2,7 @@
 @section('title', 'Settings')
 @section('page-subtitle', 'Configure your site, branding, and integrations')
 @section('head')
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Playfair+Display:wght@700&family=Montserrat:wght@700&family=Inter:wght@700&family=Lato:wght@700&family=Raleway:wght@700&family=Open+Sans:wght@700&family=Oswald:wght@700&family=Roboto:wght@700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Nunito:wght@700&family=DM+Sans:wght@700&family=Urbanist:wght@700&family=Outfit:wght@700&family=Lato:wght@700&family=Open+Sans:wght@700&family=Roboto:wght@700&family=Oswald:wght@700&family=Playfair+Display:wght@700&family=Merriweather:wght@700&family=Lora:wght@700&family=Cormorant+Garamond:wght@700&family=EB+Garamond:wght@700&family=Libre+Baskerville:wght@700&family=Cinzel:wght@700&family=Bebas+Neue&family=Anton&family=Abril+Fatface&family=Righteous&display=swap" rel="stylesheet">
 @endsection
 @section('content')
 @php
@@ -202,7 +202,7 @@ $tabs = array_merge(...array_values($groups));
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Title Font</label>
                             @php $currentFont = $settings->title_font ?? 'Poppins'; @endphp
-                            <div x-data="{ open: false, selected: '{{ $currentFont }}' }" class="relative">
+                            <div x-data="{ open: false, selected: '{{ $currentFont }}' }" x-init="$watch('selected', () => typeof updateTitlePreview === 'function' && updateTitlePreview())" class="relative">
                                 <input type="hidden" name="title_font" :value="selected">
                                 <button type="button" @click="open = !open"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-left flex items-center justify-between bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
@@ -211,14 +211,24 @@ $tabs = array_merge(...array_values($groups));
                                 </button>
                                 <div x-show="open" x-cloak @click.outside="open = false"
                                      class="absolute z-30 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-y-auto max-h-72">
-                                    @foreach(['Poppins','Playfair Display','Montserrat','Inter','Lato','Raleway','Open Sans','Oswald','Roboto'] as $font)
-                                    <button type="button"
-                                            @click="selected = '{{ $font }}'; open = false"
-                                            :class="selected === '{{ $font }}' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'"
-                                            class="w-full text-left px-4 py-2.5 transition"
-                                            style="font-family: '{{ $font }}', sans-serif; font-weight: 700; font-size: 1rem;">
-                                        {{ $font }}
-                                    </button>
+                                    @php
+                                    $fontGroups = [
+                                        'Sans-Serif' => ['Poppins','Montserrat','Raleway','Inter','Nunito','DM Sans','Urbanist','Outfit','Lato','Open Sans','Roboto','Oswald'],
+                                        'Serif'      => ['Playfair Display','Merriweather','Lora','Cormorant Garamond','EB Garamond','Libre Baskerville','Cinzel'],
+                                        'Display'    => ['Bebas Neue','Anton','Abril Fatface','Righteous'],
+                                    ];
+                                    @endphp
+                                    @foreach($fontGroups as $category => $fonts)
+                                        <div class="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider bg-gray-50 border-t border-gray-100 first:border-t-0">{{ $category }}</div>
+                                        @foreach($fonts as $font)
+                                        <button type="button"
+                                                @click="selected = '{{ $font }}'; open = false"
+                                                :class="selected === '{{ $font }}' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'"
+                                                class="w-full text-left px-4 py-2.5 transition"
+                                                style="font-family: '{{ $font }}', sans-serif; font-weight: 700; font-size: 1rem;">
+                                            {{ $font }}
+                                        </button>
+                                        @endforeach
                                     @endforeach
                                 </div>
                             </div>
@@ -273,6 +283,35 @@ $tabs = array_merge(...array_values($groups));
                                 <div id="solid-color-field" style="{{ $colorType === 'solid' ? 'display:flex' : 'display:none' }}" class="flex-1 flex-col gap-1">
                                     <label class="block text-xs font-medium text-gray-600 mb-1">Color</label>
                                     <input type="color" name="title_color_solid" value="{{ $settings->title_color_solid ?? '#3B82F6' }}" class="w-full h-10 border-0 rounded cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Live Title Preview --}}
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Preview</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <div class="flex-1 p-4 border border-gray-200 rounded-lg bg-white overflow-hidden">
+                                    @php
+                                        $prevFont     = $settings->title_font ?? 'Poppins';
+                                        $prevWeight   = $settings->site_title_font_weight ?? '800';
+                                        $prevGradS    = $settings->title_gradient_start ?? '#3B82F6';
+                                        $prevGradV    = $settings->title_gradient_via   ?? '#8B5CF6';
+                                        $prevGradE    = $settings->title_gradient_end   ?? '#1E40AF';
+                                        $prevSolid    = $settings->title_color_solid    ?? '#3B82F6';
+                                        $prevColorType = $settings->title_color_type    ?? 'gradient';
+                                        $prevSize     = match($settings->site_title_font_size ?? '3xl') { 'xl' => '1.25rem', '2xl' => '1.5rem', '4xl' => '2.25rem', default => '1.875rem' };
+                                        $prevTracking = match($settings->site_title_letter_spacing ?? 'normal') { 'tight' => '-0.05em', 'wide' => '0.05em', default => 'normal' };
+                                        $prevStyle    = "font-family: '{$prevFont}', sans-serif; font-size: {$prevSize}; font-weight: {$prevWeight}; letter-spacing: {$prevTracking};";
+                                        if ($prevColorType === 'gradient') {
+                                            $prevStyle .= " background: linear-gradient(to right, {$prevGradS}, {$prevGradV}, {$prevGradE}); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; color: transparent;";
+                                        } else {
+                                            $prevStyle .= " color: {$prevSolid};";
+                                        }
+                                    @endphp
+                                    <div id="title_preview_light" class="font-extrabold truncate" style="{{ $prevStyle }}">{{ $settings->site_title ?? 'Your Site Title' }}</div>
+                                </div>
+                                <div class="flex-1 p-4 bg-gray-900 rounded-lg overflow-hidden">
+                                    <div id="title_preview_dark" class="font-extrabold truncate" style="{{ $prevStyle }}">{{ $settings->site_title ?? 'Your Site Title' }}</div>
                                 </div>
                             </div>
                         </div>
@@ -403,28 +442,6 @@ $tabs = array_merge(...array_values($groups));
                                         <input type="text" name="hero_subtitle" value="{{ $settings->hero_subtitle }}"
                                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Professional real estate services...">
                                     </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">CTA Button 1 Text</label>
-                                        <input type="text" name="cta_primary_text" value="{{ $settings->cta_primary_text }}"
-                                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Browse Listings">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">CTA Button 1 URL</label>
-                                        <input type="text" name="cta_primary_link" value="{{ $settings->cta_primary_link }}"
-                                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="/gallery">
-                                        <p class="text-xs text-gray-400 mt-1">Use <code>/gallery</code>, <code>/map</code>, <code>#contact</code>, or a full URL. Site paths are auto-prefixed with <code>/{{ $tenant->slug }}</code>.</p>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">CTA Button 2 Text</label>
-                                        <input type="text" name="cta_secondary_text" value="{{ $settings->cta_secondary_text }}"
-                                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Contact Us">
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">CTA Button 2 URL</label>
-                                        <input type="text" name="cta_secondary_link" value="{{ $settings->cta_secondary_link }}"
-                                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="#contact">
-                                        <p class="text-xs text-gray-400 mt-1">Use <code>/gallery</code>, <code>/map</code>, <code>#contact</code>, or a full URL. Site paths are auto-prefixed with <code>/{{ $tenant->slug }}</code>.</p>
-                                    </div>
                                     <div class="md:col-span-2 border-t border-gray-100 pt-4"
                                          x-data="{ bgType: '' }"
                                          x-init="bgType = ($el.querySelector('input[name=hero_background_type]:checked') || {}).value || 'preset'">
@@ -502,6 +519,61 @@ $tabs = array_merge(...array_values($groups));
                                             </div>
                                         </div>
 
+                                    </div>
+
+                                    {{-- Hero Effects --}}
+                                    <div class="md:col-span-2 border-t border-gray-100 pt-4">
+                                        <label class="block text-xs font-medium text-gray-600 mb-3">Visual Effects</label>
+                                        @php
+                                        $hfx = array_merge([
+                                            'entrance_animation' => true,
+                                            'dot_grid'           => true,
+                                            'dark_overlay'       => true,
+                                            'overlay_opacity'    => 45,
+                                            'cta_glow'           => true,
+                                            'scroll_cue'         => true,
+                                            'parallax'           => false,
+                                            'ken_burns'          => false,
+                                            'particles'          => false,
+                                        ], (array)($settings->hero_effects ?? []));
+                                        @endphp
+                                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
+                                            @foreach([
+                                                ['hero_fx_entrance',     'entrance_animation', 'Entrance Animation', 'Staggered slide-up on page load'],
+                                                ['hero_fx_dot_grid',     'dot_grid',           'Dot Grid Texture',   'Subtle dot pattern over background'],
+                                                ['hero_fx_dark_overlay', 'dark_overlay',       'Dark Overlay',       'Dims background for readability'],
+                                                ['hero_fx_cta_glow',     'cta_glow',           'CTA Glow Pulse',     'Pulsing glow on primary button'],
+                                                ['hero_fx_scroll_cue',   'scroll_cue',         'Scroll Cue Arrow',   'Bouncing chevron at the bottom'],
+                                                ['hero_fx_parallax',     'parallax',           'Parallax Scroll',    'Background moves slower than content'],
+                                                ['hero_fx_ken_burns',    'ken_burns',          'Ken Burns Zoom',     'Slow cinematic zoom on background'],
+                                                ['hero_fx_particles',    'particles',          'Floating Particles', 'Drifting particles over the hero'],
+                                            ] as [$fieldName, $fxKey, $label, $desc])
+                                            <label class="flex items-start gap-2.5 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                                                <input type="hidden" name="{{ $fieldName }}" value="0">
+                                                <input type="checkbox" name="{{ $fieldName }}" value="1" class="mt-0.5 rounded"
+                                                    {{ ($hfx[$fxKey] ?? false) ? 'checked' : '' }}>
+                                                <div>
+                                                    <p class="text-xs font-medium text-gray-700">{{ $label }}</p>
+                                                    <p class="text-xs text-gray-400 mt-0.5">{{ $desc }}</p>
+                                                </div>
+                                            </label>
+                                            @endforeach
+                                        </div>
+                                        <div x-data="{ showOpacity: {{ ($hfx['dark_overlay'] ?? true) ? 'true' : 'false' }} }">
+                                            <label class="flex items-center gap-2 text-xs text-gray-500 mb-1 cursor-pointer">
+                                                <input type="checkbox" name="hero_fx_dark_overlay" value="1" class="rounded sr-only"
+                                                    x-model="showOpacity" {{ ($hfx['dark_overlay'] ?? true) ? 'checked' : '' }}>
+                                            </label>
+                                            <div x-show="showOpacity">
+                                                <label class="block text-xs font-medium text-gray-600 mb-1">
+                                                    Overlay Opacity — <span id="overlay-opacity-val">{{ $hfx['overlay_opacity'] ?? 45 }}</span>%
+                                                </label>
+                                                <input type="range" name="hero_fx_overlay_opacity" min="10" max="80" step="5"
+                                                    value="{{ $hfx['overlay_opacity'] ?? 45 }}"
+                                                    class="w-full accent-blue-500"
+                                                    oninput="document.getElementById('overlay-opacity-val').textContent=this.value">
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1170,6 +1242,52 @@ $tabs = array_merge(...array_values($groups));
 @endsection
 
 @section('scripts')
+// ── Title Preview ─────────────────────────────────────────────────────────────
+const _fontSizeMap    = { 'xl': '1.25rem', '2xl': '1.5rem', '3xl': '1.875rem', '4xl': '2.25rem' };
+const _trackingMap    = { 'tight': '-0.05em', 'wide': '0.05em', 'normal': 'normal' };
+function updateTitlePreview() {
+    const previews = [document.getElementById('title_preview_light'), document.getElementById('title_preview_dark')].filter(Boolean);
+    if (!previews.length) return;
+    const titleText = document.querySelector('input[name="site_title"]')?.value || 'Your Site Title';
+    const font      = document.querySelector('input[name="title_font"]')?.value  || 'Poppins';
+    const size      = document.querySelector('select[name="site_title_font_size"]')?.value     || '3xl';
+    const weight    = document.querySelector('select[name="site_title_font_weight"]')?.value   || '800';
+    const tracking  = document.querySelector('select[name="site_title_letter_spacing"]')?.value || 'normal';
+    const colorType = document.querySelector('select[name="title_color_type"]')?.value         || 'gradient';
+    previews.forEach(el => {
+        el.textContent           = titleText;
+        el.style.fontFamily      = `'${font}', sans-serif`;
+        el.style.fontSize        = _fontSizeMap[size] || '1.875rem';
+        el.style.fontWeight      = weight;
+        el.style.letterSpacing   = _trackingMap[tracking] || 'normal';
+        if (colorType === 'gradient') {
+            const start = document.querySelector('input[name="title_gradient_start"]')?.value || '#3B82F6';
+            const via   = document.querySelector('input[name="title_gradient_via"]')?.value   || '#8B5CF6';
+            const end   = document.querySelector('input[name="title_gradient_end"]')?.value   || '#1E40AF';
+            el.style.background           = `linear-gradient(to right, ${start}, ${via}, ${end})`;
+            el.style.webkitBackgroundClip = 'text';
+            el.style.webkitTextFillColor  = 'transparent';
+            el.style.backgroundClip       = 'text';
+            el.style.color                = 'transparent';
+        } else {
+            const solid = document.querySelector('input[name="title_color_solid"]')?.value || '#3B82F6';
+            el.style.background           = 'none';
+            el.style.webkitBackgroundClip = 'unset';
+            el.style.webkitTextFillColor  = 'unset';
+            el.style.backgroundClip       = 'unset';
+            el.style.color                = solid;
+        }
+    });
+}
+document.querySelector('input[name="site_title"]')?.addEventListener('input', updateTitlePreview);
+document.querySelector('select[name="site_title_font_size"]')?.addEventListener('change', updateTitlePreview);
+document.querySelector('select[name="site_title_font_weight"]')?.addEventListener('change', updateTitlePreview);
+document.querySelector('select[name="site_title_letter_spacing"]')?.addEventListener('change', updateTitlePreview);
+document.querySelector('select[name="title_color_type"]')?.addEventListener('change', updateTitlePreview);
+document.querySelector('input[name="title_gradient_start"]')?.addEventListener('input', updateTitlePreview);
+document.querySelector('input[name="title_gradient_via"]')?.addEventListener('input', updateTitlePreview);
+document.querySelector('input[name="title_gradient_end"]')?.addEventListener('input', updateTitlePreview);
+document.querySelector('input[name="title_color_solid"]')?.addEventListener('input', updateTitlePreview);
 // Test email
 document.getElementById('test-email-btn')?.addEventListener('click', async () => {
     const email = prompt('Send test to email:');
