@@ -214,6 +214,22 @@
         /* Hide scrollbar while preserving scroll behaviour */
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
         .scrollbar-hide::-webkit-scrollbar { display: none; }
+        /* Hero header scroll states — driven by JS adding .is-scrolled class */
+        #tenant-hero-header                          { background-color: transparent; }
+        #tenant-hero-header.is-scrolled              { background-color: #ffffff; box-shadow: 0 4px 16px rgba(0,0,0,0.1); padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .dark #tenant-hero-header.is-scrolled        { background-color: #1e293b; }
+        #tenant-hero-header .nav-link                { color: rgba(255,255,255,0.9); }
+        #tenant-hero-header .nav-link:hover          { color: #ffffff; }
+        #tenant-hero-header .theme-btn               { color: #ffffff; }
+        #tenant-hero-header .hamburger-btn           { color: #ffffff; }
+        #tenant-hero-header.is-scrolled .nav-link       { color: #374151; }
+        #tenant-hero-header.is-scrolled .nav-link:hover { color: var(--primary); }
+        #tenant-hero-header.is-scrolled .theme-btn      { color: #4b5563; }
+        #tenant-hero-header.is-scrolled .hamburger-btn  { color: #374151; }
+        .dark #tenant-hero-header.is-scrolled .nav-link       { color: #cbd5e1; }
+        .dark #tenant-hero-header.is-scrolled .nav-link:hover { color: var(--primary); }
+        .dark #tenant-hero-header.is-scrolled .theme-btn      { color: #94a3b8; }
+        .dark #tenant-hero-header.is-scrolled .hamburger-btn  { color: #cbd5e1; }
         @yield('styles')
     </style>
     @yield('head')
@@ -283,13 +299,11 @@
 {{-- HERO MODE HEADER --}}
 @unless(View::hasSection('hide_header'))
 @if($headerMode === 'hero')
-<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent py-4"
-        x-data="{ scrolled: window.pageYOffset > 50, open: false }"
-        x-on:scroll.window="scrolled = (window.pageYOffset > 50)"
-        :class="scrolled ? 'bg-white shadow-lg py-3' : 'bg-transparent py-4'">
+<header id="tenant-hero-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4"
+        x-data="{ open: false }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between">
-            <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3" :style="scrolled ? '' : 'filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))'">
+            <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3" id="tenant-logo" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))">
                 @if(!empty($settings->favicon_preset) && $headerDisplayMode !== 'text_only')
                     <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?? '' }}" class="h-8 w-8 object-contain rounded-lg">
                 @endif
@@ -297,16 +311,16 @@
                     <span style="{{ $titleStyle }}">{{ $settings->site_title ?? config('app.name') }}</span>
                 @endif
             </a>
-            <nav class="hidden md:flex items-center space-x-6 transition-all duration-300" style="opacity:0;pointer-events:none" :style="scrolled ? 'opacity:1;pointer-events:auto' : 'opacity:0;pointer-events:none'">
-                <a href="{{ $galleryUrl }}" class="font-medium transition-colors hover-primary" :class="scrolled ? 'text-gray-700' : 'text-white/90 hover:text-white'" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
-                <a href="{{ $mapUrl }}" class="font-medium transition-colors hover-primary" :class="scrolled ? 'text-gray-700' : 'text-white/90 hover:text-white'" @if($isMap) style="color: var(--primary);" @endif>Map</a>
-                <a href="{{ route('login') }}" class="font-medium transition-colors hover-primary" :class="scrolled ? 'text-gray-700' : 'text-white/90 hover:text-white'" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
-                <button @click="$store.theme.toggle()" class="p-1 rounded-full" :class="scrolled ? 'text-gray-600' : 'text-white'">
-                    <svg x-show="!$store.theme.dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                    <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            <nav id="tenant-nav" class="hidden md:flex items-center space-x-6 transition-all duration-300" style="opacity:0;pointer-events:none">
+                <a href="{{ $galleryUrl }}" class="nav-link font-medium transition-colors hover-primary" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
+                <a href="{{ $mapUrl }}" class="nav-link font-medium transition-colors hover-primary" @if($isMap) style="color: var(--primary);" @endif>Map</a>
+                <a href="{{ route('login') }}" class="nav-link font-medium transition-colors hover-primary" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
+                <button id="theme-toggle-btn" onclick="themeToggle()" class="theme-btn p-1 rounded-full">
+                    <svg id="theme-icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg id="theme-icon-sun" class="w-5 h-5" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </button>
             </nav>
-            <button @click="open = !open" class="md:hidden p-2 rounded transition-all duration-300" :class="scrolled ? 'text-gray-700' : 'text-white'" style="opacity:0;pointer-events:none" :style="scrolled ? 'opacity:1;pointer-events:auto' : 'opacity:0;pointer-events:none'">
+            <button @click="open = !open" id="tenant-hamburger" class="hamburger-btn md:hidden p-2 rounded transition-all duration-300" style="opacity:0;pointer-events:none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
         </div>
@@ -882,10 +896,44 @@
 @endunless
 
 <script>
+// Hero header scroll: pure JS, no Alpine dependency
+(function() {
+    var h = document.getElementById('tenant-hero-header');
+    if (!h) return;
+    var nav  = document.getElementById('tenant-nav');
+    var ham  = document.getElementById('tenant-hamburger');
+    var logo = document.getElementById('tenant-logo');
+    function update() {
+        var s = window.scrollY > 50;
+        h.classList.toggle('is-scrolled', s);
+        var vis = s ? 'opacity:1;pointer-events:auto' : 'opacity:0;pointer-events:none';
+        if (nav)  nav.style.cssText  = vis;
+        if (ham)  ham.style.cssText  = vis;
+        if (logo) logo.style.filter  = s ? '' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
+    }
+    window.addEventListener('scroll', update, { passive: true });
+})();
+
+// Dark mode toggle: pure JS, no Alpine dependency
+function updateThemeIcons() {
+    var dark = document.documentElement.classList.contains('dark');
+    var moon = document.getElementById('theme-icon-moon');
+    var sun  = document.getElementById('theme-icon-sun');
+    if (moon) moon.style.display = dark ? 'none' : '';
+    if (sun)  sun.style.display  = dark ? '' : 'none';
+}
+function themeToggle() {
+    var dark = !document.documentElement.classList.contains('dark');
+    document.documentElement.classList.toggle('dark', dark);
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+    updateThemeIcons();
+}
+updateThemeIcons();
+
 document.addEventListener('alpine:init', () => {
     Alpine.store('theme', {
         dark: document.documentElement.classList.contains('dark'),
-        toggle() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('theme', this.dark ? 'dark' : 'light'); }
+        toggle() { themeToggle(); this.dark = document.documentElement.classList.contains('dark'); }
     });
 });
 

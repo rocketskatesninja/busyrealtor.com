@@ -45,27 +45,27 @@
 @section('content')
 
 {{-- ═══════════════════════════════════════════════════════════ NAV ═══ --}}
-<header x-data="{ open: false, scrolled: false }" x-init="window.addEventListener('scroll', () => scrolled = window.scrollY > 40)"
-        :class="scrolled ? 'bg-white dark:bg-gray-900 shadow-md' : 'bg-transparent'"
-        class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+<header id="main-header" x-data="{ open: false }"
+        class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        style="background-color:transparent">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
             <a href="/" class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center">
                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                 </div>
-                <span :class="scrolled ? 'text-gray-900' : 'text-white'" class="font-bold text-lg transition-colors">BusyRealtor</span>
+                <span class="nav-text font-bold text-lg transition-colors">BusyRealtor</span>
             </a>
             <nav class="hidden md:flex items-center gap-8">
-                <a href="#features" :class="scrolled ? 'text-gray-600 dark:text-gray-300 hover:text-blue-600' : 'text-blue-100 hover:text-white'" class="text-sm font-medium transition-colors">Features</a>
-                <a href="#demo" :class="scrolled ? 'text-gray-600 dark:text-gray-300 hover:text-blue-600' : 'text-blue-100 hover:text-white'" class="text-sm font-medium transition-colors">Demo</a>
-                <a href="#pricing" :class="scrolled ? 'text-gray-600 dark:text-gray-300 hover:text-blue-600' : 'text-blue-100 hover:text-white'" class="text-sm font-medium transition-colors">Pricing</a>
+                <a href="#features" class="nav-link text-sm font-medium transition-colors">Features</a>
+                <a href="#demo" class="nav-link text-sm font-medium transition-colors">Demo</a>
+                <a href="#pricing" class="nav-link text-sm font-medium transition-colors">Pricing</a>
             </nav>
             <div class="hidden md:flex items-center gap-3">
-                <a href="/login" :class="scrolled ? 'text-gray-600 dark:text-gray-300 hover:text-blue-600' : 'text-blue-100 hover:text-white'" class="text-sm font-medium transition-colors">Sign In</a>
+                <a href="/login" class="nav-link text-sm font-medium transition-colors">Sign In</a>
                 <a href="/register" class="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">Get Started Free</a>
             </div>
-            <button @click="open = !open" :class="scrolled ? 'text-gray-600 dark:text-gray-300' : 'text-white'" class="md:hidden p-2">
+            <button @click="open = !open" class="hamburger-btn md:hidden p-2">
                 <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 <svg x-show="open" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>

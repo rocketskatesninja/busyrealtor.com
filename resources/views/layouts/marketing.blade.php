@@ -162,6 +162,20 @@
         .dark .shadow-lg  { box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important; }
         .dark .shadow-xl  { box-shadow: 0 8px 30px rgba(0,0,0,0.7) !important; }
         .dark .shadow-2xl { box-shadow: 0 12px 40px rgba(0,0,0,0.8) !important; }
+
+        /* Header scroll states — driven by JS adding .is-scrolled class */
+        #main-header .nav-link          { color: rgba(219,234,254,1); }
+        #main-header .nav-link:hover    { color: #ffffff; }
+        #main-header .nav-text          { color: #ffffff; }
+        #main-header .hamburger-btn     { color: #ffffff; }
+        #main-header.is-scrolled .nav-link       { color: #4b5563; }
+        #main-header.is-scrolled .nav-link:hover { color: #2563eb; }
+        #main-header.is-scrolled .nav-text       { color: #111827; }
+        #main-header.is-scrolled .hamburger-btn  { color: #4b5563; }
+        .dark #main-header.is-scrolled .nav-link       { color: #d1d5db; }
+        .dark #main-header.is-scrolled .nav-link:hover { color: #2563eb; }
+        .dark #main-header.is-scrolled .nav-text       { color: #f1f5f9; }
+        .dark #main-header.is-scrolled .hamburger-btn  { color: #d1d5db; }
     </style>
     @yield('head')
 </head>
@@ -203,6 +217,26 @@
     document.querySelectorAll('.count-up').forEach(function (el) {
         el.dataset.target = el.textContent.trim(); co.observe(el);
     });
+
+    // Header scroll: pure JS, no Alpine/Tailwind dependency
+    (function() {
+        var header = document.getElementById('main-header');
+        if (!header) return;
+        var isDark = document.documentElement.classList.contains('dark');
+        function updateHeader() {
+            var scrolled = window.scrollY > 40;
+            header.style.backgroundColor = scrolled
+                ? (isDark ? '#1e293b' : '#ffffff')
+                : 'transparent';
+            header.classList.toggle('shadow-md', scrolled);
+            header.classList.toggle('is-scrolled', scrolled);
+        }
+        window.addEventListener('scroll', updateHeader, { passive: true });
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
+            isDark = e.matches;
+            if (window.scrollY > 40) updateHeader();
+        });
+    })();
 })();
 </script>
 </body>
