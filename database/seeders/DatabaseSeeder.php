@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Tenant;
 use App\Models\SiteSettings;
 use App\Models\LegalPage;
+use App\Models\Property;
+use App\Models\PropertyImage;
 
 class DatabaseSeeder extends Seeder
 {
@@ -146,7 +148,44 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $this->command->info('✓ Super admin: contact@punchlistify.com / secret');
+        // Demo properties for "Needs Attention" panel
+        $propNoPhotos = Property::firstOrCreate(
+            ['title' => 'New Listing — Pending Photos', 'tenant_id' => $tenant->id],
+            [
+                'listing_status' => 'active',
+                'property_type'  => 'house',
+                'price'          => 349000,
+                'address_street' => '88 Elm Court',
+                'address_city'   => 'Anytown',
+                'address_state'  => 'CA',
+                'address_zip'    => '90210',
+                'bedrooms'       => 3,
+                'bathrooms'      => 2,
+                'view_count'     => 0,
+                'description'    => 'Just listed. Photos coming soon.',
+            ]
+        );
+
+        Property::firstOrCreate(
+            ['title' => 'Cozy Studio — Downtown', 'tenant_id' => $tenant->id],
+            [
+                'listing_status' => 'active',
+                'property_type'  => 'condo',
+                'price'          => 189000,
+                'address_street' => '12 Oak Ave #4B',
+                'address_city'   => 'Anytown',
+                'address_state'  => 'CA',
+                'address_zip'    => '90210',
+                'bedrooms'       => 1,
+                'bathrooms'      => 1,
+                'view_count'     => 3,
+                'created_at'     => now()->subDays(20),
+                'updated_at'     => now()->subDays(20),
+                'description'    => 'Affordable downtown studio. Great for first-time buyers.',
+            ]
+        );
+
+                $this->command->info('✓ Super admin: contact@punchlistify.com / secret');
         $this->command->info('✓ Demo tenant: demo-realty (admin@demorealty.com / secret)');
         $this->command->info('✓ Default settings and legal pages created');
     }

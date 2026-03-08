@@ -82,23 +82,23 @@ $tabs = array_merge(...array_values($groups));
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Site Title</label>
-                            <input type="text" name="site_title" value="{{ $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="site_title" value="{{ $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
-                            <input type="text" name="tagline" value="{{ $settings->tagline }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="tagline" value="{{ $settings->tagline }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
-                            <input type="email" name="contact_email" value="{{ $settings->contact_email }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="email" name="contact_email" value="{{ $settings->contact_email }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
-                            <input type="text" name="contact_phone" value="{{ $settings->contact_phone }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="contact_phone" value="{{ $settings->contact_phone }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">Business Address</label>
-                            <input type="text" name="contact_address" value="{{ $settings->contact_address }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="contact_address" value="{{ $settings->contact_address }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                     </div>
                     <div class="mt-5 border-t pt-5">
@@ -107,7 +107,7 @@ $tabs = array_merge(...array_values($groups));
                             @foreach(['social_facebook'=>'Facebook URL','social_instagram'=>'Instagram URL','social_twitter'=>'Twitter/X URL','social_linkedin'=>'LinkedIn URL'] as $field=>$label)
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ $label }}</label>
-                                <input type="url" name="{{ $field }}" value="{{ $settings->$field }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="https://...">
+                                <input type="url" name="{{ $field }}" value="{{ $settings->$field }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="https://...">
                             </div>
                             @endforeach
                         </div>
@@ -121,11 +121,11 @@ $tabs = array_merge(...array_values($groups));
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                            <input type="text" name="name" value="{{ auth()->user()->name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="name" value="{{ auth()->user()->name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
-                            <input type="email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                     </div>
                     <div class="mt-5 border-t pt-5">
@@ -133,11 +133,11 @@ $tabs = array_merge(...array_values($groups));
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                                <input type="password" name="new_password" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Leave blank to keep current">
+                                <input type="password" name="new_password" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Leave blank to keep current">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                                <input type="password" name="new_password_confirmation" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <input type="password" name="new_password_confirmation" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                             </div>
                         </div>
                     </div>
@@ -147,7 +147,7 @@ $tabs = array_merge(...array_values($groups));
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Agent Name</label>
-                                <input type="text" name="owner_name" value="{{ $settings->owner_name ?? auth()->user()->name }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your display name">
+                                <input type="text" name="owner_name" value="{{ $settings->owner_name ?? auth()->user()->name }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Your display name">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
@@ -160,7 +160,7 @@ $tabs = array_merge(...array_values($groups));
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-                                <textarea name="owner_bio" rows="4" maxlength="1000" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Share your expertise, years of experience, and the market areas you serve...">{{ $settings->owner_bio }}</textarea>
+                                <textarea name="owner_bio" rows="4" maxlength="1000" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Share your expertise, years of experience, and the market areas you serve...">{{ $settings->owner_bio }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -199,7 +199,7 @@ $tabs = array_merge(...array_values($groups));
                             <div x-data="{ open: false, selected: '{{ $currentFont }}' }" x-init="$watch('selected', () => typeof updateTitlePreview === 'function' && updateTitlePreview())" class="relative">
                                 <input type="hidden" name="title_font" :value="selected">
                                 <button type="button" @click="open = !open"
-                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-left flex items-center justify-between bg-white focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-left flex items-center justify-between bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/60">
                                     <span :style="`font-family: '${selected}', sans-serif; font-weight: 700; font-size: 1rem;`" x-text="selected"></span>
                                     <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                                 </button>
@@ -217,7 +217,7 @@ $tabs = array_merge(...array_values($groups));
                                         @foreach($fonts as $font)
                                         <button type="button"
                                                 @click="selected = '{{ $font }}'; open = false"
-                                                :class="selected === '{{ $font }}' ? 'bg-blue-50 text-blue-600' : 'text-gray-700 hover:bg-gray-50'"
+                                                :class="selected === '{{ $font }}' ? 'bg-[var(--primary)]/10 text-[var(--primary)]' : 'text-gray-700 hover:bg-gray-50'"
                                                 class="w-full text-left px-4 py-2.5 transition"
                                                 style="font-family: '{{ $font }}', sans-serif; font-weight: 700; font-size: 1rem;">
                                             {{ $font }}
@@ -431,7 +431,7 @@ $tabs = array_merge(...array_values($groups));
                         <div id="sections-container" class="space-y-2" style="animation: hpFadeIn .25s ease both">
                         @foreach($orderedSections as $section)
                         @php $key = $section['key']; $isLocked = $section['locked'] ?? false; @endphp
-                        <div class="section-item bg-gray-50 rounded-xl border-2 border-transparent hover:border-gray-200 transition-all {{ $isLocked ? 'locked-section' : '' }}"
+                        <div class="section-item bg-gray-50 rounded-xl border-2 border-transparent hover:border-[var(--primary)] transition-all {{ $isLocked ? 'locked-section' : '' }}"
                              data-section="{{ $key }}" data-locked="{{ $isLocked ? '1' : '0' }}">
 
                             {{-- Row Header --}}
@@ -469,7 +469,7 @@ $tabs = array_merge(...array_values($groups));
                                     <input type="checkbox" class="sr-only peer section-toggle"
                                            data-section="{{ $key }}"
                                            {{ $section['enabled'] ? 'checked' : '' }}>
-                                    <div class="relative w-9 h-5 rounded-full bg-gray-200 peer-checked:bg-blue-500 transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4" style="--tw-peer-checked-bg: var(--primary)"></div>
+                                    <div class="relative w-9 h-5 rounded-full bg-gray-200 peer-checked:bg-[var(--primary)] transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4" style="--tw-peer-checked-bg: var(--primary)"></div>
                                 </label>
                                 @else
                                 <span class="text-xs font-semibold rounded-full px-2 py-0.5 shrink-0" style="color:var(--primary);background:rgba(var(--primary-rgb),.12);border:1px solid rgba(var(--primary-rgb),.25)">Always on</span>
@@ -482,20 +482,18 @@ $tabs = array_merge(...array_values($groups));
 
                                 @if($key === 'hero')
                                 {{-- HERO EDITOR --}}
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ bgType: '' }" x-init="bgType = ($el.querySelector('input[name=hero_background_type]:checked') || {}).value || 'preset'">
                                     <div class="md:col-span-2">
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Hero Headline</label>
                                         <input type="text" name="hero_title" value="{{ $settings->hero_title }}"
-                                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Find Your Dream Home">
+                                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Find Your Dream Home">
                                     </div>
                                     <div class="md:col-span-2">
                                         <label class="block text-xs font-medium text-gray-600 mb-1">Hero Subtitle</label>
                                         <input type="text" name="hero_subtitle" value="{{ $settings->hero_subtitle }}"
-                                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Professional real estate services...">
+                                               class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Professional real estate services...">
                                     </div>
-                                    <div class="md:col-span-2 border-t border-gray-100 pt-4"
-                                         x-data="{ bgType: '' }"
-                                         x-init="bgType = ($el.querySelector('input[name=hero_background_type]:checked') || {}).value || 'preset'">
+                                    <div class="md:col-span-2 border-t border-gray-100 pt-4">
                                         <label class="block text-xs font-medium text-gray-600 mb-2">Hero Background</label>
                                         {{-- Type selector: radio inputs handle form submission; peer-checked CSS handles visual state --}}
                                         <div class="flex gap-2 flex-wrap mb-3">
@@ -505,7 +503,7 @@ $tabs = array_merge(...array_values($groups));
                                                        class="sr-only peer"
                                                        {{ ($settings->hero_background_type ?? 'preset') === $bval ? 'checked' : '' }}>
                                                 <span class="block px-3 py-1.5 rounded-lg text-xs font-medium transition
-                                                             peer-checked:bg-blue-500 peer-checked:text-white
+                                                             peer-checked:bg-[var(--primary)] peer-checked:text-white
                                                              bg-gray-100 text-gray-600 hover:bg-gray-200">{{ $blabel }}</span>
                                             </label>
                                             @endforeach
@@ -529,13 +527,13 @@ $tabs = array_merge(...array_values($groups));
                                                     <input type="radio" name="hero_preset" value="{{ $pkey }}"
                                                            class="sr-only peer"
                                                            {{ $savedPreset === $pkey ? 'checked' : '' }}>
-                                                    <div class="rounded-lg overflow-hidden transition border-2 border-transparent peer-checked:border-blue-500 hover:border-gray-300">
+                                                    <div class="rounded-lg overflow-hidden transition border-2 border-transparent peer-checked:border-[var(--primary)] hover:border-gray-300">
                                                         <img src="/assets/images/hero-presets/{{ $pkey }}.jpg"
                                                              alt="{{ $plabel }}" class="w-full h-14 object-cover">
                                                         <div class="text-xs text-center py-0.5 bg-white dark:bg-gray-700 dark:text-gray-300 text-gray-600 truncate px-1">{{ $plabel }}</div>
                                                     </div>
                                                     {{-- Checkmark: sibling of the peer input, visible when checked --}}
-                                                    <div class="absolute top-1 right-1 bg-blue-500 rounded-full p-0.5 hidden peer-checked:block pointer-events-none">
+                                                    <div class="absolute top-1 right-1 bg-[var(--primary)] rounded-full p-0.5 hidden peer-checked:block pointer-events-none">
                                                         <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                                                             <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
                                                         </svg>
@@ -555,7 +553,7 @@ $tabs = array_merge(...array_values($groups));
                                             </div>
                                             @endif
                                             <input type="file" name="hero_image" accept="image/*"
-                                                   class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                                                   class="w-full text-sm text-gray-600 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-[var(--primary)]/10 file:text-[var(--primary)] hover:file:bg-[var(--primary)]/20 dark:file:bg-blue-900/40 dark:file:text-blue-300 dark:hover:file:bg-blue-900/60">
                                             <p class="text-xs text-gray-400">Recommended: 1920×1080px or wider. JPG or PNG.</p>
                                         </div>
                                         {{-- Gradient controls --}}
@@ -590,15 +588,28 @@ $tabs = array_merge(...array_values($groups));
                                         @endphp
                                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
                                             @foreach([
-                                                ['hero_fx_entrance',     'entrance_animation', 'Entrance Animation', 'Staggered slide-up on page load'],
-                                                ['hero_fx_dot_grid',     'dot_grid',           'Dot Grid Texture',   'Subtle dot pattern over background'],
-                                                ['hero_fx_dark_overlay', 'dark_overlay',       'Dark Overlay',       'Dims background for readability'],
-                                                ['hero_fx_cta_glow',     'cta_glow',           'CTA Glow Pulse',     'Pulsing glow on primary button'],
-                                                ['hero_fx_scroll_cue',   'scroll_cue',         'Scroll Cue Arrow',   'Bouncing chevron at the bottom'],
-                                                ['hero_fx_parallax',     'parallax',           'Parallax Scroll',    'Background moves slower than content'],
-                                                ['hero_fx_ken_burns',    'ken_burns',          'Ken Burns Zoom',     'Slow cinematic zoom on background'],
-                                                ['hero_fx_particles',    'particles',          'Floating Particles', 'Drifting particles over the hero'],
-                                            ] as [$fieldName, $fxKey, $label, $desc])
+                                                ['hero_fx_entrance',     'entrance_animation', 'Entrance Animation', 'Staggered slide-up on page load',     false],
+                                                ['hero_fx_dot_grid',     'dot_grid',           'Dot Grid Texture',   'Subtle dot pattern over background',   false],
+                                                ['hero_fx_dark_overlay', 'dark_overlay',       'Dark Overlay',       'Dims background for readability',      false],
+                                                ['hero_fx_cta_glow',     'cta_glow',           'CTA Glow Pulse',     'Pulsing glow on primary button',       false],
+                                                ['hero_fx_scroll_cue',   'scroll_cue',         'Scroll Cue Arrow',   'Bouncing chevron at the bottom',       false],
+                                                ['hero_fx_parallax',     'parallax',           'Parallax Scroll',    'Background moves slower than content', true],
+                                                ['hero_fx_ken_burns',    'ken_burns',          'Ken Burns Zoom',     'Slow cinematic zoom on background',    true],
+                                                ['hero_fx_particles',    'particles',          'Floating Particles', 'Drifting particles over the hero',     false],
+                                            ] as [$fieldName, $fxKey, $label, $desc, $imageOnly])
+                                            @if($imageOnly)
+                                            <label class="flex items-start gap-2.5 p-3 border border-gray-200 rounded-lg transition"
+                                                :class="bgType==='gradient' ? 'opacity-40 pointer-events-none select-none cursor-not-allowed' : 'hover:bg-gray-50 cursor-pointer'">
+                                                <input type="hidden" name="{{ $fieldName }}" value="0">
+                                                <input type="checkbox" name="{{ $fieldName }}" value="1" class="mt-0.5 rounded"
+                                                    :disabled="bgType==='gradient'"
+                                                    {{ ($hfx[$fxKey] ?? false) ? 'checked' : '' }}>
+                                                <div>
+                                                    <p class="text-xs font-medium text-gray-700">{{ $label }}</p>
+                                                    <p class="text-xs text-gray-400 mt-0.5">{{ $desc }}<span x-show="bgType==='gradient'" class="text-amber-500"> — image only</span></p>
+                                                </div>
+                                            </label>
+                                            @else
                                             <label class="flex items-start gap-2.5 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
                                                 <input type="hidden" name="{{ $fieldName }}" value="0">
                                                 <input type="checkbox" name="{{ $fieldName }}" value="1" class="mt-0.5 rounded"
@@ -608,6 +619,7 @@ $tabs = array_merge(...array_values($groups));
                                                     <p class="text-xs text-gray-400 mt-0.5">{{ $desc }}</p>
                                                 </div>
                                             </label>
+                                            @endif
                                             @endforeach
                                         </div>
                                         <div x-data="{ showOpacity: {{ ($hfx['dark_overlay'] ?? true) ? 'true' : 'false' }} }">
@@ -621,7 +633,7 @@ $tabs = array_merge(...array_values($groups));
                                                 </label>
                                                 <input type="range" name="hero_fx_overlay_opacity" min="10" max="80" step="5"
                                                     value="{{ $hfx['overlay_opacity'] ?? 45 }}"
-                                                    class="w-full accent-blue-500"
+                                                    class="w-full accent-[var(--primary)]"
                                                     oninput="document.getElementById('overlay-opacity-val').textContent=this.value">
                                             </div>
                                         </div>
@@ -638,7 +650,7 @@ $tabs = array_merge(...array_values($groups));
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pr-6">
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Icon</label>
-                                                <select x-model="feature.icon" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <select x-model="feature.icon" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                             <option value="home">🏠 Home</option>
                                             <option value="search">🔍 Search</option>
                                             <option value="star">⭐ Star</option>
@@ -653,12 +665,12 @@ $tabs = array_merge(...array_values($groups));
                                             </div>
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
-                                                <input type="text" x-model="feature.title" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Feature title">
+                                                <input type="text" x-model="feature.title" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Feature title">
                                             </div>
                                         </div>
                                         <div class="mt-3">
                                             <label class="block text-xs font-medium text-gray-600 mb-1">Description</label>
-                                            <textarea x-model="feature.description" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Describe this feature..."></textarea>
+                                            <textarea x-model="feature.description" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none" placeholder="Describe this feature..."></textarea>
                                         </div>
                                     </div>
                                 </template>
@@ -674,7 +686,7 @@ $tabs = array_merge(...array_values($groups));
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pr-6">
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Icon</label>
-                                                <select x-model="service.icon" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <select x-model="service.icon" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                             <option value="home">🏠 Home</option>
                                             <option value="search">🔍 Search</option>
                                             <option value="star">⭐ Star</option>
@@ -689,12 +701,12 @@ $tabs = array_merge(...array_values($groups));
                                             </div>
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
-                                                <input type="text" x-model="service.title" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Service title">
+                                                <input type="text" x-model="service.title" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Service title">
                                             </div>
                                         </div>
                                         <div class="mt-3">
                                             <label class="block text-xs font-medium text-gray-600 mb-1">Description</label>
-                                            <textarea x-model="service.description" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Describe this service..."></textarea>
+                                            <textarea x-model="service.description" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none" placeholder="Describe this service..."></textarea>
                                         </div>
                                     </div>
                                 </template>
@@ -707,11 +719,11 @@ $tabs = array_merge(...array_values($groups));
                                         <div class="flex-1 grid grid-cols-2 gap-3">
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Value</label>
-                                                <input type="text" x-model="stat.value" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="500+">
+                                                <input type="text" x-model="stat.value" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="500+">
                                             </div>
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Label</label>
-                                                <input type="text" x-model="stat.label" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Homes Sold">
+                                                <input type="text" x-model="stat.label" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Homes Sold">
                                             </div>
                                         </div>
                                         <button type="button" @click="stats.splice(index,1)" class="text-red-400 hover:text-red-600 shrink-0">
@@ -731,11 +743,11 @@ $tabs = array_merge(...array_values($groups));
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pr-6">
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Name</label>
-                                                <input type="text" x-model="testimonial.name" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Client name">
+                                                <input type="text" x-model="testimonial.name" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Client name">
                                             </div>
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Rating</label>
-                                                <select x-model.number="testimonial.rating" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                                <select x-model.number="testimonial.rating" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                                     <option value="5">⭐⭐⭐⭐⭐ (5 stars)</option>
                                                     <option value="4">⭐⭐⭐⭐ (4 stars)</option>
                                                     <option value="3">⭐⭐⭐ (3 stars)</option>
@@ -746,7 +758,7 @@ $tabs = array_merge(...array_values($groups));
                                         </div>
                                         <div class="mt-3">
                                             <label class="block text-xs font-medium text-gray-600 mb-1">Testimonial Text</label>
-                                            <textarea x-model="testimonial.text" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="What the client said..."></textarea>
+                                            <textarea x-model="testimonial.text" rows="2" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none" placeholder="What the client said..."></textarea>
                                         </div>
                                     </div>
                                 </template>
@@ -760,11 +772,11 @@ $tabs = array_merge(...array_values($groups));
                                             <div class="flex-1 space-y-3">
                                                 <div>
                                                     <label class="block text-xs font-medium text-gray-600 mb-1">Question</label>
-                                                    <input type="text" x-model="item.question" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="How do I schedule a viewing?">
+                                                    <input type="text" x-model="item.question" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="How do I schedule a viewing?">
                                                 </div>
                                                 <div>
                                                     <label class="block text-xs font-medium text-gray-600 mb-1">Answer</label>
-                                                    <textarea x-model="item.answer" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" placeholder="Your answer here..."></textarea>
+                                                    <textarea x-model="item.answer" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none" placeholder="Your answer here..."></textarea>
                                                 </div>
                                             </div>
                                             <button type="button" @click="faq.splice(index,1)" class="text-red-400 hover:text-red-600 shrink-0 mt-1">
@@ -776,16 +788,16 @@ $tabs = array_merge(...array_values($groups));
                                 <button type="button" @click="faq.push({question:'',answer:''})" class="w-full py-2 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-gray-400 hover:text-gray-700 transition-colors">+ Add FAQ Item</button>
 
                                 @elseif($key === 'listings')
-                                <p class="text-sm text-gray-500">Displays properties marked as <strong>Featured</strong> from your portfolio. Manage your properties in the <a href="{{ route('tenant.admin.properties.index', $account) }}" class="text-blue-600 hover:underline">Properties section</a>.</p>
+                                <p class="text-sm text-gray-500">Displays properties marked as <strong>Featured</strong> from your portfolio. Manage your properties in the <a href="{{ route('tenant.admin.properties.index', $account) }}" class="text-[var(--primary)] hover:underline">Properties section</a>.</p>
 
                                 @elseif($key === 'team')
-                                <p class="text-sm text-gray-500">Displays staff members with <strong>Display on Homepage</strong> enabled. Manage your team in the <a href="{{ route('tenant.admin.staff.index', $account) }}" class="text-blue-600 hover:underline">Staff section</a>.</p>
+                                <p class="text-sm text-gray-500">Displays staff members with <strong>Display on Homepage</strong> enabled. Manage your team in the <a href="{{ route('tenant.admin.staff.index', $account) }}" class="text-[var(--primary)] hover:underline">Staff section</a>.</p>
 
                                 @elseif($key === 'contact')
-                                <p class="text-sm text-gray-500">Shows your contact form and office details. Update your phone, email, and address in <a href="?tab=general" class="text-blue-600 hover:underline">General settings</a>.</p>
+                                <p class="text-sm text-gray-500">Shows your contact form and office details. Update your phone, email, and address in <a href="?tab=general" class="text-[var(--primary)] hover:underline">General settings</a>.</p>
 
                                 @elseif($key === 'map')
-                                <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="?tab=connected" class="text-blue-600 hover:underline">Integrations</a>.</p>
+                                <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="?tab=connected" class="text-[var(--primary)] hover:underline">Integrations</a>.</p>
                                 <div class="mt-4 pt-4 border-t border-gray-100">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         Office Photo <span class="text-gray-400 font-normal">(optional)</span>
@@ -800,7 +812,7 @@ $tabs = array_merge(...array_values($groups));
                                     </div>
                                     @endif
                                     <input type="file" name="map_office_image" accept="image/*"
-                                        class="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+                                        class="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-[var(--primary)]/10 file:text-[var(--primary)] hover:file:bg-[var(--primary)]/20 cursor-pointer">
                                     <p class="text-xs text-gray-400 mt-1">Leave blank to keep the current photo. Max 5MB.</p>
                                 </div>
 
@@ -918,11 +930,11 @@ $tabs = array_merge(...array_values($groups));
                         <h2 class="text-lg font-bold text-gray-900 mb-5">SMTP Configuration</h2>
                         @php $smtp = $integrations->get('smtp'); $smtpConfig = $smtp?->config ?? []; @endphp
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2 flex gap-3"><div class="flex-[2]"><label class="block text-xs font-medium text-gray-600 mb-1">SMTP Host</label><input type="text" name="smtp_host" value="{{ $smtpConfig['smtp_host'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Port</label><input type="number" name="smtp_port" value="{{ $smtpConfig['smtp_port'] ?? 587 }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Encryption</label><select name="smtp_encryption" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"><option value="tls" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === 'tls')>TLS / STARTTLS (port 587)</option><option value="ssl" @selected(($smtpConfig['smtp_encryption'] ?? '') === 'ssl')>SSL (port 465)</option><option value="" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === '')>None (port 25)</option></select></div></div>
-                            <div><label class="block text-xs font-medium text-gray-600 mb-1">Username</label><input type="text" name="smtp_username" value="{{ $smtpConfig['smtp_username'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
-                            <div><label class="block text-xs font-medium text-gray-600 mb-1">Password</label><input type="password" name="smtp_password" value="{{ $smtpConfig['smtp_password'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
-                            <div><label class="block text-xs font-medium text-gray-600 mb-1">From Email</label><input type="email" name="smtp_from_email" value="{{ $smtpConfig['smtp_from_email'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
-                            <div><label class="block text-xs font-medium text-gray-600 mb-1">From Name</label><input type="text" name="smtp_from_name" value="{{ $smtpConfig['smtp_from_name'] ?? $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"></div>
+                            <div class="md:col-span-2 flex gap-3"><div class="flex-[2]"><label class="block text-xs font-medium text-gray-600 mb-1">SMTP Host</label><input type="text" name="smtp_host" value="{{ $smtpConfig['smtp_host'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Port</label><input type="number" name="smtp_port" value="{{ $smtpConfig['smtp_port'] ?? 587 }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Encryption</label><select name="smtp_encryption" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"><option value="tls" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === 'tls')>TLS / STARTTLS (port 587)</option><option value="ssl" @selected(($smtpConfig['smtp_encryption'] ?? '') === 'ssl')>SSL (port 465)</option><option value="" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === '')>None (port 25)</option></select></div></div>
+                            <div><label class="block text-xs font-medium text-gray-600 mb-1">Username</label><input type="text" name="smtp_username" value="{{ $smtpConfig['smtp_username'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                            <div><label class="block text-xs font-medium text-gray-600 mb-1">Password</label><input type="password" name="smtp_password" value="{{ $smtpConfig['smtp_password'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                            <div><label class="block text-xs font-medium text-gray-600 mb-1">From Email</label><input type="email" name="smtp_from_email" value="{{ $smtpConfig['smtp_from_email'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                            <div><label class="block text-xs font-medium text-gray-600 mb-1">From Name</label><input type="text" name="smtp_from_name" value="{{ $smtpConfig['smtp_from_name'] ?? $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
                         </div>
                         <div class="mt-4">
                             <button type="button" id="test-email-btn" class="text-sm px-4 py-2 rounded-lg font-medium transition" style="background-color: rgba(var(--primary-rgb),0.1); color: var(--primary)">Send Test Email</button>
@@ -963,7 +975,7 @@ $tabs = array_merge(...array_values($groups));
                         @php $maps = $integrations->get('google_maps'); @endphp
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps API Key</label>
-                            <input type="text" name="google_maps_key" value="{{ $maps?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="AIza...">
+                            <input type="text" name="google_maps_key" value="{{ $maps?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="AIza...">
                             <p class="text-xs text-gray-500 mt-1">Required for the map page. Get a key at Google Cloud Console.</p>
                         </div>
                     </div>
@@ -973,23 +985,23 @@ $tabs = array_merge(...array_values($groups));
                         <div class="space-y-4" x-data="{ provider: '{{ $ai?->provider ?? 'anthropic' }}' }">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                                <input type="password" name="ai_api_key" value="{{ $ai?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                <input type="password" name="ai_api_key" value="{{ $ai?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
                             </div>
                             <div class="flex gap-3">
                                 <div class="flex-1">
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
-                                    <select name="ai_provider" x-model="provider" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <select name="ai_provider" x-model="provider" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                         <option value="openai">OpenAI</option>
                                         <option value="anthropic">Anthropic</option>
                                     </select>
                                 </div>
                                 <div class="flex-1">
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                                    <select name="ai_model" x-show="provider === 'openai'" :disabled="provider !== 'openai'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <select name="ai_model" x-show="provider === 'openai'" :disabled="provider !== 'openai'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                         <option value="gpt-4o" @selected(($aiConfig['model'] ?? '') === 'gpt-4o')>GPT-4o</option>
                                         <option value="gpt-4o-mini" @selected(($aiConfig['model'] ?? 'gpt-4o-mini') === 'gpt-4o-mini')>GPT-4o Mini (recommended)</option>
                                     </select>
-                                    <select name="ai_model" x-show="provider === 'anthropic'" :disabled="provider !== 'anthropic'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    <select name="ai_model" x-show="provider === 'anthropic'" :disabled="provider !== 'anthropic'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                         <option value="claude-opus-4-6" @selected(($aiConfig['model'] ?? '') === 'claude-opus-4-6')>Claude Opus 4.6</option>
                                         <option value="claude-sonnet-4-6" @selected(($aiConfig['model'] ?? '') === 'claude-sonnet-4-6')>Claude Sonnet 4.6</option>
                                         <option value="claude-haiku-4-5-20251001" @selected(($aiConfig['model'] ?? 'claude-haiku-4-5-20251001') === 'claude-haiku-4-5-20251001')>Claude Haiku 4.5 (recommended)</option>
@@ -1004,7 +1016,7 @@ $tabs = array_merge(...array_values($groups));
                         <div class="flex items-center gap-4">
                             <div class="flex-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Measurement ID</label>
-                                <input type="text" name="ga_measurement_id" value="{{ $ga?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="G-XXXXXXXXXX">
+                                <input type="text" name="ga_measurement_id" value="{{ $ga?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="G-XXXXXXXXXX">
                             </div>
                             <div class="mt-5">
                                 <label class="flex items-center gap-2 cursor-pointer">
@@ -1035,7 +1047,7 @@ $tabs = array_merge(...array_values($groups));
                                 <input type="hidden" name="fb_enabled" value="0">
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" name="fb_enabled" value="1" class="sr-only peer" {{ ($fb?->is_active) ? 'checked' : '' }}>
-                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[var(--primary)] peer-focus:ring-2 peer-focus:ring-[var(--primary)]/60 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
                                 </label>
                             </div>
                         </div>
@@ -1044,13 +1056,13 @@ $tabs = array_merge(...array_values($groups));
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Page Access Token</label>
                                     <input type="password" name="fb_access_token" placeholder="{{ $fb ? '••••••••••••••••' : 'Paste your Page Access Token' }}"
-                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
                                     <p class="text-xs text-gray-400 mt-1">Leave blank to keep existing token. Get a long-lived token from the Facebook Developer Console.</p>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Facebook Page ID</label>
                                     <input type="text" name="fb_page_id" value="{{ $fbConfig['page_id'] ?? '' }}"
-                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="e.g. 123456789012345">
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="e.g. 123456789012345">
                                     <p class="text-xs text-gray-400 mt-1">Found in your Facebook Page &rarr; About &rarr; Page ID.</p>
                                 </div>
                             </div>
@@ -1069,9 +1081,9 @@ $tabs = array_merge(...array_values($groups));
                                     </label>
                                 </div>
                             </div>
-                            <div class="bg-blue-50 border border-blue-100 rounded-xl p-4">
-                                <p class="text-xs text-blue-800 font-medium mb-1">How to get a Page Access Token:</p>
-                                <ol class="text-xs text-blue-700 space-y-1 list-decimal list-inside">
+                            <div class="bg-[var(--primary)]/10 border border-[var(--primary)]/20 rounded-xl p-4">
+                                <p class="text-xs text-[var(--primary)] font-medium mb-1">How to get a Page Access Token:</p>
+                                <ol class="text-xs text-[var(--primary)] space-y-1 list-decimal list-inside">
                                     <li>Go to <strong>developers.facebook.com</strong> &rarr; My Apps &rarr; your app</li>
                                     <li>Open <strong>Tools &rarr; Graph API Explorer</strong></li>
                                     <li>Select your Page from the dropdown, grant <code>pages_manage_posts</code> &amp; <code>pages_read_engagement</code></li>
@@ -1105,22 +1117,22 @@ $tabs = array_merge(...array_values($groups));
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">API Key (Consumer Key)</label>
                                     <input type="password" name="tw_api_key" placeholder="{{ $tw ? '••••••••••••••••' : 'API Key' }}"
-                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">API Secret (Consumer Secret)</label>
                                     <input type="password" name="tw_api_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'API Secret' }}"
-                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Access Token</label>
                                     <input type="password" name="tw_access_token" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token' }}"
-                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Access Token Secret</label>
                                     <input type="password" name="tw_access_token_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token Secret' }}"
-                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                                        class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
                                 </div>
                             </div>
                             <p class="text-xs text-gray-400">Leave fields blank to keep existing credentials. All 4 values are required when setting up for the first time.</p>
@@ -1160,7 +1172,7 @@ $tabs = array_merge(...array_values($groups));
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <h2 class="text-lg font-bold text-gray-900 mb-4">Export Data</h2>
                         <div class="flex flex-wrap gap-3">
-                            <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=json" class="px-5 py-2.5 bg-blue-50 text-blue-700 rounded-xl text-sm font-semibold hover:bg-blue-100 transition">Export Properties (JSON)</a>
+                            <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=json" class="px-5 py-2.5 bg-[var(--primary)]/10 text-[var(--primary)] rounded-xl text-sm font-semibold hover:bg-[var(--primary)]/20 transition">Export Properties (JSON)</a>
                             <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=csv" class="px-5 py-2.5 bg-green-50 text-green-700 rounded-xl text-sm font-semibold hover:bg-green-100 transition">Export Properties (CSV)</a>
                             <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=json" class="px-5 py-2.5 bg-purple-50 text-purple-700 rounded-xl text-sm font-semibold hover:bg-purple-100 transition">Export Messages (JSON)</a>
                             <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=csv" class="px-5 py-2.5 bg-orange-50 text-orange-700 rounded-xl text-sm font-semibold hover:bg-orange-100 transition">Export Messages (CSV)</a>
@@ -1237,7 +1249,7 @@ $tabs = array_merge(...array_values($groups));
                         @foreach(['privacy' => 'Privacy Policy', 'terms' => 'Terms of Service'] as $type => $title)
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">{{ $title }}</label>
-                            <textarea name="{{ $type }}" rows="10" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y">{{ $legal->get($type)?->content }}</textarea>
+                            <textarea name="{{ $type }}" rows="10" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-y">{{ $legal->get($type)?->content }}</textarea>
                         </div>
                         @endforeach
                     </div>
@@ -1250,7 +1262,7 @@ $tabs = array_merge(...array_values($groups));
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Site Description</label>
-                            <textarea name="site_description" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ $settings->site_description }}</textarea>
+                            <textarea name="site_description" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none">{{ $settings->site_description }}</textarea>
                             <p class="text-xs text-gray-400 mt-1">Used as the meta description for search engines. Recommended: 150-160 characters.</p>
                         </div>
                         <div>
@@ -1259,7 +1271,7 @@ $tabs = array_merge(...array_values($groups));
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Google Site Verification</label>
-                            <input type="text" name="google_site_verification" value="{{ $settings->google_site_verification }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono" placeholder="abc123...">
+                            <input type="text" name="google_site_verification" value="{{ $settings->google_site_verification }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="abc123...">
                             <p class="text-xs text-gray-400 mt-1">The content value from the Google Search Console verification meta tag.</p>
                         </div>
                         <div>

@@ -137,7 +137,7 @@ class DashboardController extends Controller
             ->map(function ($p) {
                 $reasons = [];
                 if ($p->images->isEmpty()) $reasons[] = 'No photos uploaded';
-                if ($p->view_count === 0)  $reasons[] = 'Zero views';
+                if ($p->view_count == 0)   $reasons[] = 'Zero views';
                 elseif ($p->view_count < 10 && $p->created_at <= now()->subDays(14)) $reasons[] = 'Low visibility (' . $p->view_count . ' views)';
                 $p->attention_reasons = $reasons;
                 return $p;

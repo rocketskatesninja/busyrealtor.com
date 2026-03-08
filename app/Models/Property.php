@@ -70,6 +70,7 @@ class Property extends Model
         'near_transit' => 'boolean',
         'is_featured'  => 'boolean',
         'amenities'    => 'array',
+        'view_count'   => 'integer',
     ];
 
     public function images(): HasMany
