@@ -17,6 +17,8 @@ class SiteSettings extends Model
         'site_title',
         'tagline',
         'logo_image',
+        'favicon_preset',
+        'favicon_custom',
         'primary_color',
         'secondary_color',
         'accent_color',

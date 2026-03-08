@@ -84,6 +84,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/contact', [TenantPageController::class, 'contact'])->name('contact');
         Route::get('/chat', [TenantPageController::class, 'chat'])->name('chat');
         Route::get('/sitemap.xml', [TenantPageController::class, 'sitemap'])->name('sitemap');
+        Route::get('/favicon.svg', [TenantPageController::class, 'favicon'])->name('favicon');
     });
 
     // Public APIs
