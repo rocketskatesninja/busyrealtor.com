@@ -15,7 +15,6 @@ class Tenant extends Model
         'slug',
         'name',
         'email',
-        'password',
         'phone',
         'license_number',
         'profile_image',
@@ -32,7 +31,6 @@ class Tenant extends Model
     ];
 
     protected $hidden = [
-        'password',
         'remember_token',
     ];
 

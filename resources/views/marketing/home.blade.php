@@ -103,7 +103,7 @@
                     <span style="background: linear-gradient(135deg, #fdba74, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Online in Minutes</span>
                 </h1>
                 <p class="text-blue-100 text-xl leading-relaxed mb-8 max-w-lg hero-animate hero-d3">
-                    Launch a stunning property website with AI-powered chatbot, interactive map search, and a full admin suite — no developers, no headaches.
+                    Launch a stunning, customizable property website with AI-powered chatbot, interactive map search, and a full admin suite. No developers, no headaches.
                 </p>
                 <div class="flex flex-wrap gap-4 mb-6 hero-animate hero-d4">
                     <a href="/register" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-7 py-4 rounded-xl shadow-lg transition-colors text-base">
@@ -332,7 +332,7 @@
 {{-- ═════════════════════════════════════════════════════════ FOOTER ═══ --}}
 <footer class="bg-gray-950 text-gray-400 py-12">
     <div class="max-w-6xl mx-auto px-4">
-        <div class="grid md:grid-cols-4 gap-8 mb-10">
+        <div class="grid md:grid-cols-5 gap-8 mb-10">
             <div class="md:col-span-2">
                 <div class="flex items-center gap-2 mb-4">
                     <div class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center">
@@ -341,12 +341,6 @@
                     <span class="text-white font-bold text-lg">BusyRealtor</span>
                 </div>
                 <p class="text-sm leading-relaxed max-w-xs">The complete real estate website platform for modern agents. Built by <a href="https://punchlistlabs.com" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 transition-colors">Punchlist Labs</a>.</p>
-                <div class="mt-4 text-xs text-gray-500">
-                    Sister products:
-                    <a href="https://routepilot.pro" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 transition-colors ml-1">RoutePilot</a>
-                    <span class="mx-1">·</span>
-                    <a href="https://punchlistify.com" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 transition-colors">Punchlistify</a>
-                </div>
             </div>
             <div>
                 <h4 class="text-white font-semibold text-sm mb-4">Product</h4>
@@ -354,8 +348,6 @@
                     <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
                     <li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li>
                     <li><a href="/demo-realty" target="_blank" class="hover:text-white transition-colors">Live Demo</a></li>
-                    <li><a href="/register" class="hover:text-white transition-colors">Get Started</a></li>
-                    <li><a href="/login" class="hover:text-white transition-colors">Sign In</a></li>
                 </ul>
             </div>
             <div>
@@ -365,9 +357,17 @@
                     <li><a href="/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
                 </ul>
             </div>
+            <div>
+                <h4 class="text-white font-semibold text-sm mb-4">Affiliates</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="https://routepilot.pro" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">RoutePilot</a></li>
+                    <li><a href="https://punchlistify.com" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Punchlistify</a></li>
+                    <li><a href="https://punchlistlabs.com" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Punchlist Labs</a></li>
+                </ul>
+            </div>
         </div>
         <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
-            <p>&copy; {{ date('Y') }} BusyRealtor &nbsp;·&nbsp; A Punchlist Labs Product</p>
+            <p>&copy; {{ date('Y') }} BusyRealtor. All rights reserved.</p>
             <p>Made with &#9749; for hard-working realtors everywhere</p>
         </div>
     </div>

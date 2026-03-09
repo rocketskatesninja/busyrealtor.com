@@ -181,7 +181,7 @@ CREATE TABLE `legal_pages` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `legal_pages_tenant_id_foreign` (`tenant_id`),
+  UNIQUE KEY `legal_pages_tenant_page_type_unique` (`tenant_id`,`page_type`),
   CONSTRAINT `legal_pages_tenant_id_foreign` FOREIGN KEY (`tenant_id`) REFERENCES `tenants` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -324,10 +324,12 @@ CREATE TABLE `site_settings` (
   `site_title` varchar(255) DEFAULT NULL,
   `tagline` varchar(500) DEFAULT NULL,
   `logo_image` text DEFAULT NULL,
+  `favicon_preset` varchar(255) DEFAULT NULL,
+  `favicon_custom` varchar(255) DEFAULT NULL,
   `primary_color` varchar(20) NOT NULL DEFAULT '#3B82F6',
   `secondary_color` varchar(20) NOT NULL DEFAULT '#1E40AF',
   `accent_color` varchar(20) NOT NULL DEFAULT '#F59E0B',
-  `header_display_mode` enum('logo_only','text_only','both') NOT NULL DEFAULT 'both',
+  `header_display_mode` enum('logo_only','text_only','both','favicon_only','favicon_text') NOT NULL DEFAULT 'both',
   `header_mode` enum('hero','default') NOT NULL DEFAULT 'hero',
   `title_font` varchar(100) NOT NULL DEFAULT 'Poppins',
   `body_font` varchar(100) NOT NULL DEFAULT 'Inter',
@@ -359,6 +361,9 @@ CREATE TABLE `site_settings` (
   `chatbot_expiration` int(11) NOT NULL DEFAULT 24,
   `chatbot_welcome` text DEFAULT NULL,
   `chatbot_bio` text DEFAULT NULL,
+  `owner_name` varchar(255) DEFAULT NULL,
+  `owner_photo` text DEFAULT NULL,
+  `owner_bio` text DEFAULT NULL,
   `enable_email_notifications` tinyint(1) NOT NULL DEFAULT 1,
   `notify_on_contact` tinyint(1) NOT NULL DEFAULT 1,
   `notify_on_appointment` tinyint(1) NOT NULL DEFAULT 1,
@@ -380,8 +385,10 @@ CREATE TABLE `site_settings` (
   `hero_background_type` varchar(50) NOT NULL DEFAULT 'preset',
   `hero_preset` varchar(100) DEFAULT NULL,
   `hero_image` varchar(500) DEFAULT NULL,
+  `map_office_image` varchar(255) DEFAULT NULL,
   `hero_gradient_start` varchar(20) DEFAULT NULL,
   `hero_gradient_end` varchar(20) DEFAULT NULL,
+  `hero_effects` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`hero_effects`)),
   `hero_title` varchar(300) DEFAULT NULL,
   `hero_subtitle` varchar(500) DEFAULT NULL,
   `cta_primary_text` varchar(100) DEFAULT NULL,
@@ -418,6 +425,45 @@ CREATE TABLE `staff_members` (
   CONSTRAINT `staff_members_tenant_id_foreign` FOREIGN KEY (`tenant_id`) REFERENCES `tenants` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `subscription_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `subscription_items` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `subscription_id` bigint(20) unsigned NOT NULL,
+  `stripe_id` varchar(255) NOT NULL,
+  `stripe_product` varchar(255) NOT NULL,
+  `stripe_price` varchar(255) NOT NULL,
+  `meter_id` varchar(255) DEFAULT NULL,
+  `quantity` int(11) DEFAULT NULL,
+  `meter_event_name` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `subscription_items_stripe_id_unique` (`stripe_id`),
+  KEY `subscription_items_subscription_id_stripe_price_index` (`subscription_id`,`stripe_price`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `subscriptions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `subscriptions` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) unsigned NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `stripe_id` varchar(255) NOT NULL,
+  `stripe_status` varchar(255) NOT NULL,
+  `stripe_price` varchar(255) DEFAULT NULL,
+  `quantity` int(11) DEFAULT NULL,
+  `trial_ends_at` timestamp NULL DEFAULT NULL,
+  `ends_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `subscriptions_stripe_id_unique` (`stripe_id`),
+  KEY `subscriptions_user_id_stripe_status_index` (`user_id`,`stripe_status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `system_settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
@@ -426,6 +472,14 @@ CREATE TABLE `system_settings` (
   `registrations_enabled` tinyint(1) NOT NULL DEFAULT 1,
   `site_locked` tinyint(1) NOT NULL DEFAULT 0,
   `lock_message` text DEFAULT NULL,
+  `stripe_key` text DEFAULT NULL,
+  `stripe_secret` text DEFAULT NULL,
+  `stripe_webhook_secret` text DEFAULT NULL,
+  `stripe_starter_price_id` varchar(255) DEFAULT NULL,
+  `stripe_pro_price_id` varchar(255) DEFAULT NULL,
+  `starter_price` decimal(8,2) NOT NULL DEFAULT 29.00,
+  `pro_price` decimal(8,2) NOT NULL DEFAULT 59.00,
+  `og_image` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -445,16 +499,21 @@ CREATE TABLE `tenants` (
   `profile_image` varchar(255) DEFAULT NULL,
   `plan` enum('trial','starter','pro') NOT NULL DEFAULT 'trial',
   `trial_ends_at` timestamp NULL DEFAULT NULL,
-  `stripe_customer_id` varchar(255) DEFAULT NULL,
+  `trial_reminders_sent` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`trial_reminders_sent`)),
+  `payment_failed_at` timestamp NULL DEFAULT NULL,
   `stripe_subscription_id` varchar(255) DEFAULT NULL,
   `stripe_subscription_status` varchar(255) DEFAULT NULL,
   `is_active` tinyint(1) NOT NULL DEFAULT 1,
+  `stripe_id` varchar(255) DEFAULT NULL,
+  `pm_type` varchar(255) DEFAULT NULL,
+  `pm_last_four` varchar(4) DEFAULT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `tenants_slug_unique` (`slug`),
-  UNIQUE KEY `tenants_email_unique` (`email`)
+  UNIQUE KEY `tenants_email_unique` (`email`),
+  KEY `tenants_stripe_id_index` (`stripe_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `users`;
@@ -468,11 +527,18 @@ CREATE TABLE `users` (
   `tenant_id` bigint(20) unsigned DEFAULT NULL,
   `is_super_admin` tinyint(1) NOT NULL DEFAULT 0,
   `remember_token` varchar(100) DEFAULT NULL,
+  `failed_login_attempts` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `locked_until` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
+  `stripe_id` varchar(255) DEFAULT NULL,
+  `pm_type` varchar(255) DEFAULT NULL,
+  `pm_last_four` varchar(4) DEFAULT NULL,
+  `trial_ends_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_email_unique` (`email`),
   KEY `users_tenant_id_foreign` (`tenant_id`),
+  KEY `users_stripe_id_index` (`stripe_id`),
   CONSTRAINT `users_tenant_id_foreign` FOREIGN KEY (`tenant_id`) REFERENCES `tenants` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -506,3 +572,20 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (19,'2026_02_24_060
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (20,'2026_03_01_000001_create_system_settings_table',5);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (21,'2026_03_01_000002_make_property_address_nullable',6);
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (22,'2026_03_01_000003_create_feedback_table',7);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (23,'2026_03_01_170747_create_customer_columns',8);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (24,'2026_03_01_170748_create_subscriptions_table',8);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (25,'2026_03_01_170749_create_subscription_items_table',8);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (26,'2026_03_01_170750_add_meter_id_to_subscription_items_table',8);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (27,'2026_03_01_170751_add_meter_event_name_to_subscription_items_table',8);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (28,'2026_03_01_000004_add_stripe_to_system_settings',9);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (29,'2026_03_01_000005_add_cashier_columns_to_tenants',10);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (30,'2026_03_01_000006_add_billing_tracking_to_tenants',11);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (31,'2026_03_02_000001_add_unique_to_legal_pages',12);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (32,'2026_03_02_000002_add_login_lockout_to_users_table',13);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (33,'2026_03_02_000001_add_map_office_image_to_site_settings',14);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (34,'2026_03_03_000001_add_prices_to_system_settings',15);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (35,'2026_03_03_000002_add_owner_profile_to_site_settings',16);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (36,'2026_03_03_000003_add_og_image_to_system_settings',17);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (37,'2026_03_03_000001_add_hero_effects_to_site_settings',18);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (38,'2026_03_04_000001_add_favicon_to_site_settings',19);
+INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES (39,'2026_03_03_000001_add_favicon_header_modes_to_site_settings',20);

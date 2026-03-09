@@ -2,6 +2,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\ImpersonationController;
@@ -50,6 +51,14 @@ Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->
 Route::middleware(['registrations.enabled'])->group(function () {
     Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:3,1')->name('register.submit');
+});
+
+// Google OAuth
+Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+Route::middleware(['registrations.enabled'])->group(function () {
+    Route::get('/register/complete', [GoogleAuthController::class, 'showComplete'])->name('register.complete');
+    Route::post('/register/complete', [GoogleAuthController::class, 'completeRegistration'])->name('register.complete.submit');
 });
 
 // Super admin routes
@@ -143,13 +152,16 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::post('/api/restore', [RestoreController::class, 'restore'])->name('api.restore');
         Route::post('/api/test-email', [TestEmailController::class, 'send'])->name('api.test-email');
 
-        // Billing (accessible even if subscription expired)
+    });
+
+    // Billing routes — accessible even with expired trial (auth only, no tenant.active check)
+    Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
         Route::get('/billing', [BillingController::class, 'show'])->name('billing');
-        Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback');
-        Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
-        Route::get('/feedback/thanks', [FeedbackController::class, 'thanks'])->name('feedback.thanks');
         Route::post('/billing/subscribe', [BillingController::class, 'subscribe'])->name('billing.subscribe');
         Route::get('/billing/portal', [BillingController::class, 'portal'])->name('billing.portal');
         Route::get('/billing/invoice/{invoice}', [BillingController::class, 'downloadInvoice'])->name('billing.invoice');
+        Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback');
+        Route::post('/feedback', [FeedbackController::class, 'store'])->name('feedback.store');
+        Route::get('/feedback/thanks', [FeedbackController::class, 'thanks'])->name('feedback.thanks');
     });
 });

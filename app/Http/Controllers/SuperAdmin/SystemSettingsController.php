@@ -27,6 +27,8 @@ class SystemSettingsController extends Controller
             'starter_price'           => 'nullable|numeric|min:0',
             'pro_price'               => 'nullable|numeric|min:0',
             'og_image'                => 'nullable|image|mimes:jpeg,png,webp|max:2048',
+            'google_client_id'        => 'nullable|string|max:500',
+            'google_client_secret'    => 'nullable|string|max:500',
         ], [
             'stripe_key.regex'              => 'Publishable key must start with pk_live_ or pk_test_',
             'stripe_secret.regex'           => 'Secret key must start with sk_live_ or sk_test_',
@@ -54,6 +56,12 @@ class SystemSettingsController extends Controller
         }
         if ($request->filled('stripe_webhook_secret') && !str_starts_with($request->stripe_webhook_secret, '••••')) {
             $data['stripe_webhook_secret'] = $request->stripe_webhook_secret;
+        }
+        if ($request->filled('google_client_id') && !str_starts_with($request->google_client_id, '••••')) {
+            $data['google_client_id'] = $request->google_client_id;
+        }
+        if ($request->filled('google_client_secret') && !str_starts_with($request->google_client_secret, '••••')) {
+            $data['google_client_secret'] = $request->google_client_secret;
         }
 
         $settings = SystemSetting::get();

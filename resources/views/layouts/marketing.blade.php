@@ -6,7 +6,8 @@
     <title>@yield('title', 'BusyRealtor — Real Estate Websites for Modern Agents')</title>
     <meta name="description" content="@yield('description', 'Launch a stunning real estate website with AI chatbot, interactive property map, and powerful admin tools — in minutes.')">
     <link rel="canonical" href="{{ url()->current() }}">
-    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="apple-touch-icon" href="/favicon.svg">
     <meta name="robots" content="index, follow">
 
     {{-- Open Graph --}}

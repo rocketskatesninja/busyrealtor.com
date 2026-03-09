@@ -27,6 +27,8 @@
         .dark .text-gray-800  { color: #e2e8f0 !important; }
         .dark input           { background-color: #0f172a !important; color: #f1f5f9 !important; }
         .dark .shadow-2xl     { box-shadow: 0 8px 30px rgba(0,0,0,0.7) !important; }
+        .dark .google-btn     { background-color: #1e293b; border-color: #475569; color: #cbd5e1; }
+        .dark .google-btn:hover { background-color: #334155 !important; border-color: #64748b; }
     </style>
 </head>
 <body class="bg-white dark:bg-gray-50 min-h-screen flex flex-col">
