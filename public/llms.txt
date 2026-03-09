@@ -1,0 +1,37 @@
+# BusyRealtor
+
+> Real estate website builder for agents and brokers. Launch a professional property website in minutes with AI chatbot, interactive map, property listings, and appointment booking.
+
+BusyRealtor is a SaaS platform that gives real estate agents and brokers a complete, customizable website with full admin dashboard, AI-powered chatbot, property listing management, Google Maps integration, and client communication tools. No developers needed.
+
+## Pages
+
+- [Home](https://busyrealtor.com/): Overview of features, pricing, and live demo
+- [Register](https://busyrealtor.com/register): Start a 14-day free trial
+- [Login](https://busyrealtor.com/login): Sign in to your dashboard
+- [Privacy Policy](https://busyrealtor.com/privacy-policy): Privacy policy
+- [Terms of Service](https://busyrealtor.com/terms): Terms of service
+- [Sitemap](https://busyrealtor.com/sitemap.xml): Index of all tenant sites
+
+## Features
+
+- Property listing management with photos, status badges (active, pending, sold), and filters
+- Interactive Google Maps with clickable property pins and live price/type filters
+- AI chatbot powered by Claude or OpenAI — knows your listings, answers questions, books appointments
+- Appointment scheduling with staff assignment and email notifications
+- Admin dashboard with messages, appointments, stats widgets, and analytics
+- Full customization: logo, colors, fonts, hero images, homepage section order
+- SEO tools: meta description, Google site verification, sitemap generation
+- Google Analytics integration
+- Social media auto-posting (Facebook, Twitter/X) on new listings and sold properties
+- Backup and restore
+- Multi-tenant: each agent gets their own URL (busyrealtor.com/{slug})
+
+## Pricing
+
+- **Starter** — $29/month: Up to 10 active listings, public website, contact forms, admin dashboard, custom branding
+- **Pro** — $59/month: Unlimited listings, AI chatbot, appointment scheduling, Google Maps, staff management, social integrations, analytics
+
+## Live Demo
+
+A working demo site is available at https://busyrealtor.com/demo-realty

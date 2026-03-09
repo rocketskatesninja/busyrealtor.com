@@ -10,6 +10,7 @@ class DashboardOrderController extends Controller
 {
     public function save($account, Request $request)
     {
+        $request->validate(['order' => 'nullable|array']);
         $tenant   = app('tenant');
         $settings = SiteSettings::where('tenant_id', $tenant->id)->first();
         if ($settings) {

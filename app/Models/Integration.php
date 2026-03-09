@@ -22,7 +22,7 @@ class Integration extends Model
     ];
 
     protected $casts = [
-        'config'        => 'array',
+        'config'        => 'encrypted:array',
         'is_active'     => 'boolean',
         'api_key'       => 'encrypted',
         'webhook_token' => 'encrypted',

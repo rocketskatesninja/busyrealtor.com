@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', ($settings->site_title ?: ($tenant->name ?? 'BusyRealtor')) . ($settings->tagline ? ' — ' . $settings->tagline : ''))</title>
+    <title>@yield('title', ($settings->site_title ?: '[Your Agency Name] — Real Estate') . (' — ' . ($settings->tagline ?: 'Your trusted local real estate experts')))</title>
     <meta name="description" content="@yield('meta_description', $settings->site_description ?? '')">
     <link rel="canonical" href="{{ url()->current() }}">
 
@@ -31,7 +31,7 @@
     {{-- Open Graph --}}
     <meta property="og:type"        content="website">
     <meta property="og:url"         content="{{ url()->current() }}">
-    <meta property="og:title"       content="@yield('title', $settings->site_title ?: ($tenant->name ?? 'BusyRealtor'))">
+    <meta property="og:title"       content="@yield('title', $settings->site_title ?: '[Your Agency Name] — Real Estate')">
     <meta property="og:description" content="@yield('meta_description', $settings->site_description ?? '')">
     @php
         $ogImage = trim($__env->yieldContent('og_image'))
@@ -45,7 +45,7 @@
 
     {{-- Twitter Card --}}
     <meta name="twitter:card"        content="summary_large_image">
-    <meta name="twitter:title"       content="@yield('title', $settings->site_title ?: ($tenant->name ?? 'BusyRealtor'))">
+    <meta name="twitter:title"       content="@yield('title', $settings->site_title ?: '[Your Agency Name] — Real Estate')">
     <meta name="twitter:description" content="@yield('meta_description', $settings->site_description ?? '')">
     @if($ogImage)
     <meta name="twitter:image" content="{{ $ogImage }}">
@@ -305,10 +305,10 @@
         <div class="flex items-center justify-between">
             <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3" id="tenant-logo" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))">
                 @if(!empty($settings->favicon_preset) && $headerDisplayMode !== 'text_only')
-                    <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?? '' }}" class="h-8 w-8 object-contain rounded-lg">
+                    <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?: $tenant->name }}" class="h-8 w-8 object-contain rounded-lg">
                 @endif
                 @if(in_array($headerDisplayMode, ['text_only', 'favicon_text', 'both']))
-                    <span style="{{ $titleStyle }}">{{ $settings->site_title ?: $tenant->name }}</span>
+                    <span style="{{ $titleStyle }}">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
                 @endif
             </a>
             <nav id="tenant-nav" class="hidden md:flex items-center space-x-6 transition-all duration-300" style="opacity:0;pointer-events:none">
@@ -370,10 +370,10 @@
         <div class="flex items-center justify-between py-4">
             <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3 drop-shadow-lg hover:opacity-80 transition-opacity">
                 @if(!empty($settings->favicon_preset) && $headerDisplayMode !== 'text_only')
-                    <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?? '' }}" class="h-8 w-8 object-contain rounded-lg">
+                    <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?: $tenant->name }}" class="h-8 w-8 object-contain rounded-lg">
                 @endif
                 @if(in_array($headerDisplayMode, ['text_only', 'favicon_text', 'both']))
-                    <span style="{{ $titleStyle }}">{{ $settings->site_title ?: $tenant->name }}</span>
+                    <span style="{{ $titleStyle }}">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
                 @endif
             </a>
             <nav class="hidden md:flex items-center space-x-6">
@@ -569,13 +569,13 @@ function updateCookiePrefsLink() {
             <div class="md:col-span-2">
                 <div class="flex items-center space-x-3 mb-4">
                     @if(!empty($settings->favicon_preset))
-                        <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?? '' }}" class="h-8 w-8 object-contain rounded-lg flex-shrink-0">
+                        <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?: $tenant->name }}" class="h-8 w-8 object-contain rounded-lg flex-shrink-0">
                     @elseif($settings->logo_image)
                         <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto flex-shrink-0">
                     @endif
                     <div>
-                        <span class="text-lg font-bold text-white block">{{ $settings->site_title ?: $tenant->name }}</span>
-                        <span class="text-gray-400 text-sm">{{ $settings->tagline ?: 'Your trusted real estate experts.' }}</span>
+                        <span class="text-lg font-bold text-white block">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
+                        <span class="text-gray-400 text-sm">{{ $settings->tagline ?: 'Your trusted local real estate experts' }}</span>
                     </div>
                 </div>
                 @php
@@ -624,7 +624,7 @@ function updateCookiePrefsLink() {
             </div>
         </div>
         <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
-            <p>&copy; {{ date('Y') }} <span style="color: var(--primary)">{{ $settings->site_title ?: $tenant->name }}</span>. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} <span style="color: var(--primary)">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>. All rights reserved.</p>
             <p>Powered by <a href="https://busyrealtor.com" class="transition-colors" style="color: var(--primary)">BusyRealtor</a></p>
         </div>
     </div>

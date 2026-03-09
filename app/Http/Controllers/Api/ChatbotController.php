@@ -211,6 +211,7 @@ class ChatbotController extends Controller
     {
         try {
             $date = Carbon::parse($input['appointment_date'] ?? 'tomorrow');
+            if ($date->isPast()) { $date = now()->addDay(); }
 
             // Resolve property and assigned staff if property_id provided
             $property  = null;

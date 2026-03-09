@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RestoreController extends Controller
 {
@@ -32,6 +33,7 @@ class RestoreController extends Controller
             'files'       => 0,
         ];
 
+        DB::transaction(function () use ($zip, $tenant, $originalTenantId, &$r) {
         // ── Staff ──────────────────────────────────────────────────────
         if ($json = $zip->getFromName('data/staff.json')) {
             foreach (json_decode($json, true) as $s) {
@@ -114,6 +116,8 @@ class RestoreController extends Controller
             \App\Models\SiteSettings::updateOrCreate(['tenant_id' => $tenant->id], $s);
             $r['settings'] = true;
         }
+
+        }); // end DB::transaction
 
         // ── Binary files ───────────────────────────────────────────────
         $storageBase = storage_path('app/public');

@@ -39,7 +39,9 @@ class PasswordResetController extends Controller
             Mail::raw("Reset your password: $link", function ($m) use ($request) {
                 $m->to($request->email)->subject('Password Reset');
             });
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+            \Log::error('Password reset mail failed: ' . $e->getMessage());
+        }
 
         return back()->with('status', 'If that email exists, a reset link was sent.');
     }

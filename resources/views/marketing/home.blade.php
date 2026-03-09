@@ -1,6 +1,6 @@
 @extends('layouts.marketing')
 @section('title', 'BusyRealtor — Real Estate Websites for Modern Agents')
-@section('description', 'Real estate website builder for agents & brokers. Launch in minutes with AI chatbot, property listings, interactive map, and appointment booking. 14-day free trial.')
+@section('description', 'Real estate website builder for agents & brokers. Launch in minutes with AI chatbot, property listings, interactive map, and appointment booking. Free trial.')
 
 @section('head')
 <script type="application/ld+json">
@@ -12,7 +12,7 @@
       "name": "BusyRealtor",
       "url": "https://busyrealtor.com",
       "applicationCategory": "BusinessApplication",
-      "operatingSystem": "Web",
+      "operatingSystem": "Windows, macOS, iOS, Android, Web",
       "description": "Real estate website builder for agents and brokers. Launch a beautiful website with AI chatbot, property listings, interactive map, and appointment booking.",
       "offers": [
         {
@@ -20,6 +20,8 @@
           "name": "Starter",
           "price": "{{ number_format($settings->starter_price ?? 29, 2) }}",
           "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock",
+          "url": "https://busyrealtor.com/register",
           "description": "Up to 10 active listings, public website, contact forms, admin dashboard, custom branding."
         },
         {
@@ -27,6 +29,8 @@
           "name": "Pro",
           "price": "{{ number_format($settings->pro_price ?? 59, 2) }}",
           "priceCurrency": "USD",
+          "availability": "https://schema.org/InStock",
+          "url": "https://busyrealtor.com/register",
           "description": "Unlimited listings, AI chatbot, appointment scheduling, Google Maps & Analytics, staff management."
         }
       ]
@@ -98,12 +102,9 @@
                     <span class="w-1.5 h-1.5 bg-orange-400 rounded-full animate-pulse"></span>
                     A Punchlist Labs Product
                 </div>
-                <h1 class="text-5xl sm:text-6xl font-black text-white leading-tight mb-6 hero-animate hero-d2">
-                    Your Real Estate <br>Business, <br>
-                    <span style="background: linear-gradient(135deg, #fdba74, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Online in Minutes</span>
-                </h1>
+                <h1 class="text-5xl sm:text-6xl font-black text-white leading-tight mb-6 hero-animate hero-d2">Real Estate Websites for <span style="background: linear-gradient(135deg, #fdba74, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Modern Agents</span></h1>
                 <p class="text-blue-100 text-xl leading-relaxed mb-8 max-w-lg hero-animate hero-d3">
-                    Launch a stunning, customizable property website with AI-powered chatbot, interactive map search, and a full admin suite. No developers, no headaches.
+                    Launch a stunning, customizable real estate website for agents and brokers — AI chatbot, interactive map search, and a full admin suite included. No developers, no headaches.
                 </p>
                 <div class="flex flex-wrap gap-4 mb-6 hero-animate hero-d4">
                     <a href="/register" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-7 py-4 rounded-xl shadow-lg transition-colors text-base">

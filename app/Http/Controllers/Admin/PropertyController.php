@@ -109,6 +109,12 @@ class PropertyController extends Controller
             'price'          => 'nullable|numeric',
             'images'         => 'nullable|array|max:20',
             'images.*'       => 'image|mimes:jpeg,jpg,png,gif,webp|max:10240',
+            'latitude'       => 'nullable|numeric|between:-90,90',
+            'longitude'      => 'nullable|numeric|between:-180,180',
+            'bedrooms'       => 'nullable|integer|min:0|max:99',
+            'bathrooms'      => 'nullable|numeric|min:0|max:99',
+            'half_baths'     => 'nullable|integer|min:0|max:99',
+            'sqft'           => 'nullable|integer|min:0',
         ]);
 
         $tenant = app('tenant');

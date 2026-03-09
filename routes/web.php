@@ -31,6 +31,9 @@ use App\Http\Controllers\Api\TestEmailController;
 use App\Http\Controllers\MarketingController;
 
 
+// Stripe webhook — must be outside auth/tenant middleware (no CSRF)
+Route::post('/stripe/webhook', [\Laravel\Cashier\Http\Controllers\WebhookController::class, 'handleWebhook']);
+
 // Root — marketing page (authenticated users are redirected inside the controller)
 Route::get('/', [MarketingController::class, 'index'])->name('root');
 Route::get('/privacy-policy', [MarketingController::class, 'privacy'])->name('privacy');
@@ -93,6 +96,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/contact', [TenantPageController::class, 'contact'])->name('contact');
         Route::get('/chat', [TenantPageController::class, 'chat'])->name('chat');
         Route::get('/sitemap.xml', [TenantPageController::class, 'sitemap'])->name('sitemap');
+        Route::get('/llms.txt', [TenantPageController::class, 'llms'])->name('llms');
         Route::get('/favicon.svg', [TenantPageController::class, 'favicon'])->name('favicon');
     });
 
@@ -157,7 +161,10 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
     // Billing routes — accessible even with expired trial (auth only, no tenant.active check)
     Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
         Route::get('/billing', [BillingController::class, 'show'])->name('billing');
+        Route::get('/billing/subscribed', [BillingController::class, 'subscribed'])->name('billing.subscribed');
         Route::post('/billing/subscribe', [BillingController::class, 'subscribe'])->name('billing.subscribe');
+        Route::post('/billing/cancel', [BillingController::class, 'cancel'])->name('billing.cancel');
+        Route::post('/billing/resume', [BillingController::class, 'resume'])->name('billing.resume');
         Route::get('/billing/portal', [BillingController::class, 'portal'])->name('billing.portal');
         Route::get('/billing/invoice/{invoice}', [BillingController::class, 'downloadInvoice'])->name('billing.invoice');
         Route::get('/feedback', [FeedbackController::class, 'create'])->name('feedback');

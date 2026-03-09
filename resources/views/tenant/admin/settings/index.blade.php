@@ -55,7 +55,10 @@ $tabs = array_merge(...array_values($groups));
 
     {{-- Save button row (hidden on data tab) --}}
     <div x-show="activeTab !== 'data'" class="flex justify-end mb-2">
-        <button form="settings-form" type="submit" class="btn-primary px-8 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Save Settings</button>
+        <button id="settings-save-btn" form="settings-form" type="submit"
+                class="btn-primary px-8 py-2.5 rounded-xl font-semibold text-sm transition
+                       disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
+                disabled>Save Settings</button>
     </div>
 
     <div class="flex gap-8">
@@ -93,7 +96,7 @@ $tabs = array_merge(...array_values($groups));
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Site Title</label>
-                            <input type="text" name="site_title" value="{{ $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <input type="text" name="site_title" value="{{ $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="[Your Agency Name] — Real Estate">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
@@ -859,10 +862,13 @@ $tabs = array_merge(...array_values($groups));
                     <p class="text-gray-500 text-sm">Choose which widgets appear on your dashboard. Changes take effect immediately after saving.</p>
 
                     {{-- Stat Cards --}}
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-base font-bold text-gray-900 mb-1">Stat Cards</h2>
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100" x-data="dashGroup('stat_cards')">
+                        <div class="flex items-center justify-between mb-1">
+                            <h2 class="text-base font-bold text-gray-900">Stat Cards</h2>
+                            <button type="button" @click="toggleAll" class="text-xs text-[var(--primary)] hover:underline font-medium" x-text="allChecked ? 'Deselect all' : 'Select all'"></button>
+                        </div>
                         <p class="text-xs text-gray-400 mb-4">Numeric summary tiles at the top of the dashboard.</p>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3" x-ref="group">
                             @foreach([
                                 'active_listings'  => 'Active Listings',
                                 'portfolio_value'  => 'Portfolio Value',
@@ -887,10 +893,13 @@ $tabs = array_merge(...array_values($groups));
                     </div>
 
                     {{-- Charts --}}
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-base font-bold text-gray-900 mb-1">Charts</h2>
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100" x-data="dashGroup('charts')">
+                        <div class="flex items-center justify-between mb-1">
+                            <h2 class="text-base font-bold text-gray-900">Charts</h2>
+                            <button type="button" @click="toggleAll" class="text-xs text-[var(--primary)] hover:underline font-medium" x-text="allChecked ? 'Deselect all' : 'Select all'"></button>
+                        </div>
                         <p class="text-xs text-gray-400 mb-4">Visual data breakdowns shown below the stat cards.</p>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3" x-ref="group">
                             @foreach([
                                 'type_chart'        => 'Properties by Type',
                                 'status_chart'      => 'Listing Status',
@@ -912,10 +921,13 @@ $tabs = array_merge(...array_values($groups));
                     </div>
 
                     {{-- Tables --}}
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-base font-bold text-gray-900 mb-1">Tables</h2>
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100" x-data="dashGroup('tables')">
+                        <div class="flex items-center justify-between mb-1">
+                            <h2 class="text-base font-bold text-gray-900">Tables</h2>
+                            <button type="button" @click="toggleAll" class="text-xs text-[var(--primary)] hover:underline font-medium" x-text="allChecked ? 'Deselect all' : 'Select all'"></button>
+                        </div>
                         <p class="text-xs text-gray-400 mb-4">Detailed list sections shown at the bottom of the dashboard.</p>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3" x-ref="group">
                             @foreach([
                                 'top_properties'   => 'Top Properties by Views',
                                 'recent_messages'  => 'Recent Messages',
@@ -1196,73 +1208,125 @@ $tabs = array_merge(...array_values($groups));
                 <div class="space-y-6">
 
                     {{-- Export --}}
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-4">Export Data</h2>
-                        <div class="flex flex-wrap gap-3">
-                            <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=json" class="px-5 py-2.5 bg-[var(--primary)]/10 text-[var(--primary)] rounded-xl text-sm font-semibold hover:bg-[var(--primary)]/20 transition">Export Properties (JSON)</a>
-                            <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=csv" class="px-5 py-2.5 bg-green-50 text-green-700 rounded-xl text-sm font-semibold hover:bg-green-100 transition">Export Properties (CSV)</a>
-                            <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=json" class="px-5 py-2.5 bg-purple-50 text-purple-700 rounded-xl text-sm font-semibold hover:bg-purple-100 transition">Export Messages (JSON)</a>
-                            <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=csv" class="px-5 py-2.5 bg-orange-50 text-orange-700 rounded-xl text-sm font-semibold hover:bg-orange-100 transition">Export Messages (CSV)</a>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-semibold text-gray-900">Export Data</h2>
+                                <p class="text-xs text-gray-500 mt-0.5">Download your data as JSON or CSV for use in other tools.</p>
+                            </div>
+                        </div>
+                        <div class="divide-y divide-gray-50">
+                            <div class="px-6 py-4 flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">Properties</p>
+                                    <p class="text-xs text-gray-400 mt-0.5">All listings with photos, details, and status</p>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=json"
+                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                        JSON
+                                    </a>
+                                    <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=csv"
+                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 text-xs font-semibold transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        CSV
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="px-6 py-4 flex items-center justify-between gap-4">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">Messages</p>
+                                    <p class="text-xs text-gray-400 mt-0.5">All contact form submissions</p>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=json"
+                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                        JSON
+                                    </a>
+                                    <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=csv"
+                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 text-xs font-semibold transition">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                        CSV
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {{-- Backup & Restore --}}
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-6">Backup & Restore</h2>
-
-                        <div class="grid md:grid-cols-2 gap-6 mb-6">
-
-                            {{-- Backup --}}
-                            <div class="space-y-3">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Backup</h3>
-                                </div>
-                                <p class="text-sm text-gray-500 leading-relaxed">Download a <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">.zip</code> containing all properties, staff, appointments, messages, site settings, and image files. <span class="text-amber-600 font-medium">The backup contains sensitive data (e.g. SMTP password) — store it securely.</span></p>
-                                <button id="backup-btn" type="button" onclick="doBackup()"
-                                        class="inline-flex items-center gap-2 px-5 py-2.5 btn-primary rounded-xl text-sm font-semibold hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                    Download Backup
-                                </button>
+                    {{-- Backup --}}
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
                             </div>
+                            <div>
+                                <h2 class="text-base font-semibold text-gray-900">Full Backup</h2>
+                                <p class="text-xs text-gray-500 mt-0.5">Properties, staff, appointments, messages, settings, and all image files in a single <code class="font-mono">.zip</code>.</p>
+                            </div>
+                        </div>
+                        <div class="px-6 py-5 flex items-center justify-between gap-6 flex-wrap">
+                            <p class="text-sm text-amber-700 bg-amber-50 border border-amber-100 dark:text-amber-300 dark:bg-amber-900/30 dark:border-amber-700/50 rounded-lg px-3 py-2 flex items-start gap-2">
+                                <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                                Backup contains sensitive data including SMTP credentials — store it securely.
+                            </p>
+                            <button id="backup-btn" type="button" onclick="doBackup()"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 btn-primary rounded-xl text-sm font-semibold hover:opacity-90 transition shrink-0">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                Download Backup
+                            </button>
+                        </div>
+                    </div>
 
-                            {{-- Restore --}}
-                            <div class="space-y-3 md:border-l md:border-gray-100 md:pl-6">
-                                <div class="flex items-center gap-2 mb-1">
-                                    <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
-                                    <h3 class="text-sm font-semibold text-gray-700 uppercase tracking-wide">Restore</h3>
-                                </div>
-                                <p class="text-sm text-gray-500 leading-relaxed">Upload a <code class="text-xs bg-gray-100 px-1.5 py-0.5 rounded font-mono">.zip</code> backup to restore all data and image files. Existing records are updated; new ones are created. <span class="text-amber-600 font-medium">Site settings will be fully overwritten.</span></p>
-                                <div class="flex flex-wrap items-center gap-3">
-                                    <label class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold cursor-pointer transition">
-                                        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
-                                        Choose .zip file
-                                        <input type="file" id="restore-file" accept=".zip" class="sr-only" onchange="updateRestoreFile(this)">
-                                    </label>
-                                    <span id="restore-filename" class="text-sm text-gray-400 italic truncate max-w-[160px]">No file chosen</span>
-                                </div>
+                    {{-- Restore --}}
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-gray-100 flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center shrink-0">
+                                <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-semibold text-gray-900">Restore from Backup</h2>
+                                <p class="text-xs text-gray-500 mt-0.5">Upload a <code class="font-mono">.zip</code> to restore data. Existing records are updated; new ones are created.</p>
+                            </div>
+                        </div>
+                        <div class="px-6 py-5 space-y-4">
+                            <p class="text-sm text-amber-700 bg-amber-50 border border-amber-100 dark:text-amber-300 dark:bg-amber-900/30 dark:border-amber-700/50 rounded-lg px-3 py-2 flex items-start gap-2">
+                                <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                                Site settings will be fully overwritten by the backup.
+                            </p>
+                            <div class="flex flex-wrap items-center gap-3">
+                                <label class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold cursor-pointer transition">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
+                                    Choose .zip file
+                                    <input type="file" id="restore-file" accept=".zip" class="sr-only" onchange="updateRestoreFile(this)">
+                                </label>
+                                <span id="restore-filename" class="text-sm text-gray-400 italic">No file chosen</span>
                                 <button id="restore-btn" type="button" onclick="doRestore()"
-                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
                                     Restore Backup
                                 </button>
                             </div>
                         </div>
+                    </div>
 
-                        {{-- Console --}}
-                        <div class="console-wrap rounded-xl overflow-hidden border border-gray-700/50">
-                            <div id="data-console-hdr" class="bg-gray-800 px-4 py-2 flex items-center justify-between">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="w-2.5 h-2.5 rounded-full bg-red-400/70 inline-block"></span>
-                                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/70 inline-block"></span>
-                                    <span class="w-2.5 h-2.5 rounded-full bg-green-400/70 inline-block"></span>
-                                    <span class="ml-2 text-gray-400 text-xs font-mono">console</span>
-                                </div>
-                                <button type="button" onclick="clearDataConsole()" class="text-gray-500 hover:text-gray-300 text-xs font-mono transition">clear</button>
+                    {{-- Operation Console --}}
+                    <div class="rounded-2xl overflow-hidden border border-gray-700/60 shadow-sm">
+                        <div class="bg-gray-800 px-4 py-2.5 flex items-center justify-between">
+                            <div class="flex items-center gap-1.5">
+                                <span class="w-2.5 h-2.5 rounded-full bg-red-400/70 inline-block"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-yellow-400/70 inline-block"></span>
+                                <span class="w-2.5 h-2.5 rounded-full bg-green-400/70 inline-block"></span>
+                                <span class="ml-2 text-gray-400 text-xs font-mono tracking-wide">output</span>
                             </div>
-                            <div id="data-console" class="bg-gray-950 px-4 py-3 h-44 overflow-y-auto font-mono text-xs leading-5">
-                                <div style="color:#9ca3af">— Ready. No operations yet. —</div>
-                            </div>
+                            <button type="button" onclick="clearDataConsole()" class="text-gray-500 hover:text-gray-300 text-xs font-mono transition">clear</button>
+                        </div>
+                        <div id="data-console" class="bg-gray-950 px-4 py-3 h-40 overflow-y-auto font-mono text-xs leading-5">
+                            <div style="color:#6b7280">— No operations yet —</div>
                         </div>
                     </div>
 
@@ -1291,7 +1355,7 @@ $tabs = array_merge(...array_values($groups));
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Site Description</label>
-                            <textarea name="site_description" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none">{{ $settings->site_description }}</textarea>
+                            <textarea name="site_description" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none" placeholder="[Your Agency Name] is your local real estate partner for buying, selling, and discovering homes. Browse listings, explore the map, and connect with an agent today.">{{ $settings->site_description }}</textarea>
                             <p class="text-xs text-gray-400 mt-1">Used as the meta description for search engines. Recommended: 150-160 characters.</p>
                         </div>
                         <div>
@@ -1597,5 +1661,66 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, { passive: true });
 })();
+
+// ── Dirty tracking: enable Save only when something has changed ───────────────
+(function() {
+    function formSnapshot(form) {
+        const data = new FormData(form);
+        const entries = [];
+        for (const [k, v] of data.entries()) {
+            entries.push(k + '=' + (v instanceof File ? v.name + ':' + v.size : v));
+        }
+        return entries.sort().join('&');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('settings-form');
+        const btn  = document.getElementById('settings-save-btn');
+        if (!form || !btn) return;
+
+        // Wait a tick so Alpine/sortable hidden inputs are populated
+        setTimeout(function() {
+            let baseline = formSnapshot(form);
+
+            function checkDirty() {
+                const current = formSnapshot(form);
+                btn.disabled = (current === baseline);
+            }
+
+            form.addEventListener('input',  checkDirty);
+            form.addEventListener('change', checkDirty);
+
+            // Also watch for mutations on hidden inputs (homepage sections, etc.)
+            const observer = new MutationObserver(checkDirty);
+            form.querySelectorAll('input[type="hidden"]').forEach(function(el) {
+                observer.observe(el, { attributes: true, attributeFilter: ['value'] });
+            });
+
+            // Re-enable after a successful save so baseline resets
+            form.addEventListener('submit', function() {
+                btn.disabled = true;
+                baseline = formSnapshot(form);
+            });
+        }, 200);
+    });
+})();
+
+document.addEventListener('alpine:init', () => {
+    Alpine.data('dashGroup', (id) => ({
+        allChecked: true,
+        init() {
+            this.$nextTick(() => {
+                const boxes = this.$refs.group.querySelectorAll('input[type="checkbox"]');
+                this.allChecked = [...boxes].every(b => b.checked);
+            });
+        },
+        toggleAll() {
+            const boxes = this.$refs.group.querySelectorAll('input[type="checkbox"]');
+            const target = !this.allChecked;
+            boxes.forEach(b => { b.checked = target; });
+            this.allChecked = target;
+        },
+    }));
+});
 
 @endsection

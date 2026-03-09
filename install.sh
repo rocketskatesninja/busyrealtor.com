@@ -12,6 +12,7 @@
 #                   --db-pass=secret \
 #                   --app-path=/var/www/busyrealtor \
 #                   --repo=https://github.com/yourorg/busyrealtor.git \
+#                   --ssl-email=you@example.com \
 #                   --ssl                    # run certbot after setup
 # =============================================================================
 
@@ -39,6 +40,7 @@ DB_PASS=""
 APP_PATH="/var/www/busyrealtor"
 REPO_URL=""
 RUN_SSL=false
+SSL_EMAIL=""
 WEBSERVER_USER="www-data"
 PHP_VER="8.3"
 
@@ -47,6 +49,7 @@ for arg in "$@"; do
     case $arg in
         --nginx)             WEB_SERVER="nginx" ;;
         --ssl)               RUN_SSL=true ;;
+        --ssl-email=*)       SSL_EMAIL="${arg#*=}" ;;
         --domain=*)          DOMAIN="${arg#*=}" ;;
         --db-name=*)         DB_NAME="${arg#*=}" ;;
         --db-user=*)         DB_USER="${arg#*=}" ;;
@@ -88,6 +91,10 @@ prompt_if_empty DB_USER   "MySQL username"                       "busyrealtor_us
 prompt_if_empty DB_PASS   "MySQL password"                       "$(openssl rand -base64 16)" "true"
 prompt_if_empty APP_PATH  "Application path"                     "/var/www/busyrealtor"
 prompt_if_empty REPO_URL  "Git repository URL (leave blank to copy from current dir)" ""
+
+if [[ "$RUN_SSL" == "true" ]]; then
+    prompt_if_empty SSL_EMAIL "Email address for Let's Encrypt SSL certificate" "admin@${DOMAIN}"
+fi
 
 echo ""
 info "Web server : $WEB_SERVER"
@@ -144,11 +151,15 @@ apt-get install -y -qq mysql-server
 if [[ "$WEB_SERVER" == "nginx" ]]; then
     info "Installing Nginx..."
     apt-get install -y -qq nginx
-    apt-get install -y -qq "php${PHP_VER}-fpm"
 else
     info "Installing Apache..."
-    apt-get install -y -qq apache2 libapache2-mod-php${PHP_VER}
+    apt-get install -y -qq apache2
+    a2enmod proxy_fcgi setenvif
 fi
+# Both Apache and Nginx use PHP-FPM
+apt-get install -y -qq "php${PHP_VER}-fpm"
+systemctl enable "php${PHP_VER}-fpm" --quiet
+systemctl start  "php${PHP_VER}-fpm"
 
 info "Installing Composer..."
 if ! command -v composer &>/dev/null; then
@@ -156,7 +167,7 @@ if ! command -v composer &>/dev/null; then
 fi
 
 info "Installing Node.js 20 (required for Vite build)..."
-if ! node --version 2>/dev/null | grep -q "^v20\|^v22"; then
+if ! node --version 2>/dev/null | grep -qE "^v(20|22)"; then
     curl -fsSL https://deb.nodesource.com/setup_20.x | bash - -qq
     apt-get install -y -qq nodejs
 fi
@@ -237,10 +248,7 @@ else
     error ".env.example not found. Cannot create .env."
 fi
 
-APP_KEY=$(php artisan key:generate --show --no-ansi 2>/dev/null || openssl rand -base64 32)
-
 sed -i "s|APP_URL=.*|APP_URL=https://${DOMAIN}|"         "$ENV_FILE"
-sed -i "s|APP_KEY=.*|APP_KEY=base64:${APP_KEY}|"          "$ENV_FILE"
 sed -i "s|APP_ENV=.*|APP_ENV=production|"                  "$ENV_FILE"
 sed -i "s|APP_DEBUG=.*|APP_DEBUG=false|"                   "$ENV_FILE"
 sed -i "s|DB_DATABASE=.*|DB_DATABASE=${DB_NAME}|"          "$ENV_FILE"
@@ -248,7 +256,6 @@ sed -i "s|DB_USERNAME=.*|DB_USERNAME=${DB_USER}|"          "$ENV_FILE"
 sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=${DB_PASS}|"          "$ENV_FILE"
 sed -i "s|MAIL_FROM_ADDRESS=.*|MAIL_FROM_ADDRESS=noreply@${DOMAIN}|" "$ENV_FILE"
 
-# Generate a fresh APP_KEY properly
 php artisan key:generate --force --quiet
 success ".env configured."
 
@@ -321,7 +328,8 @@ if [[ "$WEB_SERVER" == "apache" ]]; then
     info "Configuring Apache..."
 
     # Enable required modules
-    a2enmod rewrite headers ssl deflate expires
+    a2enmod rewrite headers ssl deflate expires proxy_fcgi setenvif
+    a2enconf "php${PHP_VER}-fpm"
 
     APACHE_CONF="${CONF_DIR_APACHE}/${DOMAIN}.conf"
     cat > "$APACHE_CONF" <<APACHECONF
@@ -345,11 +353,9 @@ if [[ "$WEB_SERVER" == "apache" ]]; then
         Header always set Referrer-Policy "strict-origin-when-cross-origin"
     </Directory>
 
-    # PHP via mod_php (if using Apache's mod_php)
-    # If using PHP-FPM instead, replace the FilesMatch block below with:
-    # ProxyPassMatch ^/(.*\.php(/.*)?)$ unix:/run/php/php${PHP_VER}-fpm.sock|fcgi://localhost${APP_PATH}/public
+    # PHP via PHP-FPM
     <FilesMatch "\.php$">
-        SetHandler application/x-httpd-php
+        SetHandler "proxy:unix:/run/php/php${PHP_VER}-fpm.sock|fcgi://localhost"
     </FilesMatch>
 
     # Redirect to HTTPS (activated automatically if SSL is configured)
@@ -379,8 +385,9 @@ if [[ "$WEB_SERVER" == "apache" ]]; then
         Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
     </Directory>
 
+    # PHP via PHP-FPM
     <FilesMatch "\.php$">
-        SetHandler application/x-httpd-php
+        SetHandler "proxy:unix:/run/php/php${PHP_VER}-fpm.sock|fcgi://localhost"
     </FilesMatch>
 
     SSLEngine on
@@ -530,7 +537,39 @@ info "Cron entry:"
 cat "$CRON_FILE"
 
 # =============================================================================
-# 10. SSL (OPTIONAL)
+# 10. QUEUE WORKER (systemd service)
+# =============================================================================
+header "Queue Worker"
+
+QUEUE_SERVICE_FILE="/etc/systemd/system/busyrealtor-queue.service"
+
+cat > "$QUEUE_SERVICE_FILE" <<QUEUESERVICE
+[Unit]
+Description=BusyRealtor Laravel Queue Worker
+After=network.target mysql.service
+
+[Service]
+User=${WEBSERVER_USER}
+Group=${WEBSERVER_USER}
+WorkingDirectory=${APP_PATH}
+ExecStart=/usr/bin/php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+Restart=always
+RestartSec=5
+StandardOutput=append:${APP_PATH}/storage/logs/queue.log
+StandardError=append:${APP_PATH}/storage/logs/queue.log
+
+[Install]
+WantedBy=multi-user.target
+QUEUESERVICE
+
+systemctl daemon-reload
+systemctl enable busyrealtor-queue --quiet
+systemctl start  busyrealtor-queue
+success "Queue worker service installed and started."
+info "Status: $(systemctl is-active busyrealtor-queue)"
+
+# =============================================================================
+# 11. SSL (OPTIONAL)
 # =============================================================================
 if [[ "$RUN_SSL" == "true" ]]; then
     header "SSL Certificate (Let's Encrypt)"
@@ -538,10 +577,10 @@ if [[ "$RUN_SSL" == "true" ]]; then
 
     if [[ "$WEB_SERVER" == "apache" ]]; then
         certbot --apache -d "${DOMAIN}" -d "www.${DOMAIN}" --non-interactive \
-            --agree-tos --email "admin@${DOMAIN}" --redirect
+            --agree-tos --email "${SSL_EMAIL}" --redirect
     else
         certbot --nginx -d "${DOMAIN}" -d "www.${DOMAIN}" --non-interactive \
-            --agree-tos --email "admin@${DOMAIN}" --redirect
+            --agree-tos --email "${SSL_EMAIL}" --redirect
     fi
 
     # Auto-renew cron (certbot usually adds this, but ensure it)
@@ -552,7 +591,7 @@ if [[ "$RUN_SSL" == "true" ]]; then
 fi
 
 # =============================================================================
-# 11. FINAL SUMMARY
+# 12. FINAL SUMMARY
 # =============================================================================
 header "Installation Complete"
 
@@ -583,6 +622,8 @@ echo ""
 echo -e "  ${BOLD}Useful commands:${NC}"
 echo -e "  Clear caches   : cd ${APP_PATH} && php artisan config:clear && php artisan view:clear"
 echo -e "  View logs      : tail -f ${APP_PATH}/storage/logs/laravel.log"
+echo -e "  Queue log      : tail -f ${APP_PATH}/storage/logs/queue.log"
+echo -e "  Queue status   : systemctl status busyrealtor-queue"
 echo -e "  Run migrations : cd ${APP_PATH} && php artisan migrate"
 echo -e "  Test scheduler : cd ${APP_PATH} && php artisan schedule:run"
 echo ""

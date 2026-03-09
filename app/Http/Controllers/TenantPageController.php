@@ -6,6 +6,7 @@ use App\Models\Property;
 use App\Models\SiteSettings;
 use App\Models\LegalPage;
 use App\Models\Appointment;
+use App\Models\StaffMember;
 use App\Models\PropertyView;
 use Illuminate\Http\Request;
 
@@ -188,6 +189,93 @@ class TenantPageController extends Controller
         return response()
             ->view('tenant.sitemap', compact('account', 'properties'))
             ->header('Content-Type', 'text/xml');
+    }
+
+
+    public function llms($account)
+    {
+        $tenant     = app('tenant');
+        $settings   = SiteSettings::where('tenant_id', $tenant->id)->first();
+        $baseUrl    = url('/' . $account);
+
+        $agencyName = $settings?->site_title    ?: '[Your Agency Name] — Real Estate';
+        $tagline    = $settings?->tagline        ?: 'Your trusted local real estate experts';
+        $description = $settings?->site_description;
+
+        $properties = Property::where('tenant_id', $tenant->id)
+            ->whereIn('listing_status', ['active', 'pending'])
+            ->orderBy('listing_status')
+            ->orderBy('created_at', 'desc')
+            ->get(['id', 'title', 'listing_status', 'property_type', 'price', 'address_street', 'address_city', 'address_state', 'bedrooms', 'bathrooms', 'square_feet']);
+
+        $staff = StaffMember::where('tenant_id', $tenant->id)
+            ->orderBy('sort_order')
+            ->get(['name', 'role', 'email']);
+
+        $lines = [];
+        $lines[] = "# {$agencyName}";
+        $lines[] = "";
+        $lines[] = "> {$tagline}";
+        $lines[] = "";
+
+        if ($description) {
+            $lines[] = $description;
+            $lines[] = "";
+        }
+
+        // Contact
+        $hasContact = $settings && ($settings->contact_email || $settings->contact_phone || $settings->contact_address);
+        if ($hasContact) {
+            $lines[] = "## Contact";
+            $lines[] = "";
+            if ($settings->contact_email)   $lines[] = "- Email: {$settings->contact_email}";
+            if ($settings->contact_phone)   $lines[] = "- Phone: {$settings->contact_phone}";
+            if ($settings->contact_address) $lines[] = "- Address: {$settings->contact_address}";
+            $lines[] = "";
+        }
+
+        // Listings
+        if ($properties->isNotEmpty()) {
+            $lines[] = "## Listings";
+            $lines[] = "";
+            foreach ($properties as $p) {
+                $price  = $p->price ? '$' . number_format($p->price) : 'Price on request';
+                $beds   = $p->bedrooms   ? "{$p->bedrooms} bed"  . ($p->bedrooms   != 1 ? 's' : '') : null;
+                $baths  = $p->bathrooms  ? "{$p->bathrooms} bath" . ($p->bathrooms  != 1 ? 's' : '') : null;
+                $sqft   = $p->square_feet ? number_format($p->square_feet) . ' sqft' : null;
+                $details = implode(', ', array_filter([$beds, $baths, $sqft]));
+                $addr   = trim("{$p->address_street}, {$p->address_city}, {$p->address_state}", ', ');
+                $status = $p->listing_status === 'pending' ? ' (Pending)' : '';
+                $detail_str = $details ? " — {$details}" : '';
+                $lines[] = "- [{$p->title}]({$baseUrl}/property/{$p->id}): {$addr} — {$price}{$detail_str}{$status}";
+            }
+            $lines[] = "";
+        }
+
+        // Staff
+        if ($staff->isNotEmpty()) {
+            $lines[] = "## Team";
+            $lines[] = "";
+            foreach ($staff as $s) {
+                $entry = "- {$s->name}";
+                if ($s->role) $entry .= " — {$s->role}";
+                if ($s->email) $entry .= " ({$s->email})";
+                $lines[] = $entry;
+            }
+            $lines[] = "";
+        }
+
+        // Pages
+        $lines[] = "## Pages";
+        $lines[] = "";
+        $lines[] = "- [Home]({$baseUrl}/): Property listings and agency overview";
+        $lines[] = "- [Gallery]({$baseUrl}/gallery): Browse and filter all listings";
+        $lines[] = "- [Map]({$baseUrl}/map): Interactive map of all listings";
+        $lines[] = "- [Contact]({$baseUrl}/contact): Get in touch";
+        $lines[] = "";
+
+        return response(implode("\n", $lines), 200)
+            ->header('Content-Type', 'text/plain; charset=utf-8');
     }
 
     public function confirmAppointment($account, $token)

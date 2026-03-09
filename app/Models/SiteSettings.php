@@ -106,6 +106,9 @@ class SiteSettings extends Model
         'show_login_link'            => 'boolean',
         'dark_mode_enabled'          => 'boolean',
         'hero_effects'               => 'array',
+        'smtp_password'              => 'encrypted',
+        'notify_on_contact'          => 'boolean',
+        'notify_on_appointment'      => 'boolean',
     ];
 
     public function tenant(): BelongsTo

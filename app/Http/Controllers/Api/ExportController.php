@@ -41,7 +41,13 @@ class ExportController extends Controller
         if (empty($data)) return '';
         $output = fopen('php://temp', 'r+');
         fputcsv($output, array_keys($data[0]));
-        foreach ($data as $row) fputcsv($output, array_values($row));
+        foreach ($data as $row) {
+            $flat = array_map(
+                fn($v) => is_array($v) ? json_encode($v) : $v,
+                array_values($row)
+            );
+            fputcsv($output, $flat);
+        }
         rewind($output);
         $csv = stream_get_contents($output);
         fclose($output);
