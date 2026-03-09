@@ -86,7 +86,7 @@ $tabs = array_merge(...array_values($groups));
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
-                            <input type="text" name="tagline" value="{{ $settings->tagline }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <input type="text" name="tagline" value="{{ $settings->tagline }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Your trusted local real estate experts">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
@@ -162,6 +162,14 @@ $tabs = array_merge(...array_values($groups));
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
                                 <textarea name="owner_bio" rows="4" maxlength="1000" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Share your expertise, years of experience, and the market areas you serve...">{{ $settings->owner_bio }}</textarea>
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">License Number</label>
+                                <input type="text" name="license_number" value="{{ $settings->license_number }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="e.g. DRE #01234567">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Brokerage Name</label>
+                                <input type="text" name="brokerage_name" value="{{ $settings->brokerage_name }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="e.g. Keller Williams Realty">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -188,9 +196,9 @@ $tabs = array_merge(...array_values($groups));
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Header Display</label>
                             <select name="header_display_mode" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
-                                <option value="favicon_only" {{ ($settings->header_display_mode ?? '') === 'favicon_only' ? 'selected' : '' }}>Icon Only</option>
-                                <option value="text_only" {{ ($settings->header_display_mode ?? '') === 'text_only' ? 'selected' : '' }}>Title Only</option>
                                 <option value="favicon_text" {{ ($settings->header_display_mode ?? 'favicon_text') === 'favicon_text' ? 'selected' : '' }}>Icon + Title</option>
+                                <option value="text_only" {{ ($settings->header_display_mode ?? '') === 'text_only' ? 'selected' : '' }}>Title Only</option>
+                                <option value="favicon_only" {{ ($settings->header_display_mode ?? '') === 'favicon_only' ? 'selected' : '' }}>Icon Only</option>
                             </select>
                         </div>
                         <div>

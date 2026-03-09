@@ -88,6 +88,8 @@ class SiteSettings extends Model
         'owner_name',
         'owner_photo',
         'owner_bio',
+        'license_number',
+        'brokerage_name',
     ];
 
     protected $casts = [

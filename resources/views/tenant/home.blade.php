@@ -494,6 +494,13 @@ $iconPaths = [
                     <h3 class="text-2xl md:text-3xl font-black text-gray-900">{{ $settings->owner_name }}</h3>
                     @endif
                     <p class="text-sm font-semibold mt-1" style="color:var(--primary)">{{ $settings->site_title ?? 'Licensed Real Estate Agent' }}</p>
+                    @if($settings->brokerage_name || $settings->license_number)
+                    <p class="text-xs text-gray-500 mt-1">
+                        @if($settings->brokerage_name){{ $settings->brokerage_name }}@endif
+                        @if($settings->brokerage_name && $settings->license_number) &middot; @endif
+                        @if($settings->license_number)Lic. {{ $settings->license_number }}@endif
+                    </p>
+                    @endif
 
                     @if($settings->owner_bio)
                     <p class="mt-4 text-gray-600 leading-relaxed text-base">{{ $settings->owner_bio }}</p>

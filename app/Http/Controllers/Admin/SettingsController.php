@@ -60,7 +60,7 @@ class SettingsController extends Controller
                     Auth::user()->update(['password' => Hash::make($request->new_password)]);
                 }
                 // Owner public profile
-                $profileData = ['owner_name' => $request->owner_name, 'owner_bio' => $request->owner_bio];
+                $profileData = ['owner_name' => $request->owner_name, 'owner_bio' => $request->owner_bio, 'license_number' => $request->license_number, 'brokerage_name' => $request->brokerage_name];
                 if ($request->hasFile('owner_photo')) {
                     if ($settings->owner_photo) Storage::disk('public')->delete($settings->owner_photo);
                     $dir = "tenants/{$tenant->id}";

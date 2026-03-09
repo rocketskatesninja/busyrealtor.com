@@ -364,6 +364,8 @@ CREATE TABLE `site_settings` (
   `owner_name` varchar(255) DEFAULT NULL,
   `owner_photo` text DEFAULT NULL,
   `owner_bio` text DEFAULT NULL,
+  `license_number` varchar(255) DEFAULT NULL,
+  `brokerage_name` varchar(255) DEFAULT NULL,
   `enable_email_notifications` tinyint(1) NOT NULL DEFAULT 1,
   `notify_on_contact` tinyint(1) NOT NULL DEFAULT 1,
   `notify_on_appointment` tinyint(1) NOT NULL DEFAULT 1,
