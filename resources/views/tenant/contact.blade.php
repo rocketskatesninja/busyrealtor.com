@@ -29,9 +29,10 @@
 
             {{-- Form --}}
             <div class="p-6" x-data="{
-                submitting: false, success: false, error: '',
+                submitting: false, success: false, error: '', consent: false,
                 form: { name: '', email: '', phone: '', message: '' },
                 async submit() {
+                    if (!this.consent) { this.error = 'Please check the consent box to continue.'; return; }
                     this.submitting = true; this.error = '';
                     try {
                         const res = await fetch('{{ route('tenant.api.contact', $account) }}', {
@@ -76,6 +77,7 @@
                         <input type="tel" x-model="form.phone" placeholder="(555) 123-4567"
                                class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent"
                                style="--tw-ring-color: var(--primary)">
+                        <p class="text-xs text-gray-400 mt-1">By providing your phone number, you consent to receive calls or texts regarding your inquiry. <a href="{{ route('tenant.privacy', $account) }}" class="underline hover:text-gray-800" target="_blank">Privacy Policy</a>. <input type="checkbox" id="contact-consent" x-model="consent" class="w-3.5 h-3.5 rounded border-gray-400" style="vertical-align:-3px;accent-color: var(--primary)"> <label for="contact-consent" class="cursor-pointer underline">I agree</label> <span class="text-red-500">*</span></p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Message <span class="text-red-500">*</span></label>
@@ -83,7 +85,8 @@
                                   class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent resize-none"
                                   style="--tw-ring-color: var(--primary)"></textarea>
                     </div>
-                    <button type="submit" :disabled="submitting"
+
+                    <button type="submit" :disabled="submitting || !consent"
                             class="w-full py-3 rounded-xl font-semibold text-white text-sm transition hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             style="background-color: var(--primary)">
                         <svg x-show="submitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">

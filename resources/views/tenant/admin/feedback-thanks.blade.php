@@ -10,13 +10,8 @@
         </svg>
     </div>
     <p class="text-gray-500 mb-8">We've received your submission. Our team will review it and reach out if we need more information.</p>
-    <div class="flex items-center justify-center gap-3">
-        <a href="{{ route('tenant.admin.dashboard', $account) }}" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">
-            Back to Dashboard
-        </a>
-        <a href="{{ route('tenant.admin.feedback', $account) }}" class="px-6 py-2.5 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 transition">
-            Submit Another
-        </a>
-    </div>
+    <a href="{{ route('tenant.admin.feedback', $account) }}" class="inline-block px-6 py-2.5 border border-gray-200 rounded-xl font-semibold text-sm text-gray-700 hover:bg-gray-50 transition">
+        Submit Another
+    </a>
 </div>
 @endsection

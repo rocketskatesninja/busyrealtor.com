@@ -49,6 +49,13 @@ $tabs = array_merge(...array_values($groups));
         </div>
     </div>
 
+    {{-- Save button row (hidden on data tab) --}}
+    @if(!in_array($tab, ['data']))
+    <div class="flex justify-end mb-2">
+        <button form="settings-form" type="submit" class="btn-primary px-8 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Save Settings</button>
+    </div>
+    @endif
+
     <div class="flex gap-8">
         {{-- Settings Sidebar (desktop only) --}}
         <aside class="hidden md:block w-64 flex-shrink-0 sticky top-6 self-start">
@@ -71,7 +78,7 @@ $tabs = array_merge(...array_values($groups));
 
         {{-- Settings Content --}}
         <div class="flex-1">
-            <form method="POST" action="{{ route('tenant.admin.settings.update', $account) }}" enctype="multipart/form-data" class="space-y-6">
+            <form id="settings-form" method="POST" action="{{ route('tenant.admin.settings.update', $account) }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 <input type="hidden" name="tab" value="{{ $tab }}">
 
@@ -1295,11 +1302,7 @@ $tabs = array_merge(...array_values($groups));
 
                 @endif
 
-                @if(!in_array($tab, ['data']))
-                <div class="flex justify-end">
-                    <button type="submit" class="btn-primary px-8 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Save Settings</button>
-                </div>
-                @endif
+
             </form>
         </div>
     </div>
@@ -1516,5 +1519,51 @@ document.addEventListener('DOMContentLoaded', function() {
         if (input) input.value = JSON.stringify(sections);
     }
 });
+
+// ── Mobile swipe navigation ──────────────────────────────────────────────────
+(function() {
+    if (window.innerWidth >= 768) return; // desktop only uses sidebar
+
+    var tabOrder = @json(array_keys($tabs));
+    var currentTab = '{{ $tab }}';
+    var currentIdx = tabOrder.indexOf(currentTab);
+
+    // Scroll active tab into view on load
+    var strip = document.querySelector('.md\\:hidden .flex.overflow-x-auto');
+    if (strip) {
+        var active = strip.querySelector('a[style*="background-color"]');
+        if (active) {
+            strip.scrollLeft = active.offsetLeft - strip.offsetWidth / 2 + active.offsetWidth / 2;
+        }
+    }
+
+    // Swipe detection on the content area
+    var content = document.querySelector('.flex-1 form') || document.body;
+    var startX, startY, startTime;
+
+    content.addEventListener('touchstart', function(e) {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+        startTime = Date.now();
+    }, { passive: true });
+
+    content.addEventListener('touchend', function(e) {
+        if (!startX) return;
+        var dx = e.changedTouches[0].clientX - startX;
+        var dy = e.changedTouches[0].clientY - startY;
+        var dt = Date.now() - startTime;
+
+        // Must be fast (<400ms), mostly horizontal (2:1 ratio), and >50px
+        if (dt > 400 || Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
+
+        var nextIdx = dx < 0 ? currentIdx + 1 : currentIdx - 1;
+        if (nextIdx < 0 || nextIdx >= tabOrder.length) return;
+
+        var nextTab = tabOrder[nextIdx];
+        var url = new URL(window.location.href);
+        url.searchParams.set('tab', nextTab);
+        window.location.href = url.toString();
+    }, { passive: true });
+})();
 
 @endsection

@@ -5,13 +5,6 @@
 @php $account = app('tenant')->slug; @endphp
 <div class="max-w-2xl mx-auto px-4">
 
-    <div class="mb-6">
-        <a href="{{ route('tenant.admin.dashboard', $account) }}" class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Back to Dashboard
-        </a>
-    </div>
-
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
         <form method="POST" action="{{ route('tenant.admin.feedback.store', $account) }}" enctype="multipart/form-data" class="space-y-5">
             @csrf

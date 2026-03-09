@@ -192,11 +192,116 @@ class DatabaseSeeder extends Seeder
 
     private function privacyPolicyTemplate(string $name): string
     {
-        return "Privacy Policy\n\nLast updated: " . now()->format('F j, Y') . "\n\n$name (\"we\", \"us\", or \"our\") operates this website. This page informs you of our policies regarding the collection, use, and disclosure of personal information we receive from users.\n\nInformation Collection and Use\nWe collect several different types of information for various purposes to provide and improve our service to you, including contact information you provide through our forms.\n\nData Security\nThe security of your data is important to us. We strive to use commercially acceptable means to protect your Personal Information.\n\nContact Us\nIf you have any questions about this Privacy Policy, please contact us.";
+        $date = now()->format('F j, Y');
+        return <<<EOT
+Privacy Policy
+
+Last updated: {$date}
+
+1. Introduction
+{$name} ("we", "us", or "our") operates this website and is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website.
+
+2. Our Privacy Commitment
+Your privacy is not just a legal obligation to us — it is a core value. We will never sell, rent, trade, or otherwise share your personal information with third parties for their own marketing or commercial purposes. Ever. The information you provide is used solely to serve you and respond to your inquiries.
+
+3. Information We Collect
+We may collect the following types of personal information:
+- Contact information: name, email address, phone number
+- Inquiry and appointment details you submit through our forms
+- Usage data: pages visited, browser type, IP address (via cookies and analytics tools)
+- Communications you send to us via chat, email, or contact forms
+
+4. How We Use Your Information
+We use the information we collect exclusively to:
+- Respond to your inquiries and schedule appointments
+- Send you information about properties and our services that you have requested
+- Improve our website and user experience
+- Comply with legal obligations
+
+We do not use your information for any other purpose without your explicit consent.
+
+5. We Will Never Sell Your Data
+We do not sell, rent, license, or trade your personal information to any third party. This includes data brokers, advertisers, and marketing companies. Your contact details exist solely to help us serve you.
+
+6. Cookies and Tracking Technologies
+We use cookies and similar technologies to analyze website traffic and improve your experience. You may decline non-essential cookies using the consent banner on our site. Declining cookies will not prevent you from using the site.
+
+7. Third-Party Services
+We may use limited third-party services such as Google Analytics solely to understand how our website is used in aggregate. These services operate under their own privacy policies. We do not share your personal contact information with these services.
+
+8. Data Retention
+We retain personal information only as long as necessary to fulfill the purposes described in this policy or as required by law.
+
+9. Your Rights
+Depending on your location, you may have the right to:
+- Access the personal data we hold about you
+- Request correction or deletion of your data
+- Opt out of marketing communications
+- Lodge a complaint with a supervisory authority (EU/UK residents)
+- Request data deletion (California residents under CCPA)
+
+To exercise any of these rights, please contact us using the information below.
+
+10. Data Security
+We implement reasonable technical and organizational measures to protect your personal information. However, no transmission over the internet is completely secure.
+
+11. Children's Privacy
+Our services are not directed to individuals under 18. We do not knowingly collect personal information from children.
+
+12. Changes to This Policy
+We may update this Privacy Policy from time to time. We will notify you of changes by updating the date at the top of this page.
+
+13. Contact Us
+If you have questions about this Privacy Policy or wish to exercise your rights, please contact us through the contact form on our website.
+EOT;
     }
 
     private function termsTemplate(string $name): string
     {
-        return "Terms of Service\n\nLast updated: " . now()->format('F j, Y') . "\n\nPlease read these Terms of Service carefully before using our website operated by $name.\n\nBy accessing or using our service, you agree to be bound by these Terms.\n\nUse of Service\nYou agree to use our services only for lawful purposes and in accordance with these Terms.\n\nContact Us\nIf you have any questions about these Terms, please contact us.";
+        $date = now()->format('F j, Y');
+        return <<<EOT
+Terms of Service
+
+Last updated: {$date}
+
+1. Acceptance of Terms
+By accessing or using the website operated by {$name} ("we", "us", "our"), you agree to be bound by these Terms of Service. If you do not agree, please do not use this site.
+
+2. Use of Service
+You agree to use this website only for lawful purposes and in a manner that does not infringe the rights of others. You may not use this site to:
+- Transmit unlawful, harassing, or fraudulent content
+- Attempt to gain unauthorized access to any part of the site
+- Scrape or harvest listing data for commercial purposes
+
+3. Property Listings and Information
+All property listings, descriptions, and pricing information are provided for informational purposes only. Information is deemed reliable but not guaranteed. We make no warranty as to the accuracy, completeness, or timeliness of listing data.
+
+4. Fair Housing
+We are committed to the principles of the Fair Housing Act. We do not discriminate on the basis of race, color, national origin, religion, sex, familial status, disability, or any other protected class.
+
+5. No Legal or Financial Advice
+Nothing on this website constitutes legal, financial, tax, or investment advice. Consult a licensed professional before making any real estate decisions.
+
+6. Intellectual Property
+All content on this website, including text, images, and design elements, is the property of {$name} or its licensors and may not be reproduced without written permission.
+
+7. Third-Party Links
+Our website may contain links to third-party websites. We are not responsible for the content or privacy practices of those sites.
+
+8. Limitation of Liability
+To the fullest extent permitted by law, {$name} shall not be liable for any indirect, incidental, special, or consequential damages arising from your use of this website or reliance on any information provided herein.
+
+9. Disclaimer of Warranties
+This website is provided "as is" without warranties of any kind, either express or implied, including but not limited to implied warranties of merchantability or fitness for a particular purpose.
+
+10. Governing Law
+These Terms shall be governed by and construed in accordance with the laws of the state in which {$name} operates, without regard to its conflict of law provisions.
+
+11. Changes to Terms
+We reserve the right to modify these Terms at any time. Continued use of the site after changes constitutes acceptance of the revised Terms.
+
+12. Contact Us
+If you have questions about these Terms, please contact us through the contact form on our website.
+EOT;
     }
 }

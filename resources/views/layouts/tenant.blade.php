@@ -226,13 +226,22 @@
     @yield('head')
     @stack('head')
     @if(!empty($ga) && $ga->api_key)
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id={{ $ga->api_key }}"></script>
+    <!-- Google Analytics (consent-gated) -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', '{{ $ga->api_key }}');
+    window._gaId = '{{ $ga->api_key }}';
+    function loadGA() {
+        if (localStorage.getItem('cookie_consent') !== 'true') return;
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window._gaId;
+        document.head.appendChild(s);
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', window._gaId);
+        window.gtag = gtag;
+    }
+    document.addEventListener('DOMContentLoaded', loadGA);
     </script>
     @endif
 </head>
@@ -425,6 +434,133 @@
 </main>
 
 {{-- FOOTER --}}
+{{-- Cookie Consent Banner --}}
+<div id="cookie-banner" style="display:none">
+    <div class="cookie-banner-inner">
+        <div class="cookie-banner-icon">🍪</div>
+        <div class="cookie-banner-text">
+            <strong>We use cookies</strong>
+            <span>We use cookies to improve your experience and analyze traffic. See our <a href="{{ route('tenant.privacy', $account) }}">Privacy Policy</a>.</span>
+        </div>
+        <div class="cookie-banner-actions">
+            <button onclick="cookieConsent('false')" class="cookie-btn-decline">Decline</button>
+            <button onclick="cookieConsent('true')" class="cookie-btn-accept">Accept All</button>
+        </div>
+    </div>
+</div>
+<style>
+#cookie-banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 9999;
+    padding: 0 1rem 1rem;
+    pointer-events: none;
+}
+.cookie-banner-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+    pointer-events: all;
+    flex-wrap: wrap;
+    /* Light mode */
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-bottom: none;
+    color: #374151;
+}
+.dark .cookie-banner-inner {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+.cookie-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
+.cookie-banner-text {
+    flex: 1;
+    min-width: 200px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+.cookie-banner-text strong {
+    font-weight: 600;
+    color: #111827;
+}
+.dark .cookie-banner-text strong { color: #f1f5f9; }
+.cookie-banner-text span { opacity: 0.8; }
+.cookie-banner-text a {
+    text-decoration: underline;
+    color: var(--primary);
+}
+.cookie-banner-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+.cookie-btn-decline {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+    border: 1.5px solid #d1d5db;
+    color: #6b7280;
+}
+.cookie-btn-decline:hover { border-color: #9ca3af; color: #374151; }
+.dark .cookie-btn-decline { border-color: #475569; color: #94a3b8; }
+.dark .cookie-btn-decline:hover { border-color: #64748b; color: #cbd5e1; }
+.cookie-btn-accept {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    border: none;
+    color: #fff;
+    background-color: var(--primary);
+}
+.cookie-btn-accept:hover { opacity: 0.88; }
+</style>
+<script>
+(function() {
+    var consent = localStorage.getItem('cookie_consent');
+    if (!consent) {
+        var banner = document.getElementById('cookie-banner');
+        if (banner) { banner.style.display = ''; }
+    }
+    updateCookiePrefsLink();
+})();
+function cookieConsent(val) {
+    localStorage.setItem('cookie_consent', val);
+    var banner = document.getElementById('cookie-banner');
+    if (banner) banner.style.display = 'none';
+    if (val === 'true' && typeof loadGA === 'function') loadGA();
+    updateCookiePrefsLink();
+}
+function openCookiePrefs() {
+    var banner = document.getElementById('cookie-banner');
+    if (banner) { banner.style.display = ''; }
+    banner.scrollIntoView({ behavior: 'smooth', block: 'end' });
+}
+function updateCookiePrefsLink() {
+    var link = document.getElementById('cookie-prefs-link');
+    if (!link) return;
+    var consent = localStorage.getItem('cookie_consent');
+    if (consent === 'true') link.textContent = 'Cookie Preferences ✓';
+    else if (consent === 'false') link.textContent = 'Cookie Preferences ✕';
+    else link.textContent = 'Cookie Preferences';
+}
+</script>
+
 @if(View::hasSection('show_footer'))
 <footer class="bg-gray-950 text-gray-400 mt-auto">
     <div class="max-w-7xl mx-auto px-4 py-12">
@@ -442,7 +578,13 @@
                         <span class="text-gray-400 text-sm">{{ $settings->tagline ?: 'Your trusted real estate experts.' }}</span>
                     </div>
                 </div>
-                <p class="text-gray-500 text-xs mb-4">Information deemed reliable but not guaranteed. Listing data is provided for consumers' personal, non-commercial use and may not be used for any purpose other than to identify prospective properties. Equal Housing Opportunity.</p>
+                @php
+                    $footerBadge = '';
+                    if (!empty($settings->brokerage_name)) $footerBadge .= $settings->brokerage_name;
+                    if (!empty($settings->brokerage_name) && !empty($settings->license_number)) $footerBadge .= ' · ';
+                    if (!empty($settings->license_number)) $footerBadge .= 'Lic. #' . $settings->license_number;
+                @endphp
+                <p class="text-gray-500 text-xs mb-4">@if($footerBadge)<span class="text-gray-400">{{ $footerBadge }}</span> &middot; @endif Information deemed reliable but not guaranteed. Listing data is provided for consumers' personal, non-commercial use and may not be used for any purpose other than to identify prospective properties. Equal Housing Opportunity.</p>
                 <div class="flex space-x-3">
                     @foreach([['url' => $settings->social_facebook ?? null, 'label' => 'Facebook', 'path' => 'M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z'], ['url' => $settings->social_instagram ?? null, 'label' => 'Instagram', 'path' => 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z'], ['url' => $settings->social_twitter ?? null, 'label' => 'Twitter', 'path' => 'M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z'], ['url' => $settings->social_linkedin ?? null, 'label' => 'LinkedIn', 'path' => 'M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z']] as $social)
                         @if($social['url'])
@@ -468,6 +610,7 @@
                 <ul class="space-y-2 text-sm">
                     <li><a href="{{ route('tenant.privacy', $account) }}" class="footer-link transition-colors">Privacy Policy</a></li>
                     <li><a href="{{ route('tenant.terms', $account) }}" class="footer-link transition-colors">Terms of Service</a></li>
+                    <li><button onclick="openCookiePrefs()" class="footer-link transition-colors text-left" id="cookie-prefs-link">Cookie Preferences</button></li>
                 </ul>
             </div>
             {{-- Affiliates --}}
@@ -547,6 +690,7 @@
             <button type="submit" id="chatbot-send" class="px-4 py-2 rounded-full text-white text-sm font-medium shrink-0" style="background-color:var(--primary)">Send</button>
         </form>
         <div id="chatbot-typing" class="hidden text-xs text-gray-400 mt-2 px-1">Typing...</div>
+        <p class="text-center text-gray-400 mt-1.5 px-1" style="font-size:0.65rem;line-height:1.3">AI assistant &middot; Not legal, financial, or real estate advice &middot; Conversations are not stored</p>
     </div>
 </div>`;
 
@@ -766,9 +910,11 @@
             <div><label class="block text-sm font-medium text-gray-700 mb-1">Message *</label>
             <textarea id="contact-message" name="message" rows="3" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"></textarea></div>
             <input type="hidden" id="contact-property-id" name="property_id" value="">
+            <p class="text-xs text-gray-400" style="margin-top:-4px">By providing your phone number, you consent to receive calls or texts regarding your inquiry. <a href="" id="widget-privacy-link" class="underline hover:text-gray-800" target="_blank">Privacy Policy</a>. <input type="checkbox" id="widget-consent" name="consent" class="w-3.5 h-3.5 rounded border-gray-400" style="accent-color:var(--primary);vertical-align:-3px"> <label for="widget-consent" class="cursor-pointer underline">I agree</label> <span class="text-red-500">*</span></p>
+
             <div id="contact-error" class="hidden text-red-600 text-sm"></div>
             <div id="contact-success" class="hidden text-green-600 text-sm font-medium"></div>
-            <button type="submit" id="contact-submit" class="w-full py-2.5 rounded-lg text-white font-medium text-sm" style="background-color:var(--primary)">Send Message</button>
+            <button type="submit" id="contact-submit" disabled class="w-full py-2.5 rounded-lg text-white font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-opacity" style="background-color:var(--primary)">Send Message</button>
         </form>
     </div>
 </div>`;
@@ -779,6 +925,9 @@
         btn.addEventListener('click', () => { if (!state.isDragging) toggle(); });
         document.getElementById('contact-close').addEventListener('click', close);
         document.getElementById('contact-form').addEventListener('submit', handleSubmit);
+        wireConsentCheckbox();
+        var pl = document.getElementById('widget-privacy-link');
+        if (pl) pl.href = '{{ route("tenant.privacy", $account) }}';
     }
 
     function applyPosition(el) {
@@ -859,8 +1008,17 @@
         }
     }
 
+    function wireConsentCheckbox() {
+        const box = document.getElementById('widget-consent');
+        const btn = document.getElementById('contact-submit');
+        if (!box || !btn) return;
+        box.addEventListener('change', () => { btn.disabled = !box.checked; });
+    }
+
     async function handleSubmit(e) {
         e.preventDefault();
+        const consentBox = document.getElementById('widget-consent');
+        if (consentBox && !consentBox.checked) return;
         const submitBtn = document.getElementById('contact-submit');
         const errDiv = document.getElementById('contact-error');
         const okDiv  = document.getElementById('contact-success');

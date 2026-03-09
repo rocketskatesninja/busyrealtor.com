@@ -4,13 +4,6 @@
 @section('content')
 @php $account = $tenant->slug; $isEdit = isset($property); @endphp
 <div class="max-w-5xl mx-auto px-4">
-    <div class="mb-6">
-        <a href="{{ route('tenant.admin.properties.index', $account) }}" class="inline-flex items-center gap-1 text-sm text-gray-400 hover:text-gray-600 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-            Back to Properties
-        </a>
-    </div>
-
     <form method="POST" enctype="multipart/form-data"
           action="{{ $isEdit ? route('tenant.admin.properties.update', [$account, $property->id]) : route('tenant.admin.properties.store', $account) }}"
           x-data="propertyForm()"
@@ -18,13 +11,21 @@
         @csrf
         @if($isEdit) @method('PUT') @endif
 
-        {{-- Tabs --}}
-        <div class="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
-            @foreach(['Basic Info' => 'basic', 'Details' => 'details', 'Location' => 'location', 'Media' => 'media'] as $label => $tab)
-            <button type="button" @click="activeTab = '{{ $tab }}'"
-                    :class="activeTab === '{{ $tab }}' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'"
-                    class="px-4 py-2 rounded-lg text-sm font-medium transition-all">{{ $label }}</button>
-            @endforeach
+        {{-- Tabs + Action Buttons --}}
+        <div class="flex items-center justify-between gap-4">
+            <div class="flex gap-1 bg-gray-100 p-1 rounded-xl">
+                @foreach(['Basic Info' => 'basic', 'Details' => 'details', 'Location' => 'location', 'Media' => 'media'] as $label => $tab)
+                <button type="button" @click="activeTab = '{{ $tab }}'"
+                        :class="activeTab === '{{ $tab }}' ? 'bg-white shadow text-gray-900' : 'text-gray-500 hover:text-gray-700'"
+                        class="px-4 py-2 rounded-lg text-sm font-medium transition-all">{{ $label }}</button>
+                @endforeach
+            </div>
+            <div class="flex items-center gap-3 flex-shrink-0">
+                <a href="{{ route('tenant.admin.properties.index', $account) }}" class="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Cancel</a>
+                <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">
+                    {{ $isEdit ? 'Save Changes' : 'Create Property' }}
+                </button>
+            </div>
         </div>
 
         {{-- Basic Info Tab --}}
@@ -184,12 +185,7 @@
             </div>
         </div>
 
-        <div class="flex items-center justify-end gap-3">
-            <a href="{{ route('tenant.admin.properties.index', $account) }}" class="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Cancel</a>
-            <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">
-                {{ $isEdit ? 'Save Changes' : 'Create Property' }}
-            </button>
-        </div>
+
     </form>
 </div>
 @endsection

@@ -122,7 +122,7 @@ $sections = $settings->homepage_sections ?? [
     ['key' => 'agent', 'enabled' => true, 'order' => 6],
     ['key' => 'testimonials', 'enabled' => false, 'order' => 7],
     ['key' => 'faq', 'enabled' => true, 'order' => 8],
-    ['key' => 'contact', 'enabled' => true, 'order' => 9],
+    ['key' => 'contact', 'enabled' => false, 'order' => 9],
 ];
 usort($sections, fn($a,$b) => ($a['order']??0) <=> ($b['order']??0));
 
@@ -668,11 +668,11 @@ $iconPaths = [
             </div>
 
             {{-- Right: form card --}}
-            <div class="md:col-span-3" x-data="{ sent: false, sending: false, name: '', email: '', phone: '', message: '' }">
+            <div class="md:col-span-3" x-data="{ sent: false, sending: false, consent: false, name: '', email: '', phone: '', message: '' }">
                 <div x-show="!sent" class="bg-gray-50 rounded-2xl p-8 border border-gray-100 h-full">
                     <h3 class="text-lg font-bold text-gray-900 mb-6">Send a Message</h3>
                     <form x-on:submit.prevent="
-                        if (!name || !email || !message) return;
+                        if (!name || !email || !message || !consent) return;
                         sending = true;
                         fetch('{{ route('tenant.api.contact', $account) }}', {
                             method: 'POST',
@@ -688,6 +688,7 @@ $iconPaths = [
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                                 <input x-model="phone" type="tel" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition bg-white">
+                                <p class="text-xs text-gray-400 mt-1">By providing your phone number, you consent to receive calls or texts regarding your inquiry. <a href="{{ route('tenant.privacy', $account) }}" class="underline hover:text-gray-800" target="_blank">Privacy Policy</a>. <input type="checkbox" id="home-consent" x-model="consent" class="w-3.5 h-3.5 rounded border-gray-400" style="vertical-align:-3px;accent-color:var(--primary)"> <label for="home-consent" class="cursor-pointer underline">I agree</label> <span class="text-red-500">*</span></p>
                             </div>
                         </div>
                         <div>
@@ -698,7 +699,8 @@ $iconPaths = [
                             <label class="block text-sm font-medium text-gray-700 mb-1">Message *</label>
                             <textarea x-model="message" rows="5" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition resize-none bg-white"></textarea>
                         </div>
-                        <button type="submit" :disabled="sending" class="btn-primary w-full py-3 rounded-xl font-semibold transition hover:opacity-90 disabled:opacity-70">
+
+                        <button type="submit" :disabled="sending || !consent" class="btn-primary w-full py-3 rounded-xl font-semibold transition hover:opacity-90 disabled:opacity-70">
                             <span x-show="!sending">Send Message</span>
                             <span x-show="sending" x-cloak>Sending...</span>
                         </button>

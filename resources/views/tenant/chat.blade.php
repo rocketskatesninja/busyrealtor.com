@@ -66,7 +66,7 @@
                 <svg class="w-5 h-5 translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
             </button>
         </form>
-        <p class="text-center text-xs text-gray-400 mt-2">AI assistant · responses may not be 100% accurate</p>
+        <p class="text-center text-xs text-gray-400 mt-2">AI assistant · Not legal, financial, or real estate advice · Conversations are not stored</p>
     </div>
 </div>
 
