@@ -3,6 +3,7 @@
 @section('page-subtitle', 'Configure your site, branding, and integrations')
 @section('head')
 <style>
+[x-cloak] { display: none !important; }
 @keyframes hpFadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Nunito:wght@700&family=DM+Sans:wght@700&family=Urbanist:wght@700&family=Outfit:wght@700&family=Lato:wght@700&family=Open+Sans:wght@700&family=Roboto:wght@700&family=Oswald:wght@700&family=Playfair+Display:wght@700&family=Merriweather:wght@700&family=Lora:wght@700&family=Cormorant+Garamond:wght@700&family=EB+Garamond:wght@700&family=Libre+Baskerville:wght@700&family=Cinzel:wght@700&family=Bebas+Neue&family=Anton&family=Abril+Fatface&family=Righteous&display=swap" rel="stylesheet">
@@ -33,15 +34,18 @@ $groups = [
 ];
 $tabs = array_merge(...array_values($groups));
 @endphp
-<div class="max-w-7xl mx-auto px-4">
+<div class="max-w-7xl mx-auto px-4" x-data="{ activeTab: '{{ $tab }}' }">
 
     {{-- Mobile: horizontal scrollable tab strip --}}
     <div class="md:hidden mb-4 -mx-4 px-4">
         <div class="flex overflow-x-auto gap-1 pb-2 scrollbar-hide">
             @foreach($tabs as $key => $info)
-            <a href="{{ route('tenant.admin.settings', $account) }}?tab={{ $key }}"
-               class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap {{ $tab === $key ? 'text-white' : 'bg-white text-gray-600 border border-gray-200' }}"
-               style="{{ $tab === $key ? 'background-color: var(--primary)' : '' }}">
+            <a href="#"
+               data-tab="{{ $key }}"
+               @click.prevent="activeTab = '{{ $key }}'"
+               :class="activeTab === '{{ $key }}' ? 'text-white' : 'bg-white text-gray-600 border border-gray-200'"
+               :style="activeTab === '{{ $key }}' ? 'background-color: var(--primary)' : ''"
+               class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors whitespace-nowrap">
                 <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/></svg>
                 {{ $info['label'] }}
             </a>
@@ -50,11 +54,9 @@ $tabs = array_merge(...array_values($groups));
     </div>
 
     {{-- Save button row (hidden on data tab) --}}
-    @if(!in_array($tab, ['data']))
-    <div class="flex justify-end mb-2">
+    <div x-show="activeTab !== 'data'" class="flex justify-end mb-2">
         <button form="settings-form" type="submit" class="btn-primary px-8 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Save Settings</button>
     </div>
-    @endif
 
     <div class="flex gap-8">
         {{-- Settings Sidebar (desktop only) --}}
@@ -64,9 +66,11 @@ $tabs = array_merge(...array_values($groups));
                 <div class="mt-4 first:mt-0">
                     <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 mb-1">{{ $groupLabel }}</p>
                     @foreach($groupTabs as $key => $info)
-                    <a href="{{ route('tenant.admin.settings', $account) }}?tab={{ $key }}"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium mx-1 transition-colors {{ $tab === $key ? '' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900' }}"
-                       @if($tab === $key) style="background-color: var(--primary); color: #fff" @endif>
+                    <a href="#"
+                       @click.prevent="activeTab = '{{ $key }}'"
+                       :class="activeTab === '{{ $key }}' ? '' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'"
+                       :style="activeTab === '{{ $key }}' ? 'background-color: var(--primary); color: #fff' : ''"
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium mx-1 transition-colors">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/></svg>
                         {{ $info['label'] }}
                     </a>
@@ -80,9 +84,9 @@ $tabs = array_merge(...array_values($groups));
         <div class="flex-1">
             <form id="settings-form" method="POST" action="{{ route('tenant.admin.settings.update', $account) }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
-                <input type="hidden" name="tab" value="{{ $tab }}">
+                <input type="hidden" name="tab" :value="activeTab">
 
-                @if($tab === 'general')
+                <div x-show="activeTab === 'general'" x-cloak>
                 {{-- GENERAL TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">General Settings</h2>
@@ -121,7 +125,8 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
 
-                @elseif($tab === 'profile')
+                </div>
+                <div x-show="activeTab === 'profile'" x-cloak>
                 {{-- PROFILE TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Profile</h2>
@@ -181,7 +186,8 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
 
-                @elseif($tab === 'appearance')
+                </div>
+                <div x-show="activeTab === 'appearance'" x-cloak>
                 {{-- APPEARANCE TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Appearance</h2>
@@ -392,7 +398,8 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
 
-                @elseif($tab === 'homepage')
+                </div>
+                <div x-show="activeTab === 'homepage'" x-cloak>
                 {{-- HOMEPAGE TAB --}}
                 @php
                 $sectionDefs = [
@@ -809,10 +816,10 @@ $tabs = array_merge(...array_values($groups));
                                 <p class="text-sm text-gray-500">Displays staff members with <strong>Display on Homepage</strong> enabled. Manage your team in the <a href="{{ route('tenant.admin.staff.index', $account) }}" class="text-[var(--primary)] hover:underline">Staff section</a>.</p>
 
                                 @elseif($key === 'contact')
-                                <p class="text-sm text-gray-500">Shows your contact form and office details. Update your phone, email, and address in <a href="?tab=general" class="text-[var(--primary)] hover:underline">General settings</a>.</p>
+                                <p class="text-sm text-gray-500">Shows your contact form and office details. Update your phone, email, and address in <a href="#" @click.prevent="activeTab = 'general'" class="text-[var(--primary)] hover:underline">General settings</a>.</p>
 
                                 @elseif($key === 'map')
-                                <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="?tab=connected" class="text-[var(--primary)] hover:underline">Integrations</a>.</p>
+                                <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="#" @click.prevent="activeTab = 'connected'" class="text-[var(--primary)] hover:underline">Integrations</a>.</p>
                                 <div class="mt-4 pt-4 border-t border-gray-100">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         Office Photo <span class="text-gray-400 font-normal">(optional)</span>
@@ -844,7 +851,8 @@ $tabs = array_merge(...array_values($groups));
                     </div>{{-- x-data --}}
                 </div>
 
-                @elseif($tab === 'dashboard')
+                </div>
+                <div x-show="activeTab === 'dashboard'" x-cloak>
                 {{-- DASHBOARD CONFIG TAB --}}
                 @php $dashConfig = $settings->dashboard_config ?? []; @endphp
                 <div class="space-y-6">
@@ -925,7 +933,8 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
 
-                @elseif($tab === 'notifications')
+                </div>
+                <div x-show="activeTab === 'notifications'" x-cloak>
                 {{-- NOTIFICATIONS TAB --}}
                 <div class="space-y-6">
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -958,7 +967,8 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
 
-                @elseif($tab === 'chatbot')
+                </div>
+                <div x-show="activeTab === 'chatbot'" x-cloak>
                 {{-- CHATBOT TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">AI Chatbot</h2>
@@ -982,7 +992,8 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
 
-                @elseif($tab === 'connected')
+                </div>
+                <div x-show="activeTab === 'connected'" x-cloak>
                 {{-- CONNECTED APPS TAB --}}
                 <div class="space-y-6">
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -1179,7 +1190,8 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
 
-                @elseif($tab === 'data')
+                </div>
+                <div x-show="activeTab === 'data'" x-cloak>
                 {{-- DATA TAB --}}
                 <div class="space-y-6">
 
@@ -1256,7 +1268,8 @@ $tabs = array_merge(...array_values($groups));
 
                 </div>
 
-                @elseif($tab === 'legal')
+                </div>
+                <div x-show="activeTab === 'legal'" x-cloak>
                 {{-- LEGAL TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Legal Pages</h2>
@@ -1270,7 +1283,8 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
 
-                @elseif($tab === 'seo')
+                </div>
+                <div x-show="activeTab === 'seo'" x-cloak>
                 {{-- SEO TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">SEO Settings</h2>
@@ -1300,7 +1314,7 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
 
-                @endif
+                </div>
 
 
             </form>
@@ -1525,13 +1539,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.innerWidth >= 768) return; // desktop only uses sidebar
 
     var tabOrder = @json(array_keys($tabs));
-    var currentTab = '{{ $tab }}';
-    var currentIdx = tabOrder.indexOf(currentTab);
+    // Get the Alpine root and track active tab reactively
+    var alpineRoot = document.querySelector('[x-data]');
+    function getActiveTab() {
+        return alpineRoot && alpineRoot._x_dataStack ? alpineRoot._x_dataStack[0].activeTab : '{{ $tab }}';
+    }
+    function setActiveTab(tab) {
+        if (alpineRoot && alpineRoot._x_dataStack) {
+            alpineRoot._x_dataStack[0].activeTab = tab;
+        } else {
+            var url = new URL(window.location.href);
+            url.searchParams.set('tab', tab);
+            window.location.href = url.toString();
+        }
+    }
 
     // Scroll active tab into view on load
     var strip = document.querySelector('.md\\:hidden .flex.overflow-x-auto');
     if (strip) {
-        var active = strip.querySelector('a[style*="background-color"]');
+        var active = strip.querySelector('[data-tab="{{ $tab }}"]');
         if (active) {
             strip.scrollLeft = active.offsetLeft - strip.offsetWidth / 2 + active.offsetWidth / 2;
         }
@@ -1556,13 +1582,19 @@ document.addEventListener('DOMContentLoaded', function() {
         // Must be fast (<400ms), mostly horizontal (2:1 ratio), and >50px
         if (dt > 400 || Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
 
+        var currentTab = getActiveTab();
+        var currentIdx = tabOrder.indexOf(currentTab);
         var nextIdx = dx < 0 ? currentIdx + 1 : currentIdx - 1;
         if (nextIdx < 0 || nextIdx >= tabOrder.length) return;
 
         var nextTab = tabOrder[nextIdx];
-        var url = new URL(window.location.href);
-        url.searchParams.set('tab', nextTab);
-        window.location.href = url.toString();
+        setActiveTab(nextTab);
+
+        // Scroll strip to new active tab
+        if (strip) {
+            var newActive = strip.querySelector('[data-tab="' + nextTab + '"]');
+            if (newActive) strip.scrollLeft = newActive.offsetLeft - strip.offsetWidth / 2 + newActive.offsetWidth / 2;
+        }
     }, { passive: true });
 })();
 

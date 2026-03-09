@@ -54,7 +54,7 @@ class SettingsController extends Controller
 
             case 'profile':
                 $request->validate(['name' => 'required|string', 'email' => 'required|email']);
-                $tenant->update(['name' => $request->name, 'email' => $request->email]);
+                Auth::user()->update(['name' => $request->name, 'email' => $request->email]);
                 if ($request->filled('new_password')) {
                     $request->validate(['new_password' => 'min:8|confirmed']);
                     Auth::user()->update(['password' => Hash::make($request->new_password)]);
