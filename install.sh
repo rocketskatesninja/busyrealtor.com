@@ -155,6 +155,12 @@ if ! command -v composer &>/dev/null; then
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 fi
 
+info "Installing Node.js 20 (required for Vite build)..."
+if ! node --version 2>/dev/null | grep -q "^v20\|^v22"; then
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - -qq
+    apt-get install -y -qq nodejs
+fi
+
 info "Installing Git, Certbot, and utilities..."
 apt-get install -y -qq git unzip curl certbot
 
@@ -213,6 +219,10 @@ cd "$APP_PATH"
 
 info "Installing Composer dependencies..."
 composer install --no-dev --optimize-autoloader --quiet
+
+info "Installing npm dependencies and building frontend assets..."
+npm install --quiet
+npm run build
 
 # =============================================================================
 # 4. ENVIRONMENT FILE
