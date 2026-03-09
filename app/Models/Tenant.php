@@ -18,14 +18,10 @@ class Tenant extends Model
         'phone',
         'license_number',
         'profile_image',
-        'plan',
         'trial_ends_at',
-        'is_active',
-        'stripe_id',
         'pm_type',
         'pm_last_four',
-        'stripe_subscription_id',
-        'stripe_subscription_status',
+        'stripe_cancel_at',
         'trial_reminders_sent',
         'payment_failed_at',
     ];
@@ -37,9 +33,38 @@ class Tenant extends Model
     protected $casts = [
         'trial_ends_at'        => 'datetime',
         'payment_failed_at'    => 'datetime',
+        'stripe_cancel_at'     => 'datetime',
         'is_active'            => 'boolean',
         'trial_reminders_sent' => 'array',
     ];
+
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::deleting(function (Tenant $tenant): void {
+            // Remove users that belong only to this tenant (FK is set null, not cascade)
+            \Illuminate\Support\Facades\DB::table('users')
+                ->where('tenant_id', $tenant->id)
+                ->where('is_super_admin', false)
+                ->delete();
+
+            // Remove Cashier rows (no FK cascade on subscriptions table)
+            $subIds = \Illuminate\Support\Facades\DB::table('subscriptions')
+                ->where('tenant_id', $tenant->id)
+                ->pluck('id');
+
+            if ($subIds->isNotEmpty()) {
+                \Illuminate\Support\Facades\DB::table('subscription_items')
+                    ->whereIn('subscription_id', $subIds)
+                    ->delete();
+
+                \Illuminate\Support\Facades\DB::table('subscriptions')
+                    ->where('tenant_id', $tenant->id)
+                    ->delete();
+            }
+        });
+    }
 
     public function getRouteKeyName(): string
     {
