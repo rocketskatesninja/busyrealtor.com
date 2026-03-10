@@ -67,6 +67,10 @@
             </nav>
             <div class="hidden md:flex items-center gap-3">
                 <a href="/login" class="nav-link text-sm font-medium transition-colors">Sign In</a>
+                <button onclick="toggleTheme()" class="nav-link p-1.5 rounded-md transition-colors hover:opacity-75" aria-label="Toggle dark mode">
+                    <svg id="theme-icon-sun" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                    <svg id="theme-icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                </button>
                 <a href="/register" class="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">Get Started Free</a>
             </div>
             <button id="marketing-hamburger" onclick="marketingNavToggle()" class="hamburger-btn md:hidden p-2">
@@ -169,7 +173,7 @@ document.addEventListener('click', function(e) {
 </section>
 
 {{-- ════════════════════════════════════════════════════════ STATS BAR ═══ --}}
-<section class="bg-gray-900 text-white py-10">
+<section class="bg-gray-900 text-white py-10 stats-bar">
     <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
         <div><div class="text-3xl font-black text-orange-400 mb-1"><span class="count-up">10 min</span></div><div class="text-gray-400 text-sm">Average setup time</div></div>
         <div><div class="text-3xl font-black text-orange-400 mb-1">24/7</div><div class="text-gray-400 text-sm">AI chatbot availability</div></div>
@@ -179,7 +183,7 @@ document.addEventListener('click', function(e) {
 </section>
 
 {{-- ══════════════════════════════════════════════════ HOW IT WORKS ═══ --}}
-<section class="py-24 bg-gray-50 dark:bg-gray-900">
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
     <div class="max-w-5xl mx-auto px-4">
         <div class="text-center mb-16">
             <p class="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Simple by design</p>
@@ -209,10 +213,10 @@ document.addEventListener('click', function(e) {
 </section>
 
 {{-- ═════════════════════════════════════════════════════ FEATURES ═══ --}}
-<section id="features" class="py-24 bg-white dark:bg-gray-950">
+<section id="features" class="py-16 bg-white dark:bg-gray-950">
     <div class="max-w-6xl mx-auto px-4">
         <div class="text-center mb-16">
-            <p class="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Everything included</p>
+            <p class="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Starter &amp; Pro</p>
             <h2 class="text-4xl font-black text-gray-900 dark:text-white mb-4 reveal" style="transition-delay:0.1s">All the tools you need to grow</h2>
             <p class="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto reveal" style="transition-delay:0.2s">One platform for your entire online presence — from the client-facing website to your back-office admin tools.</p>
         </div>
@@ -222,17 +226,22 @@ document.addEventListener('click', function(e) {
                 ['icon'=>'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z','title'=>'Stunning Website','desc'=>'Hero, gallery, map, FAQ, testimonials, contact forms — all built-in and ready to customize.','bg'=>'bg-blue-50 dark:bg-blue-900/20','ic'=>'text-blue-600'],
                 ['icon'=>'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z','title'=>'Property Listings','desc'=>'Upload photos, set status badges, manage details, and let buyers filter and search with ease.','bg'=>'bg-indigo-50 dark:bg-indigo-900/20','ic'=>'text-indigo-600'],
                 ['icon'=>'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7','title'=>'Interactive Map','desc'=>'Google Maps with clickable property pins, live price filters, and smooth info window pop-ups.','bg'=>'bg-violet-50 dark:bg-violet-900/20','ic'=>'text-violet-600'],
-                ['icon'=>'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z','title'=>'AI Chatbot','desc'=>'A 24/7 chatbot powered by Claude or OpenAI — knows your listings and answers every question.','bg'=>'bg-purple-50 dark:bg-purple-900/20','ic'=>'text-purple-600'],
-                ['icon'=>'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z','title'=>'AI Listing Writer','desc'=>'Generate polished, compelling property descriptions in seconds with a single click.','bg'=>'bg-sky-50 dark:bg-sky-900/20','ic'=>'text-sky-600'],
-                ['icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z','title'=>'Appointment Booking','desc'=>'Clients request showings from any listing. You confirm, manage, and track from your dashboard.','bg'=>'bg-emerald-50 dark:bg-emerald-900/20','ic'=>'text-emerald-600'],
+                ['icon'=>'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z','title'=>'AI Chatbot','pro'=>true,'desc'=>'A 24/7 chatbot powered by Claude or OpenAI — knows your listings and answers every question.','bg'=>'bg-purple-50 dark:bg-purple-900/20','ic'=>'text-purple-600'],
+                ['icon'=>'M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z','title'=>'Social Media Auto-Post','pro'=>true,'desc'=>'Automatically share new listings and sold properties to Facebook and X (Twitter) the moment they go live.','bg'=>'bg-sky-50 dark:bg-sky-900/20','ic'=>'text-sky-600'],
+                ['icon'=>'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z','title'=>'Appointment Booking','pro'=>true,'desc'=>'Clients request showings from any listing. You confirm, manage, and track from your dashboard.','bg'=>'bg-emerald-50 dark:bg-emerald-900/20','ic'=>'text-emerald-600'],
                 ['icon'=>'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z','title'=>'Admin Dashboard','desc'=>'Track messages, appointments, and property values with charts and customizable stat widgets.','bg'=>'bg-orange-50 dark:bg-orange-900/20','ic'=>'text-orange-600'],
                 ['icon'=>'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4','title'=>'Full Customization','desc'=>'Logo, colors, fonts, hero images, section order — make it yours without touching any code.','bg'=>'bg-rose-50 dark:bg-rose-900/20','ic'=>'text-rose-600'],
             ];
             @endphp
             @foreach($features as $f)
-            <div class="bg-white dark:bg-gray-800 border border-gray-200 rounded-2xl p-6 hover:shadow-md hover:-translate-y-0.5 transition-all reveal" style="transition-delay: {{ ($loop->index % 4) * 0.1 }}s">
-                <div class="{{ $f['bg'] }} w-11 h-11 rounded-xl flex items-center justify-center mb-4 dark:opacity-80">
-                    <svg class="w-5 h-5 {{ $f['ic'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $f['icon'] }}"/></svg>
+            <div class="bg-white dark:bg-gray-800 border border-gray-300 rounded-2xl p-6 hover:shadow-md hover:-translate-y-0.5 transition-all reveal" style="transition-delay: {{ ($loop->index % 4) * 0.1 }}s">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="{{ $f['bg'] }} w-11 h-11 rounded-xl flex items-center justify-center dark:opacity-80">
+                        <svg class="w-5 h-5 {{ $f['ic'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $f['icon'] }}"/></svg>
+                    </div>
+                    @if(!empty($f['pro']))
+                    <span class="inline-flex items-center gap-1 text-xs font-semibold bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full dark:bg-orange-900/20 dark:border-orange-700 dark:text-orange-400">Pro</span>
+                    @endif
                 </div>
                 <h3 class="font-bold text-gray-900 dark:text-white mb-2">{{ $f['title'] }}</h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ $f['desc'] }}</p>
@@ -243,7 +252,7 @@ document.addEventListener('click', function(e) {
 </section>
 
 {{-- ══════════════════════════════════════════════════════════ DEMO ═══ --}}
-<section id="demo" class="py-24 bg-gray-50 dark:bg-gray-900">
+<section id="demo" class="py-16 bg-gray-50 dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden reveal-left">
@@ -290,7 +299,7 @@ document.addEventListener('click', function(e) {
 </section>
 
 {{-- ════════════════════════════════════════════════════════ PRICING ═══ --}}
-<section id="pricing" class="py-24 bg-white dark:bg-gray-950">
+<section id="pricing" class="py-16 bg-white dark:bg-gray-950">
     <div class="max-w-4xl mx-auto px-4">
         <div class="text-center mb-16">
             <p class="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Simple pricing</p>
@@ -322,7 +331,7 @@ document.addEventListener('click', function(e) {
                 </div>
                 <a href="/register" class="block text-center text-white font-bold py-3.5 rounded-xl mb-7 transition-colors shadow-md" style="background: #f97316;">Start Free Trial</a>
                 <ul class="space-y-3">
-                    @foreach(['Unlimited active listings','Everything in Starter','Appointment scheduling & management','AI-powered chatbot (Claude / OpenAI)','AI listing description generator','Google Maps & Analytics integration','Staff management & profiles','Priority support'] as $item)
+                    @foreach(['Unlimited active listings','Everything in Starter','Appointment scheduling & management','AI-powered chatbot (Claude / OpenAI)','Social media auto-posting (Facebook & X)','Google Maps & Analytics integration','Staff management & profiles','Priority support'] as $item)
                     <li class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm"><svg class="w-4 h-4 text-orange-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>{{ $item }}</li>
                     @endforeach
                 </ul>
@@ -349,7 +358,7 @@ document.addEventListener('click', function(e) {
 </section>
 
 {{-- ═════════════════════════════════════════════════════════ FOOTER ═══ --}}
-<footer class="bg-gray-950 text-gray-400 py-12">
+<footer class="bg-gray-100 dark:bg-gray-950 text-gray-500 dark:text-gray-400 py-12">
     <div class="max-w-6xl mx-auto px-4">
         <div class="grid md:grid-cols-5 gap-8 mb-10">
             <div class="md:col-span-2">
@@ -357,36 +366,36 @@ document.addEventListener('click', function(e) {
                     <div class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center">
                         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                     </div>
-                    <span class="text-white font-bold text-lg">BusyRealtor</span>
+                    <span class="text-gray-900 dark:text-white font-bold text-lg">BusyRealtor</span>
                 </div>
-                <p class="text-sm leading-relaxed max-w-xs">The complete real estate website platform for modern agents. Built by <a href="https://punchlistlabs.com" rel="noopener noreferrer" class="text-orange-400 hover:text-orange-300 transition-colors">Punchlist Labs</a>.</p>
+                <p class="text-sm leading-relaxed max-w-xs">The complete real estate website platform for modern agents. Built by <a href="https://punchlistlabs.com" rel="noopener noreferrer" class="text-orange-500 dark:text-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition-colors">Punchlist Labs</a>.</p>
             </div>
             <div>
-                <h4 class="text-white font-semibold text-sm mb-4">Product</h4>
+                <h4 class="text-gray-900 dark:text-white font-semibold text-sm mb-4">Product</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
-                    <li><a href="#pricing" class="hover:text-white transition-colors">Pricing</a></li>
-                    <li><a href="/demo-realty" target="_blank" class="hover:text-white transition-colors">Live Demo</a></li>
+                    <li><a href="#features" class="hover:text-gray-900 transition-colors">Features</a></li>
+                    <li><a href="#pricing" class="hover:text-gray-900 transition-colors">Pricing</a></li>
+                    <li><a href="/demo-realty" target="_blank" class="hover:text-gray-900 transition-colors">Live Demo</a></li>
                 </ul>
             </div>
             <div>
-                <h4 class="text-white font-semibold text-sm mb-4">Legal</h4>
+                <h4 class="text-gray-900 dark:text-white font-semibold text-sm mb-4">Legal</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                    <li><a href="/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
-                    <li><button onclick="openCookiePrefs()" class="hover:text-white transition-colors text-left" id="cookie-prefs-link">Cookie Preferences</button></li>
+                    <li><a href="/privacy-policy" class="hover:text-gray-900 transition-colors">Privacy Policy</a></li>
+                    <li><a href="/terms" class="hover:text-gray-900 transition-colors">Terms of Service</a></li>
+                    <li><button onclick="openCookiePrefs()" class="hover:text-gray-900 transition-colors text-left" id="cookie-prefs-link">Cookie Preferences</button></li>
                 </ul>
             </div>
             <div>
-                <h4 class="text-white font-semibold text-sm mb-4">Affiliates</h4>
+                <h4 class="text-gray-900 dark:text-white font-semibold text-sm mb-4">Affiliates</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="https://routepilot.pro" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">RoutePilot</a></li>
-                    <li><a href="https://punchlistify.com" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Punchlistify</a></li>
-                    <li><a href="https://punchlistlabs.com" target="_blank" rel="noopener noreferrer" class="hover:text-white transition-colors">Punchlist Labs</a></li>
+                    <li><a href="https://routepilot.pro" target="_blank" rel="noopener noreferrer" class="hover:text-gray-900 transition-colors">RoutePilot</a></li>
+                    <li><a href="https://punchlistify.com" target="_blank" rel="noopener noreferrer" class="hover:text-gray-900 transition-colors">Punchlistify</a></li>
+                    <li><a href="https://punchlistlabs.com" target="_blank" rel="noopener noreferrer" class="hover:text-gray-900 transition-colors">Punchlist Labs</a></li>
                 </ul>
             </div>
         </div>
-        <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
+        <div class="border-t border-gray-200 dark:border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
             <p>&copy; {{ date('Y') }} BusyRealtor. All rights reserved.</p>
             <p>Made with &#9749; for hard-working realtors everywhere</p>
         </div>

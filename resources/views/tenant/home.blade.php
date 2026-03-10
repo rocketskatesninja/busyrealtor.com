@@ -1,6 +1,6 @@
 @extends('layouts.tenant')
 @section('show_footer')@endsection
-@section('title', $settings->site_title ?? 'Home')
+@section('title', $settings->site_title ?: 'Your Agency Name Here')
 
 @section('head')
 <script type="application/ld+json">

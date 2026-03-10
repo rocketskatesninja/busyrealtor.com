@@ -7,7 +7,7 @@
     </div>
     <div>
         <h2 class="text-xl font-bold text-gray-800">One more step!</h2>
-        <p class="text-sm text-gray-500">Signed in as {{ session('google_email') }}</p>
+        <p class="text-sm text-gray-500">{{ session('oauth_email') ? 'Signed in as ' . session('oauth_email') : 'Complete your account setup' }}</p>
     </div>
 </div>
 
@@ -19,6 +19,13 @@
 
 <form method="POST" action="{{ route('register.complete.submit') }}" class="space-y-4" x-data="{ slug: '', agreed: false }">
     @csrf
+    @if(!session('oauth_email'))
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <input type="email" name="email" value="{{ old('email') }}" required
+               class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+    @endif
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
         <input type="text" name="business_name" value="{{ old('business_name') }}" required

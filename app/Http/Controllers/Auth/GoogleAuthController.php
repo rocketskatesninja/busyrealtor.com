@@ -47,10 +47,10 @@ class GoogleAuthController extends Controller
             return redirect()->route('tenant.admin.dashboard', ['account' => $user->tenant->slug]);
         }
 
-        // New user — store Google info and send to complete-registration page
+        // New user — store OAuth info and send to complete-registration page
         session([
-            'google_name'  => $googleUser->getName(),
-            'google_email' => $googleUser->getEmail(),
+            'oauth_name'  => $googleUser->getName(),
+            'oauth_email' => $googleUser->getEmail(),
         ]);
 
         return redirect()->route('register.complete');
@@ -58,7 +58,7 @@ class GoogleAuthController extends Controller
 
     public function showComplete()
     {
-        if (!session('google_email')) {
+        if (!session('oauth_email')) {
             return redirect()->route('register');
         }
         return view('auth.register-complete');
@@ -66,7 +66,7 @@ class GoogleAuthController extends Controller
 
     public function completeRegistration(Request $request)
     {
-        if (!session('google_email')) {
+        if (!session('oauth_email') && !$request->filled('email')) {
             return redirect()->route('register');
         }
 
@@ -76,8 +76,12 @@ class GoogleAuthController extends Controller
             'terms'         => 'accepted',
         ]);
 
-        $name  = session('google_name');
-        $email = session('google_email');
+        if (!session('oauth_email')) {
+            $request->validate(['email' => 'required|email|unique:users,email']);
+        }
+
+        $name  = session('oauth_name');
+        $email = session('oauth_email') ?? $request->input('email');
 
         $tenant = Tenant::create([
             'name'          => $request->business_name,
@@ -103,7 +107,7 @@ class GoogleAuthController extends Controller
             'tenant_id' => $tenant->id,
         ]);
 
-        session()->forget(['google_name', 'google_email']);
+        session()->forget(['oauth_name', 'oauth_email']);
         Auth::login($user, true);
 
         return redirect()->route('tenant.admin.dashboard', ['account' => $tenant->slug]);

@@ -6,7 +6,7 @@
     $account      = $tenant->slug;
     $planData     = [
         'starter' => ['label' => 'Starter', 'price' => '$' . number_format($sys->starter_price ?? 12.99, 2), 'features' => ['Up to 10 listings', 'Public website, gallery & map', 'Contact forms & messaging', 'SMTP custom email', 'Custom branding', 'Email support']],
-        'pro'     => ['label' => 'Pro',     'price' => '$' . number_format($sys->pro_price ?? 24.99, 2),     'features' => ['Unlimited listings', 'Appointment scheduling', 'AI chatbot (Claude / OpenAI)', 'AI listing descriptions', 'Google Maps & Analytics', 'Staff management', 'Priority support']],
+        'pro'     => ['label' => 'Pro',     'price' => '$' . number_format($sys->pro_price ?? 24.99, 2),     'features' => ['Unlimited listings', 'Appointment scheduling', 'AI chatbot (Claude / OpenAI)', 'Social media auto-posting', 'Google Maps & Analytics', 'Staff management', 'Priority support']],
     ];
     $isSubscribed  = $tenant->stripe_subscription_status === 'active' && $tenant->stripe_subscription_id;
     $isCanceling   = $isSubscribed && $tenant->stripe_cancel_at;

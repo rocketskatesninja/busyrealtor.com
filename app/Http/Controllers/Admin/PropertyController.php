@@ -55,7 +55,9 @@ class PropertyController extends Controller
         $property = Property::create($data);
         $this->handleImages($request, $property);
         if (($data['listing_status'] ?? '') === 'active') {
-            PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'new_listing');
+            if ($tenant->isPro()) {
+                PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'new_listing');
+            }
         }
         return redirect()->route('tenant.admin.properties.index', ['account' => app('tenant')->slug])
             ->with('success', 'Property created successfully.');
@@ -79,9 +81,13 @@ class PropertyController extends Controller
         $this->handleImages($request, $property);
         if ($oldStatus !== $data['listing_status']) {
             if ($data['listing_status'] === 'active') {
-                PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'new_listing');
+                if ($tenant->isPro()) {
+                    PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'new_listing');
+                }
             } elseif ($data['listing_status'] === 'sold') {
-                PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'sold');
+                if ($tenant->isPro()) {
+                    PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'sold');
+                }
             }
         }
         return redirect()->route('tenant.admin.properties.index', ['account' => app('tenant')->slug])

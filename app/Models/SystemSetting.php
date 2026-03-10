@@ -20,18 +20,26 @@ class SystemSetting extends Model
         'og_image',
         'google_client_id',
         'google_client_secret',
+        'facebook_client_id',
+        'facebook_client_secret',
+        'twitter_client_id',
+        'twitter_client_secret',
     ];
 
-    protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret', 'google_client_id', 'google_client_secret'];
+    protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret', 'google_client_id', 'google_client_secret', 'facebook_client_id', 'facebook_client_secret', 'twitter_client_id', 'twitter_client_secret'];
 
     protected $casts = [
-        'registrations_enabled' => 'boolean',
-        'site_locked'           => 'boolean',
-        'stripe_key'            => 'encrypted',
-        'stripe_secret'         => 'encrypted',
-        'stripe_webhook_secret' => 'encrypted',
-        'google_client_id'     => 'encrypted',
-        'google_client_secret'  => 'encrypted',
+        'registrations_enabled'  => 'boolean',
+        'site_locked'            => 'boolean',
+        'stripe_key'             => 'encrypted',
+        'stripe_secret'          => 'encrypted',
+        'stripe_webhook_secret'  => 'encrypted',
+        'google_client_id'       => 'encrypted',
+        'google_client_secret'   => 'encrypted',
+        'facebook_client_id'     => 'encrypted',
+        'facebook_client_secret' => 'encrypted',
+        'twitter_client_id'      => 'encrypted',
+        'twitter_client_secret'  => 'encrypted',
     ];
 
     public static function get(): self
@@ -53,5 +61,15 @@ class SystemSetting extends Model
     public function hasGoogle(): bool
     {
         return !empty($this->google_client_id) && !empty($this->google_client_secret);
+    }
+
+    public function hasFacebook(): bool
+    {
+        return !empty($this->facebook_client_id) && !empty($this->facebook_client_secret);
+    }
+
+    public function hasTwitter(): bool
+    {
+        return !empty($this->twitter_client_id) && !empty($this->twitter_client_secret);
     }
 }

@@ -29,6 +29,10 @@ class SystemSettingsController extends Controller
             'og_image'                => 'nullable|image|mimes:jpeg,png,webp|max:2048',
             'google_client_id'        => 'nullable|string|max:500',
             'google_client_secret'    => 'nullable|string|max:500',
+            'facebook_client_id'      => 'nullable|string|max:500',
+            'facebook_client_secret'  => 'nullable|string|max:500',
+            'twitter_client_id'       => 'nullable|string|max:500',
+            'twitter_client_secret'   => 'nullable|string|max:500',
         ], [
             'stripe_key.regex'              => 'Publishable key must start with pk_live_ or pk_test_',
             'stripe_secret.regex'           => 'Secret key must start with sk_live_ or sk_test_',
@@ -62,6 +66,18 @@ class SystemSettingsController extends Controller
         }
         if ($request->filled('google_client_secret') && !str_starts_with($request->google_client_secret, '••••')) {
             $data['google_client_secret'] = $request->google_client_secret;
+        }
+        if ($request->filled('facebook_client_id') && !str_starts_with($request->facebook_client_id, '••••')) {
+            $data['facebook_client_id'] = $request->facebook_client_id;
+        }
+        if ($request->filled('facebook_client_secret') && !str_starts_with($request->facebook_client_secret, '••••')) {
+            $data['facebook_client_secret'] = $request->facebook_client_secret;
+        }
+        if ($request->filled('twitter_client_id') && !str_starts_with($request->twitter_client_id, '••••')) {
+            $data['twitter_client_id'] = $request->twitter_client_id;
+        }
+        if ($request->filled('twitter_client_secret') && !str_starts_with($request->twitter_client_secret, '••••')) {
+            $data['twitter_client_secret'] = $request->twitter_client_secret;
         }
 
         $settings = SystemSetting::get();

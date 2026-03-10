@@ -24,7 +24,7 @@ $groups = [
         'notifications' => ['label' => 'Notifications',  'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
     ],
     'INTEGRATIONS' => [
-        'connected'     => ['label' => 'Connected Apps', 'icon' => 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z'],
+        'connected'     => ['label' => 'Social Media', 'icon' => 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z'],
         'chatbot'       => ['label' => 'Chatbot',        'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
     ],
     'TOOLS' => [
@@ -118,17 +118,7 @@ $tabs = array_merge(...array_values($groups));
                             <input type="text" name="contact_address" value="{{ $settings->contact_address }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                     </div>
-                    <div class="mt-5 border-t pt-5">
-                        <h3 class="font-medium text-gray-800 mb-3">Social Links</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @foreach(['social_facebook'=>'Facebook URL','social_instagram'=>'Instagram URL','social_twitter'=>'Twitter/X URL','social_linkedin'=>'LinkedIn URL'] as $field=>$label)
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ $label }}</label>
-                                <input type="url" name="{{ $field }}" value="{{ $settings->$field }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="https://...">
-                            </div>
-                            @endforeach
-                        </div>
-                    </div>
+
                 </div>
 
                 </div>
@@ -825,7 +815,7 @@ $tabs = array_merge(...array_values($groups));
                                 <p class="text-sm text-gray-500">Shows your contact form and office details. Update your phone, email, and address in <a href="#" @click.prevent="activeTab = 'general'" class="text-[var(--primary)] hover:underline">General settings</a>.</p>
 
                                 @elseif($key === 'map')
-                                <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="#" @click.prevent="activeTab = 'connected'" class="text-[var(--primary)] hover:underline">Integrations</a>.</p>
+                                <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="#" @click.prevent="activeTab = 'data'" class="text-[var(--primary)] hover:underline">Data</a>.</p>
                                 <div class="mt-4 pt-4 border-t border-gray-100">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         Office Photo <span class="text-gray-400 font-normal">(optional)</span>
@@ -985,86 +975,75 @@ $tabs = array_merge(...array_values($groups));
                 </div>
                 <div x-show="activeTab === 'chatbot'" x-cloak>
                 {{-- CHATBOT TAB --}}
+                <div class="space-y-6">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">AI Chatbot</h2>
                     <div class="space-y-4">
-                        <label class="flex items-center gap-3 cursor-pointer">
-                            <input type="checkbox" name="chatbot_enabled" value="1" class="rounded" {{ $settings->chatbot_enabled ? 'checked' : '' }}>
-                            <span class="text-sm text-gray-700">Enable chatbot widget on public site</span>
-                        </label>
-                        <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Personality</label>
-                            <select name="chatbot_personality" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none">
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-3 cursor-pointer shrink-0">
+                                <input type="checkbox" name="chatbot_enabled" value="1" class="rounded" {{ $settings->chatbot_enabled ? 'checked' : '' }}>
+                                <span class="text-sm text-gray-700">Enable chatbot widget on public site</span>
+                            </label>
+                            <span class="text-sm text-gray-600 shrink-0 ml-auto">Personality</span>
+                            <select name="chatbot_personality" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
                                 @foreach(['friendly'=>'Friendly','professional'=>'Professional','concise'=>'Concise'] as $v=>$l)
                                 <option value="{{ $v }}" {{ ($settings->chatbot_personality ?? 'professional') === $v ? 'selected' : '' }}>{{ $l }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-600 mb-1">Realtor Bio (provided as context to AI)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Realtor Bio</label>
+                            <p class="text-xs text-gray-500 mb-1">Provided as context to the AI so it can answer questions about you.</p>
                             <textarea name="chatbot_realtor_bio" rows="4" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none resize-none" placeholder="Describe yourself, your expertise, and your market area...">{{ $settings->chatbot_realtor_bio }}</textarea>
                         </div>
                     </div>
                 </div>
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <h2 class="text-lg font-bold text-gray-900 mb-5">AI Provider</h2>
+                    @php $ai = $integrations->get('ai_provider'); $aiConfig = $ai?->config ?? []; @endphp
+                    <div class="space-y-4" x-data="{ provider: '{{ $ai?->provider ?? 'anthropic' }}' }">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+                            <input type="password" name="ai_api_key" value="{{ $ai?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
+                                <select name="ai_provider" x-model="provider" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                    <option value="openai">OpenAI</option>
+                                    <option value="anthropic">Anthropic</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
+                                <select name="ai_model" x-show="provider === 'openai'" :disabled="provider !== 'openai'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                    <option value="gpt-4o" @selected(($aiConfig['model'] ?? '') === 'gpt-4o')>GPT-4o</option>
+                                    <option value="gpt-4o-mini" @selected(($aiConfig['model'] ?? 'gpt-4o-mini') === 'gpt-4o-mini')>GPT-4o Mini (recommended)</option>
+                                </select>
+                                <select name="ai_model" x-show="provider === 'anthropic'" :disabled="provider !== 'anthropic'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                    <option value="claude-opus-4-6" @selected(($aiConfig['model'] ?? '') === 'claude-opus-4-6')>Claude Opus 4.6</option>
+                                    <option value="claude-sonnet-4-6" @selected(($aiConfig['model'] ?? '') === 'claude-sonnet-4-6')>Claude Sonnet 4.6</option>
+                                    <option value="claude-haiku-4-5-20251001" @selected(($aiConfig['model'] ?? 'claude-haiku-4-5-20251001') === 'claude-haiku-4-5-20251001')>Claude Haiku 4.5 (recommended)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>{{-- /space-y-6 --}}
 
                 </div>
                 <div x-show="activeTab === 'connected'" x-cloak>
-                {{-- CONNECTED APPS TAB --}}
+                {{-- SOCIAL MEDIA TAB --}}
                 <div class="space-y-6">
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">Google Maps</h2>
-                        @php $maps = $integrations->get('google_maps'); @endphp
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps API Key</label>
-                            <input type="text" name="google_maps_key" value="{{ $maps?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="AIza...">
-                            <p class="text-xs text-gray-500 mt-1">Required for the map page. Get a key at Google Cloud Console.</p>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">AI Provider</h2>
-                        @php $ai = $integrations->get('ai_provider'); $aiConfig = $ai?->config ?? []; @endphp
-                        <div class="space-y-4" x-data="{ provider: '{{ $ai?->provider ?? 'anthropic' }}' }">
+                        <h2 class="text-lg font-bold text-gray-900 mb-5">Social Links</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            @foreach(['social_facebook'=>'Facebook URL','social_instagram'=>'Instagram URL','social_twitter'=>'Twitter/X URL','social_linkedin'=>'LinkedIn URL'] as $field=>$label)
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                                <input type="password" name="ai_api_key" value="{{ $ai?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ $label }}</label>
+                                <input type="url" name="{{ $field }}" value="{{ $settings->$field }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="https://...">
                             </div>
-                            <div class="flex gap-3">
-                                <div class="flex-1">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
-                                    <select name="ai_provider" x-model="provider" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                        <option value="openai">OpenAI</option>
-                                        <option value="anthropic">Anthropic</option>
-                                    </select>
-                                </div>
-                                <div class="flex-1">
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                                    <select name="ai_model" x-show="provider === 'openai'" :disabled="provider !== 'openai'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                        <option value="gpt-4o" @selected(($aiConfig['model'] ?? '') === 'gpt-4o')>GPT-4o</option>
-                                        <option value="gpt-4o-mini" @selected(($aiConfig['model'] ?? 'gpt-4o-mini') === 'gpt-4o-mini')>GPT-4o Mini (recommended)</option>
-                                    </select>
-                                    <select name="ai_model" x-show="provider === 'anthropic'" :disabled="provider !== 'anthropic'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                        <option value="claude-opus-4-6" @selected(($aiConfig['model'] ?? '') === 'claude-opus-4-6')>Claude Opus 4.6</option>
-                                        <option value="claude-sonnet-4-6" @selected(($aiConfig['model'] ?? '') === 'claude-sonnet-4-6')>Claude Sonnet 4.6</option>
-                                        <option value="claude-haiku-4-5-20251001" @selected(($aiConfig['model'] ?? 'claude-haiku-4-5-20251001') === 'claude-haiku-4-5-20251001')>Claude Haiku 4.5 (recommended)</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">Google Analytics</h2>
-                        @php $ga = $integrations->get('google_analytics'); @endphp
-                        <div class="flex items-center gap-4">
-                            <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Measurement ID</label>
-                                <input type="text" name="ga_measurement_id" value="{{ $ga?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="G-XXXXXXXXXX">
-                            </div>
-                            <div class="mt-5">
-                                <label class="flex items-center gap-2 cursor-pointer">
-                                    <input type="checkbox" name="ga_enabled" value="1" class="rounded" {{ $ga?->is_active ? 'checked' : '' }}>
-                                    <span class="text-sm text-gray-700">Enabled</span>
-                                </label>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
                     @php
@@ -1209,6 +1188,35 @@ $tabs = array_merge(...array_values($groups));
                 <div x-show="activeTab === 'data'" x-cloak>
                 {{-- DATA TAB --}}
                 <div class="space-y-6">
+
+                    {{-- Google Maps --}}
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <h2 class="text-lg font-bold text-gray-900 mb-5">Google Maps</h2>
+                        @php $maps = $integrations->get('google_maps'); @endphp
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps API Key</label>
+                            <input type="text" name="google_maps_key" value="{{ $maps?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="AIza...">
+                            <p class="text-xs text-gray-500 mt-1">Required for the map page. Get a key at Google Cloud Console.</p>
+                        </div>
+                    </div>
+
+                    {{-- Google Analytics --}}
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <h2 class="text-lg font-bold text-gray-900 mb-5">Google Analytics</h2>
+                        @php $ga = $integrations->get('google_analytics'); @endphp
+                        <div class="flex items-center gap-4">
+                            <div class="flex-1">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Measurement ID</label>
+                                <input type="text" name="ga_measurement_id" value="{{ $ga?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="G-XXXXXXXXXX">
+                            </div>
+                            <div class="mt-5">
+                                <label class="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" name="ga_enabled" value="1" class="rounded" {{ $ga?->is_active ? 'checked' : '' }}>
+                                    <span class="text-sm text-gray-700">Enabled</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
                     {{-- Export --}}
                     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
