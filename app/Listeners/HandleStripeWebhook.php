@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Models\Tenant;
 use App\Services\TenantMailer;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Events\WebhookReceived;
 
@@ -50,11 +51,16 @@ class HandleStripeWebhook
             default                       => $tenant->plan,
         };
 
+        $cancelAt = ($obj['cancel_at_period_end'] ?? false) && !empty($obj['cancel_at'])
+            ? Carbon::createFromTimestamp($obj['cancel_at'])
+            : null;
+
         $tenant->update([
             'plan'                       => $plan,
             'stripe_id'                  => $obj['customer'] ?? $tenant->stripe_id,
             'stripe_subscription_id'     => $obj['id'] ?? $tenant->stripe_subscription_id,
             'stripe_subscription_status' => $status,
+            'stripe_cancel_at'           => $cancelAt,
             // active/trialing = fully active; past_due = grace period (dunning handles suspension)
             'is_active'                  => in_array($status, ['active', 'trialing', 'past_due']),
             // Clear payment_failed_at if subscription becomes active again
@@ -73,6 +79,7 @@ class HandleStripeWebhook
         $tenant->update([
             'plan'                       => 'trial',
             'stripe_subscription_status' => 'canceled',
+            'stripe_cancel_at'           => null,
             'is_active'                  => false,
             'payment_failed_at'          => null,
         ]);

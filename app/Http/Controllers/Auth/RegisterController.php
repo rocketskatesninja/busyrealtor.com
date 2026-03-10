@@ -40,9 +40,10 @@ class RegisterController extends Controller
         ]);
 
         SiteSettings::create([
-            'tenant_id'    => $tenant->id,
-            'site_title'   => $request->business_name,
-            'contact_email'=> $request->email,
+            'tenant_id'          => $tenant->id,
+            'site_title'         => $request->business_name,
+            'contact_email'      => $request->email,
+            'header_display_mode'=> 'favicon_text',
         ]);
 
         LegalPage::create(['tenant_id' => $tenant->id, 'page_type' => 'privacy',  'content' => 'Privacy Policy content here.']);

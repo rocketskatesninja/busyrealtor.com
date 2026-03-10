@@ -49,7 +49,7 @@
 @section('content')
 
 {{-- ═══════════════════════════════════════════════════════════ NAV ═══ --}}
-<header id="main-header" x-data="{ open: false }"
+<header id="main-header"
         class="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
         style="background-color:transparent">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -69,17 +69,17 @@
                 <a href="/login" class="nav-link text-sm font-medium transition-colors">Sign In</a>
                 <a href="/register" class="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">Get Started Free</a>
             </div>
-            <button @click="open = !open" class="hamburger-btn md:hidden p-2">
-                <svg x-show="!open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                <svg x-show="open" x-cloak class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <button id="marketing-hamburger" onclick="marketingNavToggle()" class="hamburger-btn md:hidden p-2">
+                <svg id="marketing-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                <svg id="marketing-icon-close" class="w-6 h-6" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
     </div>
-    <div x-show="open" x-cloak class="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-lg">
+    <div id="marketing-mobile-menu" style="display:none" class="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-lg">
         <div class="px-4 py-3 space-y-2">
-            <a href="#features" @click="open=false" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Features</a>
-            <a href="#demo" @click="open=false" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Demo</a>
-            <a href="#pricing" @click="open=false" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Pricing</a>
+            <a href="#features" onclick="marketingNavClose()" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Features</a>
+            <a href="#demo" onclick="marketingNavClose()" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Demo</a>
+            <a href="#pricing" onclick="marketingNavClose()" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Pricing</a>
             <div class="pt-2 border-t border-gray-100 flex gap-3">
                 <a href="/login" class="flex-1 text-center py-2 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-200 dark:border-gray-700">Sign In</a>
                 <a href="/register" class="flex-1 text-center py-2 bg-orange-500 text-white font-semibold rounded-lg">Get Started</a>
@@ -87,6 +87,24 @@
         </div>
     </div>
 </header>
+<script>
+function marketingNavToggle() {
+    var menu  = document.getElementById('marketing-mobile-menu');
+    var open  = menu.style.display === 'none' || menu.style.display === '';
+    menu.style.display = open ? 'block' : 'none';
+    document.getElementById('marketing-icon-open').style.display  = open ? 'none'  : '';
+    document.getElementById('marketing-icon-close').style.display = open ? '' : 'none';
+}
+function marketingNavClose() {
+    document.getElementById('marketing-mobile-menu').style.display = 'none';
+    document.getElementById('marketing-icon-open').style.display  = '';
+    document.getElementById('marketing-icon-close').style.display = 'none';
+}
+document.addEventListener('click', function(e) {
+    var header = document.getElementById('main-header');
+    if (header && !header.contains(e.target)) marketingNavClose();
+});
+</script>
 
 {{-- ══════════════════════════════════════════════════════════ HERO ═══ --}}
 <section class="min-h-screen flex items-center pt-16 pb-12 overflow-hidden relative" style="background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 45%, #4338ca 100%);">

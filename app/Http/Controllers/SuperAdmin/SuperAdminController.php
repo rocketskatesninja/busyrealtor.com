@@ -90,7 +90,9 @@ class SuperAdminController extends Controller
             'trial_ends_at' => 'nullable|date',
         ]);
 
-        $tenant->update($request->only('name', 'slug', 'plan', 'trial_ends_at'));
+        $tenant->fill($request->only('name', 'slug', 'trial_ends_at'));
+        $tenant->plan = $request->plan;
+        $tenant->save();
 
         return back()->with('success', 'Tenant updated successfully.');
     }

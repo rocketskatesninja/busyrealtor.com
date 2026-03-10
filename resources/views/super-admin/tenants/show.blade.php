@@ -61,7 +61,7 @@
         <h3 class="font-semibold text-gray-800 mb-5">Edit Tenant</h3>
         <form method="POST" action="{{ route('super.tenants.update', $tenant->slug) }}" class="space-y-4">
             @csrf @method('PUT')
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ plan: '{{ $tenant->plan }}' }">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
                     <input type="text" name="name" value="{{ old('name', $tenant->name) }}" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -73,7 +73,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Plan Override</label>
-                    <select name="plan" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="plan" x-model="plan" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <option value="trial" {{ $tenant->plan === 'trial' ? 'selected' : '' }}>Trial</option>
                         <option value="starter" {{ $tenant->plan === 'starter' ? 'selected' : '' }}>Starter</option>
                         <option value="pro" {{ $tenant->plan === 'pro' ? 'selected' : '' }}>Pro</option>
@@ -81,7 +81,10 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Trial Ends At</label>
-                    <input type="date" name="trial_ends_at" value="{{ old('trial_ends_at', $tenant->trial_ends_at?->format('Y-m-d')) }}" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="date" name="trial_ends_at" value="{{ old('trial_ends_at', $tenant->trial_ends_at?->format('Y-m-d')) }}"
+                           :disabled="plan !== 'trial'"
+                           :class="plan !== 'trial' ? 'opacity-50 cursor-not-allowed' : ''"
+                           class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
 

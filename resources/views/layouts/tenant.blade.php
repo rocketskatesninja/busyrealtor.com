@@ -260,6 +260,7 @@
     $gradEnd = $settings->title_gradient_end ?? '#1E40AF';
     $solidColor = $settings->title_color_solid ?? '#3B82F6';
     $titleSize = match($settings->site_title_font_size ?? '3xl') { 'xl' => '1.25rem', '2xl' => '1.5rem', '4xl' => '2.25rem', default => '1.875rem' };
+    $mobileTitleSize = match($settings->site_title_font_size ?? '3xl') { '4xl' => '1.5rem', '3xl' => '1.25rem', '2xl' => '1rem', default => '0.875rem' };
     $titleWeight = $settings->site_title_font_weight ?? '800';
     $titleTracking = $settings->site_title_letter_spacing ?? 'normal';
     $titleStyle = "font-family: '{$titleFont}', sans-serif; font-size: {$titleSize}; font-weight: {$titleWeight}; letter-spacing: " . match($titleTracking) { 'tight' => '-0.05em', 'wide' => '0.05em', default => 'normal' } . ";";
@@ -284,6 +285,18 @@
     $pg = hexdec(substr($pc, 3, 2));
     $pb = hexdec(substr($pc, 5, 2));
 @endphp
+<style>
+@media (max-width: 767px) {
+    #site-title-text {
+        font-size: {{ $mobileTitleSize }} !important;
+        max-width: calc(100vw - 100px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+    }
+}
+</style>
 
 {{-- Flash Notification --}}
 @if(session('success') || session('error'))
@@ -299,8 +312,7 @@
 {{-- HERO MODE HEADER --}}
 @unless(View::hasSection('hide_header'))
 @if($headerMode === 'hero')
-<header id="tenant-hero-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4"
-        x-data="{ open: false }">
+<header id="tenant-hero-header" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 py-4">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between">
             <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3" id="tenant-logo" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))">
@@ -308,7 +320,7 @@
                     <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?: $tenant->name }}" class="h-8 w-8 object-contain rounded-lg">
                 @endif
                 @if(in_array($headerDisplayMode, ['text_only', 'favicon_text', 'both']))
-                    <span style="{{ $titleStyle }}">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
+                    <span id="site-title-text" style="{{ $titleStyle }}">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
                 @endif
             </a>
             <nav id="tenant-nav" class="hidden md:flex items-center space-x-6 transition-all duration-300" style="opacity:0;pointer-events:none">
@@ -320,18 +332,12 @@
                     <svg id="theme-icon-sun" class="w-5 h-5" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </button>
             </nav>
-            <button @click="open = !open" id="tenant-hamburger" class="hamburger-btn md:hidden p-2 rounded transition-all duration-300" style="opacity:0;pointer-events:none">
+            <button onclick="tenantNavToggle()" id="tenant-hamburger" class="hamburger-btn md:hidden p-2 rounded transition-all duration-300" style="opacity:0;pointer-events:none">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
         </div>
     </div>
-    <div x-show="open" x-cloak
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0 -translate-y-2"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100 translate-y-0"
-         x-transition:leave-end="opacity-0 -translate-y-2"
+    <div id="tenant-mobile-menu" style="display:none"
          class="md:hidden border-t bg-white shadow-lg">
         <nav class="px-4 py-3 space-y-1">
             <a href="{{ $galleryUrl }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isGallery) text-white @else text-gray-700 hover:bg-gray-100 @endif" @if($isGallery) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
@@ -365,7 +371,7 @@
 
 @else
 {{-- DEFAULT MODE HEADER --}}
-<header class="bg-white shadow-lg sticky top-0 z-50" x-data="{ open: false }">
+<header id="tenant-default-header" class="bg-white shadow-lg sticky top-0 z-50">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex items-center justify-between py-4">
             <a href="{{ route('tenant.home', $account) }}" class="flex items-center space-x-3 drop-shadow-lg hover:opacity-80 transition-opacity">
@@ -373,7 +379,7 @@
                     <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?: $tenant->name }}" class="h-8 w-8 object-contain rounded-lg">
                 @endif
                 @if(in_array($headerDisplayMode, ['text_only', 'favicon_text', 'both']))
-                    <span style="{{ $titleStyle }}">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
+                    <span id="site-title-text" style="{{ $titleStyle }}">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
                 @endif
             </a>
             <nav class="hidden md:flex items-center space-x-6">
@@ -385,21 +391,15 @@
                     <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </button>
             </nav>
-            <button @click="open = !open" class="md:hidden p-2 rounded text-gray-700">
+            <button onclick="tenantNavToggle()" id="tenant-default-hamburger" class="md:hidden p-2 rounded text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
         </div>
     </div>
-    <div x-show="open" x-cloak
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0 -translate-y-2"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100 translate-y-0"
-         x-transition:leave-end="opacity-0 -translate-y-2"
+    <div id="tenant-default-mobile-menu" style="display:none"
          class="md:hidden border-t bg-white">
         <nav class="px-4 py-3 space-y-1">
-            <a href="{{ $galleryUrl }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isGallery) @else text-gray-700 hover:bg-gray-100 @endif" @if($isGallery) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+            <a href="{{ $galleryUrl }}" onclick="tenantNavClose()" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isGallery) @else text-gray-700 hover:bg-gray-100 @endif" @if($isGallery) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
                 <svg class="w-5 h-5 mr-3 @if($isGallery) @else text-gray-500 @endif" style="@if($isGallery) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 Gallery
             </a>
@@ -1049,6 +1049,28 @@ function updateCookiePrefsLink() {
 @endunless
 
 <script>
+// Mobile nav — pure JS (no Alpine dependency)
+function tenantNavToggle() {
+    var heroMenu    = document.getElementById('tenant-mobile-menu');
+    var defaultMenu = document.getElementById('tenant-default-mobile-menu');
+    var menu = heroMenu || defaultMenu;
+    if (!menu) return;
+    var opening = menu.style.display === 'none' || menu.style.display === '';
+    menu.style.display = opening ? 'block' : 'none';
+}
+function tenantNavClose() {
+    var heroMenu    = document.getElementById('tenant-mobile-menu');
+    var defaultMenu = document.getElementById('tenant-default-mobile-menu');
+    if (heroMenu)    heroMenu.style.display    = 'none';
+    if (defaultMenu) defaultMenu.style.display = 'none';
+}
+document.addEventListener('click', function(e) {
+    var hero    = document.getElementById('tenant-hero-header');
+    var def     = document.getElementById('tenant-default-header');
+    var header  = hero || def;
+    if (header && !header.contains(e.target)) tenantNavClose();
+});
+
 // Hero header scroll: pure JS, no Alpine dependency
 (function() {
     var h = document.getElementById('tenant-hero-header');
@@ -1063,6 +1085,8 @@ function updateCookiePrefsLink() {
         if (nav)  nav.style.cssText  = vis;
         if (ham)  ham.style.cssText  = vis;
         if (logo) logo.style.filter  = s ? '' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
+        // Close mobile menu when scrolling back to top
+        if (!s) tenantNavClose();
     }
     window.addEventListener('scroll', update, { passive: true });
 })();
