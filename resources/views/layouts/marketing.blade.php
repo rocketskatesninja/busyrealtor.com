@@ -28,15 +28,11 @@
     <meta name="twitter:description" content="@yield('description', 'Launch a stunning real estate website with AI chatbot, interactive property map, and powerful admin tools — in minutes.')">
     <script>
         (function() {
-            var stored = localStorage.getItem('theme');
-            var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            if (stored === 'dark' || (!stored && prefersDark)) {
+            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
                 document.documentElement.classList.add('dark');
             }
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-                if (!localStorage.getItem('theme')) {
-                    e.matches ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark');
-                }
+                e.matches ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark');
             });
         })();
     </script>
@@ -184,11 +180,6 @@
         .dark .stats-bar { background-color: #020617 !important; }
         .stats-bar .text-gray-400,
         .dark .stats-bar .text-gray-400 { color: #9ca3af !important; }
-        /* Theme toggle icons — controlled by .dark class on <html> */
-        #theme-icon-sun  { display: none; }
-        .dark #theme-icon-sun  { display: block; }
-        #theme-icon-moon { display: block; }
-        .dark #theme-icon-moon { display: none; }
         /* Footer nav link hover in dark mode */
         .dark footer ul a:hover,
         .dark footer ul button:hover { color: #ffffff !important; }
@@ -353,8 +344,8 @@ function updateCookiePrefsLink() {
     (function() {
         var header = document.getElementById('main-header');
         if (!header) return;
+        var isDark = document.documentElement.classList.contains('dark');
         function updateHeader() {
-            var isDark = document.documentElement.classList.contains('dark');
             var scrolled = window.scrollY > 40;
             header.style.backgroundColor = scrolled
                 ? (isDark ? '#1e293b' : '#ffffff')
@@ -364,19 +355,12 @@ function updateCookiePrefsLink() {
         }
         window.addEventListener('scroll', updateHeader, { passive: true });
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-            if (!localStorage.getItem('theme') && window.scrollY > 40) updateHeader();
+            isDark = e.matches;
+            if (window.scrollY > 40) updateHeader();
         });
     })();
 })();
 
-function toggleTheme() {
-    var isDark = document.documentElement.classList.toggle('dark');
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-    var header = document.getElementById('main-header');
-    if (header && window.scrollY > 40) {
-        header.style.backgroundColor = isDark ? '#1e293b' : '#ffffff';
-    }
-}
 </script>
 </body>
 </html>
