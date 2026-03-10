@@ -56,9 +56,12 @@ $tabs = array_merge(...array_values($groups));
     {{-- Save button row (hidden on data tab) --}}
     <div x-show="activeTab !== 'data'" class="flex justify-end mb-2">
         <button id="settings-save-btn" form="settings-form" type="submit"
-                class="btn-primary px-8 py-2.5 rounded-xl font-semibold text-sm transition
+                class="btn-primary inline-flex items-center gap-2 px-8 py-2.5 rounded-xl font-semibold text-sm transition
                        disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
-                disabled>Save Settings</button>
+                disabled>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            Save Settings
+        </button>
     </div>
 
     <div class="flex gap-8">
@@ -1668,6 +1671,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const data = new FormData(form);
         const entries = [];
         for (const [k, v] of data.entries()) {
+            if (k === 'tab') continue;
             entries.push(k + '=' + (v instanceof File ? v.name + ':' + v.size : v));
         }
         return entries.sort().join('&');
@@ -1700,6 +1704,14 @@ document.addEventListener('DOMContentLoaded', function() {
             form.addEventListener('submit', function() {
                 btn.disabled = true;
                 baseline = formSnapshot(form);
+            });
+
+            // Warn before navigating away with unsaved changes
+            window.addEventListener('beforeunload', function(e) {
+                if (!btn.disabled) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
             });
         }, 200);
     });
