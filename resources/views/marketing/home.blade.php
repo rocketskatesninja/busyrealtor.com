@@ -356,6 +356,7 @@
                 <ul class="space-y-2 text-sm">
                     <li><a href="/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a></li>
                     <li><a href="/terms" class="hover:text-white transition-colors">Terms of Service</a></li>
+                    <li><button onclick="openCookiePrefs()" class="hover:text-white transition-colors text-left" id="cookie-prefs-link">Cookie Preferences</button></li>
                 </ul>
             </div>
             <div>

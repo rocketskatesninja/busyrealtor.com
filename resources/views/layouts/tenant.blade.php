@@ -537,7 +537,7 @@
         var banner = document.getElementById('cookie-banner');
         if (banner) { banner.style.display = ''; }
     }
-    updateCookiePrefsLink();
+    document.addEventListener('DOMContentLoaded', updateCookiePrefsLink);
 })();
 function cookieConsent(val) {
     localStorage.setItem('cookie_consent', val);

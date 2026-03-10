@@ -218,8 +218,7 @@ $activeFilters = collect(['type','status','price_min','price_max','beds','baths'
             </form>
         </div>
         <div class="p-5 pt-3 flex-shrink-0 border-t">
-            <p class="text-xs text-gray-500 font-medium mb-1">Properties on map: <span id="prop-count">{{ $properties->count() }}</span></p>
-            <a href="{{ route('tenant.gallery', $account) }}" class="text-xs transition" style="color: var(--primary)">View as list →</a>
+            <p class="text-xs text-gray-500 font-medium">Properties on map: <span id="prop-count">{{ $properties->count() }}</span></p>
         </div>
     </div>
 

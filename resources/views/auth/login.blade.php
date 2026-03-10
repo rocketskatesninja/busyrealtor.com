@@ -39,4 +39,7 @@
 <div class="mt-6 text-center text-sm text-gray-600">
     Don't have an account? <a href="{{ route('register') }}" class="text-blue-600 hover:text-blue-700 font-medium">Sign up free</a>
 </div>
+<div class="mt-4 text-center">
+    <a href="{{ route('root') }}" class="text-sm text-blue-600 hover:text-blue-700">&larr; Back to home</a>
+</div>
 @endsection

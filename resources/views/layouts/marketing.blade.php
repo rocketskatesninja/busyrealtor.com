@@ -180,6 +180,121 @@
 </head>
 <body class="bg-gray-50 text-gray-900 antialiased">
     @yield('content')
+
+{{-- Cookie Consent Banner --}}
+<div id="cookie-banner" style="display:none">
+    <div class="cookie-banner-inner">
+        <div class="cookie-banner-icon">🍪</div>
+        <div class="cookie-banner-text">
+            <strong>We use cookies</strong>
+            <span>We use cookies to improve your experience and analyze traffic. See our <a href="/privacy-policy">Privacy Policy</a>.</span>
+        </div>
+        <div class="cookie-banner-actions">
+            <button onclick="cookieConsent('false')" class="cookie-btn-decline">Decline</button>
+            <button onclick="cookieConsent('true')" class="cookie-btn-accept">Accept All</button>
+        </div>
+    </div>
+</div>
+<style>
+#cookie-banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 9999;
+    padding: 0 1rem 1rem;
+    pointer-events: none;
+}
+.cookie-banner-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-radius: 1rem 1rem 0 0;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+    pointer-events: all;
+    flex-wrap: wrap;
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-bottom: none;
+    color: #374151;
+}
+.dark .cookie-banner-inner {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+.cookie-banner-icon { font-size: 1.5rem; flex-shrink: 0; }
+.cookie-banner-text {
+    flex: 1;
+    min-width: 200px;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+.cookie-banner-text strong { font-weight: 600; color: #111827; }
+.dark .cookie-banner-text strong { color: #f1f5f9; }
+.cookie-banner-text span { opacity: 0.8; }
+.cookie-banner-text a { text-decoration: underline; color: #2563eb; }
+.cookie-banner-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+.cookie-btn-decline {
+    padding: 0.5rem 1rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+    border: 1.5px solid #d1d5db;
+    color: #6b7280;
+}
+.cookie-btn-decline:hover { border-color: #9ca3af; color: #374151; }
+.dark .cookie-btn-decline { border-color: #475569; color: #94a3b8; }
+.dark .cookie-btn-decline:hover { border-color: #64748b; color: #cbd5e1; }
+.cookie-btn-accept {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    border: none;
+    color: #fff;
+    background: #2563eb;
+}
+.cookie-btn-accept:hover { opacity: 0.88; }
+</style>
+<script>
+(function() {
+    var consent = localStorage.getItem('cookie_consent');
+    if (!consent) {
+        var banner = document.getElementById('cookie-banner');
+        if (banner) banner.style.display = '';
+    }
+    document.addEventListener('DOMContentLoaded', updateCookiePrefsLink);
+})();
+function cookieConsent(val) {
+    localStorage.setItem('cookie_consent', val);
+    var banner = document.getElementById('cookie-banner');
+    if (banner) banner.style.display = 'none';
+    updateCookiePrefsLink();
+}
+function openCookiePrefs() {
+    var banner = document.getElementById('cookie-banner');
+    if (banner) { banner.style.display = ''; banner.scrollIntoView({ behavior: 'smooth', block: 'end' }); }
+}
+function updateCookiePrefsLink() {
+    var link = document.getElementById('cookie-prefs-link');
+    if (!link) return;
+    var c = localStorage.getItem('cookie_consent');
+    if (c === 'true')  link.textContent = 'Cookie Preferences ✓';
+    else if (c === 'false') link.textContent = 'Cookie Preferences ✕';
+    else link.textContent = 'Cookie Preferences';
+}
+</script>
+
 <script>
 (function () {
     // Scroll reveal
