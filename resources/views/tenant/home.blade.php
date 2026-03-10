@@ -209,6 +209,15 @@ $iconPaths = [
     {{-- Main content --}}
     <div class="relative z-10 text-center px-4 max-w-5xl mx-auto py-24">
 
+        {{-- Trust badge --}}
+        <div class="inline-flex items-center gap-2.5 bg-white/10 backdrop-blur border border-white/20 rounded-full px-5 py-2 text-white/90 text-sm font-medium mb-8 {{ $ea ? 'hero-animate hero-d1' : '' }}">
+            <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
+            </span>
+            Trusted Real Estate Experts
+        </div>
+
         {{-- Headline --}}
         <h1 class="text-5xl md:text-7xl font-extrabold text-white mb-6 leading-tight drop-shadow-2xl {{ $ea ? 'hero-animate hero-d2' : '' }}">
             {{ $settings->hero_title ?? 'Find Your Dream Home' }}

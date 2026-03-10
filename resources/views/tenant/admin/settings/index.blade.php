@@ -96,7 +96,7 @@ $tabs = array_merge(...array_values($groups));
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Site Title</label>
-                            <input type="text" name="site_title" value="{{ $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="[Your Agency Name] — Real Estate">
+                            <input type="text" name="site_title" value="{{ $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Your Agency Name Here">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tagline</label>

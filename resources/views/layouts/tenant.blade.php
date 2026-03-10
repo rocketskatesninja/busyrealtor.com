@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', ($settings->site_title ?: '[Your Agency Name] — Real Estate') . (' — ' . ($settings->tagline ?: 'Your trusted local real estate experts')))</title>
+    <title>@yield('title', ($settings->site_title ?: 'Your Agency Name Here') . (' — ' . ($settings->tagline ?: 'Your trusted local real estate experts')))</title>
     <meta name="description" content="@yield('meta_description', $settings->site_description ?? '')">
     <link rel="canonical" href="{{ url()->current() }}">
 
@@ -31,7 +31,7 @@
     {{-- Open Graph --}}
     <meta property="og:type"        content="website">
     <meta property="og:url"         content="{{ url()->current() }}">
-    <meta property="og:title"       content="@yield('title', $settings->site_title ?: '[Your Agency Name] — Real Estate')">
+    <meta property="og:title"       content="@yield('title', $settings->site_title ?: 'Your Agency Name Here')">
     <meta property="og:description" content="@yield('meta_description', $settings->site_description ?? '')">
     @php
         $ogImage = trim($__env->yieldContent('og_image'))
@@ -45,7 +45,7 @@
 
     {{-- Twitter Card --}}
     <meta name="twitter:card"        content="summary_large_image">
-    <meta name="twitter:title"       content="@yield('title', $settings->site_title ?: '[Your Agency Name] — Real Estate')">
+    <meta name="twitter:title"       content="@yield('title', $settings->site_title ?: 'Your Agency Name Here')">
     <meta name="twitter:description" content="@yield('meta_description', $settings->site_description ?? '')">
     @if($ogImage)
     <meta name="twitter:image" content="{{ $ogImage }}">
@@ -320,7 +320,7 @@
                     <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?: $tenant->name }}" class="h-8 w-8 object-contain rounded-lg">
                 @endif
                 @if(in_array($headerDisplayMode, ['text_only', 'favicon_text', 'both']))
-                    <span id="site-title-text" style="{{ $titleStyle }}">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
+                    <span id="site-title-text" style="{{ $titleStyle }}">{{ $settings->site_title ?: 'Your Agency Name Here' }}</span>
                 @endif
             </a>
             <nav id="tenant-nav" class="hidden md:flex items-center space-x-6 transition-all duration-300" style="opacity:0;pointer-events:none">
@@ -379,7 +379,7 @@
                     <img src="{{ url('/' . $account . '/favicon.svg') . '?v=' . optional($settings->updated_at)->timestamp }}" alt="{{ $settings->site_title ?: $tenant->name }}" class="h-8 w-8 object-contain rounded-lg">
                 @endif
                 @if(in_array($headerDisplayMode, ['text_only', 'favicon_text', 'both']))
-                    <span id="site-title-text" style="{{ $titleStyle }}">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
+                    <span id="site-title-text" style="{{ $titleStyle }}">{{ $settings->site_title ?: 'Your Agency Name Here' }}</span>
                 @endif
             </a>
             <nav class="hidden md:flex items-center space-x-6">
@@ -574,7 +574,7 @@ function updateCookiePrefsLink() {
                         <img src="{{ asset('storage/' . $settings->logo_image) }}" alt="Logo" class="h-10 w-auto flex-shrink-0">
                     @endif
                     <div>
-                        <span class="text-lg font-bold text-white block">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>
+                        <span class="text-lg font-bold text-white block">{{ $settings->site_title ?: 'Your Agency Name Here' }}</span>
                         <span class="text-gray-400 text-sm">{{ $settings->tagline ?: 'Your trusted local real estate experts' }}</span>
                     </div>
                 </div>
@@ -624,7 +624,7 @@ function updateCookiePrefsLink() {
             </div>
         </div>
         <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row items-center justify-between text-xs text-gray-500">
-            <p>&copy; {{ date('Y') }} <span style="color: var(--primary)">{{ $settings->site_title ?: '[Your Agency Name] — Real Estate' }}</span>. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} <span style="color: var(--primary)">{{ $settings->site_title ?: 'Your Agency Name Here' }}</span>. All rights reserved.</p>
             <p>Powered by <a href="https://busyrealtor.com" class="transition-colors" style="color: var(--primary)">BusyRealtor</a></p>
         </div>
     </div>

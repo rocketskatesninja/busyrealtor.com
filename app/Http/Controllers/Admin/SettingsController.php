@@ -190,21 +190,21 @@ class SettingsController extends Controller
                     if ($settings->hero_image) Storage::disk('public')->delete($settings->hero_image);
                     $dir = "tenants/{$tenant->id}";
                     Storage::disk('public')->makeDirectory($dir);
-                    $file = $request->file('hero_image');
-                    $ext  = $file->getClientOriginalExtension();
-                    $img  = Image::read($file)->scale(width: 1920);
-                    Storage::disk('public')->put($dir . '/hero-bg.' . $ext, $img->toJpeg(85));
-                    $heroData['hero_image'] = $dir . '/hero-bg.' . $ext;
+                    $file     = $request->file('hero_image');
+                    $img      = Image::read($file)->scale(width: 1920);
+                    $filename = 'hero-bg-' . time() . '.jpg';
+                    Storage::disk('public')->put($dir . '/' . $filename, $img->toJpeg(85));
+                    $heroData['hero_image'] = $dir . '/' . $filename;
                 }
                 if ($request->hasFile('map_office_image')) {
                     if ($settings->map_office_image) Storage::disk('public')->delete($settings->map_office_image);
                     $dir  = "tenants/{$tenant->id}";
                     Storage::disk('public')->makeDirectory($dir);
-                    $file = $request->file('map_office_image');
-                    $ext  = $file->getClientOriginalExtension();
-                    $img  = Image::read($file)->scale(width: 800);
-                    Storage::disk('public')->put($dir . '/office.' . $ext, $img->toJpeg(85));
-                    $heroData['map_office_image'] = $dir . '/office.' . $ext;
+                    $file     = $request->file('map_office_image');
+                    $img      = Image::read($file)->scale(width: 800);
+                    $filename = 'office-' . time() . '.jpg';
+                    Storage::disk('public')->put($dir . '/' . $filename, $img->toJpeg(85));
+                    $heroData['map_office_image'] = $dir . '/' . $filename;
                 }
                 $settings->update($heroData);
                 break;
