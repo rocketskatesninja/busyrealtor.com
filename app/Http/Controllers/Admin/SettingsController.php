@@ -170,12 +170,20 @@ class SettingsController extends Controller
                 ['api_key' => $request->google_maps_key, 'is_active' => true]
             );
         }
-        if ($request->filled('ai_api_key')) {
-            Integration::updateOrCreate(
-                ['tenant_id' => $tenant->id, 'integration_type' => 'ai_provider'],
-                ['api_key' => $request->ai_api_key, 'provider' => $request->ai_provider, 'config' => ['model' => $request->ai_model], 'is_active' => true]
-            );
-        }
+        // AI provider — always update config so preferred/model changes persist even without new keys
+        $aiRecord      = Integration::where('tenant_id', $tenant->id)->where('integration_type', 'ai_provider')->first();
+        $existingConfig = $aiRecord?->config ?? [];
+        $aiConfig = [
+            'anthropic_key'   => $request->filled('ai_anthropic_key') ? $request->ai_anthropic_key : ($existingConfig['anthropic_key'] ?? null),
+            'anthropic_model' => $request->ai_anthropic_model ?? $existingConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001',
+            'openai_key'      => $request->filled('ai_openai_key') ? $request->ai_openai_key : ($existingConfig['openai_key'] ?? null),
+            'openai_model'    => $request->ai_openai_model ?? $existingConfig['openai_model'] ?? 'gpt-4o-mini',
+            'preferred'       => $request->ai_preferred ?? $existingConfig['preferred'] ?? 'anthropic',
+        ];
+        Integration::updateOrCreate(
+            ['tenant_id' => $tenant->id, 'integration_type' => 'ai_provider'],
+            ['config' => $aiConfig, 'provider' => $aiConfig['preferred'], 'is_active' => true]
+        );
         if ($request->filled('ga_measurement_id')) {
             Integration::updateOrCreate(
                 ['tenant_id' => $tenant->id, 'integration_type' => 'google_analytics'],

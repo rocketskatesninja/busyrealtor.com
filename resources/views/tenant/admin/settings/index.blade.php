@@ -999,31 +999,52 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5">AI Provider</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-1">AI Provider</h2>
+                    <p class="text-sm text-gray-500 mb-5">Used by the AI Assistant. Configure one or both providers and choose which one is active.</p>
                     @php $ai = $integrations->get('ai_provider'); $aiConfig = $ai?->config ?? []; @endphp
-                    <div class="space-y-4" x-data="{ provider: '{{ $ai?->provider ?? 'anthropic' }}' }">
+                    <div class="space-y-5">
+                        {{-- Preferred provider --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">API Key</label>
-                            <input type="password" name="ai_api_key" value="{{ $ai?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Active Provider</label>
+                            <select name="ai_preferred" class="w-full sm:w-56 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                <option value="anthropic" @selected(($aiConfig['preferred'] ?? 'anthropic') === 'anthropic')>Anthropic (Claude)</option>
+                                <option value="openai" @selected(($aiConfig['preferred'] ?? '') === 'openai')>OpenAI (ChatGPT / GPT-4)</option>
+                            </select>
                         </div>
-                        <div class="flex gap-3">
-                            <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Provider</label>
-                                <select name="ai_provider" x-model="provider" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                    <option value="openai">OpenAI</option>
-                                    <option value="anthropic">Anthropic</option>
+                        {{-- Anthropic --}}
+                        <div class="border border-gray-100 rounded-xl p-4 space-y-3">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded text-white text-xs font-bold" style="background:#d97706">A</span>
+                                <span class="text-sm font-semibold text-gray-800">Anthropic</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">API Key <span class="text-gray-400 font-normal">(leave blank to keep existing)</span></label>
+                                <input type="password" name="ai_anthropic_key" placeholder="sk-ant-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Model</label>
+                                <select name="ai_anthropic_model" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                    <option value="claude-haiku-4-5-20251001" @selected(($aiConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001') === 'claude-haiku-4-5-20251001')>Claude Haiku 4.5 — fastest, most affordable ✓</option>
+                                    <option value="claude-sonnet-4-6" @selected(($aiConfig['anthropic_model'] ?? '') === 'claude-sonnet-4-6')>Claude Sonnet 4.6 — balanced</option>
+                                    <option value="claude-opus-4-6" @selected(($aiConfig['anthropic_model'] ?? '') === 'claude-opus-4-6')>Claude Opus 4.6 — most capable</option>
                                 </select>
                             </div>
-                            <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Model</label>
-                                <select name="ai_model" x-show="provider === 'openai'" :disabled="provider !== 'openai'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                    <option value="gpt-4o" @selected(($aiConfig['model'] ?? '') === 'gpt-4o')>GPT-4o</option>
-                                    <option value="gpt-4o-mini" @selected(($aiConfig['model'] ?? 'gpt-4o-mini') === 'gpt-4o-mini')>GPT-4o Mini (recommended)</option>
-                                </select>
-                                <select name="ai_model" x-show="provider === 'anthropic'" :disabled="provider !== 'anthropic'" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                    <option value="claude-opus-4-6" @selected(($aiConfig['model'] ?? '') === 'claude-opus-4-6')>Claude Opus 4.6</option>
-                                    <option value="claude-sonnet-4-6" @selected(($aiConfig['model'] ?? '') === 'claude-sonnet-4-6')>Claude Sonnet 4.6</option>
-                                    <option value="claude-haiku-4-5-20251001" @selected(($aiConfig['model'] ?? 'claude-haiku-4-5-20251001') === 'claude-haiku-4-5-20251001')>Claude Haiku 4.5 (recommended)</option>
+                        </div>
+                        {{-- OpenAI --}}
+                        <div class="border border-gray-100 rounded-xl p-4 space-y-3">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded text-white text-xs font-bold" style="background:#10a37f">G</span>
+                                <span class="text-sm font-semibold text-gray-800">OpenAI</span>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">API Key <span class="text-gray-400 font-normal">(leave blank to keep existing)</span></label>
+                                <input type="password" name="ai_openai_key" placeholder="sk-proj-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-gray-600 mb-1">Model</label>
+                                <select name="ai_openai_model" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                    <option value="gpt-4o-mini" @selected(($aiConfig['openai_model'] ?? 'gpt-4o-mini') === 'gpt-4o-mini')>GPT-4o Mini — fastest, most affordable ✓</option>
+                                    <option value="gpt-4o" @selected(($aiConfig['openai_model'] ?? '') === 'gpt-4o')>GPT-4o — most capable</option>
                                 </select>
                             </div>
                         </div>

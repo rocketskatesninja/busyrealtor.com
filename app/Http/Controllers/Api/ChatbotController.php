@@ -35,12 +35,23 @@ class ChatbotController extends Controller
                         ->where('is_active', true)
                         ->first();
 
-        if (!$aiInteg || !$aiInteg->api_key) {
+        // Resolve key and model from new dual-key config, falling back to legacy api_key column
+        $aiConfig  = $aiInteg?->config ?? [];
+        $preferred = $aiConfig['preferred'] ?? ($aiInteg?->provider ?? 'anthropic');
+        $key       = $preferred === 'openai'
+            ? ($aiConfig['openai_key']    ?? $aiInteg?->api_key ?? null)
+            : ($aiConfig['anthropic_key'] ?? $aiInteg?->api_key ?? null);
+        $model     = $preferred === 'openai'
+            ? ($aiConfig['openai_model']    ?? $aiConfig['model'] ?? 'gpt-4o-mini')
+            : ($aiConfig['anthropic_model'] ?? $aiConfig['model'] ?? 'claude-haiku-4-5-20251001');
+
+        if (!$aiInteg || !$key) {
             return response()->json(['reply' => 'Chatbot is not configured yet.']);
         }
 
         $sessionId = $request->session_id ?? Str::uuid()->toString();
-        $history   = ChatLog::where('session_id', $sessionId)->orderBy('created_at')->get();
+        // Scope history to this tenant to prevent cross-tenant data leakage
+        $history   = ChatLog::where('tenant_id', $tenant->id)->where('session_id', $sessionId)->orderBy('created_at')->get();
 
         // Build system prompt
         $activeProps = Property::where('tenant_id', $tenant->id)
@@ -71,15 +82,14 @@ class ChatbotController extends Controller
         ])->all();
         $messages[] = ['role' => 'user', 'content' => $request->message];
 
-        $config = $aiInteg->config ?? [];
         $reply  = '';
         $booked = false;
 
         try {
-            if ($aiInteg->provider === 'anthropic') {
-                [$reply, $booked] = $this->callAnthropic($aiInteg->api_key, $config, $sysPrompt, $messages, $tenant, $settings, $request->message);
+            if ($preferred === 'anthropic') {
+                [$reply, $booked] = $this->callAnthropic($key, $model, $sysPrompt, $messages, $tenant, $settings, $request->message);
             } else {
-                [$reply, $booked] = $this->callOpenAI($aiInteg->api_key, $config, $sysPrompt, $messages, $tenant, $settings, $request->message);
+                [$reply, $booked] = $this->callOpenAI($key, $model, $sysPrompt, $messages, $tenant, $settings, $request->message);
             }
         } catch (\Exception $e) {
             Log::error('Chatbot exception', ['error' => $e->getMessage()]);
@@ -94,13 +104,13 @@ class ChatbotController extends Controller
 
     // ── Anthropic ──────────────────────────────────────────────────────────────
 
-    private function callAnthropic(string $key, array $config, string $sys, array $messages, $tenant, $settings, string $lastMessage = ''): array
+    private function callAnthropic(string $key, string $model, string $sys, array $messages, $tenant, $settings, string $lastMessage = ''): array
     {
         $resp = Http::withHeaders([
             'x-api-key'         => $key,
             'anthropic-version' => '2023-06-01',
         ])->post('https://api.anthropic.com/v1/messages', [
-            'model'      => $config['model'] ?? 'claude-haiku-4-5-20251001',
+            'model'      => $model,
             'max_tokens' => 600,
             'system'     => $sys,
             'messages'   => $messages,
@@ -150,10 +160,10 @@ class ChatbotController extends Controller
 
     // ── OpenAI ─────────────────────────────────────────────────────────────────
 
-    private function callOpenAI(string $key, array $config, string $sys, array $messages, $tenant, $settings, string $lastMessage = ''): array
+    private function callOpenAI(string $key, string $model, string $sys, array $messages, $tenant, $settings, string $lastMessage = ''): array
     {
         $resp = Http::withToken($key)->post('https://api.openai.com/v1/chat/completions', [
-            'model'       => $config['model'] ?? 'gpt-4o-mini',
+            'model'       => $model,
             'max_tokens'  => 600,
             'messages'    => array_merge([['role' => 'system', 'content' => $sys]], $messages),
             'tools'       => [$this->openAITool()],
@@ -254,7 +264,7 @@ class ChatbotController extends Controller
                 $body .= "Date:  {$date->format('l, F j, Y')} at {$timeLabel}\n";
                 if ($property) $body .= "Property: {$property->title} — {$property->address_street}, {$property->address_city}\n";
                 if ($appt->notes) $body .= "Notes: {$appt->notes}\n";
-                $body .= "\nView in admin: " . url("/{$tenant->slug}/admin/appointments");
+                $body .= "\nView in admin: " . route('tenant.admin.appointments.index', $tenant->slug);
 
                 TenantMailer::send($tenant->id, $ownerEmail, "New {$typeLabel} Request — {$appt->visitor_name}", $body);
             }

@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\AppointmentController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\BillingController;
+use App\Http\Controllers\Admin\AdminChatController;
 use App\Http\Controllers\TenantPageController;
 use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Api\ContactController;
@@ -115,7 +116,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
     Route::post('/appointments', [AppointmentController::class, 'storePublic'])->middleware('throttle:10,1')->name('appointments.store');
 
     // Admin routes
-    Route::prefix('admin')->middleware(['auth', 'tenant.active'])->name('admin.')->group(function () {
+    Route::prefix('admin')->middleware(['auth', 'tenant.active', 'tenant.admin'])->name('admin.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('/dashboard-order', [DashboardOrderController::class, 'save'])->name('dashboard.order');
 
@@ -152,6 +153,10 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
         Route::post('/appointments/{id}/action', [AppointmentController::class, 'action'])->name('appointments.action');
         Route::post('/appointments/bulk', [AppointmentController::class, 'bulk'])->name('appointments.bulk');
+
+        // AI Assistant (Pro only — enforced in controller)
+        Route::get('/assistant', [AdminChatController::class, 'index'])->name('assistant');
+        Route::post('/api/assistant', [AdminChatController::class, 'chat'])->middleware('throttle:30,1')->name('api.assistant');
 
         // Settings
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings');

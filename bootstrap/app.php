@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureSuperAdmin;
 use App\Http\Middleware\EnsureTenantActive;
+use App\Http\Middleware\EnsureTenantAdmin;
 use App\Http\Middleware\HandleImpersonation;
 use App\Http\Middleware\ResolveTenant;
 use Illuminate\Foundation\Application;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant'               => ResolveTenant::class,
             'super.admin'          => EnsureSuperAdmin::class,
             'tenant.active'        => EnsureTenantActive::class,
+            'tenant.admin'         => EnsureTenantAdmin::class,
             'impersonate'          => HandleImpersonation::class,
             'registrations.enabled'=> \App\Http\Middleware\CheckRegistrationsEnabled::class,
             'site.lock'            => \App\Http\Middleware\CheckSiteLocked::class,

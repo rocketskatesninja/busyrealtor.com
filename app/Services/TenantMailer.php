@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Integration;
+use App\Models\SiteSettings;
+use App\Models\Tenant;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -20,7 +22,9 @@ class TenantMailer
         string $to,
         string $subject,
         string $body,
-        string $template = 'tenant'
+        string $template = 'tenant',
+        ?string $toName = null,
+        ?string $replyTo = null
     ): bool {
         $smtp = Integration::where('tenant_id', $tenantId)
                     ->where('integration_type', 'smtp')
@@ -51,11 +55,18 @@ class TenantMailer
         try {
             Log::info('TenantMailer sending', ['to' => $to, 'subject' => $subject, 'tenant_id' => $tenantId, 'template' => $template]);
 
-            $settings = \App\Models\SiteSettings::where('tenant_id', $tenantId)->first();
-            $tenant   = \App\Models\Tenant::find($tenantId);
+            $allowed  = ['tenant', 'platform'];
+            if (!in_array($template, $allowed)) {
+                throw new \InvalidArgumentException("Invalid email template: {$template}");
+            }
+            $settings = SiteSettings::where('tenant_id', $tenantId)->first();
+            $tenant   = Tenant::find($tenantId);
             $html     = view("emails.{$template}", compact('subject', 'body', 'settings', 'tenant'))->render();
 
-            Mail::html($html, fn($m) => $m->to($to)->subject($subject));
+            Mail::html($html, function ($m) use ($to, $toName, $subject, $replyTo) {
+                $m->to($to, $toName)->subject($subject);
+                if ($replyTo) $m->replyTo($replyTo);
+            });
             Log::info('TenantMailer sent OK', ['to' => $to]);
             return true;
         } catch (\Exception $e) {
