@@ -17,11 +17,13 @@ class SystemSettingsController extends Controller
 
     public function update(Request $request)
     {
+        $isMasked = fn($v) => $v && str_starts_with($v, '••••');
+
         $request->validate([
             'lock_message'            => 'nullable|string|max:500',
-            'stripe_key'              => ['nullable', 'regex:/^pk_(live|test)_/'],
-            'stripe_secret'           => ['nullable', 'regex:/^sk_(live|test)_/'],
-            'stripe_webhook_secret'   => ['nullable', 'regex:/^whsec_/'],
+            'stripe_key'              => ['nullable', function ($a, $v, $fail) use ($isMasked) { if ($v && !$isMasked($v) && !preg_match('/^pk_(live|test)_/', $v)) $fail('Publishable key must start with pk_live_ or pk_test_'); }],
+            'stripe_secret'           => ['nullable', function ($a, $v, $fail) use ($isMasked) { if ($v && !$isMasked($v) && !preg_match('/^sk_(live|test)_/', $v)) $fail('Secret key must start with sk_live_ or sk_test_'); }],
+            'stripe_webhook_secret'   => ['nullable', function ($a, $v, $fail) use ($isMasked) { if ($v && !$isMasked($v) && !preg_match('/^whsec_/', $v)) $fail('Webhook secret must start with whsec_'); }],
             'stripe_starter_price_id' => ['nullable', 'regex:/^price_/'],
             'stripe_pro_price_id'     => ['nullable', 'regex:/^price_/'],
             'starter_price'           => 'nullable|numeric|min:0',
@@ -34,9 +36,6 @@ class SystemSettingsController extends Controller
             'twitter_client_id'       => 'nullable|string|max:500',
             'twitter_client_secret'   => 'nullable|string|max:500',
         ], [
-            'stripe_key.regex'              => 'Publishable key must start with pk_live_ or pk_test_',
-            'stripe_secret.regex'           => 'Secret key must start with sk_live_ or sk_test_',
-            'stripe_webhook_secret.regex'   => 'Webhook secret must start with whsec_',
             'stripe_starter_price_id.regex' => 'Starter price ID must start with price_',
             'stripe_pro_price_id.regex'     => 'Pro price ID must start with price_',
         ]);
