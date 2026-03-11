@@ -74,9 +74,9 @@ $tabs = array_merge(...array_values($groups));
                     @foreach($groupTabs as $key => $info)
                     <a href="#"
                        @click.prevent="activeTab = '{{ $key }}'"
-                       :class="activeTab === '{{ $key }}' ? '' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'"
+                       :class="activeTab === '{{ $key }}' ? '' : 'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-slate-700'"
                        :style="activeTab === '{{ $key }}' ? 'background-color: var(--primary); color: #fff' : ''"
-                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium mx-1 transition-colors">
+                       class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium mx-1 transition-colors text-gray-600 dark:text-white">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/></svg>
                         {{ $info['label'] }}
                     </a>

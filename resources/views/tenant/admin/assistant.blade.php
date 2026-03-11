@@ -229,9 +229,11 @@ async function sendMessage() {
         });
         const data = await res.json();
         setLoading(false);
+        document.getElementById('user-input').focus();
         appendMessage('assistant', data.reply || data.error || 'Something went wrong. Please try again.');
     } catch (e) {
         setLoading(false);
+        document.getElementById('user-input').focus();
         appendMessage('assistant', 'Network error. Please check your connection and try again.');
     }
 }

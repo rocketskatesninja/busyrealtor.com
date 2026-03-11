@@ -9,7 +9,9 @@
   "@@type": "RealEstateAgent",
   "name": {!! json_encode($settings->site_title ?? '') !!},
   "url": "{{ url('/' . $tenant->slug . '/') }}"
-  @if(!empty($settings->logo_image))
+  @if(!empty($settings->favicon_preset))
+  ,"logo": "{{ url('/' . $tenant->slug . '/favicon.svg') }}"
+  @elseif(!empty($settings->logo_image))
   ,"logo": "{{ asset('storage/' . $settings->logo_image) }}"
   @endif
 }

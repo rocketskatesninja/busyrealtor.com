@@ -11,7 +11,6 @@
     $siteTitle    = $settings->site_title ?? ($tenant->name ?? 'BusyRealtor');
     $contactEmail = $settings->contact_email ?? null;
     $address      = $settings->contact_address ?? null;
-    $initial = strtoupper(mb_substr($siteTitle, 0, 1));
 
     function renderEmailBody(string $raw): string {
         $lines  = explode("\n", $raw);
@@ -80,14 +79,6 @@
         {{-- Header --}}
         <tr>
           <td align="center" style="background-color:{{ $primaryColor }};padding:28px 40px 24px;border-radius:8px 8px 0 0;">
-            <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 12px;">
-              <tr>
-                <td width="46" height="46" align="center"
-                    style="width:46px;height:46px;border-radius:10px;background-color:rgba(255,255,255,0.2);font-size:22px;font-weight:700;color:#ffffff;line-height:46px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
-                  {{ $initial }}
-                </td>
-              </tr>
-            </table>
             <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:0.3px;display:block;line-height:1.2;">{{ $siteTitle }}</span>
           </td>
         </tr>
