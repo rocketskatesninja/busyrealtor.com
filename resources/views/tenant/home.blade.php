@@ -217,7 +217,7 @@ $iconPaths = [
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-400"></span>
             </span>
-            Trusted Real Estate Experts
+            Free Consultations Available
         </div>
 
         {{-- Headline --}}
