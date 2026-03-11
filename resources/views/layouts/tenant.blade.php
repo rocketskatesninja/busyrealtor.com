@@ -198,6 +198,7 @@
         .dark #chatbot-modal .border-t { border-color: #334155; }
         .dark #chatbot-input { background-color: #334155 !important; border-color: #475569 !important; color: #f1f5f9 !important; }
         .dark #chatbot-input::placeholder { color: #64748b !important; }
+        #chatbot-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent); }
         .dark #chatbot-modal .text-gray-400 { color: #64748b !important; }
 
         /* Contact widget */
@@ -700,7 +701,7 @@ function updateCookiePrefsLink() {
     <div class="p-3 border-t bg-white rounded-b-xl shrink-0">
         <form id="chatbot-form" class="flex gap-2">
             <input type="text" id="chatbot-input" placeholder="Type a message..." autocomplete="off"
-                   class="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                   class="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none">
             <button type="submit" id="chatbot-send" class="px-4 py-2 rounded-full text-white text-sm font-medium shrink-0" style="background-color:var(--primary)">Send</button>
         </form>
         <div id="chatbot-typing" class="hidden text-xs text-gray-400 mt-2 px-1">Typing...</div>

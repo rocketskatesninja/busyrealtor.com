@@ -5,6 +5,16 @@
 @section('hide_chatbot')@endsection
 @section('hide_contact')@endsection
 
+@section('head')
+<style>
+#chat-input:focus {
+    outline: none;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+</style>
+@endsection
+
 @section('content')
 @php $account = $tenant->slug; @endphp
 <div class="flex flex-col bg-gray-50" style="height: 100vh; height: 100dvh">
@@ -56,8 +66,8 @@
     <div class="flex-shrink-0 bg-white border-t px-4 py-3">
         <form id="chat-form" class="flex items-end gap-2">
             <textarea id="chat-input" rows="1" placeholder="Type a message..."
-                      class="flex-1 px-4 py-2.5 border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:border-transparent resize-none overflow-hidden"
-                      style="--tw-ring-color: var(--primary); max-height: 120px"
+                      class="flex-1 px-4 py-2.5 border border-gray-200 rounded-2xl text-sm focus:outline-none resize-none overflow-hidden"
+                      style="max-height: 120px"
                       onInput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"
                       onKeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); document.getElementById('chat-form').dispatchEvent(new Event('submit', {bubbles:true,cancelable:true})); }"></textarea>
             <button type="submit" id="chat-send"

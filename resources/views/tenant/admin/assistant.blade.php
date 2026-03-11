@@ -3,7 +3,7 @@
 @section('title', 'AI Assistant')
 
 @section('content')
-<style>main{min-height:0!important;overflow:hidden;}body{overflow:hidden;}</style>
+<style>main{min-height:0!important;overflow:hidden;}body{overflow:hidden;}#user-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 20%,transparent);}</style>
 <div id="chat-wrapper" class="mx-auto flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
      style="max-width:1281px; min-height:500px;">
 
@@ -110,7 +110,7 @@
         <div style="display:flex; gap:12px; align-items:flex-end;">
             <textarea id="user-input" rows="1"
                 placeholder="Ask anything about your listings, messages, or appointments&hellip;"
-                class="flex-1 resize-none border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 leading-relaxed"
+                class="flex-1 resize-none border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none leading-relaxed"
                 style="max-height:140px;"></textarea>
             <button id="send-btn"
                 class="flex-shrink-0 flex items-center justify-center text-white transition-opacity disabled:opacity-40"
