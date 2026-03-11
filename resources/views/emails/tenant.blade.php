@@ -9,9 +9,13 @@
 @php
     $primaryColor = $settings->primary_color ?? '#2563eb';
     $siteTitle    = $settings->site_title ?? ($tenant->name ?? 'BusyRealtor');
-    $logoImage    = $settings->logo_image ?? null;
     $contactEmail = $settings->contact_email ?? null;
     $address      = $settings->contact_address ?? null;
+
+    // Site icon: render the favicon preset in white (header background is primary color)
+    $faviconPreset  = $settings->favicon_preset ?? null;
+    $faviconSvg     = $faviconPreset ? \App\Models\SiteSettings::faviconSvg($faviconPreset, '#ffffff') : null;
+    $faviconDataUri = $faviconSvg ? 'data:image/svg+xml;base64,' . base64_encode($faviconSvg) : null;
 
     // Parse body: detect key:value lines, separator lines, URLs
     function renderEmailBody(string $raw): string {
@@ -86,11 +90,12 @@
         {{-- Header --}}
         <tr>
           <td align="center" style="background-color:{{ $primaryColor }};padding:30px 40px;border-radius:8px 8px 0 0;">
-            @if($logoImage)
-              <img src="{{ url('storage/' . $logoImage) }}" alt="{{ $siteTitle }}"
-                   style="max-height:52px;max-width:260px;display:block;margin:0 auto 12px;filter:brightness(0) invert(1);">
+            @if($faviconDataUri)
+              <img src="{{ $faviconDataUri }}" alt="{{ $siteTitle }}"
+                   width="48" height="48"
+                   style="display:block;margin:0 auto 10px;width:48px;height:48px;">
             @endif
-            <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:0.3px;display:block;opacity:{{ $logoImage ? '0.9' : '1' }};">{{ $siteTitle }}</span>
+            <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:0.3px;display:block;">{{ $siteTitle }}</span>
           </td>
         </tr>
 
