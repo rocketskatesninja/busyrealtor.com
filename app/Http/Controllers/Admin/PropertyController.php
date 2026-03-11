@@ -106,6 +106,13 @@ class PropertyController extends Controller
             ->with('success', 'Property deleted.');
     }
 
+    public function photos($account)
+    {
+        $tenant     = app('tenant');
+        $properties = Property::with('images')->orderBy('title')->get();
+        return view('tenant.admin.properties.photos', compact('tenant', 'properties'));
+    }
+
     private function validateAndPrepare(Request $request)
     {
         $request->validate([

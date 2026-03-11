@@ -83,7 +83,7 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin'])->name('super.'
     Route::put('/settings', [SystemSettingsController::class, 'update'])->name('settings.update');
     Route::get('/feedback', [SuperFeedbackController::class, 'index'])->name('feedback');
     Route::get('/feedback/{id}', [SuperFeedbackController::class, 'show'])->name('feedback.show');
-    Route::get('/feedback/{id}/screenshot', [SuperFeedbackController::class, 'screenshot'])->name('feedback.screenshot');
+    Route::get('/feedback/{id}/screenshot/{index?}', [SuperFeedbackController::class, 'screenshot'])->name('feedback.screenshot');
     Route::delete('/feedback/{id}', [SuperFeedbackController::class, 'destroy'])->name('feedback.destroy');
 });
 
@@ -123,6 +123,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/properties', [PropertyController::class, 'index'])->name('properties.index');
         Route::get('/properties/create', [PropertyController::class, 'create'])->name('properties.create');
         Route::post('/properties', [PropertyController::class, 'store'])->name('properties.store');
+        Route::get('/properties/photos', [PropertyController::class, 'photos'])->name('properties.photos');
         Route::get('/properties/{id}/edit', [PropertyController::class, 'edit'])->name('properties.edit');
         Route::put('/properties/{id}', [PropertyController::class, 'update'])->name('properties.update');
         Route::delete('/properties/{id}', [PropertyController::class, 'destroy'])->name('properties.destroy');

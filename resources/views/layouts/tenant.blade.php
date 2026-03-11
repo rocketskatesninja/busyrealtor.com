@@ -394,9 +394,9 @@
                 <a href="{{ $galleryUrl }}" class="font-medium transition-colors hover-primary @if(!$isGallery) text-gray-700 @endif" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
                 <a href="{{ $mapUrl }}" class="font-medium transition-colors hover-primary @if(!$isMap) text-gray-700 @endif" @if($isMap) style="color: var(--primary);" @endif>Map</a>
                 <a href="{{ route('login') }}" class="font-medium transition-colors hover-primary @if(!$isLogin) text-gray-700 @endif" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
-                <button @click="$store.theme.toggle()" class="p-1 rounded-full text-gray-600 hover:text-gray-900">
-                    <svg x-show="!$store.theme.dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                    <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <button onclick="themeToggle()" class="theme-btn p-1 rounded-full text-gray-600 hover:text-gray-900">
+                    <svg id="default-theme-icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    <svg id="default-theme-icon-sun" class="w-5 h-5" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </button>
             </nav>
             <button onclick="tenantNavToggle()" id="tenant-default-hamburger" class="md:hidden p-2 rounded text-gray-700">
@@ -426,6 +426,12 @@
                 Chat Assistant
             </a>
             @endif
+            <div class="border-t my-2"></div>
+            <button onclick="themeToggle()" class="flex items-center w-full px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+                <svg id="default-mobile-theme-icon-moon" class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                <svg id="default-mobile-theme-icon-sun" class="w-5 h-5 mr-3 text-gray-500" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span id="default-mobile-theme-label">Dark Mode</span>
+            </button>
             <div class="border-t my-2"></div>
             <a href="{{ route('login') }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isLogin) @else text-gray-700 hover:bg-gray-100 @endif" @if($isLogin) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
                 <svg class="w-5 h-5 mr-3 @if($isLogin) @else text-gray-500 @endif" style="@if($isLogin) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
@@ -1102,10 +1108,19 @@ document.addEventListener('click', function(e) {
 // Dark mode toggle: pure JS, no Alpine dependency
 function updateThemeIcons() {
     var dark = document.documentElement.classList.contains('dark');
-    var moon = document.getElementById('theme-icon-moon');
-    var sun  = document.getElementById('theme-icon-sun');
-    if (moon) moon.style.display = dark ? 'none' : '';
-    if (sun)  sun.style.display  = dark ? '' : 'none';
+    var ids = [
+        ['theme-icon-moon',              'theme-icon-sun'],
+        ['default-theme-icon-moon',      'default-theme-icon-sun'],
+        ['default-mobile-theme-icon-moon','default-mobile-theme-icon-sun'],
+    ];
+    ids.forEach(function(pair) {
+        var moon = document.getElementById(pair[0]);
+        var sun  = document.getElementById(pair[1]);
+        if (moon) moon.style.display = dark ? 'none' : '';
+        if (sun)  sun.style.display  = dark ? '' : 'none';
+    });
+    var lbl = document.getElementById('default-mobile-theme-label');
+    if (lbl) lbl.textContent = dark ? 'Light Mode' : 'Dark Mode';
 }
 function themeToggle() {
     var dark = !document.documentElement.classList.contains('dark');

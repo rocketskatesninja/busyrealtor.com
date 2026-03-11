@@ -385,6 +385,7 @@
     @yield('content')
 </main>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>
 document.addEventListener('alpine:init', () => {
     Alpine.store('theme', {
@@ -394,6 +395,5 @@ document.addEventListener('alpine:init', () => {
 });
 @yield('scripts')
 </script>
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 </body>
 </html>

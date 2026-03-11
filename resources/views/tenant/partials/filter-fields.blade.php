@@ -5,7 +5,7 @@
     <label class="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
     <select name="type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         <option value="">All Types</option>
-        @foreach(['house' => 'House', 'condo' => 'Condo', 'townhouse' => 'Townhouse', 'land' => 'Land', 'commercial' => 'Commercial', 'multi-family' => 'Multi-Family'] as $fVal => $fLabel)
+        @foreach(['house' => 'House', 'condo' => 'Condo', 'townhouse' => 'Townhouse', 'land' => 'Land', 'commercial' => 'Commercial', 'multi_family' => 'Multi-Family'] as $fVal => $fLabel)
             <option value="{{ $fVal }}" {{ request('type') === $fVal ? 'selected' : '' }}>{{ $fLabel }}</option>
         @endforeach
     </select>

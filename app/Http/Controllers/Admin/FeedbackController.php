@@ -18,19 +18,21 @@ class FeedbackController extends Controller
     public function store($account, Request $request)
     {
         $request->validate([
-            'subject'    => 'required|string|max:200',
-            'message'    => 'required|string|max:5000',
-            'screenshot' => 'nullable|image|mimes:jpeg,png,gif,webp|max:8192',
+            'subject'        => 'required|string|max:200',
+            'message'        => 'required|string|max:5000',
+            'screenshots'    => 'nullable|array|max:10',
+            'screenshots.*'  => 'image|mimes:jpeg,png,gif,webp|max:8192',
         ]);
 
         $tenant = app('tenant');
-        $path   = null;
+        $paths  = [];
 
-        if ($request->hasFile('screenshot')) {
-            $file = $request->file('screenshot');
-            $dir  = 'feedback/' . $tenant->id;
-            $name = uniqid() . '.' . $file->getClientOriginalExtension();
-            $path = Storage::disk('local')->putFileAs($dir, $file, $name);
+        if ($request->hasFile('screenshots')) {
+            $dir = 'feedback/' . $tenant->id;
+            foreach ($request->file('screenshots') as $file) {
+                $name   = uniqid() . '.' . $file->getClientOriginalExtension();
+                $paths[] = Storage::disk('local')->putFileAs($dir, $file, $name);
+            }
         }
 
         Feedback::create([
@@ -38,7 +40,7 @@ class FeedbackController extends Controller
             'user_id'         => auth()->id(),
             'subject'         => $request->subject,
             'message'         => $request->message,
-            'screenshot_path' => $path,
+            'screenshot_path' => $paths,
         ]);
 
         return redirect()->route('tenant.admin.feedback.thanks', $account);

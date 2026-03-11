@@ -42,20 +42,28 @@
         <p class="text-gray-200 text-sm leading-relaxed whitespace-pre-wrap">{{ $item->message }}</p>
     </div>
 
-    {{-- Screenshot --}}
+    {{-- Screenshots --}}
     @if($item->hasScreenshot())
     <div class="bg-gray-800 rounded-xl border border-gray-700 px-5 py-4">
-        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Screenshot</h3>
-        <img src="{{ route('super.feedback.screenshot', $item->id) }}"
-             alt="Screenshot"
-             class="max-w-full rounded-lg border border-gray-700 cursor-zoom-in"
-             @click="$el.classList.toggle('max-w-full'); $el.classList.toggle('w-full')"
-             x-data>
-        <a href="{{ route('super.feedback.screenshot', $item->id) }}" download
-           class="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white mt-2 transition">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-            Download
-        </a>
+        <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            Screenshots ({{ count($item->screenshots()) }})
+        </h3>
+        <div class="{{ count($item->screenshots()) > 1 ? 'grid grid-cols-2 gap-3' : '' }}">
+            @foreach($item->screenshots() as $i => $path)
+            <div>
+                <img src="{{ route('super.feedback.screenshot', [$item->id, $i]) }}"
+                     alt="Screenshot {{ $i + 1 }}"
+                     class="max-w-full w-full rounded-lg border border-gray-700 cursor-zoom-in"
+                     @click="$el.classList.toggle('w-full'); $el.classList.toggle('w-auto'); $el.classList.toggle('max-w-full')"
+                     x-data>
+                <a href="{{ route('super.feedback.screenshot', [$item->id, $i]) }}" download
+                   class="inline-flex items-center gap-1.5 text-xs text-gray-400 hover:text-white mt-1.5 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Download #{{ $i + 1 }}
+                </a>
+            </div>
+            @endforeach
+        </div>
     </div>
     @endif
 

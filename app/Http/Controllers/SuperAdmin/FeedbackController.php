@@ -33,13 +33,15 @@ class FeedbackController extends Controller
         return view('super-admin.feedback.show', compact('item'));
     }
 
-    public function screenshot(int $id): StreamedResponse
+    public function screenshot(int $id, int $index = 0): StreamedResponse
     {
         $item = Feedback::withoutGlobalScopes()->findOrFail($id);
 
-        abort_unless($item->hasScreenshot(), 404);
+        $screenshots = $item->screenshots();
+        $path = $screenshots[$index] ?? null;
 
-        $path = $item->screenshot_path;
+        abort_if(!$path, 404);
+
         $mime = Storage::disk('local')->mimeType($path);
 
         return response()->streamDownload(
