@@ -34,7 +34,7 @@ class TenantPageController extends Controller
         $tenant   = app('tenant');
         $settings = $this->getSettings();
 
-        $query = Property::query();
+        $query = Property::with('images');
         if ($request->search)        $query->where(function($q) use ($request) { $q->where('title','like',"%{$request->search}%")->orWhere('address_street','like',"%{$request->search}%")->orWhere('address_city','like',"%{$request->search}%"); });
         if ($request->type)          $query->where('property_type', $request->type);
         if ($request->status)        $query->where('listing_status', $request->status);

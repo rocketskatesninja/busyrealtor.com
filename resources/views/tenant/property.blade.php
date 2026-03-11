@@ -147,7 +147,7 @@ function initPropertyMap() {
                 }
             }" class="mb-8">
                 {{-- Main image --}}
-                <div class="relative rounded-2xl overflow-hidden bg-gray-100 mb-3 cursor-pointer" style="height: 450px" @click="lightbox = true; lightboxIdx = current" @touchstart.passive="touchX = $event.changedTouches[0].clientX" @touchend.passive="swipe($event)">
+                <div class="relative rounded-2xl overflow-hidden bg-gray-100 mb-3 cursor-pointer" style="height: 720px" @click="lightbox = true; lightboxIdx = current" @touchstart.passive="touchX = $event.changedTouches[0].clientX" @touchend.passive="swipe($event)">
                     <template x-for="(img, idx) in {{ json_encode($images->values()->map(fn($i) => asset('storage/'.$i->image_path))) }}" :key="idx">
                         <img :src="img" :class="current === idx ? 'opacity-100 carousel-img-active' : 'opacity-0'" class="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 ease-in-out">
                     </template>
@@ -214,9 +214,15 @@ $" . number_format($property->price) : '') . "
 
                 {{-- Status + Share row --}}
                 <div class="flex items-center justify-between mb-4">
-                    <span class="inline-flex items-center text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
-                        {{ ucfirst($property->listing_status) }}
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="inline-flex items-center text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
+                            {{ ucfirst($property->listing_status) }}
+                        </span>
+                        <span id="fav-badge" class="inline-flex items-center gap-1 text-xs font-semibold text-yellow-900 bg-yellow-400 px-3 py-1 rounded-full" style="display:none">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                            Favorite
+                        </span>
+                    </div>
                     <div class="flex items-center gap-1.5 no-print" x-data="{ copied: false }">
                         <span class="text-xs text-gray-400 mr-1 hidden sm:inline">Share:</span>
                         <button type="button" title="Copy link"
@@ -241,6 +247,7 @@ $" . number_format($property->price) : '') . "
                         </button>
                     </div>
                 </div>
+
 
                 {{-- Title + Address + Price --}}
                 <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
@@ -706,4 +713,15 @@ $" . number_format($property->price) : '') . "
     </div>
     @endif
 </div>
+@endsection
+
+@section('scripts')
+(function() {
+    try {
+        var key  = 'br_favs_{{ $tenant->slug }}';
+        var id   = {{ $property->id }};
+        var favs = JSON.parse(localStorage.getItem(key) || '[]');
+        if (favs.includes(id)) document.getElementById('fav-badge').style.display = '';
+    } catch(e) {}
+})();
 @endsection

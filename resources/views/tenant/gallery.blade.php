@@ -35,7 +35,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
     {{-- Property Grid --}}
     <div class="md:ml-80 px-4 md:px-6 py-10">
         <div class="flex items-center justify-between mb-6">
-            <p class="text-sm text-gray-500">{{ $properties->total() }} {{ Str::plural('property', $properties->total()) }} found</p>
+            <p class="text-sm text-gray-500">{{ $properties->total() }} {{ Str::plural('property', $properties->total()) }} found<span id="favs-hint" style="display:none"> — Favorites listed first</span></p>
             <form method="GET" action="{{ route('tenant.gallery', $account) }}" class="flex items-center gap-2">
                 @foreach(request()->except('sort') as $k => $v)
                     @if(is_array($v))
@@ -57,9 +57,9 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
         </div>
 
         @if($properties->count())
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div id="property-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @foreach($properties as $property)
-            <a href="{{ route('tenant.property', [$account, $property->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-xl transition-shadow group">
+            <a data-property-id="{{ $property->id }}" href="{{ route('tenant.property', [$account, $property->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-xl transition-shadow group">
                 <div class="relative h-48 bg-gray-200 overflow-hidden">
                     @if($property->primaryImage)
                         <img src="{{ asset('storage/'.$property->primaryImage->image_path) }}" alt="{{ $property->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
@@ -71,6 +71,16 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
                     <span class="absolute top-3 left-3 text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
                         {{ ucfirst($property->listing_status) }}
                     </span>
+                    <button type="button" onclick="favToggle(event, {{ $property->id }})"
+                            class="absolute top-2 right-2 z-10 p-1 rounded-full bg-white/70 hover:bg-white transition"
+                            aria-label="Favorite">
+                        <svg id="fav-outline-{{ $property->id }}" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                        <svg id="fav-filled-{{ $property->id }}" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-yellow-400" fill="currentColor" viewBox="0 0 24 24" style="display:none">
+                            <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+                        </svg>
+                    </button>
                 </div>
                 <div class="p-4">
                     <p class="text-xl font-bold mb-1" style="color: var(--primary)">${{ number_format($property->price) }}</p>
@@ -170,3 +180,50 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
 
 </div>
 @endsection
+
+@section('scripts')
+const FAV_KEY = 'br_favs_{{ $tenant->slug }}';
+
+function getFavs() {
+    try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); }
+    catch(e) { return []; }
+}
+function saveFavs(favs) {
+    localStorage.setItem(FAV_KEY, JSON.stringify(favs));
+}
+
+function favToggle(e, id) {
+    e.preventDefault();
+    e.stopPropagation();
+    let favs = getFavs();
+    const idx = favs.indexOf(id);
+    if (idx === -1) favs.push(id); else favs.splice(idx, 1);
+    saveFavs(favs);
+    applyFavsToGrid();
+}
+
+function applyFavsToGrid() {
+    const favs = getFavs();
+    const grid = document.getElementById('property-grid');
+    if (!grid) return;
+
+    grid.querySelectorAll('[data-property-id]').forEach(card => {
+        const id = parseInt(card.dataset.propertyId);
+        const isFav = favs.includes(id);
+        const outline = document.getElementById('fav-outline-' + id);
+        const filled  = document.getElementById('fav-filled-'  + id);
+        if (outline) outline.style.display = isFav ? 'none' : '';
+        if (filled)  filled.style.display  = isFav ? ''     : 'none';
+    });
+
+    const cards = Array.from(grid.querySelectorAll('[data-property-id]'));
+    const favCards    = cards.filter(c => favs.includes(parseInt(c.dataset.propertyId)));
+    const nonFavCards = cards.filter(c => !favs.includes(parseInt(c.dataset.propertyId)));
+    [...favCards, ...nonFavCards].forEach(c => grid.appendChild(c));
+    var hint = document.getElementById('favs-hint');
+    if (hint) hint.style.display = favCards.length ? '' : 'none';
+}
+
+document.addEventListener('DOMContentLoaded', applyFavsToGrid);
+@endsection
+

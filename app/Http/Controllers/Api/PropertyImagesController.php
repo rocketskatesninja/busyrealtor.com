@@ -51,12 +51,13 @@ class PropertyImagesController extends Controller
         $path      = $dir . '/' . $filename;
         $img       = Image::read($request->file('image'))->scale(width: 1200);
         Storage::disk('public')->put($path, $img->toJpeg(85));
-        $isPrimary = $property->images()->count() === 0;
+        $existingCount = $property->images()->count();
+        $isPrimary     = $existingCount === 0;
         $image = PropertyImage::create([
             'property_id' => $property->id,
             'tenant_id'   => $tenant->id,
             'image_url'   => $path,
-            'sort_order'  => $property->images()->count(),
+            'sort_order'  => $existingCount,
             'is_primary'  => $isPrimary,
         ]);
         return response()->json(['id' => $image->id, 'url' => asset('storage/' . $path), 'is_primary' => $isPrimary]);

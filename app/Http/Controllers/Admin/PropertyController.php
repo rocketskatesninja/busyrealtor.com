@@ -98,9 +98,6 @@ class PropertyController extends Controller
     {
         $tenant   = app('tenant');
         $property = Property::where('tenant_id', $tenant->id)->findOrFail($id);
-        foreach ($property->images as $img) {
-            Storage::disk('public')->delete($img->image_path);
-        }
         $property->delete();
         return redirect()->route('tenant.admin.properties.index', ['account' => app('tenant')->slug])
             ->with('success', 'Property deleted.');
@@ -174,12 +171,13 @@ class PropertyController extends Controller
             $img      = Image::read($file)->scale(width: 1200);
             Storage::disk('public')->put($path, $img->toJpeg(85));
 
-            $isPrimary = ($i === 0 && $property->images()->count() === 0);
+            $existingCount = $property->images()->count();
+            $isPrimary     = ($i === 0 && $existingCount === 0);
             PropertyImage::create([
                 'property_id' => $property->id,
                 'tenant_id'   => $tenant->id,
-                'image_url'    => $path,
-                'sort_order'  => $property->images()->count(),
+                'image_url'   => $path,
+                'sort_order'  => $existingCount,
                 'is_primary'  => $isPrimary,
             ]);
         }
