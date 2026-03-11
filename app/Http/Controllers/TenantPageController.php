@@ -131,14 +131,20 @@ class TenantPageController extends Controller
         return view('tenant.legal', compact('tenant', 'settings', 'page'));
     }
 
-    public function favicon($account)
+    public function favicon($account, \Illuminate\Http\Request $request)
     {
         $tenant   = \App\Models\Tenant::where('slug', $account)->firstOrFail();
         $settings = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
 
         $preset = $settings->favicon_preset ?? null;
-        $pcolor = $settings->primary_color ?? '#3B82F6';
-        $svg    = $preset ? \App\Models\SiteSettings::faviconSvg($preset, $pcolor) : null;
+
+        // Allow an override color via ?color=rrggbb (used by email templates for white icons)
+        $rawColor = ltrim($request->query('color', ''), '#');
+        $pcolor   = preg_match('/^[0-9a-fA-F]{3,6}$/', $rawColor)
+            ? '#' . $rawColor
+            : ($settings->primary_color ?? '#3B82F6');
+
+        $svg = $preset ? \App\Models\SiteSettings::faviconSvg($preset, $pcolor) : null;
 
         if (!$svg) {
             abort(404);

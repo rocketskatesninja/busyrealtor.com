@@ -11,13 +11,9 @@
     $siteTitle    = $settings->site_title ?? ($tenant->name ?? 'BusyRealtor');
     $contactEmail = $settings->contact_email ?? null;
     $address      = $settings->contact_address ?? null;
+    $faviconPreset = $settings->favicon_preset ?? null;
+    $iconUrl       = $faviconPreset ? url('/' . $tenant->slug . '/favicon.svg?color=ffffff') : null;
 
-    // Site icon: render the favicon preset in white (header background is primary color)
-    $faviconPreset  = $settings->favicon_preset ?? null;
-    $faviconSvg     = $faviconPreset ? \App\Models\SiteSettings::faviconSvg($faviconPreset, '#ffffff') : null;
-    $faviconDataUri = $faviconSvg ? 'data:image/svg+xml;base64,' . base64_encode($faviconSvg) : null;
-
-    // Parse body: detect key:value lines, separator lines, URLs
     function renderEmailBody(string $raw): string {
         $lines  = explode("\n", $raw);
         $output = '';
@@ -39,20 +35,17 @@
         foreach ($lines as $line) {
             $trimmed = trim($line);
 
-            // Separator line (e.g. ────────)
             if (preg_match('/^[─\-=_]{4,}$/', $trimmed)) {
                 $flushKv();
                 $output .= '<hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0;">';
                 continue;
             }
 
-            // Key: Value line
             if (preg_match('/^([A-Za-z][A-Za-z0-9 _\-]{1,24}):\s+(.+)$/', $trimmed, $m)) {
                 $kvRows[] = [$m[1], $m[2]];
                 continue;
             }
 
-            // Otherwise flush any pending key/value block first
             $flushKv();
 
             if ($trimmed === '') {
@@ -67,7 +60,6 @@
     }
 
     function formatBodyValue(string $text): string {
-        // Linkify bare URLs
         $text = e($text);
         $text = preg_replace(
             '/https?:\/\/[^\s<>"]+/',
@@ -78,7 +70,6 @@
     }
 @endphp
 
-{{-- Preheader (hidden preview text in inbox) --}}
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">{{ $subject }} &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
 
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#eef0f3;">
@@ -89,50 +80,42 @@
 
         {{-- Header --}}
         <tr>
-          <td align="center" style="background-color:{{ $primaryColor }};padding:30px 40px;border-radius:8px 8px 0 0;">
-            @if($faviconDataUri)
-              <img src="{{ $faviconDataUri }}" alt="{{ $siteTitle }}"
-                   width="48" height="48"
-                   style="display:block;margin:0 auto 10px;width:48px;height:48px;">
+          <td align="center" style="background-color:{{ $primaryColor }};padding:28px 40px 24px;border-radius:8px 8px 0 0;">
+            @if($iconUrl)
+            <img src="{{ $iconUrl }}" width="44" height="44" alt=""
+                 style="display:block;margin:0 auto 10px;width:44px;height:44px;border:0;">
             @endif
-            <span style="font-size:18px;font-weight:700;color:#ffffff;letter-spacing:0.3px;display:block;">{{ $siteTitle }}</span>
+            <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:0.3px;display:block;line-height:1.2;">{{ $siteTitle }}</span>
           </td>
         </tr>
 
         {{-- Accent stripe --}}
         <tr>
-          <td style="background-color:{{ $primaryColor }};height:4px;opacity:0.35;font-size:0;line-height:0;">&nbsp;</td>
+          <td style="background-color:{{ $primaryColor }};height:3px;opacity:0.3;font-size:0;line-height:0;">&nbsp;</td>
         </tr>
 
         {{-- Body --}}
         <tr>
           <td style="background-color:#ffffff;padding:36px 44px 32px;">
-
-            {{-- Subject heading --}}
-            <h2 style="margin:0 0 24px;font-size:19px;font-weight:700;color:#111827;line-height:1.3;border-bottom:2px solid {{ $primaryColor }};padding-bottom:14px;">
-              {{ $subject }}
-            </h2>
-
-            {{-- Body content --}}
+            <h2 style="margin:0 0 22px;font-size:19px;font-weight:700;color:#111827;line-height:1.3;border-bottom:2px solid {{ $primaryColor }};padding-bottom:14px;">{{ $subject }}</h2>
             <div style="color:#374151;font-size:15px;line-height:1.75;">
               {!! renderEmailBody($body) !!}
             </div>
-
           </td>
         </tr>
 
         {{-- Footer --}}
         <tr>
-          <td style="background-color:#f8f9fb;border-top:1px solid #e5e7eb;border-radius:0 0 8px 8px;padding:22px 44px;">
+          <td style="background-color:#f8f9fb;border-top:1px solid #e5e7eb;border-radius:0 0 8px 8px;padding:20px 44px;">
             <table width="100%" cellpadding="0" cellspacing="0" border="0">
               <tr>
                 <td style="color:#6b7280;font-size:12px;line-height:1.7;">
                   <strong style="color:#374151;">{{ $siteTitle }}</strong>
                   @if($contactEmail)
-                    <br><a href="mailto:{{ $contactEmail }}" style="color:#6b7280;text-decoration:none;">{{ $contactEmail }}</a>
+                  <br><a href="mailto:{{ $contactEmail }}" style="color:#6b7280;text-decoration:none;">{{ $contactEmail }}</a>
                   @endif
                   @if($address)
-                    <br>{{ $address }}
+                  <br>{{ $address }}
                   @endif
                 </td>
                 <td align="right" style="color:#9ca3af;font-size:11px;vertical-align:bottom;">
