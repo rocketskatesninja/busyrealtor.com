@@ -281,6 +281,7 @@ class AdminChatController extends Controller
             'todays_appointments' => $todayAppts->all(),
             'active_listings'     => Property::where('tenant_id', $tenant->id)->where('listing_status', 'active')->count(),
             'pending_listings'    => Property::where('tenant_id', $tenant->id)->where('listing_status', 'pending')->count(),
+            'sold_listings'       => Property::where('tenant_id', $tenant->id)->where('listing_status', 'sold')->count(),
         ];
     }
 
@@ -594,6 +595,7 @@ class AdminChatController extends Controller
 
         $activeCount  = Property::where('tenant_id', $tenant->id)->where('listing_status', 'active')->count();
         $pendingCount = Property::where('tenant_id', $tenant->id)->where('listing_status', 'pending')->count();
+        $soldCount    = Property::where('tenant_id', $tenant->id)->where('listing_status', 'sold')->count();
 
         $hour    = (int) $today->format('H');
         $greeting = $hour < 12 ? 'Good morning' : ($hour < 17 ? 'Good afternoon' : 'Good evening');
@@ -623,6 +625,7 @@ class AdminChatController extends Controller
 
         $listingParts = ["{$activeCount} active"];
         if ($pendingCount > 0) $listingParts[] = "{$pendingCount} pending";
+        if ($soldCount > 0)    $listingParts[] = "{$soldCount} sold";
         $lines[] = '**Listings:** ' . implode(', ', $listingParts) . '.';
 
         $lines[] = '';
