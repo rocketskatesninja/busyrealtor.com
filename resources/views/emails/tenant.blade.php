@@ -11,8 +11,7 @@
     $siteTitle    = $settings->site_title ?? ($tenant->name ?? 'BusyRealtor');
     $contactEmail = $settings->contact_email ?? null;
     $address      = $settings->contact_address ?? null;
-    $faviconPreset = $settings->favicon_preset ?? null;
-    $iconUrl       = $faviconPreset ? url('/' . $tenant->slug . '/favicon.svg?color=ffffff') : null;
+    $initial = strtoupper(mb_substr($siteTitle, 0, 1));
 
     function renderEmailBody(string $raw): string {
         $lines  = explode("\n", $raw);
@@ -81,10 +80,14 @@
         {{-- Header --}}
         <tr>
           <td align="center" style="background-color:{{ $primaryColor }};padding:28px 40px 24px;border-radius:8px 8px 0 0;">
-            @if($iconUrl)
-            <img src="{{ $iconUrl }}" width="44" height="44" alt=""
-                 style="display:block;margin:0 auto 10px;width:44px;height:44px;border:0;">
-            @endif
+            <table cellpadding="0" cellspacing="0" border="0" style="margin:0 auto 12px;">
+              <tr>
+                <td width="46" height="46" align="center"
+                    style="width:46px;height:46px;border-radius:10px;background-color:rgba(255,255,255,0.2);font-size:22px;font-weight:700;color:#ffffff;line-height:46px;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+                  {{ $initial }}
+                </td>
+              </tr>
+            </table>
             <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:0.3px;display:block;line-height:1.2;">{{ $siteTitle }}</span>
           </td>
         </tr>
@@ -107,23 +110,18 @@
         {{-- Footer --}}
         <tr>
           <td style="background-color:#f8f9fb;border-top:1px solid #e5e7eb;border-radius:0 0 8px 8px;padding:20px 44px;">
-            <table width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td style="color:#6b7280;font-size:12px;line-height:1.7;">
-                  <strong style="color:#374151;">{{ $siteTitle }}</strong>
-                  @if($contactEmail)
-                  <br><a href="mailto:{{ $contactEmail }}" style="color:#6b7280;text-decoration:none;">{{ $contactEmail }}</a>
-                  @endif
-                  @if($address)
-                  <br>{{ $address }}
-                  @endif
-                </td>
-                <td align="right" style="color:#9ca3af;font-size:11px;vertical-align:bottom;">
-                  Powered by<br>
-                  <a href="https://busyrealtor.com" style="color:#9ca3af;text-decoration:none;font-weight:600;">BusyRealtor</a>
-                </td>
-              </tr>
-            </table>
+            <p style="margin:0 0 4px;font-size:12px;color:#374151;font-weight:600;">{{ $siteTitle }}</p>
+            @if($contactEmail)
+            <p style="margin:0 0 2px;font-size:12px;color:#6b7280;">
+              <a href="mailto:{{ $contactEmail }}" style="color:#6b7280;text-decoration:none;">{{ $contactEmail }}</a>
+            </p>
+            @endif
+            @if($address)
+            <p style="margin:0;font-size:12px;color:#6b7280;">{{ $address }}</p>
+            @endif
+            <p style="margin:14px 0 0;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;">
+              Powered by <a href="https://busyrealtor.com" style="color:#9ca3af;text-decoration:none;font-weight:600;">BusyRealtor</a>
+            </p>
           </td>
         </tr>
 
