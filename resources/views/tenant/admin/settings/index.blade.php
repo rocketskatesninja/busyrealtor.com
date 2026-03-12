@@ -440,11 +440,11 @@ $tabs = array_merge(...array_values($groups));
                     <div x-data="hpSectionData()">
                         {{-- Hidden inputs serialized to JSON on submit --}}
                         <input type="hidden" name="homepage_sections" id="hp_sections_input">
-                        <input type="hidden" name="features_items"      :value="JSON.stringify(features)">
-                        <input type="hidden" name="services_items"      :value="JSON.stringify(services)">
-                        <input type="hidden" name="testimonials_items"  :value="JSON.stringify(testimonials)">
-                        <input type="hidden" name="stats_items"         :value="JSON.stringify(stats)">
-                        <input type="hidden" name="faq_items"           :value="JSON.stringify(faq)">
+                        <input type="hidden" name="features_items"     x-ref="featuresInput"     value='{!! json_encode($settings->features_items ?: []) !!}' :value="JSON.stringify(features)">
+                        <input type="hidden" name="services_items"     x-ref="servicesInput"     value='{!! json_encode($settings->services_items ?: []) !!}' :value="JSON.stringify(services)">
+                        <input type="hidden" name="testimonials_items" x-ref="testimonialsInput" value='{!! json_encode($settings->testimonials_items ?: []) !!}' :value="JSON.stringify(testimonials)">
+                        <input type="hidden" name="stats_items"        x-ref="statsInput"        value='{!! json_encode($settings->stats_items ?: []) !!}' :value="JSON.stringify(stats)">
+                        <input type="hidden" name="faq_items"          x-ref="faqInput"          value='{!! json_encode($settings->faq_items ?: []) !!}' :value="JSON.stringify(faq)">
 
                         <div id="sections-container" class="space-y-2" style="animation: hpFadeIn .25s ease both">
                         @foreach($orderedSections as $section)
@@ -1693,6 +1693,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }, { passive: true });
 })();
+
+// ── Serialise Alpine-managed homepage data just before form submit ───────────────
+document.addEventListener('DOMContentLoaded', function() {
+    var form = document.getElementById('settings-form');
+    if (!form) return;
+    form.addEventListener('submit', function() {
+        var hpDiv = form.querySelector('[x-data="hpSectionData()"]');
+        if (hpDiv && window.Alpine) {
+            try {
+                var data = Alpine.$data(hpDiv);
+                var map = {
+                    'features_items':     'features',
+                    'services_items':     'services',
+                    'testimonials_items': 'testimonials',
+                    'stats_items':        'stats',
+                    'faq_items':          'faq',
+                };
+                Object.entries(map).forEach(function(pair) {
+                    var el = form.querySelector('[name="' + pair[0] + '"]');
+                    if (el && data[pair[1]] !== undefined) {
+                        el.value = JSON.stringify(data[pair[1]]);
+                    }
+                });
+            } catch(e) { /* Alpine.$data unavailable - static value fallback used */ }
+        }
+    }, true);
+});
 
 // ── Dirty tracking: enable Save only when something has changed ───────────────
 (function() {
