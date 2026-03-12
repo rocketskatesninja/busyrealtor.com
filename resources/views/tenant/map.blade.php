@@ -148,8 +148,8 @@ function applyMapFilterFromMobile() {
     applyMapFilter();
     // close the Alpine drawer
     var wrapper = document.querySelector('[x-data*="mobileOpen"]');
-    if (wrapper && wrapper._x_dataStack) {
-        wrapper._x_dataStack[0].mobileOpen = false;
+    if (wrapper) {
+        Alpine.$data(wrapper).mobileOpen = false;
     }
 }
 </script>
@@ -287,7 +287,7 @@ $activeFilters = collect(['type','status','price_min','price_max','beds','baths'
             {{-- Fixed footer --}}
             <div class="flex-shrink-0 p-4 border-t bg-gray-50 flex gap-3">
                 <button type="button"
-                        onclick="clearMapFilter(); document.querySelector('[x-data]').__x.$data.mobileOpen = false"
+                        onclick="clearMapFilter(); Alpine.$data(document.querySelector('[x-data]')).mobileOpen = false"
                         class="flex-1 py-3 text-center border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-100 transition">Clear All</button>
                 <button type="button"
                         onclick="applyMapFilterFromMobile()"

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" x-data x-bind:class="$store.theme.dark ? 'dark' : ''">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,9 +25,7 @@
             }
         })();
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config = { darkMode: "class" }</script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     @php
@@ -183,8 +181,46 @@
         html:not(.dark) .console-wrap     { border-color: #e2e8f0 !important; }
         html:not(.dark) #data-console-hdr { background-color: #f1f5f9 !important; }
         html:not(.dark) #data-console     { background-color: #f9fafb !important; }
+
+        /* Dark mode icon visibility
+           dark-mode-icon-sun class = MOON svg (shows in light mode, switch to dark)
+           dark-mode-icon-moon class = SUN svg (shows in dark mode, switch to light) */
+        .dark-mode-icon-sun { display: block; }
+        html.dark .dark-mode-icon-sun { display: none; }
+        .dark-mode-icon-moon { display: none; }
+        html.dark .dark-mode-icon-moon { display: block; }
         @yield('styles')
     </style>
+    <script>
+        function toggleUserMenu() {
+            var d = document.getElementById('user-dropdown');
+            d.style.display = d.style.display === 'none' ? 'block' : 'none';
+        }
+        function toggleMobileMenu() {
+            var m = document.getElementById('mobile-menu');
+            m.style.display = m.style.display === 'none' ? 'block' : 'none';
+        }
+        function toggleDarkMode() {
+            var isDark = document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            updateDarkModeLabels();
+        }
+        function updateDarkModeLabels() {
+            var isDark = document.documentElement.classList.contains('dark');
+            document.querySelectorAll('.dark-mode-label').forEach(function(el) {
+                el.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+            });
+        }
+        // Close user dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            var btn = document.getElementById('user-menu-btn');
+            var dd = document.getElementById('user-dropdown');
+            if (dd && btn && !btn.contains(e.target) && !dd.contains(e.target)) {
+                dd.style.display = 'none';
+            }
+        });
+        document.addEventListener('DOMContentLoaded', updateDarkModeLabels);
+    </script>
     @yield('head')
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -201,7 +237,7 @@
 @endif
 
 {{-- TOP NAV --}}
-<header class="bg-white shadow-lg sticky top-0 z-50" x-data="{ open: false, userOpen: false }">
+<header class="bg-white shadow-lg sticky top-0 z-50" id="admin-header">
     <div class="max-w-7xl mx-auto px-4">
         <div class="flex items-center justify-between py-4">
             <div class="flex items-center gap-3">
@@ -244,11 +280,11 @@
                     </a>
                 </nav>
                 <div class="relative">
-                    <button @click="userOpen = !userOpen" x-on:click.away="userOpen = false" class="flex items-center space-x-2 text-gray-700 hover-primary focus:outline-none">
+                    <button onclick="toggleUserMenu()" id="user-menu-btn" class="flex items-center space-x-2 text-gray-700 hover-primary focus:outline-none">
                         <span class="font-medium">{{ explode(' ', auth()->user()->name)[0] }}</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
-                    <div x-show="userOpen" x-cloak class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 border">
+                    <div id="user-dropdown" style="display:none" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 border">
                         <a href="{{ route('tenant.admin.settings', $account) }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm">
                             <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             Settings
@@ -263,10 +299,10 @@
                             Assistant
                         </a>
                         @endif
-                        <button @click="$store.theme.toggle()" class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm text-left">
-                            <svg x-show="!$store.theme.dark" class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                            <svg x-show="$store.theme.dark" x-cloak class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                            <span x-text="$store.theme.dark ? 'Light Mode' : 'Dark Mode'"></span>
+                        <button onclick="toggleDarkMode()" class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm text-left">
+                            <svg class="w-4 h-4 mr-3 text-gray-500 dark-mode-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                            <svg class="w-4 h-4 mr-3 text-gray-500 dark-mode-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                            <span class="dark-mode-label"></span>
                         </button>
                         <a href="{{ route('tenant.admin.feedback', $account) }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm">
                             <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
@@ -289,7 +325,7 @@
             </div>
 
             {{-- Mobile menu button --}}
-            <button @click="open = !open" class="md:hidden p-2 rounded text-gray-700">
+            <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded text-gray-700">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
             </button>
         </div>
@@ -304,14 +340,7 @@
         $isMsgs     = request()->routeIs('tenant.admin.messages.*');
         $isSettings = request()->routeIs('tenant.admin.settings*');
     @endphp
-    <div x-show="open" x-cloak
-         x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0 -translate-y-2"
-         x-transition:enter-end="opacity-100 translate-y-0"
-         x-transition:leave="transition ease-in duration-150"
-         x-transition:leave-start="opacity-100 translate-y-0"
-         x-transition:leave-end="opacity-0 -translate-y-2"
-         class="md:hidden border-t bg-white shadow-lg">
+    <div id="mobile-menu" style="display:none" class="md:hidden border-t bg-white shadow-lg">
         <nav class="px-4 py-3 space-y-1">
             <a href="{{ route('tenant.admin.dashboard', $account) }}" class="flex items-center px-3 py-2 rounded-lg font-medium {{ $isDash ? '' : 'text-gray-700 hover:bg-gray-100' }}" @if($isDash) style="background-color: rgba({{ $r }},{{ $g }},{{ $b }},0.1); color: var(--primary);" @endif>
                 <svg class="w-5 h-5 mr-3 {{ $isDash ? '' : 'text-gray-500' }}" style="{{ $isDash ? 'color:var(--primary)' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1V5zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V5zM4 15a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H5a1 1 0 01-1-1v-4zm10 0a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"/></svg>
@@ -359,10 +388,10 @@
                 Assistant
             </a>
             @endif
-            <button @click="$store.theme.toggle()" class="flex items-center w-full px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
-                <svg x-show="!$store.theme.dark" class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
-                <span x-text="$store.theme.dark ? 'Light Mode' : 'Dark Mode'"></span>
+            <button onclick="toggleDarkMode()" class="flex items-center w-full px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+                <svg class="w-5 h-5 mr-3 text-gray-500 dark-mode-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                <svg class="w-5 h-5 mr-3 text-gray-500 dark-mode-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                <span class="dark-mode-label"></span>
             </button>
             <div class="border-t my-2"></div>
             <form method="POST" action="{{ route('logout') }}">
@@ -398,14 +427,8 @@
     @yield('content')
 </main>
 
-<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ asset('js/Sortable.min.js') }}"></script>
 <script>
-document.addEventListener('alpine:init', () => {
-    Alpine.store('theme', {
-        dark: document.documentElement.classList.contains('dark'),
-        toggle() { this.dark = !this.dark; document.documentElement.classList.toggle('dark', this.dark); localStorage.setItem('theme', this.dark ? 'dark' : 'light'); }
-    });
-});
 @yield('scripts')
 </script>
 </body>

@@ -34,7 +34,7 @@ class DashboardController extends Controller
             'pending_listings' => Property::where('listing_status', 'pending')->count(),
             'total_revenue'    => Property::where('listing_status', 'sold')->sum('price'),
             'response_rate'    => $totalMessages > 0 ? round(($readMessages / $totalMessages) * 100) : 0,
-            'days_on_market'   => (int) (Property::where('listing_status', 'active')->selectRaw('AVG(DATEDIFF(NOW(), created_at)) as avg_days')->value('avg_days') ?? 0),
+            'days_on_market'   => (int) ($activeProps->clone()->selectRaw('AVG(DATEDIFF(NOW(), created_at)) as avg_days')->value('avg_days') ?? 0),
             'views_month'      => DB::table('property_views')->where('tenant_id', $tenant->id)->where('viewed_at', '>=', now()->subDays(30))->count(),
         ];
 
@@ -72,37 +72,40 @@ class DashboardController extends Controller
             return ['label' => now()->subDays($d)->format('D'), 'count' => $rawMsgs[$date] ?? 0];
         });
 
-        // Price range distribution
-        $priceRanges = [
-            'Under $200K'  => [0,        200000],
-            '$200–400K'    => [200000,   400000],
-            '$400–600K'    => [400000,   600000],
-            '$600K–1M'     => [600000,  1000000],
-            'Over $1M'     => [1000000, PHP_INT_MAX],
-        ];
-        $priceDistribution = collect($priceRanges)->map(fn($r) =>
-            Property::where('price', '>=', $r[0])->where('price', '<', $r[1])->count()
-        );
+        // Price range distribution — single CASE WHEN query
+        $pdRaw = Property::selectRaw("
+            SUM(CASE WHEN price < 200000 THEN 1 ELSE 0 END) as under_200k,
+            SUM(CASE WHEN price >= 200000 AND price < 400000 THEN 1 ELSE 0 END) as p200_400k,
+            SUM(CASE WHEN price >= 400000 AND price < 600000 THEN 1 ELSE 0 END) as p400_600k,
+            SUM(CASE WHEN price >= 600000 AND price < 1000000 THEN 1 ELSE 0 END) as p600k_1m,
+            SUM(CASE WHEN price >= 1000000 THEN 1 ELSE 0 END) as over_1m
+        ")->first();
+        $priceDistribution = collect([
+            'Under $200K' => (int) $pdRaw->under_200k,
+            '$200–400K'   => (int) $pdRaw->p200_400k,
+            '$400–600K'   => (int) $pdRaw->p400_600k,
+            '$600K–1M'    => (int) $pdRaw->p600k_1m,
+            'Over $1M'    => (int) $pdRaw->over_1m,
+        ]);
 
-        // Listings added per month — last 12 months
-        $listingsOverTime = collect(range(11, 0))->map(function ($m) {
-            $dt = now()->subMonths($m);
-            return [
-                'label' => $dt->format('M y'),
-                'count' => Property::whereYear('created_at', $dt->year)->whereMonth('created_at', $dt->month)->count(),
-            ];
-        });
+        // Listings added per month — last 12 months (single GROUP BY query)
+        $rawListings = Property::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, COUNT(*) as count")
+            ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
+            ->groupBy('ym')->pluck('count', 'ym');
+        $listingsOverTime = collect(range(11, 0))->map(fn($m) => [
+            'label' => now()->subMonths($m)->format('M y'),
+            'count' => (int) ($rawListings[now()->subMonths($m)->format('Y-m')] ?? 0),
+        ]);
 
-        // Monthly revenue from sold properties — last 12 months
-        $revenueTrend = collect(range(11, 0))->map(function ($m) {
-            $dt = now()->subMonths($m);
-            return [
-                'label'   => $dt->format('M y'),
-                'revenue' => (int) Property::where('listing_status', 'sold')
-                    ->whereYear('updated_at', $dt->year)->whereMonth('updated_at', $dt->month)
-                    ->sum('price'),
-            ];
-        });
+        // Monthly revenue from sold properties — last 12 months (single GROUP BY query)
+        $rawRevenue = Property::where('listing_status', 'sold')
+            ->where('updated_at', '>=', now()->subMonths(11)->startOfMonth())
+            ->selectRaw("DATE_FORMAT(updated_at, '%Y-%m') as ym, SUM(price) as revenue")
+            ->groupBy('ym')->pluck('revenue', 'ym');
+        $revenueTrend = collect(range(11, 0))->map(fn($m) => [
+            'label'   => now()->subMonths($m)->format('M y'),
+            'revenue' => (int) ($rawRevenue[now()->subMonths($m)->format('Y-m')] ?? 0),
+        ]);
 
         // Appointment status breakdown
         $apptByStatus = Appointment::selectRaw('status, count(*) as count')
@@ -143,13 +146,52 @@ class DashboardController extends Controller
                 return $p;
             });
 
+        // ── Chart & table ordering ─────────────────────────────────────────
+        $defaultChartOrder = ['type_chart', 'status_chart', 'views_chart', 'views_30days', 'messages_7days',
+                              'price_distribution', 'listings_over_time', 'revenue_trend', 'appt_status', 'message_sources'];
+        $chartOrder = $dashConfig['_chart_order'] ?? $defaultChartOrder;
+        $chartOrder = array_values(array_filter($chartOrder, fn($k) => $show($k)));
+
+        $defaultTableOrder = ['top_properties', 'recent_messages', 'starred_messages',
+                              'upcoming_appts', 'recent_properties', 'needs_attention'];
+        $tableOrder = $dashConfig['_table_order'] ?? $defaultTableOrder;
+        $tableOrder = array_values(array_filter($tableOrder, fn($k) => $show($k)));
+
+        // ── Chart label/data arrays for Chart.js ───────────────────────────
+        $typeLabels   = $propertiesByType->keys()->map(fn($k) => ucfirst(str_replace('-', ' ', $k)))->values()->all();
+        $typeData     = $propertiesByType->values()->all();
+        $statusLabels = $propertiesByStatus->keys()->map(fn($k) => ucfirst($k))->values()->all();
+        $statusData   = $propertiesByStatus->values()->all();
+        $viewLabels   = $viewsByProperty->map(fn($p) => \Illuminate\Support\Str::limit($p->title ?: $p->address_street, 20))->all();
+        $viewData     = $viewsByProperty->pluck('view_count')->all();
+        $v30Labels    = $views30days->pluck('label')->all();
+        $v30Data      = $views30days->pluck('count')->all();
+        $msg7Labels   = $messages7days->pluck('label')->all();
+        $msg7Data     = $messages7days->pluck('count')->all();
+        $priceLabels  = $priceDistribution->keys()->all();
+        $priceData    = $priceDistribution->values()->all();
+        $ltLabels     = $listingsOverTime->pluck('label')->all();
+        $ltData       = $listingsOverTime->pluck('count')->all();
+        $revLabels    = $revenueTrend->pluck('label')->all();
+        $revData      = $revenueTrend->pluck('revenue')->all();
+        $apptLabels   = $apptByStatus->keys()->map(fn($k) => ucfirst($k))->values()->all();
+        $apptData     = $apptByStatus->values()->all();
+        $srcLabels    = $messageSources->keys()->map(fn($k) => ucfirst($k))->values()->all();
+        $srcData      = $messageSources->values()->all();
+
         return view('tenant.admin.dashboard', compact(
             'tenant', 'settings', 'stats', 'show', 'dashConfig',
             'viewsByProperty', 'propertiesByType', 'propertiesByStatus',
             'views30days', 'messages7days', 'priceDistribution',
             'listingsOverTime', 'revenueTrend', 'apptByStatus', 'messageSources',
             'recentMessages', 'starredMessages', 'upcomingAppts',
-            'topProperties', 'recentProperties', 'needsAttention'
+            'topProperties', 'recentProperties', 'needsAttention',
+            'chartOrder', 'tableOrder',
+            'typeLabels', 'typeData', 'statusLabels', 'statusData',
+            'viewLabels', 'viewData', 'v30Labels', 'v30Data',
+            'msg7Labels', 'msg7Data', 'priceLabels', 'priceData',
+            'ltLabels', 'ltData', 'revLabels', 'revData',
+            'apptLabels', 'apptData', 'srcLabels', 'srcData'
         ));
     }
 }

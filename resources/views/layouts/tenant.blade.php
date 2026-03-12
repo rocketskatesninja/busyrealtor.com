@@ -1131,12 +1131,7 @@ function themeToggle() {
 }
 updateThemeIcons();
 
-document.addEventListener('alpine:init', () => {
-    Alpine.store('theme', {
-        dark: document.documentElement.classList.contains('dark'),
-        toggle() { themeToggle(); this.dark = document.documentElement.classList.contains('dark'); }
-    });
-});
+
 
 @yield('scripts')
 </script>

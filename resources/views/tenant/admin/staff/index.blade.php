@@ -5,9 +5,8 @@
 @php $account = $tenant->slug; @endphp
 <div class="max-w-7xl mx-auto px-4">
 
-    <div x-data="{ showForm: false }">
     <div class="flex justify-end mb-6">
-        <button @click="showForm = !showForm"
+        <button onclick="toggleAddStaffForm()"
                 class="btn-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition flex items-center gap-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Add Member
@@ -16,7 +15,7 @@
 
     {{-- Add Form --}}
     <div>
-        <div x-show="showForm" x-cloak class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
+        <div id="add-staff-panel" style="display:none" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
             <h3 class="font-semibold text-gray-800 mb-4">Add Staff Member</h3>
             <form method="POST" enctype="multipart/form-data" action="{{ route('tenant.admin.staff.store', $account) }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @csrf
@@ -55,12 +54,11 @@
                     </label>
                 </div>
                 <div class="md:col-span-2 flex justify-end gap-3">
-                    <button type="button" @click="showForm = false" class="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
+                    <button type="button" onclick="hideAddStaffPanel()" class="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
                     <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Add Member</button>
                 </div>
             </form>
         </div>
-    </div>
     </div>
 
     {{-- Staff List --}}
@@ -231,6 +229,13 @@
 @endsection
 
 @section('scripts')
+function toggleAddStaffForm() {
+    var p = document.getElementById('add-staff-panel');
+    p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+function hideAddStaffPanel() {
+    document.getElementById('add-staff-panel').style.display = 'none';
+}
 // Drag-drop reordering
 const list = document.getElementById('staff-list');
 if (list) {
