@@ -71,7 +71,7 @@ class SettingsController extends Controller
             'header_display_mode'       => $request->header_display_mode,
             'primary_color'             => $request->primary_color,
             'dark_mode_enabled'         => $request->boolean('dark_mode_enabled'),
-            'title_font'                => $request->title_font,
+            'title_font'                => $request->title_font ?? $settings->title_font ?? 'Poppins',
             'site_title_font_size'      => $request->site_title_font_size,
             'site_title_font_weight'    => $request->site_title_font_weight,
             'site_title_letter_spacing' => $request->site_title_letter_spacing,

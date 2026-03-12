@@ -214,7 +214,7 @@ $tabs = array_merge(...array_values($groups));
                             <label class="block text-sm font-medium text-gray-700 mb-1">Title Font</label>
                             @php $currentFont = $settings->title_font ?? 'Poppins'; @endphp
                             <div x-data="{ open: false, selected: '{{ $currentFont }}' }" x-init="$watch('selected', () => typeof updateTitlePreview === 'function' && updateTitlePreview())" class="relative">
-                                <input type="hidden" name="title_font" :value="selected">
+                                <input type="hidden" name="title_font" value="{{ $currentFont }}" :value="selected">
                                 <button type="button" @click="open = !open"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-left flex items-center justify-between bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/60">
                                     <span :style="`font-family: '${selected}', sans-serif; font-weight: 700; font-size: 1rem;`" x-text="selected"></span>
