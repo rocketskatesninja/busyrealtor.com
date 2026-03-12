@@ -374,7 +374,7 @@ $tabs = array_merge(...array_values($groups));
                                     @foreach($groupIcons as $pkey => $psvg)
                                     @php $renderedSvg = str_replace('PCOLOR', $primaryColor, $psvg); @endphp
                                     <label class="cursor-pointer" title="{{ ucfirst(str_replace(['_outline','_duotone'], '', $pkey)) }}"
-                                           @click="selectedPreset = '{{ $pkey }}'">
+                                           @click="selectedPreset = '{{ $pkey }}'; document.getElementById('settings-save-btn').disabled = false">
                                         <input type="radio" name="favicon_preset" value="{{ $pkey }}"
                                                x-model="selectedPreset"
                                                class="sr-only">
@@ -437,7 +437,7 @@ $tabs = array_merge(...array_values($groups));
                         };
                     }
                     </script>
-                    <div x-data="hpSectionData()">
+                    <div x-data="hpSectionData()" x-init="$nextTick(() => $el._hpReady = true)" x-effect="JSON.stringify([features,services,testimonials,stats,faq]); if($el._hpReady) document.getElementById('settings-save-btn').disabled = false">
                         {{-- Hidden inputs serialized to JSON on submit --}}
                         <input type="hidden" name="homepage_sections" id="hp_sections_input">
                         <input type="hidden" name="features_items"     x-ref="featuresInput"     value='{!! json_encode($settings->features_items ?: []) !!}' :value="JSON.stringify(features)">
@@ -642,7 +642,7 @@ $tabs = array_merge(...array_values($groups));
                                         </div>
                                         <div x-data="{ showOpacity: {{ ($hfx['dark_overlay'] ?? true) ? 'true' : 'false' }} }">
                                             <label class="flex items-center gap-2 text-xs text-gray-500 mb-1 cursor-pointer">
-                                                <input type="checkbox" name="hero_fx_dark_overlay" value="1" class="rounded sr-only"
+                                                <input type="checkbox" value="1" class="rounded sr-only"
                                                     x-model="showOpacity" {{ ($hfx['dark_overlay'] ?? true) ? 'checked' : '' }}>
                                             </label>
                                             <div x-show="showOpacity">
@@ -1638,12 +1638,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get the Alpine root and track active tab reactively
     var alpineRoot = document.querySelector('[x-data]');
     function getActiveTab() {
-        return alpineRoot && alpineRoot._x_dataStack ? alpineRoot._x_dataStack[0].activeTab : '{{ $tab }}';
+        try { return window.Alpine ? Alpine.$data(alpineRoot).activeTab : '{{ $tab }}'; }
+        catch(e) { return '{{ $tab }}'; }
     }
     function setActiveTab(tab) {
-        if (alpineRoot && alpineRoot._x_dataStack) {
-            alpineRoot._x_dataStack[0].activeTab = tab;
-        } else {
+        try { if (window.Alpine) Alpine.$data(alpineRoot).activeTab = tab;
+        } catch(e) {
             var url = new URL(window.location.href);
             url.searchParams.set('tab', tab);
             window.location.href = url.toString();
@@ -1699,6 +1699,11 @@ document.addEventListener('DOMContentLoaded', function() {
     var form = document.getElementById('settings-form');
     if (!form) return;
     form.addEventListener('submit', function() {
+        // Sync active tab to hidden input so we return to the same tab after save
+        var tabInput = form.querySelector('input[name="tab"]');
+        if (tabInput && window.Alpine) {
+            try { tabInput.value = Alpine.$data(form.closest('[x-data]')).activeTab; } catch(e) {}
+        }
         var hpDiv = form.querySelector('[x-data="hpSectionData()"]');
         if (hpDiv && window.Alpine) {
             try {
@@ -1721,55 +1726,26 @@ document.addEventListener('DOMContentLoaded', function() {
     }, true);
 });
 
-// ── Dirty tracking: enable Save only when something has changed ───────────────
+// ── Dirty tracking: enable Save when anything changes ─────────────────────────
 (function() {
-    function formSnapshot(form) {
-        const data = new FormData(form);
-        const entries = [];
-        for (const [k, v] of data.entries()) {
-            if (k === 'tab') continue;
-            entries.push(k + '=' + (v instanceof File ? v.name + ':' + v.size : v));
-        }
-        return entries.sort().join('&');
-    }
-
     document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('settings-form');
-        const btn  = document.getElementById('settings-save-btn');
+        var form = document.getElementById('settings-form');
+        var btn  = document.getElementById('settings-save-btn');
         if (!form || !btn) return;
 
-        // Wait a tick so Alpine/sortable hidden inputs are populated
-        setTimeout(function() {
-            let baseline = formSnapshot(form);
+        function markDirty() { btn.disabled = false; }
 
-            function checkDirty() {
-                const current = formSnapshot(form);
-                btn.disabled = (current === baseline);
-            }
+        // Capture phase ensures we see events even if something stops propagation
+        form.addEventListener('input',  markDirty, true);
+        form.addEventListener('change', markDirty, true);
 
-            form.addEventListener('input',  checkDirty);
-            form.addEventListener('change', checkDirty);
+        // Reset after save
+        form.addEventListener('submit', function() { btn.disabled = true; });
 
-            // Also watch for mutations on hidden inputs (homepage sections, etc.)
-            const observer = new MutationObserver(checkDirty);
-            form.querySelectorAll('input[type="hidden"]').forEach(function(el) {
-                observer.observe(el, { attributes: true, attributeFilter: ['value'] });
-            });
-
-            // Re-enable after a successful save so baseline resets
-            form.addEventListener('submit', function() {
-                btn.disabled = true;
-                baseline = formSnapshot(form);
-            });
-
-            // Warn before navigating away with unsaved changes
-            window.addEventListener('beforeunload', function(e) {
-                if (!btn.disabled) {
-                    e.preventDefault();
-                    e.returnValue = '';
-                }
-            });
-        }, 200);
+        // Warn before navigating away with unsaved changes
+        window.addEventListener('beforeunload', function(e) {
+            if (!btn.disabled) { e.preventDefault(); e.returnValue = ''; }
+        });
     });
 })();
 

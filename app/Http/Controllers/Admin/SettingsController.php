@@ -227,6 +227,6 @@ class SettingsController extends Controller
             $twData
         );
 
-        return redirect()->back()->with('success', 'Settings saved.');
+        return redirect()->route('tenant.admin.settings', ['account' => $account, 'tab' => $tab])->with('success', 'Settings saved.');
     }
 }
