@@ -43,6 +43,10 @@ class GoogleAuthController extends Controller
         // Existing user — log them in
         $user = User::where('email', $googleUser->getEmail())->first();
         if ($user && $user->tenant) {
+            if (!$user->email_verified_at) {
+                $user->email_verified_at = now();
+                $user->save();
+            }
             Auth::login($user, true);
             return redirect()->route('tenant.admin.dashboard', ['account' => $user->tenant->slug]);
         }
@@ -102,9 +106,10 @@ class GoogleAuthController extends Controller
         LegalPage::create(['tenant_id' => $tenant->id, 'page_type' => 'terms',   'content' => 'Terms of Service content here.']);
 
         $user = User::create([
-            'name'      => $name,
-            'email'     => $email,
-            'tenant_id' => $tenant->id,
+            'name'              => $name,
+            'email'             => $email,
+            'tenant_id'         => $tenant->id,
+            'email_verified_at' => now(),
         ]);
 
         session()->forget(['oauth_name', 'oauth_email']);

@@ -350,6 +350,107 @@
             </div>
         </div>
 
+        {{-- SMTP / Email --}}
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-700">
+                <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    SMTP / Email
+                </h2>
+                <p class="text-gray-400 text-sm mt-1">Configure outbound email for verification emails, password resets, and notifications.</p>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+
+                <div class="grid grid-cols-4 gap-4">
+                    <div class="col-span-2">
+                        <label class="block text-sm font-medium text-gray-300 mb-1">SMTP Host</label>
+                        <input type="text" name="smtp_host"
+                               value="{{ old('smtp_host', $settings->smtp_host) }}"
+                               placeholder="smtp.gmail.com"
+                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Port</label>
+                        <input type="number" name="smtp_port" min="1" max="65535"
+                               value="{{ old('smtp_port', $settings->smtp_port) }}"
+                               placeholder="587"
+                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Encryption</label>
+                        <select name="smtp_encryption"
+                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <option value="" {{ !$settings->smtp_encryption ? 'selected' : '' }}>None</option>
+                            <option value="tls" {{ $settings->smtp_encryption === 'tls' ? 'selected' : '' }}>TLS</option>
+                            <option value="ssl" {{ $settings->smtp_encryption === 'ssl' ? 'selected' : '' }}>SSL</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+                        <input type="text" name="smtp_username"
+                               value="{{ $settings->smtp_username ? '••••••••' . substr($settings->smtp_username, -8) : '' }}"
+                               placeholder="user@example.com"
+                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
+                        <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing. Paste full value to update.</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                        <input type="password" name="smtp_password"
+                               value="{{ $settings->smtp_password ? '••••••••••••' : '' }}"
+                               placeholder="••••••••"
+                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
+                        <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing. Paste full value to update.</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-700 pt-4">
+                    <p class="text-sm font-medium text-gray-300 mb-3">From Address</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Email Address</label>
+                            <input type="email" name="mail_from_address"
+                                   value="{{ old('mail_from_address', $settings->mail_from_address) }}"
+                                   placeholder="noreply@busyrealtor.com"
+                                   class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-gray-400 mb-1">Sender Name</label>
+                            <input type="text" name="mail_from_name"
+                                   value="{{ old('mail_from_name', $settings->mail_from_name) }}"
+                                   placeholder="BusyRealtor"
+                                   class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
+                        </div>
+                    </div>
+                </div>
+
+                @if($settings->hasMail())
+                <div class="flex items-center gap-2 text-green-400 text-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    SMTP is configured. Outbound email is active.
+                </div>
+                @else
+                <div class="flex items-center gap-2 text-yellow-400 text-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    SMTP is not configured. Email verification, password resets, and notifications will not work.
+                </div>
+                @endif
+
+                <div class="bg-gray-900 rounded-lg p-3 text-xs text-gray-400 space-y-1">
+                    <p class="font-medium text-gray-300">Common SMTP providers:</p>
+                    <p><span class="text-green-400">Gmail:</span> smtp.gmail.com, port 587, TLS, use an App Password</p>
+                    <p><span class="text-blue-400">Mailgun:</span> smtp.mailgun.org, port 587, TLS</p>
+                    <p><span class="text-purple-400">SendGrid:</span> smtp.sendgrid.net, port 587, TLS, username: apikey</p>
+                    <p><span class="text-orange-400">Amazon SES:</span> email-smtp.[region].amazonaws.com, port 587, TLS</p>
+                </div>
+
+            </div>
+        </div>
+
         {{-- Marketing --}}
         <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6">
             <div class="px-6 py-4 border-b border-gray-700">

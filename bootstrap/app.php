@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'impersonate'          => HandleImpersonation::class,
             'registrations.enabled'=> \App\Http\Middleware\CheckRegistrationsEnabled::class,
             'site.lock'            => \App\Http\Middleware\CheckSiteLocked::class,
+            'verified'             => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

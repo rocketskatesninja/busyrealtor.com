@@ -586,7 +586,7 @@ $" . number_format($property->price) : '') . "
                         <input type="tel" x-model="form.visitor_phone" placeholder="(555) 123-4567"
                                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:border-transparent transition"
                                style="--tw-ring-color: var(--primary)">
-                        <p class="text-xs text-gray-400 mt-1">By providing your phone number, you consent to receive calls or texts regarding your inquiry. <a href="{{ route('tenant.privacy', $account) }}" class="underline hover:text-gray-800" target="_blank">Privacy Policy</a>. <input type="checkbox" id="appt-consent" x-model="consent" class="w-3.5 h-3.5 rounded border-gray-400" style="vertical-align:-3px;accent-color: var(--primary)"> <label for="appt-consent" class="cursor-pointer underline">I agree</label> <span class="text-red-500">*</span></p>
+
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Request Type</label>
@@ -632,15 +632,18 @@ $" . number_format($property->price) : '') . "
                               style="--tw-ring-color: var(--primary)"></textarea>
                 </div>
 
-                <button type="submit"
-                        :disabled="submitting || !consent"
-                        class="w-full sm:w-auto btn-primary px-8 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                    <svg x-show="submitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                    </svg>
-                    <span x-text="submitting ? 'Sending...' : 'Request Appointment'"></span>
-                </button>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <p class="text-xs text-gray-400">By providing your phone number, you consent to receive calls or texts regarding your inquiry. <a href="{{ route('tenant.privacy', $account) }}" class="underline hover:text-gray-800" target="_blank">Privacy Policy</a>. <input type="checkbox" id="appt-consent" x-model="consent" class="w-3.5 h-3.5 rounded border-gray-400" style="vertical-align:-3px;accent-color: var(--primary)"> <label for="appt-consent" class="cursor-pointer underline">I agree</label> <span class="text-red-500">*</span></p>
+                    <button type="submit"
+                            :disabled="submitting || !consent"
+                            class="w-full sm:w-auto btn-primary px-8 py-3 rounded-xl font-semibold text-sm transition hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 shrink-0">
+                        <svg x-show="submitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                        </svg>
+                        <span x-text="submitting ? 'Sending...' : 'Request Appointment'"></span>
+                    </button>
+                </div>
             </form>
         </div>
 

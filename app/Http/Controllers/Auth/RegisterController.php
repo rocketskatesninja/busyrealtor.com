@@ -9,8 +9,6 @@ use App\Models\SiteSettings;
 use App\Models\LegalPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class RegisterController extends Controller
 {
@@ -56,8 +54,10 @@ class RegisterController extends Controller
             'tenant_id' => $tenant->id,
         ]);
 
+        $user->sendEmailVerificationNotification();
+
         Auth::login($user);
 
-        return redirect()->route('tenant.admin.dashboard', ['account' => $tenant->slug]);
+        return redirect()->route('verification.notice');
     }
 }

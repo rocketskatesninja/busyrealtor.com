@@ -400,16 +400,16 @@ $tabs = array_merge(...array_values($groups));
                 @php
                 $sectionDefs = [
                     ['key'=>'hero',         'label'=>'Hero',         'emoji'=>'🏠', 'desc'=>'Main banner — headline, subtitle and call-to-action buttons', 'locked'=>true],
-                    ['key'=>'features',     'label'=>'Features',     'emoji'=>'✨', 'desc'=>'Highlight your key selling points and why clients should choose you'],
-                    ['key'=>'listings',     'label'=>'Listings',     'emoji'=>'🏡', 'desc'=>'Display featured properties from your portfolio'],
+                    ['key'=>'features',     'label'=>'Why Choose Us', 'emoji'=>'✨', 'desc'=>'Highlight your key selling points and why clients should choose you'],
+                    ['key'=>'listings',     'label'=>'Featured Listings', 'emoji'=>'🏡', 'desc'=>'Display featured properties from your portfolio'],
                     ['key'=>'stats',        'label'=>'Statistics',   'emoji'=>'📊', 'desc'=>'Show impressive numbers — properties sold, years of experience, etc.'],
-                    ['key'=>'services',     'label'=>'Services',     'emoji'=>'🛠️', 'desc'=>'List all the real estate services you offer'],
-                    ['key'=>'team',         'label'=>'Team',         'emoji'=>'👥', 'desc'=>'Showcase your staff (manage them in the Staff section)'],
+                    ['key'=>'services',     'label'=>'Our Services', 'emoji'=>'🛠️', 'desc'=>'List all the real estate services you offer'],
+                    ['key'=>'team',         'label'=>'Meet Our Team','emoji'=>'👥', 'desc'=>'Showcase your staff (manage them in the Staff section)'],
                     ['key'=>'agent',        'label'=>'Agent Spotlight','emoji'=>'🧑‍💼','desc'=>'Highlight the owner/broker with photo and bio (set in Profile settings)'],
-                    ['key'=>'testimonials', 'label'=>'Testimonials', 'emoji'=>'💬', 'desc'=>'Build credibility with reviews from satisfied clients'],
-                    ['key'=>'faq',          'label'=>'FAQ',          'emoji'=>'❓', 'desc'=>'Answer common questions visitors have about your services'],
-                    ['key'=>'contact',      'label'=>'Contact',      'emoji'=>'📞', 'desc'=>'Contact form and office information'],
-                    ['key'=>'map',          'label'=>'Map',          'emoji'=>'🗺️', 'desc'=>'Embedded location map for your office or service area'],
+                    ['key'=>'testimonials', 'label'=>'What Our Clients Say', 'emoji'=>'💬', 'desc'=>'Build credibility with reviews from satisfied clients'],
+                    ['key'=>'faq',          'label'=>'Frequently Asked Questions', 'emoji'=>'❓', 'desc'=>'Answer common questions visitors have about your services'],
+                    ['key'=>'contact',      'label'=>'Get in Touch', 'emoji'=>'📞', 'desc'=>'Contact form and office information'],
+                    ['key'=>'map',          'label'=>'Our Location', 'emoji'=>'🗺️', 'desc'=>'Embedded location map for your office or service area'],
                 ];
                 $savedSections = collect($settings->homepage_sections ?? []);
                 $orderedSections = collect($sectionDefs)->map(function($def) use ($savedSections) {

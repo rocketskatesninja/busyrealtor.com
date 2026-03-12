@@ -32,6 +32,7 @@ use App\Http\Controllers\Api\BackupController;
 use App\Http\Controllers\Api\RestoreController;
 use App\Http\Controllers\Api\TestEmailController;
 use App\Http\Controllers\MarketingController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 
 // Stripe webhook — must be outside auth/tenant middleware (no CSRF)
@@ -54,6 +55,24 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
 });
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
+
+// Email verification
+Route::middleware('auth')->group(function () {
+    Route::get('/email/verify', function () {
+        return view('auth.verify-email');
+    })->name('verification.notice');
+
+    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+        $request->fulfill();
+        $user = $request->user();
+        return redirect()->route('tenant.admin.dashboard', ['account' => $user->tenant->slug]);
+    })->middleware('signed')->name('verification.verify');
+
+    Route::post('/email/resend', function (\Illuminate\Http\Request $request) {
+        $request->user()->sendEmailVerificationNotification();
+        return back()->with('status', 'verification-link-sent');
+    })->middleware('throttle:6,1')->name('verification.send');
+});
 Route::middleware(['registrations.enabled'])->group(function () {
     Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:3,1')->name('register.submit');
@@ -116,7 +135,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
     Route::post('/appointments', [AppointmentController::class, 'storePublic'])->middleware('throttle:10,1')->name('appointments.store');
 
     // Admin routes
-    Route::prefix('admin')->middleware(['auth', 'tenant.active', 'tenant.admin'])->name('admin.')->group(function () {
+    Route::prefix('admin')->middleware(['auth', 'verified', 'tenant.active', 'tenant.admin'])->name('admin.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('/dashboard-order', [DashboardOrderController::class, 'save'])->name('dashboard.order');
 

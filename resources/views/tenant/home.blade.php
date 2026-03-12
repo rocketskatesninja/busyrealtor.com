@@ -390,7 +390,7 @@ $iconPaths = [
     <div class="max-w-7xl mx-auto px-4">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-white text-center">
             @foreach($statsItems as $stat)
-            <div x-data="{ count: 0, target: '{{ $stat['value'] ?? '0' }}' }" x-intersect="count = target">
+            <div x-data="{ count: 0, target: '{{ $stat['value'] ?? '0' }}' }" x-intersect="count = target" class="reveal" style="transition-delay: {{ $loop->index * 0.1 }}s">
                 <div class="text-4xl md:text-5xl font-bold mb-2 count-up" x-text="target">{{ $stat['value'] }}</div>
                 <div class="text-white/80 font-medium">{{ $stat['label'] ?? '' }}</div>
             </div>
@@ -409,7 +409,7 @@ $iconPaths = [
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @foreach($servicesItems as $item)
-            <div class="bg-white rounded-2xl p-8 shadow border border-gray-200 hover:shadow-lg transition-shadow text-center group reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
+            <div class="bg-white rounded-2xl p-8 shadow border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center group reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-all group-hover:scale-110" style="background-color: rgba(var(--primary-rgb), 0.1)">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $iconPaths[$item['icon'] ?? 'star'] ?? $iconPaths['star'] }}"/>
@@ -434,10 +434,10 @@ $iconPaths = [
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($staff as $member)
-            <div class="bg-white rounded-2xl p-6 text-center shadow border border-gray-200 hover:shadow-lg transition-shadow reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
+            <div class="group bg-white rounded-2xl p-6 text-center shadow border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gray-100">
                     @if($member->photo_url)
-                        <img src="{{ asset('storage/' . $member->photo_url) }}" alt="{{ $member->name }}" class="w-full h-full object-cover">
+                        <img src="{{ asset('storage/' . $member->photo_url) }}" alt="{{ $member->name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     @else
                         <div class="w-full h-full flex items-center justify-center" style="background-color: rgba(var(--primary-rgb), 0.1)">
                             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -466,13 +466,12 @@ $iconPaths = [
 
         {{-- Section header --}}
         <div class="text-center mb-14">
-            <p class="text-sm font-semibold uppercase tracking-widest mb-2" style="color:var(--primary)">Meet Your Agent</p>
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900">Personal Service You Can Count On</h2>
-            <p class="mt-3 text-gray-500 max-w-xl mx-auto">Real estate is personal. I'm here to guide you every step of the way.</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 reveal">Personal Service You Can Count On</h2>
+            <p class="mt-3 text-gray-500 max-w-xl mx-auto reveal">Real estate is personal. I'm here to guide you every step of the way.</p>
         </div>
 
         {{-- Card --}}
-        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
+        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden reveal hover:shadow-2xl transition-shadow duration-500">
             <div class="flex flex-col md:flex-row">
 
                 {{-- Photo column --}}
@@ -480,7 +479,7 @@ $iconPaths = [
                     @if($settings->owner_photo)
                     <img src="{{ asset('storage/' . $settings->owner_photo) }}"
                          alt="{{ $settings->owner_name }}"
-                         class="w-44 h-44 rounded-full object-cover shadow-xl ring-4 ring-white">
+                         class="w-44 h-44 rounded-full object-cover shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105">
                     @else
                     <div class="w-44 h-44 rounded-full flex items-center justify-center shadow-xl ring-4 ring-white bg-gray-100">
                         <svg class="w-20 h-20 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
@@ -510,15 +509,15 @@ $iconPaths = [
 
                     {{-- Credential badges --}}
                     <div class="flex flex-wrap gap-3 mt-6">
-                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700 reveal hover:border-[var(--primary)] hover:shadow-sm transition-all duration-300" style="transition-delay: 0.1s">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                             Licensed &amp; Certified
                         </span>
-                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700 reveal hover:border-[var(--primary)] hover:shadow-sm transition-all duration-300" style="transition-delay: 0.2s">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             Local Market Expert
                         </span>
-                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700">
+                        <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700 reveal hover:border-[var(--primary)] hover:shadow-sm transition-all duration-300" style="transition-delay: 0.3s">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Free Consultation
                         </span>
@@ -567,13 +566,13 @@ $iconPaths = [
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
             @foreach($testimonialsItems as $t)
-            <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200 reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
+            <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200 hover:shadow-lg hover:-translate-y-1 hover:border-[var(--primary)]/30 transition-all duration-300 reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="flex mb-4">
                     @for($s = 0; $s < ($t['rating'] ?? 5); $s++)
                     <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                     @endfor
                 </div>
-                <p class="text-gray-600 leading-relaxed mb-6 italic">"{{ $t['text'] ?? '' }}"</p>
+                <p class="text-gray-600 leading-relaxed mb-6 italic relative pl-6"><span class="absolute left-0 top-0 text-3xl leading-none font-serif" style="color: var(--primary); opacity: 0.3">&ldquo;</span>{{ $t['text'] ?? '' }}&rdquo;</p>
                 <p class="font-semibold text-gray-800">{{ $t['name'] ?? '' }}</p>
             </div>
             @endforeach
@@ -586,12 +585,12 @@ $iconPaths = [
 <section class="py-20 bg-gray-50">
     <div class="max-w-3xl mx-auto px-4">
         <div class="text-center mb-14">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Frequently Asked Questions</h2>
-            <p class="text-gray-500">Got questions? We've got answers.</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 reveal">Frequently Asked Questions</h2>
+            <p class="text-gray-500 reveal">Got questions? We've got answers.</p>
         </div>
         <div class="space-y-4" x-data="{ open: null }">
             @foreach($faqItems as $i => $faq)
-            <div class="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden">
+            <div class="bg-white rounded-2xl shadow border border-gray-200 overflow-hidden reveal hover:shadow-lg transition-shadow duration-300" style="transition-delay: {{ $i * 0.08 }}s">
                 <button @click="open === {{ $i }} ? open = null : open = {{ $i }}"
                         class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-gray-800 hover:bg-gray-50 transition-colors">
                     {{ $faq['question'] ?? '' }}
@@ -608,16 +607,25 @@ $iconPaths = [
 
 {{-- CONTACT --}}
 @elseif($key === 'contact')
+<style>
+#contact input:focus, #contact textarea:focus {
+    --tw-ring-color: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.3);
+    outline: none;
+}
+#contact input[type="checkbox"] { accent-color: var(--primary); }
+</style>
 <section id="contact" class="py-20 bg-white">
     <div class="max-w-6xl mx-auto px-4">
         <div class="text-center mb-12">
-            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3">Get in Touch</h2>
-            <p class="text-gray-500 max-w-xl mx-auto">Ready to find your dream property? We'd love to hear from you.</p>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-3 reveal">Get in Touch</h2>
+            <p class="text-gray-500 max-w-xl mx-auto reveal">Ready to find your dream property? We'd love to hear from you.</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-stretch">
 
             {{-- Left: contact info card --}}
-            <div class="md:col-span-2 rounded-2xl p-8 flex flex-col gap-6" style="background:rgba(var(--primary-rgb),.05);border:1px solid rgba(var(--primary-rgb),.15)">
+            <div class="md:col-span-2 rounded-2xl p-8 flex flex-col gap-6 reveal" style="background:rgba(var(--primary-rgb),.05);border:1px solid rgba(var(--primary-rgb),.15)">
                 <div>
                     <h3 class="text-lg font-bold text-gray-900 mb-1">Contact Us</h3>
                     <p class="text-sm text-gray-500">Reach out and we'll get back to you as soon as possible.</p>
@@ -670,7 +678,7 @@ $iconPaths = [
             </div>
 
             {{-- Right: form card --}}
-            <div class="md:col-span-3" x-data="{ sent: false, sending: false, consent: false, name: '', email: '', phone: '', message: '' }">
+            <div class="md:col-span-3 reveal" style="transition-delay: 0.15s" x-data="{ sent: false, sending: false, consent: false, name: '', email: '', phone: '', message: '' }">
                 <div x-show="!sent" class="bg-gray-50 rounded-2xl p-8 border border-gray-100 h-full">
                     <h3 class="text-lg font-bold text-gray-900 mb-6">Send a Message</h3>
                     <form x-on:submit.prevent="
@@ -689,17 +697,17 @@ $iconPaths = [
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                                <input x-model="phone" type="tel" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition bg-white">
+                                <input x-model="phone" type="tel" class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition bg-white">
                                 <p class="text-xs text-gray-400 mt-1">By providing your phone number, you consent to receive calls or texts regarding your inquiry. <a href="{{ route('tenant.privacy', $account) }}" class="underline hover:text-gray-800" target="_blank">Privacy Policy</a>. <input type="checkbox" id="home-consent" x-model="consent" class="w-3.5 h-3.5 rounded border-gray-400" style="vertical-align:-3px;accent-color:var(--primary)"> <label for="home-consent" class="cursor-pointer underline">I agree</label> <span class="text-red-500">*</span></p>
                             </div>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
-                            <input x-model="email" type="email" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition bg-white">
+                            <input x-model="email" type="email" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition bg-white">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Message *</label>
-                            <textarea x-model="message" rows="5" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 transition resize-none bg-white"></textarea>
+                            <textarea x-model="message" rows="5" required class="w-full border border-gray-200 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:border-transparent transition resize-none bg-white"></textarea>
                         </div>
 
                         <button type="submit" :disabled="sending || !consent" class="btn-primary w-full py-3 rounded-xl font-semibold transition hover:opacity-90 disabled:opacity-70">
@@ -732,7 +740,7 @@ $iconPaths = [
 <section class="py-20 bg-white">
     <div class="max-w-7xl mx-auto px-4">
         <div class="text-center mb-10">
-            <h2 class="text-3xl font-bold text-gray-900 mb-3">Our Location</h2>
+            <h2 class="text-3xl font-bold text-gray-900 mb-3 reveal">Our Location</h2>
             @if($mapAddress)
             <p class="text-gray-500">{{ $mapAddress }}</p>
             @endif
@@ -742,7 +750,7 @@ $iconPaths = [
         <div class="{{ ($hasMap && $hasPhoto) ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : '' }}">
 
             @if($hasMap)
-            <div class="rounded-2xl overflow-hidden shadow border border-gray-200" style="height: 420px">
+            <div class="rounded-2xl overflow-hidden shadow border border-gray-200 reveal hover:shadow-xl transition-shadow duration-300" style="height: 420px">
                 <iframe width="100%" height="100%" frameborder="0" style="border:0"
                     src="https://maps.google.com/maps?q={{ urlencode($mapAddress) }}&output=embed&iwloc=&z=14"
                     allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
@@ -751,10 +759,10 @@ $iconPaths = [
             @endif
 
             @if($hasPhoto)
-            <div class="rounded-2xl overflow-hidden shadow border border-gray-200" style="height: 420px">
+            <div class="rounded-2xl overflow-hidden shadow border border-gray-200 reveal hover:shadow-xl transition-shadow duration-300" style="height: 420px; transition-delay: 0.15s">
                 <img src="{{ asset('storage/' . $officePhoto) }}"
                      alt="Our office"
-                     class="w-full h-full object-cover">
+                     class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
             </div>
             @endif
 

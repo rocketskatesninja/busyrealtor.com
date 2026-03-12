@@ -18,6 +18,8 @@ class Tenant extends Model
         'phone',
         'license_number',
         'profile_image',
+        'plan',
+        'is_active',
         'trial_ends_at',
         'pm_type',
         'pm_last_four',

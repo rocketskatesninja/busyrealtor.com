@@ -3,10 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable;
 
@@ -15,6 +16,7 @@ class User extends Authenticatable
         'email',
         'password',
         'tenant_id',
+        'email_verified_at',
         'is_super_admin',
         'failed_login_attempts',
         'locked_until',

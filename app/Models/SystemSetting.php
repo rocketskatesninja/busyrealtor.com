@@ -24,9 +24,16 @@ class SystemSetting extends Model
         'facebook_client_secret',
         'twitter_client_id',
         'twitter_client_secret',
+        'smtp_host',
+        'smtp_port',
+        'smtp_username',
+        'smtp_password',
+        'smtp_encryption',
+        'mail_from_address',
+        'mail_from_name',
     ];
 
-    protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret', 'google_client_id', 'google_client_secret', 'facebook_client_id', 'facebook_client_secret', 'twitter_client_id', 'twitter_client_secret'];
+    protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret', 'google_client_id', 'google_client_secret', 'facebook_client_id', 'facebook_client_secret', 'twitter_client_id', 'twitter_client_secret', 'smtp_username', 'smtp_password'];
 
     protected $casts = [
         'registrations_enabled'  => 'boolean',
@@ -40,6 +47,8 @@ class SystemSetting extends Model
         'facebook_client_secret' => 'encrypted',
         'twitter_client_id'      => 'encrypted',
         'twitter_client_secret'  => 'encrypted',
+        'smtp_username'          => 'encrypted',
+        'smtp_password'          => 'encrypted',
     ];
 
     public static function get(): self
@@ -71,5 +80,10 @@ class SystemSetting extends Model
     public function hasTwitter(): bool
     {
         return !empty($this->twitter_client_id) && !empty($this->twitter_client_secret);
+    }
+
+    public function hasMail(): bool
+    {
+        return !empty($this->smtp_host) && !empty($this->smtp_port);
     }
 }

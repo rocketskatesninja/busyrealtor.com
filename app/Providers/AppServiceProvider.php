@@ -28,6 +28,19 @@ class AppServiceProvider extends ServiceProvider
                     'cashier.webhook.secret' => $sys->stripe_webhook_secret,
                 ]);
             }
+
+            if ($sys->hasMail()) {
+                config([
+                    'mail.default'                    => 'smtp',
+                    'mail.mailers.smtp.host'          => $sys->smtp_host,
+                    'mail.mailers.smtp.port'          => (int) $sys->smtp_port,
+                    'mail.mailers.smtp.username'      => $sys->smtp_username,
+                    'mail.mailers.smtp.password'      => $sys->smtp_password,
+                    'mail.mailers.smtp.encryption'    => $sys->smtp_encryption ?: null,
+                    'mail.from.address'               => $sys->mail_from_address ?: config('mail.from.address'),
+                    'mail.from.name'                  => $sys->mail_from_name ?: config('mail.from.name'),
+                ]);
+            }
         } catch (\Exception $e) {
             // DB not ready yet (e.g. during migrations) — skip
         }

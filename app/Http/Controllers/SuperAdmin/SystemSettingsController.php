@@ -35,6 +35,13 @@ class SystemSettingsController extends Controller
             'facebook_client_secret'  => 'nullable|string|max:500',
             'twitter_client_id'       => 'nullable|string|max:500',
             'twitter_client_secret'   => 'nullable|string|max:500',
+            'smtp_host'               => 'nullable|string|max:255',
+            'smtp_port'               => 'nullable|integer|min:1|max:65535',
+            'smtp_encryption'         => 'nullable|in:tls,ssl',
+            'smtp_username'           => 'nullable|string|max:500',
+            'smtp_password'           => 'nullable|string|max:500',
+            'mail_from_address'       => 'nullable|email|max:255',
+            'mail_from_name'          => 'nullable|string|max:255',
         ], [
             'stripe_starter_price_id.regex' => 'Starter price ID must start with price_',
             'stripe_pro_price_id.regex'     => 'Pro price ID must start with price_',
@@ -49,6 +56,13 @@ class SystemSettingsController extends Controller
             'starter_price'           => $request->starter_price ?? 29,
             'pro_price'               => $request->pro_price ?? 59,
         ];
+
+        // Non-secret SMTP fields
+        $data['smtp_host']         = $request->smtp_host;
+        $data['smtp_port']         = $request->smtp_port;
+        $data['smtp_encryption']   = $request->smtp_encryption;
+        $data['mail_from_address'] = $request->mail_from_address;
+        $data['mail_from_name']    = $request->mail_from_name;
 
         // Only update secret fields if a real value was submitted (not the masked placeholder)
         if ($request->filled('stripe_key') && !str_starts_with($request->stripe_key, '••••')) {
@@ -77,6 +91,12 @@ class SystemSettingsController extends Controller
         }
         if ($request->filled('twitter_client_secret') && !str_starts_with($request->twitter_client_secret, '••••')) {
             $data['twitter_client_secret'] = $request->twitter_client_secret;
+        }
+        if ($request->filled('smtp_username') && !str_starts_with($request->smtp_username, '••••')) {
+            $data['smtp_username'] = $request->smtp_username;
+        }
+        if ($request->filled('smtp_password') && !str_starts_with($request->smtp_password, '••••')) {
+            $data['smtp_password'] = $request->smtp_password;
         }
 
         $settings = SystemSetting::get();
