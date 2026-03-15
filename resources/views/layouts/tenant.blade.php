@@ -309,15 +309,7 @@
 </style>
 
 {{-- Flash Notification --}}
-@if(session('success') || session('error'))
-<div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)"
-     class="{{ session('success') ? 'bg-green-100 border-green-500 text-green-700' : 'bg-red-100 border-red-500 text-red-700' }} border-l-4 p-4 relative z-50">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
-        <span>{{ session('success') ?? session('error') }}</span>
-        <button @click="show = false" class="ml-4 opacity-70 hover:opacity-100">&times;</button>
-    </div>
-</div>
-@endif
+@include('partials.flash')
 
 {{-- HERO MODE HEADER --}}
 @unless(View::hasSection('hide_header'))

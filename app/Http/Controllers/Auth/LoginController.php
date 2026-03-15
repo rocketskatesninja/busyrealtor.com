@@ -52,12 +52,12 @@ class LoginController extends Controller
             ]);
 
             if ($user->is_super_admin) {
-                return redirect()->route('super.dashboard');
+                return redirect()->route('super.dashboard')->with('success', 'Welcome back, ' . $user->first_name . '!');
             }
 
             $tenant = Tenant::where('id', $user->tenant_id)->first();
             if ($tenant) {
-                return redirect()->route('tenant.admin.dashboard', ['account' => $tenant->slug]);
+                return redirect()->route('tenant.admin.dashboard', ['account' => $tenant->slug])->with('success', 'Welcome back, ' . $user->first_name . '!');
             }
 
             return redirect('/');
@@ -97,6 +97,6 @@ class LoginController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'You have been logged out.');
     }
 }

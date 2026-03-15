@@ -31,34 +31,7 @@
 </head>
 <body class="bg-white dark:bg-gray-50 min-h-screen flex flex-col">
     {{-- Flash banners --}}
-    @if(session('error'))
-    <div x-data="{ show: true }" x-show="show" class="bg-red-100 border-l-4 border-red-700 text-red-700 p-4 dark:bg-red-600 dark:border-red-800 dark:text-white">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <span>{{ session('error') }}</span>
-            <button @click="show = false" class="ml-4 opacity-70 hover:opacity-100">&times;</button>
-        </div>
-    </div>
-    @endif
-    @if($errors->any())
-    <div x-data="{ show: true }" x-show="show" class="bg-red-100 border-l-4 border-red-700 text-red-700 p-4 dark:bg-red-600 dark:border-red-800 dark:text-white">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div>
-                @foreach($errors->all() as $error)
-                    <span class="block">{{ $error }}</span>
-                @endforeach
-            </div>
-            <button @click="show = false" class="ml-4 opacity-70 hover:opacity-100 self-start">&times;</button>
-        </div>
-    </div>
-    @endif
-    @if(session('status'))
-    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 dark:bg-green-600 dark:border-green-600 dark:text-white">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <span>{{ session('status') }}</span>
-            <button @click="show = false" class="ml-4 opacity-70 hover:opacity-100">&times;</button>
-        </div>
-    </div>
-    @endif
+    @include('partials.flash')
 
     {{-- Centered card --}}
     <div class="flex-1 flex items-center justify-center py-12 px-4">

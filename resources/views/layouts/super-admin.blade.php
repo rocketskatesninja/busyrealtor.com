@@ -207,18 +207,7 @@
         <span class="text-gray-400 text-sm">{{ now()->format('M j, Y') }}</span>
     </div>
 
-    @if(session('success'))
-    <div x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" class="bg-green-600 text-white px-6 py-3 flex items-center justify-between">
-        <span>{{ session('success') }}</span>
-        <button @click="show = false">&times;</button>
-    </div>
-    @endif
-    @if(session('error'))
-    <div x-data="{ show: true }" x-show="show" class="bg-red-600 text-white px-6 py-3 flex items-center justify-between">
-        <span>{{ session('error') }}</span>
-        <button @click="show = false">&times;</button>
-    </div>
-    @endif
+    @include('partials.flash')
 
     <main class="flex-1 p-6 bg-gray-900">
         @yield('content')
