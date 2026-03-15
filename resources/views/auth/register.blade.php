@@ -27,16 +27,21 @@
     @csrf
     <div class="grid grid-cols-2 gap-4">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-            <input type="text" name="name" value="{{ old('name') }}" required
+            <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+            <input type="text" name="first_name" value="{{ old('first_name') }}" required
                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-            <input type="text" name="business_name" value="{{ old('business_name') }}" required
-                   x-on:input="slug = $event.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')"
+            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+            <input type="text" name="last_name" value="{{ old('last_name') }}" required
                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
+    </div>
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+        <input type="text" name="business_name" value="{{ old('business_name') }}" required
+               x-on:input="slug = $event.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')"
+               class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>

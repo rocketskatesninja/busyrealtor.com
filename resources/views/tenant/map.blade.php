@@ -23,7 +23,7 @@ function initMap() {
         'title'      => $p->title,
         'price'      => (int)$p->price,
         'price_disp' => '$' . number_format($p->price),
-        'address'    => $p->address,
+        'address'    => $p->address . ($p->address_line_2 ? ' ' . $p->address_line_2 : ''),
         'image'      => $p->primaryImage ? asset('storage/'.$p->primaryImage->image_path) : null,
         'url'        => route('tenant.property', [$account, $p->id]),
         'type'       => $p->property_type,

@@ -38,8 +38,13 @@ class SettingsController extends Controller
         $tab      = $request->input('tab', 'general');
 
         // ── Auth user (profile tab) ───────────────────────────────────────
-        $request->validate(['name' => 'required|string', 'email' => 'required|email']);
-        Auth::user()->update(['name' => $request->name, 'email' => $request->email]);
+        $request->validate(['first_name' => 'required|string|max:255', 'last_name' => 'required|string|max:255', 'email' => 'required|email']);
+        Auth::user()->update([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'unsubscribed_at' => $request->has('platform_emails') ? null : (Auth::user()->unsubscribed_at ?? now()),
+        ]);
         if ($request->filled('new_password')) {
             $request->validate(['new_password' => 'min:8|confirmed']);
             Auth::user()->update(['password' => Hash::make($request->new_password)]);
@@ -61,6 +66,7 @@ class SettingsController extends Controller
             'social_instagram' => $request->social_instagram,
             'social_twitter'   => $request->social_twitter,
             'social_linkedin'  => $request->social_linkedin,
+            'social_youtube'   => $request->social_youtube,
             // profile (public)
             'owner_name'     => $request->owner_name,
             'owner_bio'      => $request->owner_bio,

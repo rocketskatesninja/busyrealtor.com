@@ -104,31 +104,7 @@ function initPropertyMap() {
 @section('content')
 @php $account = $tenant->slug; @endphp
 <div class="max-w-7xl mx-auto px-4 py-10">
-    <div class="mb-6">
-        <nav class="flex items-center gap-2 text-sm text-gray-500 no-print">
-            @auth
-            @if(auth()->user()->tenant_id === app('tenant')->id || auth()->user()->is_super_admin)
-            <a href="{{ route('tenant.admin.dashboard', $account) }}" class="hover-primary transition">Home</a>
-            @else
-            <a href="{{ route('tenant.home', $account) }}" class="hover-primary transition">Home</a>
-            @endif
-            @else
-            <a href="{{ route('tenant.home', $account) }}" class="hover-primary transition">Home</a>
-            @endauth
-            <span>/</span>
-            @auth
-            @if(auth()->user()->tenant_id === app('tenant')->id || auth()->user()->is_super_admin)
-            <a href="{{ route('tenant.admin.properties.index', $account) }}" class="hover-primary transition">Properties</a>
-            @else
-            <a href="{{ route('tenant.gallery', $account) }}" class="hover-primary transition">Properties</a>
-            @endif
-            @else
-            <a href="{{ route('tenant.gallery', $account) }}" class="hover-primary transition">Properties</a>
-            @endauth
-            <span>/</span>
-            <span class="text-gray-800">{{ Str::limit($property->title, 40) }}</span>
-        </nav>
-    </div>
+
 
     <div>
             {{-- Image Gallery --}}
@@ -256,7 +232,7 @@ $" . number_format($property->price) : '') . "
                         @if($property->address)
                         <p class="flex items-center gap-1.5 text-gray-500 text-sm mt-1">
                             <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            {{ $property->address }}{{ $property->city ? ', ' . $property->city : '' }}{{ $property->state ? ', ' . $property->state : '' }}{{ $property->zip ? ' ' . $property->zip : '' }}
+                            {{ $property->address }}@if($property->address_line_2), {{ $property->address_line_2 }}@endif{{ $property->city ? ', ' . $property->city : '' }}{{ $property->state ? ', ' . $property->state : '' }}{{ $property->zip ? ' ' . $property->zip : '' }}
                         </p>
                         @endif
                     </div>
@@ -684,6 +660,7 @@ $" . number_format($property->price) : '') . "
             <div class="text-center text-gray-500">
                 <svg class="w-10 h-10 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 <p class="font-medium text-sm">{{ $property->address }}</p>
+                @if($property->address_line_2)<p class="text-xs">{{ $property->address_line_2 }}</p>@endif
                 @if($property->city)<p class="text-xs">{{ $property->city }}@if($property->state), {{ $property->state }}@endif</p>@endif
             </div>
         </div>

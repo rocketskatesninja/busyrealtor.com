@@ -48,6 +48,7 @@ class SiteSettings extends Model
         'social_instagram',
         'social_twitter',
         'social_linkedin',
+        'social_youtube',
         'chatbot_enabled',
         'chatbot_name',
         'chatbot_personality',

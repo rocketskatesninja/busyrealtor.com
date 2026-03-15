@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Mail\CampaignMail;
+use App\Models\MailCampaign;
+use Illuminate\Support\Facades\Mail;
 
 class SuperAdminController extends Controller
 {
@@ -101,5 +104,57 @@ class SuperAdminController extends Controller
     {
         $tenant->delete();
         return redirect()->route('super.tenants')->with('success', 'Tenant deleted.');
+    }
+
+    public function mailer()
+    {
+        $users = User::where('is_super_admin', false)
+            ->whereNotNull('email_verified_at')
+            ->whereNull('unsubscribed_at')
+            ->with('tenant')
+            ->orderBy('first_name')
+            ->get();
+
+        $campaigns = MailCampaign::latest()->take(20)->get();
+
+        return view('super-admin.mailer', compact('users', 'campaigns'));
+    }
+
+    public function sendMail(Request $request)
+    {
+        $request->validate([
+            'subject'  => 'required|string|max:255',
+            'body'     => 'required|string',
+            'user_ids' => 'required|array|min:1',
+            'user_ids.*' => 'integer|exists:users,id',
+        ]);
+
+        $users = User::whereIn('id', $request->user_ids)
+            ->where('is_super_admin', false)
+            ->whereNull('unsubscribed_at')
+            ->get();
+
+        $subject = $request->subject;
+        $bodyTemplate = $request->body;
+
+        foreach ($users->chunk(50) as $chunk) {
+            foreach ($chunk as $user) {
+                $personalizedBody = str_replace(
+                    ['{{first_name}}', '{{last_name}}', '{{email}}'],
+                    [$user->first_name, $user->last_name, $user->email],
+                    $bodyTemplate
+                );
+                Mail::to($user->email)->send(new CampaignMail($subject, $personalizedBody, base64_encode($user->id)));
+            }
+        }
+
+        MailCampaign::create([
+            'subject'         => $subject,
+            'body'            => $bodyTemplate,
+            'recipient_count' => $users->count(),
+            'sent_at'         => now(),
+        ]);
+
+        return back()->with('success', "Email sent to {$users->count()} recipients.");
     }
 }

@@ -45,6 +45,15 @@ Route::get('/terms', [MarketingController::class, 'terms'])->name('terms');
 Route::get('/sitemap.xml', [MarketingController::class, 'sitemap'])->name('sitemap');
 Route::get('/marketing-sitemap.xml', [MarketingController::class, 'sitemapPages'])->name('sitemap.pages');
 
+// Email unsubscribe (signed URL, no auth needed)
+Route::get('/email/unsubscribe/{token}', function (string $token) {
+    $user = \App\Models\User::where('id', base64_decode($token))->first();
+    if ($user && !$user->unsubscribed_at) {
+        $user->update(['unsubscribed_at' => now()]);
+    }
+    return view('emails.unsubscribed');
+})->name('email.unsubscribe');
+
 // Auth routes (no tenant)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showForm'])->name('login');
@@ -105,6 +114,8 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin'])->name('super.'
     Route::get('/feedback/{id}', [SuperFeedbackController::class, 'show'])->name('feedback.show');
     Route::get('/feedback/{id}/screenshot/{index?}', [SuperFeedbackController::class, 'screenshot'])->name('feedback.screenshot');
     Route::delete('/feedback/{id}', [SuperFeedbackController::class, 'destroy'])->name('feedback.destroy');
+    Route::get('/mailer', [SuperAdminController::class, 'mailer'])->name('mailer');
+    Route::post('/mailer/send', [SuperAdminController::class, 'sendMail'])->name('mailer.send');
 });
 
 // Tenant routes

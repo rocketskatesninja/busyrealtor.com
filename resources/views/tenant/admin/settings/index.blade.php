@@ -128,8 +128,12 @@ $tabs = array_merge(...array_values($groups));
                     <h2 class="text-lg font-bold text-gray-900 mb-5">Profile</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                            <input type="text" name="name" value="{{ auth()->user()->name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                            <input type="text" name="first_name" value="{{ auth()->user()->first_name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                            <input type="text" name="last_name" value="{{ auth()->user()->last_name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
@@ -953,6 +957,10 @@ $tabs = array_merge(...array_values($groups));
                                 <input type="checkbox" name="notify_on_appointment" value="1" class="rounded" {{ $settings->notify_on_appointment ? 'checked' : '' }}>
                                 <span class="text-sm text-gray-700">Notify me on new appointment requests</span>
                             </label>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="checkbox" name="platform_emails" value="1" class="rounded" {{ !auth()->user()->unsubscribed_at ? 'checked' : '' }}>
+                                <span class="text-sm text-gray-700">Receive platform updates and announcements from BusyRealtor</span>
+                            </label>
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -1059,7 +1067,7 @@ $tabs = array_merge(...array_values($groups));
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <h2 class="text-lg font-bold text-gray-900 mb-5">Social Links</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @foreach(['social_facebook'=>'Facebook URL','social_instagram'=>'Instagram URL','social_twitter'=>'Twitter/X URL','social_linkedin'=>'LinkedIn URL'] as $field=>$label)
+                            @foreach(['social_facebook'=>'Facebook URL','social_instagram'=>'Instagram URL','social_twitter'=>'Twitter/X URL','social_linkedin'=>'LinkedIn URL','social_youtube'=>'YouTube URL'] as $field=>$label)
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">{{ $label }}</label>
                                 <input type="url" name="{{ $field }}" value="{{ $settings->$field }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="https://...">

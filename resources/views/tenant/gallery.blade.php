@@ -85,7 +85,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
                 <div class="p-4">
                     <p class="text-xl font-bold mb-1" style="color: var(--primary)">${{ number_format($property->price) }}</p>
                     <h3 class="font-semibold text-gray-800 mb-1 truncate text-sm">{{ $property->title }}</h3>
-                    <p class="text-gray-500 text-xs mb-3 truncate">{{ $property->address }}{{ $property->city ? ', ' . $property->city : '' }}</p>
+                    <p class="text-gray-500 text-xs mb-3 truncate">{{ $property->address }}@if($property->address_line_2) {{ $property->address_line_2 }}@endif{{ $property->city ? ', ' . $property->city : '' }}</p>
                     <div class="flex items-center gap-3 text-xs text-gray-500 border-t pt-3">
                         @if($property->bedrooms) <span>{{ $property->bedrooms }} bed</span> @endif
                         @if($property->bathrooms) <span>{{ $property->bathrooms }} bath</span> @endif

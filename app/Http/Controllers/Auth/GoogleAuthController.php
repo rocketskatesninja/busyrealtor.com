@@ -53,7 +53,8 @@ class GoogleAuthController extends Controller
 
         // New user — store OAuth info and send to complete-registration page
         session([
-            'oauth_name'  => $googleUser->getName(),
+            'oauth_first_name' => explode(' ', $googleUser->getName(), 2)[0],
+            'oauth_last_name'  => explode(' ', $googleUser->getName() . ' ', 2)[1] ?? '',
             'oauth_email' => $googleUser->getEmail(),
         ]);
 
@@ -84,7 +85,8 @@ class GoogleAuthController extends Controller
             $request->validate(['email' => 'required|email|unique:users,email']);
         }
 
-        $name  = session('oauth_name');
+        $firstName = session('oauth_first_name');
+        $lastName  = session('oauth_last_name');
         $email = session('oauth_email') ?? $request->input('email');
 
         $tenant = Tenant::create([
@@ -106,13 +108,14 @@ class GoogleAuthController extends Controller
         LegalPage::create(['tenant_id' => $tenant->id, 'page_type' => 'terms',   'content' => 'Terms of Service content here.']);
 
         $user = User::create([
-            'name'              => $name,
+            'first_name'        => $firstName,
+            'last_name'         => $lastName,
             'email'             => $email,
             'tenant_id'         => $tenant->id,
             'email_verified_at' => now(),
         ]);
 
-        session()->forget(['oauth_name', 'oauth_email']);
+        session()->forget(['oauth_first_name', 'oauth_last_name', 'oauth_email']);
         Auth::login($user, true);
 
         return redirect()->route('tenant.admin.dashboard', ['account' => $tenant->slug]);

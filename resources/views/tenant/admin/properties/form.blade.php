@@ -131,17 +131,78 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
                     <input type="text" name="address" value="{{ old('address', $property->address ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                    <input type="text" name="city" value="{{ old('city', $property->city ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 2 <span class="text-gray-400 font-normal">(Apt, Suite, Unit)</span></label>
+                    <input type="text" name="address_line_2" value="{{ old('address_line_2', $property->address_line_2 ?? '') }}" placeholder="Apt 4B, Suite 200, Unit 12..." class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
-                    <input type="text" name="state" value="{{ old('state', $property->state ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
-                    <input type="text" name="zip" value="{{ old('zip', $property->zip ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div class="md:col-span-2">
+                    <div class="grid grid-cols-4 gap-5">
+                        <div class="col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
+                            <input type="text" name="city" value="{{ old('city', $property->city ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
+                            <select name="state" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                            <option value="" {{ old('state', $property->state ?? '') == '' ? 'selected' : '' }}>Select State</option>
+                            <option value="AL" {{ old('state', $property->state ?? '') == 'AL' ? 'selected' : '' }}>AL — Alabama</option>
+                            <option value="AK" {{ old('state', $property->state ?? '') == 'AK' ? 'selected' : '' }}>AK — Alaska</option>
+                            <option value="AZ" {{ old('state', $property->state ?? '') == 'AZ' ? 'selected' : '' }}>AZ — Arizona</option>
+                            <option value="AR" {{ old('state', $property->state ?? '') == 'AR' ? 'selected' : '' }}>AR — Arkansas</option>
+                            <option value="CA" {{ old('state', $property->state ?? '') == 'CA' ? 'selected' : '' }}>CA — California</option>
+                            <option value="CO" {{ old('state', $property->state ?? '') == 'CO' ? 'selected' : '' }}>CO — Colorado</option>
+                            <option value="CT" {{ old('state', $property->state ?? '') == 'CT' ? 'selected' : '' }}>CT — Connecticut</option>
+                            <option value="DE" {{ old('state', $property->state ?? '') == 'DE' ? 'selected' : '' }}>DE — Delaware</option>
+                            <option value="DC" {{ old('state', $property->state ?? '') == 'DC' ? 'selected' : '' }}>DC — District of Columbia</option>
+                            <option value="FL" {{ old('state', $property->state ?? '') == 'FL' ? 'selected' : '' }}>FL — Florida</option>
+                            <option value="GA" {{ old('state', $property->state ?? '') == 'GA' ? 'selected' : '' }}>GA — Georgia</option>
+                            <option value="HI" {{ old('state', $property->state ?? '') == 'HI' ? 'selected' : '' }}>HI — Hawaii</option>
+                            <option value="ID" {{ old('state', $property->state ?? '') == 'ID' ? 'selected' : '' }}>ID — Idaho</option>
+                            <option value="IL" {{ old('state', $property->state ?? '') == 'IL' ? 'selected' : '' }}>IL — Illinois</option>
+                            <option value="IN" {{ old('state', $property->state ?? '') == 'IN' ? 'selected' : '' }}>IN — Indiana</option>
+                            <option value="IA" {{ old('state', $property->state ?? '') == 'IA' ? 'selected' : '' }}>IA — Iowa</option>
+                            <option value="KS" {{ old('state', $property->state ?? '') == 'KS' ? 'selected' : '' }}>KS — Kansas</option>
+                            <option value="KY" {{ old('state', $property->state ?? '') == 'KY' ? 'selected' : '' }}>KY — Kentucky</option>
+                            <option value="LA" {{ old('state', $property->state ?? '') == 'LA' ? 'selected' : '' }}>LA — Louisiana</option>
+                            <option value="ME" {{ old('state', $property->state ?? '') == 'ME' ? 'selected' : '' }}>ME — Maine</option>
+                            <option value="MD" {{ old('state', $property->state ?? '') == 'MD' ? 'selected' : '' }}>MD — Maryland</option>
+                            <option value="MA" {{ old('state', $property->state ?? '') == 'MA' ? 'selected' : '' }}>MA — Massachusetts</option>
+                            <option value="MI" {{ old('state', $property->state ?? '') == 'MI' ? 'selected' : '' }}>MI — Michigan</option>
+                            <option value="MN" {{ old('state', $property->state ?? '') == 'MN' ? 'selected' : '' }}>MN — Minnesota</option>
+                            <option value="MS" {{ old('state', $property->state ?? '') == 'MS' ? 'selected' : '' }}>MS — Mississippi</option>
+                            <option value="MO" {{ old('state', $property->state ?? '') == 'MO' ? 'selected' : '' }}>MO — Missouri</option>
+                            <option value="MT" {{ old('state', $property->state ?? '') == 'MT' ? 'selected' : '' }}>MT — Montana</option>
+                            <option value="NE" {{ old('state', $property->state ?? '') == 'NE' ? 'selected' : '' }}>NE — Nebraska</option>
+                            <option value="NV" {{ old('state', $property->state ?? '') == 'NV' ? 'selected' : '' }}>NV — Nevada</option>
+                            <option value="NH" {{ old('state', $property->state ?? '') == 'NH' ? 'selected' : '' }}>NH — New Hampshire</option>
+                            <option value="NJ" {{ old('state', $property->state ?? '') == 'NJ' ? 'selected' : '' }}>NJ — New Jersey</option>
+                            <option value="NM" {{ old('state', $property->state ?? '') == 'NM' ? 'selected' : '' }}>NM — New Mexico</option>
+                            <option value="NY" {{ old('state', $property->state ?? '') == 'NY' ? 'selected' : '' }}>NY — New York</option>
+                            <option value="NC" {{ old('state', $property->state ?? '') == 'NC' ? 'selected' : '' }}>NC — North Carolina</option>
+                            <option value="ND" {{ old('state', $property->state ?? '') == 'ND' ? 'selected' : '' }}>ND — North Dakota</option>
+                            <option value="OH" {{ old('state', $property->state ?? '') == 'OH' ? 'selected' : '' }}>OH — Ohio</option>
+                            <option value="OK" {{ old('state', $property->state ?? '') == 'OK' ? 'selected' : '' }}>OK — Oklahoma</option>
+                            <option value="OR" {{ old('state', $property->state ?? '') == 'OR' ? 'selected' : '' }}>OR — Oregon</option>
+                            <option value="PA" {{ old('state', $property->state ?? '') == 'PA' ? 'selected' : '' }}>PA — Pennsylvania</option>
+                            <option value="RI" {{ old('state', $property->state ?? '') == 'RI' ? 'selected' : '' }}>RI — Rhode Island</option>
+                            <option value="SC" {{ old('state', $property->state ?? '') == 'SC' ? 'selected' : '' }}>SC — South Carolina</option>
+                            <option value="SD" {{ old('state', $property->state ?? '') == 'SD' ? 'selected' : '' }}>SD — South Dakota</option>
+                            <option value="TN" {{ old('state', $property->state ?? '') == 'TN' ? 'selected' : '' }}>TN — Tennessee</option>
+                            <option value="TX" {{ old('state', $property->state ?? '') == 'TX' ? 'selected' : '' }}>TX — Texas</option>
+                            <option value="UT" {{ old('state', $property->state ?? '') == 'UT' ? 'selected' : '' }}>UT — Utah</option>
+                            <option value="VT" {{ old('state', $property->state ?? '') == 'VT' ? 'selected' : '' }}>VT — Vermont</option>
+                            <option value="VA" {{ old('state', $property->state ?? '') == 'VA' ? 'selected' : '' }}>VA — Virginia</option>
+                            <option value="WA" {{ old('state', $property->state ?? '') == 'WA' ? 'selected' : '' }}>WA — Washington</option>
+                            <option value="WV" {{ old('state', $property->state ?? '') == 'WV' ? 'selected' : '' }}>WV — West Virginia</option>
+                            <option value="WI" {{ old('state', $property->state ?? '') == 'WI' ? 'selected' : '' }}>WI — Wisconsin</option>
+                            <option value="WY" {{ old('state', $property->state ?? '') == 'WY' ? 'selected' : '' }}>WY — Wyoming</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
+                            <input type="text" name="zip" value="{{ old('zip', $property->zip ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>

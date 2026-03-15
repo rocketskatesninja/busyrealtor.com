@@ -131,6 +131,14 @@
         /* Status badges — soften */
         .dark .bg-green-100  { background-color: rgba(16,185,129,0.15) !important; }
         .dark .bg-yellow-100 { background-color: rgba(234,179,8,0.15) !important; }
+
+        /* Assistant disclaimer */
+        .disclaimer-banner { background-color: #fffbeb; border-color: #fde68a; }
+        .disclaimer-icon { color: #f59e0b; }
+        .disclaimer-text { color: #78350f; }
+        .dark .disclaimer-banner { background-color: rgba(120,53,15,0.2) !important; border-color: rgba(161,98,7,0.4) !important; }
+        .dark .disclaimer-icon { color: #fbbf24 !important; }
+        .dark .disclaimer-text { color: #fde68a !important; }
         .dark .bg-blue-100   { background-color: rgba(59,130,246,0.15) !important; }
         .dark .bg-red-100    { background-color: rgba(239,68,68,0.15) !important; }
         .dark .bg-purple-100 { background-color: rgba(168,85,247,0.15) !important; }
@@ -281,7 +289,7 @@
                 </nav>
                 <div class="relative">
                     <button onclick="toggleUserMenu()" id="user-menu-btn" class="flex items-center space-x-2 text-gray-700 hover-primary focus:outline-none">
-                        <span class="font-medium">{{ explode(' ', auth()->user()->name)[0] }}</span>
+                        <span class="font-medium">{{ auth()->user()->first_name }}</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div id="user-dropdown" style="display:none" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 border">

@@ -135,6 +135,7 @@
                                     'Provide, operate, and maintain the Service',
                                     'Process subscription payments and send billing-related communications',
                                     'Send transactional emails (account confirmations, password resets, billing receipts)',
+                                    'Send service-related announcements, product updates, and platform communications to the email address associated with your account',
                                     'Respond to support requests and troubleshoot issues',
                                     'Monitor platform health, detect errors, and prevent fraud or abuse',
                                     'Improve and develop new features based on aggregate usage patterns',

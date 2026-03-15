@@ -28,6 +28,7 @@ class Property extends Model
         'property_type',
         'price',
         'address_street',
+        'address_line_2',
         'address_city',
         'address_state',
         'address_zip',
@@ -102,6 +103,7 @@ class Property extends Model
             ?? $this->images->first();
     }
     // Column alias accessors for view compatibility
+    public function getAddress2Attribute(): ?string { return $this->address_line_2; }
     public function getAddressAttribute(): ?string { return $this->address_street; }
     public function getCityAttribute(): ?string { return $this->address_city; }
     public function getStateAttribute(): ?string { return $this->address_state; }

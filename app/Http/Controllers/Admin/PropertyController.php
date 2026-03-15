@@ -135,6 +135,7 @@ class PropertyController extends Controller
             'property_type'   => $request->property_type,
             'price'           => $request->price,
             'address_street'  => $request->address,
+            'address_line_2'  => $request->address_line_2,
             'address_city'    => $request->city,
             'address_state'   => $request->state,
             'address_zip'     => $request->zip,

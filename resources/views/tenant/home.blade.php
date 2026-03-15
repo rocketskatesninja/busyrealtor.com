@@ -360,7 +360,7 @@ $iconPaths = [
                 <div class="p-5">
                     <p class="text-2xl font-bold mb-1" style="color: var(--primary)">${{ number_format($property->price) }}</p>
                     <h3 class="font-semibold text-gray-800 mb-1 truncate">{{ $property->title }}</h3>
-                    <p class="text-gray-500 text-sm mb-3 truncate">{{ $property->address }}{{ $property->city ? ', ' . $property->city : '' }}</p>
+                    <p class="text-gray-500 text-sm mb-3 truncate">{{ $property->address }}@if($property->address_line_2) {{ $property->address_line_2 }}@endif{{ $property->city ? ', ' . $property->city : '' }}</p>
                     <div class="flex items-center gap-4 text-sm text-gray-500 border-t pt-3">
                         @if($property->bedrooms) <span>{{ $property->bedrooms }} bed</span> @endif
                         @if($property->bathrooms) <span>{{ $property->bathrooms }} bath</span> @endif

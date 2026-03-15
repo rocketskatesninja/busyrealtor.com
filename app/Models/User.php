@@ -12,11 +12,13 @@ class User extends Authenticatable implements MustVerifyEmail
     use Notifiable;
 
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
         'tenant_id',
         'email_verified_at',
+        'unsubscribed_at',
         'is_super_admin',
         'failed_login_attempts',
         'locked_until',
@@ -30,11 +32,20 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'is_super_admin'         => 'boolean',
         'email_verified_at'      => 'datetime',
+        'unsubscribed_at'        => 'datetime',
         'password'               => 'hashed',
         'failed_login_attempts'  => 'integer',
         'locked_until'           => 'datetime',
     ];
 
+
+    /**
+     * Backward-compatible full name accessor.
+     */
+    public function getNameAttribute(): string
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
+    }
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);

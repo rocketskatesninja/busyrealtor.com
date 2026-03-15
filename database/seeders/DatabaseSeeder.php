@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
         $superAdmin = User::firstOrCreate(
             ['email' => 'contact@punchlistify.com'],
             [
-                'name' => 'Super Admin',
+                'first_name' => 'Super',
+                'last_name' => 'Admin',
                 'password' => Hash::make('secret'),
                 'is_super_admin' => true,
                 
@@ -42,7 +43,8 @@ class DatabaseSeeder extends Seeder
         $tenantUser = User::firstOrCreate(
             ['email' => 'admin@demorealty.com'],
             [
-                'name' => 'Demo Admin',
+                'first_name' => 'Demo',
+                'last_name' => 'Admin',
                 'password' => Hash::make('secret'),
                 'tenant_id' => $tenant->id,
                 
@@ -125,6 +127,7 @@ class DatabaseSeeder extends Seeder
                 'social_instagram' => '',
                 'social_twitter' => '',
                 'social_linkedin' => '',
+                'social_youtube' => '',
                 'dashboard_config' => [
                     'stats' => ['active_listings', 'unread_messages', 'appointments', 'portfolio_value'],
                     'charts' => ['properties_by_type', 'properties_by_status', 'views_per_day'],

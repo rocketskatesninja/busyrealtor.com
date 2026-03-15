@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('title', 'Dashboard')
-@section('page-subtitle', 'Welcome back, ' . explode(' ', auth()->user()->name)[0])
+@section('page-subtitle', 'Welcome back, ' . auth()->user()->first_name)
 
 @section('styles')
 /* Stat card icon backgrounds in dark mode — per-color overrides */
