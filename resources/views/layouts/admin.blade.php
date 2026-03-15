@@ -95,11 +95,11 @@
         .dark .border-b,
         .dark .border-l,
         .dark .border-r,
-        .dark .border         { border-color: #334155; }
+        .dark .border         { border-color: #334155 !important; }
 
         /* Divide */
         .dark .divide-y > * + *,
-        .dark .divide-x > * + * { border-color: #334155; }
+        .dark .divide-x > * + * { border-color: #334155 !important; }
 
         /* Inputs, selects, textareas */
         .dark input:not([type=checkbox]):not([type=radio]):not([type=range]),
@@ -156,6 +156,11 @@
 
         /* Footer */
         .dark footer { background-color: #0f172a !important; border-color: #1e293b !important; }
+        /* Dashboard panel dividers — bypass Tailwind v4 specificity */
+        .dash-divide > * + * { border-top: 1px solid #e5e7eb; }
+        .dark .dash-divide > * + * { border-top: 1px solid #334155; }
+        .dash-header-border { border-bottom: 1px solid #e5e7eb; }
+        .dark .dash-header-border { border-bottom: 1px solid #334155; }
         .dark footer .text-gray-800 { color: #e2e8f0 !important; }
         .dark footer .text-gray-600 { color: #94a3b8 !important; }
         .dark footer .text-gray-500 { color: #64748b !important; }

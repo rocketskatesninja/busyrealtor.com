@@ -10,6 +10,7 @@ use App\Models\SiteSettings;
 use App\Models\LegalPage;
 use App\Models\Property;
 use App\Models\PropertyImage;
+use App\Models\StaffMember;
 
 class DatabaseSeeder extends Seeder
 {
@@ -23,7 +24,7 @@ class DatabaseSeeder extends Seeder
                 'last_name' => 'Admin',
                 'password' => Hash::make('secret'),
                 'is_super_admin' => true,
-                
+                'email_verified_at' => now(),
             ]
         );
 
@@ -46,7 +47,7 @@ class DatabaseSeeder extends Seeder
                 'last_name' => 'Admin',
                 'password' => Hash::make('secret'),
                 'tenant_id' => $tenant->id,
-                
+                'email_verified_at' => now(),
             ]
         );
 
@@ -150,46 +151,245 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Demo properties for "Needs Attention" panel
-        $propNoPhotos = Property::firstOrCreate(
-            ['title' => 'New Listing — Pending Photos', 'tenant_id' => $tenant->id],
+        // Demo staff members
+        $staff1 = StaffMember::firstOrCreate(
+            ['email' => 'sarah@demorealty.com', 'tenant_id' => $tenant->id],
             [
-                'listing_status' => 'active',
-                'property_type'  => 'house',
-                'price'          => 349000,
-                'address_street' => '88 Elm Court',
-                'address_city'   => 'Anytown',
-                'address_state'  => 'CA',
-                'address_zip'    => '90210',
-                'bedrooms'       => 3,
-                'bathrooms'      => 2,
-                'view_count'     => 0,
-                'description'    => 'Just listed. Photos coming soon.',
+                'name'       => 'Sarah Mitchell',
+                'role'       => 'Lead Agent',
+                'phone'      => '(555) 234-5678',
+                'bio'        => 'With over 12 years of experience in residential real estate, Sarah specializes in helping first-time buyers navigate the market with confidence.',
+                'status'     => 'active',
+                'sort_order' => 1,
+                'display_on_homepage'    => true,
+                'accepts_appointments'   => true,
+            ]
+        );
+
+        $staff2 = StaffMember::firstOrCreate(
+            ['email' => 'james@demorealty.com', 'tenant_id' => $tenant->id],
+            [
+                'name'       => 'James Rodriguez',
+                'role'       => 'Senior Agent',
+                'phone'      => '(555) 345-6789',
+                'bio'        => 'James brings a decade of commercial and luxury property expertise. Known for his market analysis skills and negotiation prowess.',
+                'status'     => 'active',
+                'sort_order' => 2,
+                'display_on_homepage'    => true,
+                'accepts_appointments'   => true,
+            ]
+        );
+
+        $staff3 = StaffMember::firstOrCreate(
+            ['email' => 'emily@demorealty.com', 'tenant_id' => $tenant->id],
+            [
+                'name'       => 'Emily Chen',
+                'role'       => 'Buyer Specialist',
+                'phone'      => '(555) 456-7890',
+                'bio'        => 'Emily is passionate about finding the perfect match between buyers and homes. She focuses on condos and townhomes in the downtown area.',
+                'status'     => 'active',
+                'sort_order' => 3,
+                'display_on_homepage'    => true,
+                'accepts_appointments'   => true,
+            ]
+        );
+
+        // Demo properties (8 total)
+        Property::firstOrCreate(
+            ['title' => 'Modern Lakefront Estate', 'tenant_id' => $tenant->id],
+            [
+                'listing_status'  => 'active',
+                'property_type'   => 'house',
+                'price'           => 1250000,
+                'address_street'  => '1 Lakeshore Drive',
+                'address_city'    => 'Anytown',
+                'address_state'   => 'CA',
+                'address_zip'     => '90210',
+                'bedrooms'        => 5,
+                'bathrooms'       => 4,
+                'half_baths'      => 1,
+                'square_feet'     => 4200,
+                'lot_size'        => '0.85 acres',
+                'year_built'      => 2019,
+                'garage'          => 3,
+                'has_pool'        => true,
+                'has_fireplace'   => true,
+                'view_count'      => 142,
+                'staff_member_id' => $staff1->id,
+                'description'     => 'Stunning lakefront estate with panoramic water views. Open floor plan, chef\'s kitchen with quartz countertops, and a resort-style backyard with infinity pool. Master suite with private balcony overlooking the lake.',
+            ]
+        );
+
+        Property::firstOrCreate(
+            ['title' => 'Downtown Luxury Penthouse', 'tenant_id' => $tenant->id],
+            [
+                'listing_status'  => 'active',
+                'property_type'   => 'condo',
+                'price'           => 875000,
+                'address_street'  => '500 Main Street',
+                'address_line_2'  => 'PH-1',
+                'address_city'    => 'Anytown',
+                'address_state'   => 'CA',
+                'address_zip'     => '90210',
+                'bedrooms'        => 3,
+                'bathrooms'       => 2,
+                'square_feet'     => 2400,
+                'year_built'      => 2021,
+                'garage'          => 2,
+                'has_fireplace'   => true,
+                'hoa_fee'         => 650,
+                'view_count'      => 98,
+                'staff_member_id' => $staff2->id,
+                'description'     => 'Top-floor penthouse with floor-to-ceiling windows and 360-degree city views. Designer finishes throughout, private elevator access, and rooftop terrace. Walking distance to restaurants and nightlife.',
+            ]
+        );
+
+        Property::firstOrCreate(
+            ['title' => 'Charming Craftsman Bungalow', 'tenant_id' => $tenant->id],
+            [
+                'listing_status'  => 'active',
+                'property_type'   => 'house',
+                'price'           => 425000,
+                'address_street'  => '742 Maple Street',
+                'address_city'    => 'Anytown',
+                'address_state'   => 'CA',
+                'address_zip'     => '90211',
+                'bedrooms'        => 3,
+                'bathrooms'       => 2,
+                'square_feet'     => 1650,
+                'year_built'      => 1928,
+                'garage'          => 1,
+                'has_fireplace'   => true,
+                'has_basement'    => true,
+                'near_school'     => true,
+                'view_count'      => 67,
+                'staff_member_id' => $staff1->id,
+                'description'     => 'Original Craftsman character meets modern updates. Hardwood floors, built-in bookshelves, and a wrap-around porch. Updated kitchen and bathrooms. Mature landscaping with detached garage studio.',
             ]
         );
 
         Property::firstOrCreate(
             ['title' => 'Cozy Studio — Downtown', 'tenant_id' => $tenant->id],
             [
-                'listing_status' => 'active',
-                'property_type'  => 'condo',
-                'price'          => 189000,
-                'address_street' => '12 Oak Ave #4B',
-                'address_city'   => 'Anytown',
-                'address_state'  => 'CA',
-                'address_zip'    => '90210',
-                'bedrooms'       => 1,
-                'bathrooms'      => 1,
-                'view_count'     => 3,
-                'created_at'     => now()->subDays(20),
-                'updated_at'     => now()->subDays(20),
-                'description'    => 'Affordable downtown studio. Great for first-time buyers.',
+                'listing_status'  => 'active',
+                'property_type'   => 'condo',
+                'price'           => 189000,
+                'address_street'  => '12 Oak Ave',
+                'address_line_2'  => '#4B',
+                'address_city'    => 'Anytown',
+                'address_state'   => 'CA',
+                'address_zip'     => '90210',
+                'bedrooms'        => 1,
+                'bathrooms'       => 1,
+                'square_feet'     => 580,
+                'year_built'      => 2015,
+                'hoa_fee'         => 275,
+                'near_shopping'   => true,
+                'near_transit'    => true,
+                'view_count'      => 45,
+                'staff_member_id' => $staff3->id,
+                'description'     => 'Efficient and stylish downtown studio. In-unit washer/dryer, modern finishes, and a Juliet balcony. Building amenities include gym, rooftop lounge, and bike storage. Walk score 95.',
             ]
         );
 
-                $this->command->info('✓ Super admin: contact@punchlistify.com / secret');
+        Property::firstOrCreate(
+            ['title' => 'Family Home with Pool', 'tenant_id' => $tenant->id],
+            [
+                'listing_status'  => 'pending',
+                'property_type'   => 'house',
+                'price'           => 549000,
+                'address_street'  => '2200 Sunset Boulevard',
+                'address_city'    => 'Anytown',
+                'address_state'   => 'CA',
+                'address_zip'     => '90212',
+                'bedrooms'        => 4,
+                'bathrooms'       => 3,
+                'square_feet'     => 2800,
+                'lot_size'        => '0.35 acres',
+                'year_built'      => 2005,
+                'garage'          => 2,
+                'has_pool'        => true,
+                'has_fireplace'   => true,
+                'near_school'     => true,
+                'near_shopping'   => true,
+                'view_count'      => 31,
+                'staff_member_id' => $staff2->id,
+                'description'     => 'Spacious family home on a quiet cul-de-sac. Open concept living, gourmet kitchen, and large backyard with saltwater pool and built-in BBQ. Top-rated school district.',
+            ]
+        );
+
+        Property::firstOrCreate(
+            ['title' => 'Historic Victorian', 'tenant_id' => $tenant->id],
+            [
+                'listing_status'  => 'sold',
+                'property_type'   => 'house',
+                'price'           => 725000,
+                'address_street'  => '88 Heritage Lane',
+                'address_city'    => 'Anytown',
+                'address_state'   => 'CA',
+                'address_zip'     => '90210',
+                'bedrooms'        => 4,
+                'bathrooms'       => 3,
+                'half_baths'      => 1,
+                'square_feet'     => 3100,
+                'year_built'      => 1895,
+                'garage'          => 1,
+                'has_fireplace'   => true,
+                'has_basement'    => true,
+                'view_count'      => 210,
+                'staff_member_id' => $staff1->id,
+                'description'     => 'Beautifully restored Victorian with original millwork, stained glass, and three fireplaces. Modern systems throughout. Carriage house could be converted to ADU. National Register eligible.',
+            ]
+        );
+
+        Property::firstOrCreate(
+            ['title' => 'New Construction Townhome', 'tenant_id' => $tenant->id],
+            [
+                'listing_status'  => 'active',
+                'property_type'   => 'townhouse',
+                'price'           => 389000,
+                'address_street'  => '15 Park Row',
+                'address_line_2'  => 'Unit C',
+                'address_city'    => 'Anytown',
+                'address_state'   => 'CA',
+                'address_zip'     => '90211',
+                'bedrooms'        => 3,
+                'bathrooms'       => 2,
+                'half_baths'      => 1,
+                'square_feet'     => 1900,
+                'year_built'      => 2026,
+                'garage'          => 2,
+                'hoa_fee'         => 185,
+                'near_transit'    => true,
+                'view_count'      => 22,
+                'staff_member_id' => $staff3->id,
+                'description'     => 'Brand new construction with smart home technology throughout. Energy-efficient design with solar panels, EV charger, and tankless water heater. Private patio and attached two-car garage.',
+            ]
+        );
+
+        Property::firstOrCreate(
+            ['title' => 'New Listing — Pending Photos', 'tenant_id' => $tenant->id],
+            [
+                'listing_status'  => 'active',
+                'property_type'   => 'house',
+                'price'           => 349000,
+                'address_street'  => '88 Elm Court',
+                'address_city'    => 'Anytown',
+                'address_state'   => 'CA',
+                'address_zip'     => '90210',
+                'bedrooms'        => 3,
+                'bathrooms'       => 2,
+                'square_feet'     => 1500,
+                'year_built'      => 1985,
+                'garage'          => 1,
+                'view_count'      => 0,
+                'description'     => 'Just listed! Well-maintained ranch home in established neighborhood. Photos and virtual tour coming soon. Schedule a private showing today.',
+            ]
+        );
+
+        $this->command->info('✓ Super admin: contact@punchlistify.com / secret');
         $this->command->info('✓ Demo tenant: demo-realty (admin@demorealty.com / secret)');
-        $this->command->info('✓ Default settings and legal pages created');
+        $this->command->info('✓ 3 staff members, 8 properties, settings, and legal pages created');
     }
 
     private function privacyPolicyTemplate(string $name): string

@@ -85,7 +85,7 @@
     @if(count($cards) > 0)
     <div id="stat-cards-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         @foreach($cards as $card)
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100" data-widget="{{ $card['key'] }}">
+        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200" data-widget="{{ $card['key'] }}">
             <div class="stat-icon w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-{{ $card['color'] }}-50">
                 <svg class="w-5 h-5 text-{{ $card['color'] }}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/></svg>
             </div>
@@ -100,7 +100,7 @@
     @if(count($chartOrder) > 0)
     <div id="charts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6" style="grid-auto-rows: 1fr;">
         @foreach($chartOrder as $chartKey)
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col" data-widget="{{ $chartKey }}">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col" data-widget="{{ $chartKey }}">
             @switch($chartKey)
                 @case('type_chart')
                     <h3 class="font-semibold text-gray-800 mb-4">Properties by Type</h3>
@@ -181,12 +181,12 @@
         @switch($tableKey)
 
             @case('top_properties')
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100" data-widget="top_properties">
-                <div class="flex items-center justify-between p-5 border-b">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="top_properties">
+                <div class="flex items-center justify-between p-5 dash-header-border">
                     <h3 class="font-semibold text-gray-800">Top Properties by Views</h3>
                     <a href="{{ route('tenant.admin.properties.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
-                <div class="divide-y">
+                <div class="dash-divide">
                     @forelse($topProperties as $p)
                     @php $img = $p->images->first(); @endphp
                     <div class="flex items-center gap-4 p-4">
@@ -207,12 +207,12 @@
             @break
 
             @case('recent_messages')
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100" data-widget="recent_messages">
-                <div class="flex items-center justify-between p-5 border-b">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="recent_messages">
+                <div class="flex items-center justify-between p-5 dash-header-border">
                     <h3 class="font-semibold text-gray-800">Recent Messages</h3>
                     <a href="{{ route('tenant.admin.messages.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
-                <div class="divide-y">
+                <div class="dash-divide">
                     @forelse($recentMessages as $msg)
                     <div class="flex items-start gap-3 p-4 {{ !$msg->is_read ? 'bg-blue-50/50 dark:bg-blue-900/20' : '' }}">
                         <div class="w-9 h-9 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0 text-sm font-semibold text-gray-500">
@@ -238,12 +238,12 @@
             @break
 
             @case('starred_messages')
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100" data-widget="starred_messages">
-                <div class="flex items-center justify-between p-5 border-b">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="starred_messages">
+                <div class="flex items-center justify-between p-5 dash-header-border">
                     <h3 class="font-semibold text-gray-800">Starred Messages</h3>
                     <a href="{{ route('tenant.admin.messages.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
-                <div class="divide-y">
+                <div class="dash-divide">
                     @forelse($starredMessages as $msg)
                     <div class="flex items-start gap-3 p-4">
                         <div class="w-9 h-9 rounded-full bg-yellow-50 flex items-center justify-center flex-shrink-0 text-sm font-semibold text-yellow-600">
@@ -267,12 +267,12 @@
             @break
 
             @case('upcoming_appts')
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100" data-widget="upcoming_appts">
-                <div class="flex items-center justify-between p-5 border-b">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="upcoming_appts">
+                <div class="flex items-center justify-between p-5 dash-header-border">
                     <h3 class="font-semibold text-gray-800">Upcoming Appointments</h3>
                     <a href="{{ route('tenant.admin.appointments.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
-                <div class="divide-y">
+                <div class="dash-divide">
                     @forelse($upcomingAppts as $appt)
                     <div class="p-4">
                         <div class="flex items-center justify-between mb-1">
@@ -294,12 +294,12 @@
 
             @case('recent_properties')
             @php $sc = ['active'=>'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400','pending'=>'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400','sold'=>'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300']; @endphp
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100" data-widget="recent_properties">
-                <div class="flex items-center justify-between p-5 border-b">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="recent_properties">
+                <div class="flex items-center justify-between p-5 dash-header-border">
                     <h3 class="font-semibold text-gray-800">Recently Added</h3>
                     <a href="{{ route('tenant.admin.properties.create', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">+ Add New</a>
                 </div>
-                <div class="divide-y">
+                <div class="dash-divide">
                     @forelse($recentProperties as $p)
                     @php $img = $p->images->first(); @endphp
                     <a href="{{ route('tenant.admin.properties.edit', [$account, $p->id]) }}" class="flex items-center gap-3 p-4 hover:bg-gray-50 transition">
@@ -330,15 +330,15 @@
                     <span class="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/30 px-2 py-1 rounded-full">{{ $needsAttention->count() }} active {{ Str::plural('listing', $needsAttention->count()) }}</span>
                     @endif
                 </div>
-                <div class="divide-y">
+                <div class="dash-divide">
                     @forelse($needsAttention as $p)
                     @php $img = $p->images->first(); @endphp
                     <a href="{{ route('tenant.admin.properties.edit', [$account, $p->id]) }}" class="flex items-center gap-4 p-4 hover:bg-amber-50/50 dark:hover:bg-amber-900/10 transition">
-                        <div class="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0">
+                        <div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-700 overflow-hidden flex-shrink-0">
                             @if($img)
                                 <img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">
                             @else
-                                <div class="w-full h-full flex items-center justify-center bg-amber-50">
+                                <div class="w-full h-full flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
                                     <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 </div>
                             @endif
