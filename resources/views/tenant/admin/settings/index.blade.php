@@ -137,7 +137,11 @@ $tabs = array_merge(...array_values($groups));
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
-                            <input type="email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <input type="email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" id="email-input" oninput="document.getElementById('email-warning').style.display = this.value !== this.defaultValue ? 'flex' : 'none'">
+                            <div id="email-warning" style="display:none;" class="mt-2 flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
+                                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                                <span>Changing your email will require re-verification. A verification link will be sent to the new address.</span>
+                            </div>
                         </div>
                     </div>
                     <div class="mt-5 border-t pt-5">
@@ -1480,11 +1484,23 @@ document.getElementById('test-email-btn')?.addEventListener('click', async () =>
     if (!email) return;
     const btn = document.getElementById('test-email-btn');
     const res = document.getElementById('test-email-result');
-    btn.textContent = 'Sending...';
+    btn.textContent = 'Saving & sending...';
+    // Grab current SMTP values from form so they get saved before test
+    const form = document.getElementById('settings-form');
+    const smtpData = {
+        to: email,
+        smtp_host: form?.querySelector('[name="smtp_host"]')?.value || '',
+        smtp_port: form?.querySelector('[name="smtp_port"]')?.value || '',
+        smtp_encryption: form?.querySelector('[name="smtp_encryption"]')?.value || '',
+        smtp_username: form?.querySelector('[name="smtp_username"]')?.value || '',
+        smtp_password: form?.querySelector('[name="smtp_password"]')?.value || '',
+        smtp_from_email: form?.querySelector('[name="smtp_from_email"]')?.value || '',
+        smtp_from_name: form?.querySelector('[name="smtp_from_name"]')?.value || '',
+    };
     try {
         const r = await fetch('{{ route('tenant.admin.api.test-email', $account) }}', {
             method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            body: JSON.stringify({ to: email })
+            body: JSON.stringify(smtpData)
         });
         const d = await r.json();
         res.textContent = d.message;

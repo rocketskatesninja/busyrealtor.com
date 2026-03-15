@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Services\TenantMailer;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Carbon;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -49,5 +52,33 @@ class User extends Authenticatable implements MustVerifyEmail
     public function tenant(): BelongsTo
     {
         return $this->belongsTo(Tenant::class);
+    }
+
+    /**
+     * Send verification email using tenant SMTP + branded template.
+     */
+    public function sendEmailVerificationNotification(): void
+    {
+        if ($this->tenant_id) {
+            $url = URL::temporarySignedRoute(
+                'verification.verify',
+                Carbon::now()->addMinutes(60),
+                ['id' => $this->getKey(), 'hash' => sha1($this->getEmailForVerification())]
+            );
+
+            $body = "Hi {$this->first_name},\n\nPlease verify your email address by clicking the link below:\n\n{$url}\n\nThis link will expire in 60 minutes.\n\nIf you did not request this, no action is needed.";
+
+            TenantMailer::send(
+                $this->tenant_id,
+                $this->email,
+                'Verify Your Email Address',
+                $body,
+                'tenant',
+                $this->name
+            );
+            return;
+        }
+
+        parent::sendEmailVerificationNotification();
     }
 }

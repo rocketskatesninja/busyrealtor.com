@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'registrations.enabled'=> \App\Http\Middleware\CheckRegistrationsEnabled::class,
             'site.lock'            => \App\Http\Middleware\CheckSiteLocked::class,
             'verified'             => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+            'no.cache'             => \App\Http\Middleware\NoCacheHeaders::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

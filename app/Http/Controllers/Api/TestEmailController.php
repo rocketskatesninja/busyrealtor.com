@@ -13,13 +13,22 @@ class TestEmailController extends Controller
     {
         $request->validate(['to' => 'required|email']);
         $tenant = app('tenant');
-        $smtp   = Integration::where('tenant_id', $tenant->id)
-                      ->where('integration_type', 'smtp')
-                      ->where('is_active', true)
-                      ->first();
+
+        // Save SMTP settings from form if provided
+        if ($request->filled('smtp_host')) {
+            Integration::updateOrCreate(
+                ['tenant_id' => $tenant->id, 'integration_type' => 'smtp'],
+                ['config' => $request->only('smtp_host','smtp_port','smtp_encryption','smtp_username','smtp_password','smtp_from_email','smtp_from_name'), 'is_active' => true]
+            );
+        }
+
+        $smtp = Integration::where('tenant_id', $tenant->id)
+                    ->where('integration_type', 'smtp')
+                    ->where('is_active', true)
+                    ->first();
 
         if (!$smtp || empty($smtp->config['smtp_host'])) {
-            return response()->json(['success' => false, 'message' => 'No SMTP configured. Enter your SMTP credentials above and save first.'], 422);
+            return response()->json(['success' => false, 'message' => 'No SMTP configured. Enter your SMTP credentials above.'], 422);
         }
 
         $sent = TenantMailer::send(

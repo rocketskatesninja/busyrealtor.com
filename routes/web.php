@@ -100,12 +100,15 @@ Route::middleware(['registrations.enabled'])->group(function () {
 });
 
 // Super admin routes
-Route::prefix('super-admin')->middleware(['auth', 'super.admin'])->name('super.')->group(function () {
+Route::prefix('super-admin')->middleware(['auth', 'super.admin', 'no.cache'])->name('super.')->group(function () {
     Route::get('/', [SuperAdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/tenants', [SuperAdminController::class, 'tenants'])->name('tenants');
     Route::get('/tenants/{tenant}', [SuperAdminController::class, 'showTenant'])->name('tenants.show');
     Route::put('/tenants/{tenant}', [SuperAdminController::class, 'updateTenant'])->name('tenants.update');
     Route::delete('/tenants/{tenant}', [SuperAdminController::class, 'destroyTenant'])->name('tenants.destroy');
+    Route::put('/tenants/{tenant}/owner', [SuperAdminController::class, 'updateTenantOwner'])->name('tenants.owner.update');
+    Route::post('/tenants/{tenant}/verify', [SuperAdminController::class, 'verifyTenantOwner'])->name('tenants.owner.verify');
+    Route::post('/tenants/{tenant}/resend-verification', [SuperAdminController::class, 'resendTenantVerification'])->name('tenants.owner.resend');
     Route::post('/impersonate/{tenant}', [ImpersonationController::class, 'impersonate'])->name('impersonate');
     Route::post('/stop-impersonate', [ImpersonationController::class, 'stop'])->name('stop-impersonate');
     Route::get('/settings', [SystemSettingsController::class, 'index'])->name('settings');
@@ -146,7 +149,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
     Route::post('/appointments', [AppointmentController::class, 'storePublic'])->middleware('throttle:10,1')->name('appointments.store');
 
     // Admin routes
-    Route::prefix('admin')->middleware(['auth', 'verified', 'tenant.active', 'tenant.admin'])->name('admin.')->group(function () {
+    Route::prefix('admin')->middleware(['auth', 'verified', 'tenant.active', 'tenant.admin', 'no.cache'])->name('admin.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
         Route::post('/dashboard-order', [DashboardOrderController::class, 'save'])->name('dashboard.order');
 

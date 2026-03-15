@@ -108,16 +108,61 @@
     @if($owner = $tenant->users->first())
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 class="font-semibold text-gray-800 mb-4">Account Owner</h3>
-        <div class="flex items-center gap-4">
+
+        <div class="flex items-center gap-4 mb-5">
             <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg">
                 {{ strtoupper(substr($owner->name, 0, 1)) }}
             </div>
             <div>
                 <p class="font-medium text-gray-800">{{ $owner->name }}</p>
-                <p class="text-sm text-gray-500">{{ $owner->email }}</p>
                 <p class="text-xs text-gray-400 mt-0.5">Joined {{ $owner->created_at->format('M j, Y') }}</p>
             </div>
+            <div class="ml-auto">
+                @if($owner->email_verified_at)
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        Verified
+                    </span>
+                @else
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        Unverified
+                    </span>
+                @endif
+            </div>
         </div>
+
+        {{-- Email Edit Form --}}
+        <form method="POST" action="{{ route('super.tenants.owner.update', $tenant->slug) }}" class="mb-4">
+            @csrf @method('PUT')
+            <label class="block text-sm font-medium text-gray-700 mb-1">Owner Email</label>
+            <div class="flex gap-3">
+                <input type="email" name="email" value="{{ old('email', $owner->email) }}" required
+                       class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="submit" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition whitespace-nowrap">
+                    Update Email
+                </button>
+            </div>
+            <p class="text-xs text-gray-400 mt-1">Changing the email will reset verification status.</p>
+        </form>
+
+        {{-- Verification Actions --}}
+        @unless($owner->email_verified_at)
+        <div class="flex gap-3 pt-3 border-t border-gray-100">
+            <form method="POST" action="{{ route('super.tenants.owner.verify', $tenant->slug) }}">
+                @csrf
+                <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-green-700 transition">
+                    Verify Now
+                </button>
+            </form>
+            <form method="POST" action="{{ route('super.tenants.owner.resend', $tenant->slug) }}">
+                @csrf
+                <button type="submit" class="border border-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-medium hover:bg-gray-50 transition">
+                    Resend Verification Email
+                </button>
+            </form>
+        </div>
+        @endunless
     </div>
     @endif
 

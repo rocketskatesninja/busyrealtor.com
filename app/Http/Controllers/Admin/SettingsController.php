@@ -38,13 +38,23 @@ class SettingsController extends Controller
         $tab      = $request->input('tab', 'general');
 
         // ── Auth user (profile tab) ───────────────────────────────────────
-        $request->validate(['first_name' => 'required|string|max:255', 'last_name' => 'required|string|max:255', 'email' => 'required|email']);
+        $request->validate(['first_name' => 'required|string|max:255', 'last_name' => 'required|string|max:255', 'email' => 'required|email|unique:users,email,' . Auth::id()]);
+        $emailChanged = $request->email !== Auth::user()->email;
         Auth::user()->update([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'unsubscribed_at' => $request->has('platform_emails') ? null : (Auth::user()->unsubscribed_at ?? now()),
         ]);
+        if ($emailChanged) {
+            Auth::user()->update(['email_verified_at' => null]);
+            try {
+                Auth::user()->sendEmailVerificationNotification();
+            } catch (\Exception $e) {
+                return redirect()->route('tenant.admin.settings', ['account' => $account, 'tab' => 'profile'])
+                    ->with('error', 'Email updated but verification email could not be sent. Please configure SMTP settings or contact support.');
+            }
+        }
         if ($request->filled('new_password')) {
             $request->validate(['new_password' => 'min:8|confirmed']);
             Auth::user()->update(['password' => Hash::make($request->new_password)]);

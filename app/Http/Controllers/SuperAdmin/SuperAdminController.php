@@ -106,6 +106,57 @@ class SuperAdminController extends Controller
         return redirect()->route('super.tenants')->with('success', 'Tenant deleted.');
     }
 
+    public function updateTenantOwner(Request $request, Tenant $tenant)
+    {
+        $owner = $tenant->users()->first();
+        abort_unless($owner, 404, 'No owner found for this tenant.');
+
+        $request->validate([
+            'email' => 'required|email|max:255|unique:users,email,' . $owner->id,
+        ]);
+
+        if ($owner->email === $request->email) {
+            return back()->with('success', 'No changes made.');
+        }
+
+        $owner->email = $request->email;
+        $owner->email_verified_at = null;
+        $owner->save();
+
+        try {
+            $owner->sendEmailVerificationNotification();
+            return back()->with('success', 'Owner email updated. Verification email sent to ' . $owner->email);
+        } catch (\Exception $e) {
+            \Log::warning('Failed to send verification email for user ' . $owner->id . ': ' . $e->getMessage());
+            return back()->with('error', 'Owner email updated but verification email could not be sent.');
+        }
+    }
+
+    public function verifyTenantOwner(Tenant $tenant)
+    {
+        $owner = $tenant->users()->first();
+        abort_unless($owner, 404, 'No owner found for this tenant.');
+
+        $owner->email_verified_at = now();
+        $owner->save();
+
+        return back()->with('success', 'Owner email marked as verified.');
+    }
+
+    public function resendTenantVerification(Tenant $tenant)
+    {
+        $owner = $tenant->users()->first();
+        abort_unless($owner, 404, 'No owner found for this tenant.');
+
+        try {
+            $owner->sendEmailVerificationNotification();
+            return back()->with('success', 'Verification email sent to ' . $owner->email);
+        } catch (\Exception $e) {
+            \Log::warning('Failed to resend verification for user ' . $owner->id . ': ' . $e->getMessage());
+            return back()->with('error', 'Failed to send verification email. Check mail configuration.');
+        }
+    }
+
     public function mailer()
     {
         $users = User::where('is_super_admin', false)
