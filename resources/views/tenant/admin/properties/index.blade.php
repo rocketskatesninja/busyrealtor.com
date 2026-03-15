@@ -62,7 +62,7 @@
             </select>
             <select name="status" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">All Statuses</option>
-                @foreach(['active'=>'Active','pending'=>'Pending','sold'=>'Sold','off-market'=>'Off Market'] as $v=>$l)
+                @foreach(['active'=>'Active','pending'=>'Pending','sold'=>'Sold','off-market'=>'Off Market','featured'=>'Featured','withdrawn'=>'Withdrawn'] as $v=>$l)
                     <option value="{{ $v }}" {{ request('status') === $v ? 'selected' : '' }}>{{ $l }}</option>
                 @endforeach
             </select>

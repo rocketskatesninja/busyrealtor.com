@@ -1002,7 +1002,7 @@ $tabs = array_merge(...array_values($groups));
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Realtor Bio</label>
                             <p class="text-xs text-gray-500 mb-1">Provided as context to the AI so it can answer questions about you.</p>
-                            <textarea name="chatbot_realtor_bio" rows="4" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none resize-none" placeholder="Describe yourself, your expertise, and your market area...">{{ $settings->chatbot_realtor_bio }}</textarea>
+                            <textarea name="chatbot_bio" rows="4" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none resize-none" placeholder="Describe yourself, your expertise, and your market area...">{{ $settings->chatbot_bio }}</textarea>
                         </div>
                     </div>
                 </div>

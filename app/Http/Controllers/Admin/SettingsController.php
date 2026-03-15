@@ -95,7 +95,7 @@ class SettingsController extends Controller
             // chatbot
             'chatbot_enabled'     => $request->boolean('chatbot_enabled'),
             'chatbot_personality' => $request->chatbot_personality,
-            'chatbot_realtor_bio' => $request->chatbot_realtor_bio,
+            'chatbot_bio' => $request->chatbot_bio,
             // homepage
             'homepage_sections'    => $homepageSections,
             'features_items'       => !empty($request->features_items)     ? (json_decode($request->features_items, true)     ?? $settings->features_items     ?? []) : ($settings->features_items     ?? []),

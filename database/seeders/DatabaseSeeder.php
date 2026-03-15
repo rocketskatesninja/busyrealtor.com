@@ -33,7 +33,6 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Demo Realty Group',
                 'email' => 'info@demorealty.com',
-                'password' => Hash::make('secret'),
                 'plan' => 'pro',
                 'trial_ends_at' => now()->addDays(30),
             ]
