@@ -37,8 +37,8 @@ $tabs = array_merge(...array_values($groups));
 <div class="max-w-7xl mx-auto px-4" x-data="{ activeTab: '{{ $tab }}' }">
 
     {{-- Mobile: horizontal scrollable tab strip --}}
-    <div class="md:hidden mb-4 -mx-4 px-4">
-        <div class="flex overflow-x-auto gap-1 pb-2 scrollbar-hide">
+    <div class="md:hidden mb-4 -mx-4 px-4 relative">
+        <div class="flex overflow-x-auto gap-1 pb-2 scrollbar-hide" id="mobile-tab-strip">
             @foreach($tabs as $key => $info)
             <a href="#"
                data-tab="{{ $key }}"
@@ -75,7 +75,7 @@ $tabs = array_merge(...array_values($groups));
                     <a href="#"
                        @click.prevent="activeTab = '{{ $key }}'"
                        :class="activeTab === '{{ $key }}' ? '' : 'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-slate-700'"
-                       :style="activeTab === '{{ $key }}' ? 'background-color: var(--primary); color: #fff' : ''"
+                       :style="activeTab === '{{ $key }}' ? 'background-color: var(--primary); color: #fff !important' : ''"
                        class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium mx-1 transition-colors text-gray-600 dark:text-white">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/></svg>
                         {{ $info['label'] }}

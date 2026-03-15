@@ -98,9 +98,9 @@
 
     {{-- Charts —— unified sortable container --}}
     @if(count($chartOrder) > 0)
-    <div id="charts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+    <div id="charts-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6" style="grid-auto-rows: 1fr;">
         @foreach($chartOrder as $chartKey)
-        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100" data-widget="{{ $chartKey }}">
+        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col" data-widget="{{ $chartKey }}">
             @switch($chartKey)
                 @case('type_chart')
                     <h3 class="font-semibold text-gray-800 mb-4">Properties by Type</h3>
@@ -121,36 +121,36 @@
                 @case('views_chart')
                     <h3 class="font-semibold text-gray-800 mb-4">Views by Property</h3>
                     @if($viewsByProperty->isEmpty())
-                        <p class="text-gray-400 text-sm text-center py-16">No views tracked yet.</p>
+                        <p class="text-gray-400 text-sm text-center py-16 flex-1 flex items-center justify-center">No views tracked yet.</p>
                     @else
-                        <div class="relative" style="min-height:200px">
+                        <div class="flex-1 relative min-h-[140px]">
                             <canvas id="viewsChart" class="w-full h-full"></canvas>
                         </div>
                     @endif
                 @break
                 @case('views_30days')
                     <h3 class="font-semibold text-gray-800 mb-4">Property Views — Last 30 Days</h3>
-                    <canvas id="views30Chart" height="140"></canvas>
+                    <div class="flex-1 relative min-h-[140px]"><canvas id="views30Chart" class="w-full h-full"></canvas></div>
                 @break
                 @case('messages_7days')
                     <h3 class="font-semibold text-gray-800 mb-4">Messages — Last 7 Days</h3>
-                    <canvas id="msgs7Chart" height="140"></canvas>
+                    <div class="flex-1 relative min-h-[140px]"><canvas id="msgs7Chart" class="w-full h-full"></canvas></div>
                 @break
                 @case('price_distribution')
                     <h3 class="font-semibold text-gray-800 mb-4">Price Range Distribution</h3>
                     @if($priceDistribution->sum() === 0)
-                        <p class="text-gray-400 text-sm text-center py-16">No data yet.</p>
+                        <p class="text-gray-400 text-sm text-center py-16 flex-1 flex items-center justify-center">No data yet.</p>
                     @else
-                        <canvas id="priceChart" height="200"></canvas>
+                        <div class="flex-1 relative min-h-[140px]"><canvas id="priceChart" class="w-full h-full"></canvas></div>
                     @endif
                 @break
                 @case('listings_over_time')
                     <h3 class="font-semibold text-gray-800 mb-4">Listings Added (12 Months)</h3>
-                    <canvas id="listingsTimeChart" height="200"></canvas>
+                    <div class="flex-1 relative min-h-[140px]"><canvas id="listingsTimeChart" class="w-full h-full"></canvas></div>
                 @break
                 @case('revenue_trend')
                     <h3 class="font-semibold text-gray-800 mb-4">Revenue Trend (12 Months)</h3>
-                    <canvas id="revenueChart" height="200"></canvas>
+                    <div class="flex-1 relative min-h-[140px]"><canvas id="revenueChart" class="w-full h-full"></canvas></div>
                 @break
                 @case('appt_status')
                     <h3 class="font-semibold text-gray-800 mb-4">Appointment Status</h3>
@@ -407,28 +407,28 @@ new Chart(document.getElementById('viewsChart'), {
 new Chart(document.getElementById('views30Chart'), {
     type: 'line',
     data: { labels: {!! json_encode($v30Labels) !!}, datasets: [{ label: 'Views', data: {!! json_encode($v30Data) !!}, borderColor: primaryColor, backgroundColor: primaryColor + '22', fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2 }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
 });
 @endif
 @if($show('messages_7days'))
 new Chart(document.getElementById('msgs7Chart'), {
     type: 'bar',
     data: { labels: {!! json_encode($msg7Labels) !!}, datasets: [{ label: 'Messages', data: {!! json_encode($msg7Data) !!}, backgroundColor: '#8b5cf6', borderRadius: 6 }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
 });
 @endif
 @if($show('price_distribution') && $priceDistribution->sum() > 0)
 new Chart(document.getElementById('priceChart'), {
     type: 'bar',
     data: { labels: {!! json_encode($priceLabels) !!}, datasets: [{ label: 'Properties', data: {!! json_encode($priceData) !!}, backgroundColor: '#10b981', borderRadius: 6 }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
 });
 @endif
 @if($show('listings_over_time'))
 new Chart(document.getElementById('listingsTimeChart'), {
     type: 'line',
     data: { labels: {!! json_encode($ltLabels) !!}, datasets: [{ label: 'Listings Added', data: {!! json_encode($ltData) !!}, borderColor: '#f59e0b', backgroundColor: '#f59e0b22', fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2 }] },
-    options: { responsive: true, plugins: { legend: { display: false } }, scales: scaleDefaults }
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
 });
 @endif
 @if($show('revenue_trend'))
@@ -437,6 +437,7 @@ new Chart(document.getElementById('revenueChart'), {
     data: { labels: {!! json_encode($revLabels) !!}, datasets: [{ label: 'Revenue', data: {!! json_encode($revData) !!}, backgroundColor: '#10b981', borderRadius: 6 }] },
     options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: { legend: { display: false } },
         scales: {
             y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: tickColor, callback: function(v) { return '$' + (v >= 1000000 ? (v/1000000).toFixed(1)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v); } } },

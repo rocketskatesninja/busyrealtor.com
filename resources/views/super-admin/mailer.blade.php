@@ -3,7 +3,7 @@
 @section('page-title', 'Mailing List')
 
 @section('content')
-<div x-data="mailerApp()" class="space-y-6">
+<div x-data="mailerApp()" x-effect="search; filterPlan; currentPage = 1" class="space-y-6">
 
     {{-- Compose Panel --}}
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
@@ -122,7 +122,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <template x-for="u in sortedUsers" :key="u.id">
+                    <template x-for="u in paginatedUsers" :key="u.id">
                         <tr class="border-b border-gray-50 hover:bg-gray-50 transition-colors">
                             <td class="py-2 px-3">
                                 <input type="checkbox" :checked="selectedIds.includes(u.id)"
@@ -145,6 +145,28 @@
                     </template>
                 </tbody>
             </table>
+        </div>
+        {{-- Pagination Controls --}}
+        <div x-show="totalPages > 1" class="flex items-center justify-between pt-4 border-t border-gray-100 mt-4">
+            <p class="text-sm text-gray-500">
+                Showing <span x-text="pageStart"></span>–<span x-text="pageEnd"></span> of <span x-text="filteredUsers.length"></span> users
+            </p>
+            <div class="flex items-center gap-1">
+                <button @click="currentPage = 1" :disabled="currentPage === 1"
+                        class="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition disabled:opacity-30 disabled:cursor-not-allowed">&laquo;</button>
+                <button @click="currentPage--" :disabled="currentPage === 1"
+                        class="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition disabled:opacity-30 disabled:cursor-not-allowed">&lsaquo;</button>
+                <template x-for="p in pageNumbers" :key="p">
+                    <button @click="if(p !== '...') currentPage = p"
+                            :class="p === currentPage ? 'bg-blue-600 text-white border-blue-600' : (p === '...' ? 'cursor-default border-transparent' : 'border-gray-200 hover:bg-gray-50')"
+                            class="px-2.5 py-1.5 text-xs font-medium rounded-lg border transition"
+                            x-text="p"></button>
+                </template>
+                <button @click="currentPage++" :disabled="currentPage === totalPages"
+                        class="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition disabled:opacity-30 disabled:cursor-not-allowed">&rsaquo;</button>
+                <button @click="currentPage = totalPages" :disabled="currentPage === totalPages"
+                        class="px-2.5 py-1.5 text-xs font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition disabled:opacity-30 disabled:cursor-not-allowed">&raquo;</button>
+            </div>
         </div>
     </div>
 
@@ -235,6 +257,8 @@ function mailerApp() {
         filterPlan: '',
         sortCol: 'name',
         sortDir: 'asc',
+        perPage: 25,
+        currentPage: 1,
         subject: '',
         body: '',
         sending: false,
@@ -261,6 +285,36 @@ function mailerApp() {
                 const bv = (b[col] || '').toLowerCase();
                 return av < bv ? -dir : av > bv ? dir : 0;
             });
+        },
+
+        get totalPages() {
+            return Math.max(1, Math.ceil(this.filteredUsers.length / this.perPage));
+        },
+
+        get paginatedUsers() {
+            const start = (this.currentPage - 1) * this.perPage;
+            return this.sortedUsers.slice(start, start + this.perPage);
+        },
+
+        get pageStart() {
+            return this.filteredUsers.length === 0 ? 0 : (this.currentPage - 1) * this.perPage + 1;
+        },
+
+        get pageEnd() {
+            return Math.min(this.currentPage * this.perPage, this.filteredUsers.length);
+        },
+
+        get pageNumbers() {
+            const total = this.totalPages;
+            const cur = this.currentPage;
+            if (total <= 7) return Array.from({length: total}, (_, i) => i + 1);
+            const pages = [];
+            pages.push(1);
+            if (cur > 3) pages.push('...');
+            for (let i = Math.max(2, cur - 1); i <= Math.min(total - 1, cur + 1); i++) pages.push(i);
+            if (cur < total - 2) pages.push('...');
+            pages.push(total);
+            return pages;
         },
 
         get visibleCount() {

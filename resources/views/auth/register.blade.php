@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 @section('title', 'Create Account')
 @section('content')
-<h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Create Your Account</h2>
+<h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">BusyRealtor Registration</h2>
 
 <div class="flex flex-col gap-2">
 <a href="{{ route('auth.google') }}" class="google-btn w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
@@ -60,15 +60,49 @@
     <div class="grid grid-cols-2 gap-4">
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <input type="password" name="password" required minlength="8"
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="relative">
+                <input id="reg-password" type="password" name="password" required minlength="8"
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="button" onclick="togglePw('reg-password')"
+                        class="absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5 eye-on" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <svg class="w-5 h-5 eye-off hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 012.071-3.454m3.084-2.757A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.97 9.97 0 01-1.938 3.259M3 3l18 18"/>
+                    </svg>
+                </button>
+            </div>
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Confirm</label>
-            <input type="password" name="password_confirmation" required
-                   class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <div class="relative">
+                <input id="reg-password-confirm" type="password" name="password_confirmation" required
+                       class="w-full border border-gray-300 rounded-lg px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <button type="button" onclick="togglePw('reg-password-confirm')"
+                        class="absolute inset-y-0 right-0 flex items-center px-2.5 text-gray-400 hover:text-gray-600">
+                    <svg class="w-5 h-5 eye-on" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                    </svg>
+                    <svg class="w-5 h-5 eye-off hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.97 9.97 0 012.071-3.454m3.084-2.757A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a9.97 9.97 0 01-1.938 3.259M3 3l18 18"/>
+                    </svg>
+                </button>
+            </div>
         </div>
     </div>
+    <script>
+    function togglePw(id) {
+        const input = document.getElementById(id);
+        const btn = input.nextElementSibling;
+        const showing = input.type === 'text';
+        input.type = showing ? 'password' : 'text';
+        btn.querySelector('.eye-on').classList.toggle('hidden', !showing);
+        btn.querySelector('.eye-off').classList.toggle('hidden', showing);
+    }
+    </script>
     <div class="flex items-start">
         <input type="checkbox" name="terms" id="terms" required class="mt-1 mr-2 rounded">
         <label for="terms" class="text-sm text-gray-600">I agree to the <a href="/terms" class="text-blue-600 hover:underline">Terms of Service</a> and <a href="/privacy-policy" class="text-blue-600 hover:underline">Privacy Policy</a></label>

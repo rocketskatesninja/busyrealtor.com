@@ -76,15 +76,29 @@
         </div>
     </div>
     <div id="marketing-mobile-menu" style="display:none" class="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-lg">
-        <div class="px-4 py-3 space-y-2">
-            <a href="#features" onclick="marketingNavClose()" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Features</a>
-            <a href="#demo" onclick="marketingNavClose()" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Demo</a>
-            <a href="#pricing" onclick="marketingNavClose()" class="block py-2 text-gray-700 dark:text-gray-300 font-medium">Pricing</a>
-            <div class="pt-2 border-t border-gray-100 flex gap-3">
-                <a href="/login" class="flex-1 text-center py-2 text-gray-600 dark:text-gray-300 font-medium rounded-lg border border-gray-200 dark:border-gray-700">Sign In</a>
-                <a href="/register" class="flex-1 text-center py-2 bg-orange-500 text-white font-semibold rounded-lg">Get Started</a>
-            </div>
-        </div>
+        <nav class="px-4 py-3 space-y-1">
+            <a href="#features" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Features
+            </a>
+            <a href="#demo" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                Demo
+            </a>
+            <a href="#pricing" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Pricing
+            </a>
+            <div class="border-t my-2"></div>
+            <a href="/login" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
+                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
+                Sign In
+            </a>
+            <a href="/register" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600 font-semibold">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                Get Started Free
+            </a>
+        </nav>
     </div>
 </header>
 <script>

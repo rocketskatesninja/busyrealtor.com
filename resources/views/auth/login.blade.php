@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 @section('title', 'Login')
 @section('content')
-<h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">Welcome Back</h2>
+<h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">BusyRealtor Login</h2>
 
 <div class="flex flex-col gap-2">
 <a href="{{ route('auth.google') }}" class="google-btn w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">

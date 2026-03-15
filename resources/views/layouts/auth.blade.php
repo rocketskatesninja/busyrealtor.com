@@ -63,10 +63,7 @@
     {{-- Centered card --}}
     <div class="flex-1 flex items-center justify-center py-12 px-4">
         <div class="w-full max-w-md">
-            <div class="text-center mb-8">
-                <a href="/" class="text-3xl font-bold text-gray-900 dark:text-white">BusyRealtor</a>
-                <p class="text-gray-500 dark:text-gray-400 mt-2 text-sm">Real Estate Management Platform</p>
-            </div>
+
             <div class="bg-white rounded-2xl shadow-2xl p-8">
                 @yield('content')
             </div>
