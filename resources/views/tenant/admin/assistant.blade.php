@@ -1,6 +1,7 @@
 @extends('layouts.admin')
 
 @section('title', 'AI Assistant')
+@section('page-subtitle', 'Your AI-powered real estate sidekick')
 
 @section('content')
 <style>main{min-height:0!important;overflow:hidden;}body{overflow:hidden;}#user-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 20%,transparent);}</style>
@@ -8,17 +9,8 @@
      style="max-width:1281px; min-height:500px;">
 
     {{-- Header --}}
-    <div class="flex items-center justify-between px-6 py-4 border-b bg-white flex-shrink-0">
-        <div>
-            <div class="flex items-center gap-2">
-                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                </svg>
-                <h1 class="text-lg font-bold text-gray-900">AI Assistant</h1>
-            </div>
-            <p class="text-xs text-gray-400 mt-0.5 ml-7">Powered by {{ $providerLabel }} &middot; {{ $modelLabel }}</p>
-        </div>
+    <div class="flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-white flex-shrink-0">
+        <p class="text-xs text-gray-400">Powered by {{ $providerLabel }} &middot; {{ $modelLabel }}</p>
         <a href="{{ route('tenant.admin.assistant', $account) }}?new=1"
            title="Start a new conversation"
            class="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-700 border border-gray-200 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition-colors">
@@ -89,7 +81,7 @@
     </div>
 
     {{-- Disclaimer --}}
-    <div x-data class="border-t flex-shrink-0 transition-colors"
+    <div x-data class="border-t border-gray-200 flex-shrink-0 transition-colors"
          class="border disclaimer-banner">
         <div style="display:flex; align-items:flex-start; gap:8px; padding:8px 20px;">
             <svg class="flex-shrink-0 disclaimer-icon" style="width:14px; height:14px; margin-top:2px;"
@@ -104,7 +96,7 @@
     </div>
 
     {{-- Input --}}
-    <div class="border-t bg-white flex-shrink-0 px-4 py-3">
+    <div class="border-t border-gray-200 bg-white flex-shrink-0 px-4 py-3">
         <div style="display:flex; gap:12px; align-items:flex-end;">
             <textarea id="user-input" rows="1"
                 placeholder="Ask anything about your listings, messages, or appointments&hellip;"

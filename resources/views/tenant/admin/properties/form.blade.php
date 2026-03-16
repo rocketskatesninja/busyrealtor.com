@@ -34,11 +34,11 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Property Title *</label>
-                    <input type="text" name="title" value="{{ old('title', $property->title ?? '') }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" name="title" value="{{ old('title', $property->title ?? '') }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Listing Status *</label>
-                    <select name="listing_status" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="listing_status" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         @foreach(['active'=>'Active','pending'=>'Pending','sold'=>'Sold','off-market'=>'Off Market','featured'=>'Featured','withdrawn'=>'Withdrawn'] as $v=>$l)
                         <option value="{{ $v }}" {{ old('listing_status', $property->listing_status ?? 'active') === $v ? 'selected' : '' }}>{{ $l }}</option>
                         @endforeach
@@ -46,7 +46,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Property Type *</label>
-                    <select name="property_type" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="property_type" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         @foreach(['house'=>'House','condo'=>'Condo','townhouse'=>'Townhouse','land'=>'Land','commercial'=>'Commercial','multi_family'=>'Multi-Family'] as $v=>$l)
                         <option value="{{ $v }}" {{ old('property_type', $property->property_type ?? '') === $v ? 'selected' : '' }}>{{ $l }}</option>
                         @endforeach
@@ -56,12 +56,12 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">Price</label>
                     <div class="relative">
                         <span class="absolute left-3 top-2.5 text-gray-500 text-sm">$</span>
-                        <input type="number" name="price" value="{{ old('price', $property->price ?? '') }}" class="w-full border border-gray-200 rounded-lg pl-7 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="number" name="price" value="{{ old('price', $property->price ?? '') }}" class="w-full border border-gray-200 rounded-lg pl-7 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">HOA Fees ($/mo)</label>
-                    <input type="number" name="hoa_fees" value="{{ old('hoa_fees', $property->hoa_fees ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" name="hoa_fees" value="{{ old('hoa_fees', $property->hoa_fees ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div class="md:col-span-2">
                     <div class="flex items-center justify-between mb-1">
@@ -73,19 +73,19 @@
                             <span x-text="generating ? 'Generating...' : 'Generate with AI'"></span>
                         </button>
                     </div>
-                    <textarea id="description" name="description" rows="5" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ old('description', $property->description ?? '') }}</textarea>
+                    <textarea id="description" name="description" rows="5" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none">{{ old('description', $property->description ?? '') }}</textarea>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">MLS Number</label>
-                    <input type="text" name="mls_number" value="{{ old('mls_number', $property->mls_number ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" name="mls_number" value="{{ old('mls_number', $property->mls_number ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Virtual Tour URL</label>
-                    <input type="url" name="virtual_tour_url" value="{{ old('virtual_tour_url', $property->virtual_tour_url ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="url" name="virtual_tour_url" value="{{ old('virtual_tour_url', $property->virtual_tour_url ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Assigned Agent / Staff</label>
-                    <select name="staff_member_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <select name="staff_member_id" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         <option value="">— None —</option>
                         @foreach($staffMembers as $sm)
                         <option value="{{ $sm->id }}" {{ old('staff_member_id', $property->staff_member_id ?? '') == $sm->id ? 'selected' : '' }}>{{ $sm->name }}</option>
@@ -106,7 +106,7 @@
                 @foreach(['bedrooms'=>'Bedrooms','bathrooms'=>'Bathrooms','half_baths'=>'Half Baths','sqft'=>'Sq Ft','lot_size'=>'Lot Size','year_built'=>'Year Built','garage_spaces'=>'Garage Spaces'] as $field => $label)
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">{{ $label }}</label>
-                    <input type="number" name="{{ $field }}" value="{{ old($field, $property->$field ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" name="{{ $field }}" value="{{ old($field, $property->$field ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 @endforeach
             </div>
@@ -129,21 +129,21 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
-                    <input type="text" name="address" value="{{ old('address', $property->address ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" name="address" value="{{ old('address', $property->address ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Address Line 2 <span class="text-gray-400 font-normal">(Apt, Suite, Unit)</span></label>
-                    <input type="text" name="address_line_2" value="{{ old('address_line_2', $property->address_line_2 ?? '') }}" placeholder="Apt 4B, Suite 200, Unit 12..." class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" name="address_line_2" value="{{ old('address_line_2', $property->address_line_2 ?? '') }}" placeholder="Apt 4B, Suite 200, Unit 12..." class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div class="md:col-span-2">
                     <div class="grid grid-cols-4 gap-5">
                         <div class="col-span-2">
                             <label class="block text-sm font-medium text-gray-700 mb-1">City</label>
-                            <input type="text" name="city" value="{{ old('city', $property->city ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="city" value="{{ old('city', $property->city ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">State</label>
-                            <select name="state" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                            <select name="state" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] bg-white">
                             <option value="" {{ old('state', $property->state ?? '') == '' ? 'selected' : '' }}>Select State</option>
                             <option value="AL" {{ old('state', $property->state ?? '') == 'AL' ? 'selected' : '' }}>AL — Alabama</option>
                             <option value="AK" {{ old('state', $property->state ?? '') == 'AK' ? 'selected' : '' }}>AK — Alaska</option>
@@ -200,17 +200,17 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">ZIP Code</label>
-                            <input type="text" name="zip" value="{{ old('zip', $property->zip ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <input type="text" name="zip" value="{{ old('zip', $property->zip ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                     </div>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
-                    <input type="number" step="any" name="latitude" value="{{ old('latitude', $property->latitude ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" step="any" name="latitude" value="{{ old('latitude', $property->latitude ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
-                    <input type="number" step="any" name="longitude" value="{{ old('longitude', $property->longitude ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="number" step="any" name="longitude" value="{{ old('longitude', $property->longitude ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
             </div>
         </div>

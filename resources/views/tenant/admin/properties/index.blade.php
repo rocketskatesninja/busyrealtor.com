@@ -52,15 +52,15 @@
     <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">
         <form method="GET" class="flex flex-wrap gap-3 items-end justify-center md:justify-start">
             <div class="w-full md:flex-1 md:min-w-40">
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search properties..." class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Search properties..." class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
             </div>
-            <select name="type" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select name="type" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 <option value="">All Types</option>
                 @foreach(['house'=>'House','condo'=>'Condo','townhouse'=>'Townhouse','land'=>'Land','commercial'=>'Commercial'] as $v=>$l)
                     <option value="{{ $v }}" {{ request('type') === $v ? 'selected' : '' }}>{{ $l }}</option>
                 @endforeach
             </select>
-            <select name="status" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <select name="status" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 <option value="">All Statuses</option>
                 @foreach(['active'=>'Active','pending'=>'Pending','sold'=>'Sold','off-market'=>'Off Market','featured'=>'Featured','withdrawn'=>'Withdrawn'] as $v=>$l)
                     <option value="{{ $v }}" {{ request('status') === $v ? 'selected' : '' }}>{{ $l }}</option>

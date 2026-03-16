@@ -8,14 +8,14 @@
     {{-- Filters --}}
     <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">
         <form method="GET" class="flex flex-wrap gap-3 items-end">
-            <select name="status" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none">
+            <select name="status" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 <option value="">All Statuses</option>
                 @foreach(['pending'=>'Pending','confirmed'=>'Confirmed','completed'=>'Completed','cancelled'=>'Cancelled'] as $v=>$l)
                     <option value="{{ $v }}" {{ request('status')===$v ? 'selected' : '' }}>{{ $l }}</option>
                 @endforeach
             </select>
-            <input type="date" name="date_from" value="{{ request('date_from') }}" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none">
-            <input type="date" name="date_to" value="{{ request('date_to') }}" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none">
+            <input type="date" name="date_from" value="{{ request('date_from') }}" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+            <input type="date" name="date_to" value="{{ request('date_to') }}" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
             <button type="submit" class="btn-primary px-5 py-2.5 rounded-lg font-semibold text-sm hover:opacity-90 transition">Filter</button>
             @if(request()->hasAny(['status','date_from','date_to'])) <a href="{{ route('tenant.admin.appointments.index', $account) }}" class="text-sm text-gray-500 py-2.5">Clear</a> @endif
         </form>

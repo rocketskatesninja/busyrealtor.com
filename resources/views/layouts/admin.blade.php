@@ -291,6 +291,11 @@
                             <span class="absolute -top-1 -right-1 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" style="background-color: var(--primary);">{{ $unreadMessages > 9 ? '9+' : $unreadMessages }}</span>
                         @endif
                     </a>
+                    @if($tenant->isPro())
+                    <a href="{{ route('tenant.admin.assistant', $account) }}" class="{{ request()->routeIs('tenant.admin.assistant') ? 'nav-active' : 'text-gray-700 hover-primary' }} transition-colors" title="AI Assistant (Pro)">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                    </a>
+                    @endif
                 </nav>
                 <div class="relative">
                     <button onclick="toggleUserMenu()" id="user-menu-btn" class="flex items-center space-x-2 text-gray-700 hover-primary focus:outline-none">
@@ -306,12 +311,6 @@
                             <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                             Billing
                         </a>
-                        @if($tenant->isPro())
-                        <a href="{{ route('tenant.admin.assistant', $account) }}" class="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm">
-                            <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-                            Assistant
-                        </a>
-                        @endif
                         <button onclick="toggleDarkMode()" class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm text-left">
                             <svg class="w-4 h-4 mr-3 text-gray-500 dark-mode-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                             <svg class="w-4 h-4 mr-3 text-gray-500 dark-mode-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
@@ -325,7 +324,7 @@
                             <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                             View Website
                         </a>
-                        <hr class="my-1">
+                        <div class="border-t my-1"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <button type="submit" class="flex items-center w-full px-4 py-2 text-red-600 hover:bg-gray-100 text-sm">

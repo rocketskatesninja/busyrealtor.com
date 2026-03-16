@@ -13,7 +13,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Subject <span class="text-red-500">*</span></label>
                 <input type="text" name="subject" value="{{ old('subject') }}" required maxlength="200"
                        placeholder="e.g. Map not loading, Feature request: bulk delete…"
-                       class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 @error('subject') border-red-400 @enderror">
+                       class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] @error('subject') border-red-400 @enderror">
                 @error('subject') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
@@ -21,7 +21,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-1">Message <span class="text-red-500">*</span></label>
                 <textarea name="message" required rows="6" maxlength="5000"
                           placeholder="Describe the issue or feedback in detail. Include steps to reproduce if it's a bug."
-                          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none @error('message') border-red-400 @enderror">{{ old('message') }}</textarea>
+                          class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none @error('message') border-red-400 @enderror">{{ old('message') }}</textarea>
                 @error('message') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 

@@ -11,7 +11,7 @@
             {{-- Filters --}}
             <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
                 <form method="GET" class="space-y-2">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search messages..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search messages..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                     <div class="grid grid-cols-2 gap-2">
                         <select name="type" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
                             <option value="">All Types</option>
