@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # =============================================================================
 # BusyRealtor.com — Server Install Script
-# Supports: Ubuntu 22.04 / 24.04 LTS
+# Supports: Debian 13 (Trixie), Ubuntu 22.04 / 24.04 LTS
 # Web servers: Apache (default) or Nginx (pass --nginx flag)
 # Usage:
 #   bash install.sh                          # interactive
@@ -31,6 +31,10 @@ header()  { echo -e "\n${BOLD}${BLUE}═══ $* ═══${NC}\n"; }
 # ── Root check ─────────────────────────────────────────────────────────────────
 [[ $EUID -eq 0 ]] || error "Run this script as root: sudo bash install.sh"
 
+# ── Detect distro ─────────────────────────────────────────────────────────────
+IS_UBUNTU=false
+grep -qi ubuntu /etc/os-release && IS_UBUNTU=true
+
 # ── Default values ─────────────────────────────────────────────────────────────
 WEB_SERVER="apache"
 DOMAIN=""
@@ -42,7 +46,7 @@ REPO_URL=""
 RUN_SSL=false
 SSL_EMAIL=""
 WEBSERVER_USER="www-data"
-PHP_VER="8.3"
+PHP_VER="8.4"
 
 # ── Parse args ─────────────────────────────────────────────────────────────────
 for arg in "$@"; do
@@ -103,6 +107,7 @@ info "App path   : $APP_PATH"
 info "DB name    : $DB_NAME"
 info "DB user    : $DB_USER"
 info "SSL        : $RUN_SSL"
+info "Distro     : $($IS_UBUNTU && echo 'Ubuntu' || echo 'Debian')"
 echo ""
 read -rp "Proceed with installation? [y/N]: " confirm
 [[ "$confirm" =~ ^[Yy]$ ]] || { info "Aborted."; exit 0; }
@@ -115,14 +120,19 @@ header "System Packages"
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -qq
 
-# PHP repository
+# PHP repository — only needed on Ubuntu; Debian 13+ ships PHP 8.4 natively
 if ! php${PHP_VER} --version &>/dev/null; then
-    info "Adding Ondrej PHP PPA..."
-    apt-get install -y -qq software-properties-common
-    add-apt-repository -y ppa:ondrej/php
-    apt-get update -qq
+    if [[ "$IS_UBUNTU" == "true" ]]; then
+        info "Adding Ondrej PHP PPA (Ubuntu)..."
+        apt-get install -y -qq software-properties-common
+        add-apt-repository -y ppa:ondrej/php
+        apt-get update -qq
+    else
+        info "Using default repos for PHP ${PHP_VER} (Debian)..."
+    fi
 fi
 
+# Core extensions — sodium, json, fileinfo, tokenizer, ctype are bundled in PHP 8.4+
 PHP_EXTENSIONS=(
     "php${PHP_VER}"
     "php${PHP_VER}-cli"
@@ -135,18 +145,23 @@ PHP_EXTENSIONS=(
     "php${PHP_VER}-gd"
     "php${PHP_VER}-bcmath"
     "php${PHP_VER}-intl"
-    "php${PHP_VER}-sodium"
-    "php${PHP_VER}-fileinfo"
-    "php${PHP_VER}-tokenizer"
-    "php${PHP_VER}-ctype"
-    "php${PHP_VER}-json"
 )
 
 info "Installing PHP ${PHP_VER} and extensions..."
 apt-get install -y -qq "${PHP_EXTENSIONS[@]}"
 
-info "Installing MySQL server..."
-apt-get install -y -qq mysql-server
+# MariaDB on Debian, MySQL on Ubuntu
+if [[ "$IS_UBUNTU" == "true" ]]; then
+    info "Installing MySQL server..."
+    apt-get install -y -qq mysql-server
+    DB_SERVICE="mysql"
+    DB_CLIENT="mysql"
+else
+    info "Installing MariaDB server..."
+    apt-get install -y -qq mariadb-server
+    DB_SERVICE="mariadb"
+    DB_CLIENT="mariadb"
+fi
 
 if [[ "$WEB_SERVER" == "nginx" ]]; then
     info "Installing Nginx..."
@@ -168,7 +183,7 @@ fi
 
 info "Installing Node.js 20 (required for Vite build)..."
 if ! node --version 2>/dev/null | grep -qE "^v(20|22)"; then
-    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - -qq
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
     apt-get install -y -qq nodejs
 fi
 
@@ -188,9 +203,9 @@ success "System packages installed."
 # =============================================================================
 header "Database Setup"
 
-info "Starting MySQL service..."
-systemctl enable mysql --quiet
-systemctl start mysql
+info "Starting database service..."
+systemctl enable "$DB_SERVICE" --quiet
+systemctl start "$DB_SERVICE"
 
 info "Creating database and user..."
 
@@ -203,7 +218,7 @@ GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';
 FLUSH PRIVILEGES;
 SQL
 
-mysql --defaults-file=/dev/null -u root < "$SQL_SETUP_FILE"
+$DB_CLIENT -u root < "$SQL_SETUP_FILE"
 rm -f "$SQL_SETUP_FILE"
 success "Database '${DB_NAME}' and user '${DB_USER}' created."
 
@@ -217,10 +232,16 @@ if [[ -n "$REPO_URL" ]]; then
     git clone "$REPO_URL" "$APP_PATH"
 else
     if [[ -f "$(dirname "$0")/artisan" ]]; then
-        info "Copying application from current directory..."
-        rsync -a --exclude='.git' --exclude='vendor' --exclude='node_modules' \
-              --exclude='storage/logs/*.log' \
-              "$(dirname "$0")/" "$APP_PATH/"
+        SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+        DEST_DIR="$(cd "$APP_PATH" 2>/dev/null && pwd || echo "$APP_PATH")"
+        if [[ "$SCRIPT_DIR" != "$DEST_DIR" ]]; then
+            info "Copying application from current directory..."
+            rsync -a --exclude='.git' --exclude='vendor' --exclude='node_modules' \
+                  --exclude='storage/logs/*.log' \
+                  "$SCRIPT_DIR/" "$APP_PATH/"
+        else
+            info "Application already at ${APP_PATH}, skipping copy."
+        fi
     else
         error "No --repo provided and artisan not found in current directory. Cannot install app."
     fi
@@ -229,7 +250,7 @@ fi
 cd "$APP_PATH"
 
 info "Installing Composer dependencies..."
-composer install --no-dev --optimize-autoloader --quiet
+COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-scripts --quiet
 
 info "Installing npm dependencies and building frontend assets..."
 npm install --quiet
@@ -238,6 +259,16 @@ npm run build
 # =============================================================================
 # 4. ENVIRONMENT FILE
 # =============================================================================
+
+# Ensure required directories exist before any artisan commands
+mkdir -p "${APP_PATH}/bootstrap/cache"
+mkdir -p "${APP_PATH}/storage/framework/sessions"
+mkdir -p "${APP_PATH}/storage/framework/views"
+mkdir -p "${APP_PATH}/storage/framework/cache/data"
+mkdir -p "${APP_PATH}/storage/logs"
+chmod -R 775 "${APP_PATH}/bootstrap/cache"
+chmod -R 775 "${APP_PATH}/storage"
+
 header "Environment Configuration"
 
 ENV_FILE="${APP_PATH}/.env"
@@ -257,6 +288,11 @@ sed -i "s|DB_PASSWORD=.*|DB_PASSWORD=${DB_PASS}|"          "$ENV_FILE"
 sed -i "s|MAIL_FROM_ADDRESS=.*|MAIL_FROM_ADDRESS=noreply@${DOMAIN}|" "$ENV_FILE"
 
 php artisan key:generate --force --quiet
+
+# Run package discovery now that .env exists
+COMPOSER_ALLOW_SUPERUSER=1 composer dump-autoload --optimize --quiet
+php artisan package:discover --ansi
+
 success ".env configured."
 
 # =============================================================================
@@ -329,13 +365,22 @@ if [[ "$WEB_SERVER" == "apache" ]]; then
 
     # Enable required modules
     a2enmod rewrite headers ssl deflate expires proxy_fcgi setenvif
+
+    # Use event MPM (not prefork) — much better with FPM
+    a2dismod mpm_prefork 2>/dev/null || true
+    a2enmod  mpm_event   2>/dev/null || true
+    # Ensure mod_php is not loaded (conflicts with event MPM)
+    a2dismod "php${PHP_VER}" 2>/dev/null || true
+
     a2enconf "php${PHP_VER}-fpm"
 
+    # Write HTTP-only vhost — certbot creates the SSL vhost via --ssl flag
     APACHE_CONF="${CONF_DIR_APACHE}/${DOMAIN}.conf"
     cat > "$APACHE_CONF" <<APACHECONF
-# BusyRealtor — Apache Virtual Host
+# BusyRealtor — Apache Virtual Host (HTTP)
 # Domain: ${DOMAIN}
 # Generated by install.sh on $(date +%Y-%m-%d)
+# SSL vhost is created automatically by certbot
 
 <VirtualHost *:80>
     ServerName ${DOMAIN}
@@ -358,50 +403,8 @@ if [[ "$WEB_SERVER" == "apache" ]]; then
         SetHandler "proxy:unix:/run/php/php${PHP_VER}-fpm.sock|fcgi://localhost"
     </FilesMatch>
 
-    # Redirect to HTTPS (activated automatically if SSL is configured)
-    RewriteEngine On
-    RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
     ErrorLog \${APACHE_LOG_DIR}/${DOMAIN}_error.log
     CustomLog \${APACHE_LOG_DIR}/${DOMAIN}_access.log combined
-    LogLevel warn
-</VirtualHost>
-
-<VirtualHost *:443>
-    ServerName ${DOMAIN}
-    ServerAlias www.${DOMAIN}
-    DocumentRoot ${APP_PATH}/public
-
-    <Directory ${APP_PATH}/public>
-        Options -Indexes +FollowSymLinks
-        AllowOverride All
-        Require all granted
-
-        Header always set X-Content-Type-Options "nosniff"
-        Header always set X-Frame-Options "SAMEORIGIN"
-        Header always set X-XSS-Protection "1; mode=block"
-        Header always set Referrer-Policy "strict-origin-when-cross-origin"
-        Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload"
-    </Directory>
-
-    # PHP via PHP-FPM
-    <FilesMatch "\.php$">
-        SetHandler "proxy:unix:/run/php/php${PHP_VER}-fpm.sock|fcgi://localhost"
-    </FilesMatch>
-
-    SSLEngine on
-    # Certificate paths — filled in by Certbot, or set manually:
-    SSLCertificateFile    /etc/letsencrypt/live/${DOMAIN}/fullchain.pem
-    SSLCertificateKeyFile /etc/letsencrypt/live/${DOMAIN}/privkey.pem
-
-    SSLProtocol           all -SSLv3 -TLSv1 -TLSv1.1
-    SSLCipherSuite        ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384
-    SSLHonorCipherOrder   off
-    SSLSessionTickets     off
-
-    ErrorLog \${APACHE_LOG_DIR}/${DOMAIN}_ssl_error.log
-    CustomLog \${APACHE_LOG_DIR}/${DOMAIN}_ssl_access.log combined
     LogLevel warn
 </VirtualHost>
 
@@ -415,10 +418,12 @@ if [[ "$WEB_SERVER" == "apache" ]]; then
 </Directory>
 APACHECONF
 
+    # Disable default site, enable ours
+    a2dissite 000-default.conf 2>/dev/null || true
     a2ensite "${DOMAIN}.conf"
     systemctl enable apache2 --quiet
-    systemctl reload apache2
-    success "Apache configured and reloaded."
+    systemctl restart apache2
+    success "Apache configured and restarted."
 
 else
     info "Configuring Nginx..."
@@ -426,46 +431,27 @@ else
     systemctl enable "php${PHP_VER}-fpm" --quiet
     systemctl start  "php${PHP_VER}-fpm"
 
+    # Write HTTP-only server block — certbot adds SSL via --ssl flag
     NGINX_CONF="${CONF_DIR_NGINX}/${DOMAIN}.conf"
     cat > "$NGINX_CONF" <<NGINXCONF
-# BusyRealtor — Nginx Server Block
+# BusyRealtor — Nginx Server Block (HTTP)
 # Domain: ${DOMAIN}
 # Generated by install.sh on $(date +%Y-%m-%d)
+# SSL block is created automatically by certbot
 
-# Redirect HTTP → HTTPS
 server {
     listen 80;
     listen [::]:80;
     server_name ${DOMAIN} www.${DOMAIN};
-    return 301 https://\$host\$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name ${DOMAIN} www.${DOMAIN};
 
     root ${APP_PATH}/public;
     index index.php index.html;
-
-    # SSL — filled by Certbot, or set manually:
-    ssl_certificate     /etc/letsencrypt/live/${DOMAIN}/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/${DOMAIN}/privkey.pem;
-
-    ssl_protocols             TLSv1.2 TLSv1.3;
-    ssl_ciphers               ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
-    ssl_prefer_server_ciphers off;
-    ssl_session_cache         shared:SSL:10m;
-    ssl_session_tickets       off;
-    ssl_stapling              on;
-    ssl_stapling_verify       on;
 
     # Security headers
     add_header X-Frame-Options           "SAMEORIGIN"                        always;
     add_header X-Content-Type-Options    "nosniff"                           always;
     add_header X-XSS-Protection          "1; mode=block"                     always;
     add_header Referrer-Policy           "strict-origin-when-cross-origin"   always;
-    add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
 
     # Logs
     access_log /var/log/nginx/${DOMAIN}_access.log;
@@ -511,8 +497,8 @@ NGINXCONF
     rm -f "${CONF_ENABLED_NGINX}/default" 2>/dev/null || true
     nginx -t
     systemctl enable nginx --quiet
-    systemctl reload nginx
-    success "Nginx configured and reloaded."
+    systemctl restart nginx
+    success "Nginx configured and restarted."
 fi
 
 # =============================================================================
@@ -546,7 +532,7 @@ QUEUE_SERVICE_FILE="/etc/systemd/system/busyrealtor-queue.service"
 cat > "$QUEUE_SERVICE_FILE" <<QUEUESERVICE
 [Unit]
 Description=BusyRealtor Laravel Queue Worker
-After=network.target mysql.service
+After=network.target ${DB_SERVICE}.service
 
 [Service]
 User=${WEBSERVER_USER}
