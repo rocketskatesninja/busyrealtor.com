@@ -25,7 +25,7 @@ class BillingController extends Controller
         }
     }
 
-    public function show()
+    public function show($account)
     {
         $tenant   = app('tenant');
         $sys      = SystemSetting::get();

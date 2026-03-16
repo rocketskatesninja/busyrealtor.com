@@ -137,11 +137,12 @@ class RestoreController extends Controller
             $destPath = "{$storageBase}/{$destRelative}";
 
             // Guard against path traversal in crafted ZIPs
+            if (str_contains($destRelative, '..')) continue;
             $realBase = realpath($storageBase);
-            $realDest = realpath(dirname($destPath)) ?: dirname($destPath);
-            if (!str_starts_with($realDest . '/', $realBase . '/')) continue;
-
             @mkdir(dirname($destPath), 0775, true);
+            $realDest = realpath(dirname($destPath));
+            if (!$realDest || !str_starts_with($realDest . '/', $realBase . '/')) continue;
+
             file_put_contents($destPath, $zip->getFromIndex($i));
             $r['files']++;
         }

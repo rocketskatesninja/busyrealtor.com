@@ -46,13 +46,12 @@ Route::get('/sitemap.xml', [MarketingController::class, 'sitemap'])->name('sitem
 Route::get('/marketing-sitemap.xml', [MarketingController::class, 'sitemapPages'])->name('sitemap.pages');
 
 // Email unsubscribe (signed URL, no auth needed)
-Route::get('/email/unsubscribe/{token}', function (string $token) {
-    $user = \App\Models\User::where('id', base64_decode($token))->first();
-    if ($user && !$user->unsubscribed_at) {
+Route::get('/email/unsubscribe/{user}', function (\App\Models\User $user) {
+    if (!$user->unsubscribed_at) {
         $user->update(['unsubscribed_at' => now()]);
     }
     return view('emails.unsubscribed');
-})->name('email.unsubscribe');
+})->name('email.unsubscribe')->middleware('signed');
 
 // Auth routes (no tenant)
 Route::middleware('guest')->group(function () {
@@ -197,9 +196,9 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
 
         // Export/Backup/Test Email
         Route::get('/api/export/{type}', [ExportController::class, 'export'])->name('api.export');
-        Route::post('/api/backup', [BackupController::class, 'create'])->name('api.backup');
-        Route::post('/api/restore', [RestoreController::class, 'restore'])->name('api.restore');
-        Route::post('/api/test-email', [TestEmailController::class, 'send'])->name('api.test-email');
+        Route::post('/api/backup', [BackupController::class, 'create'])->middleware('throttle:5,1')->name('api.backup');
+        Route::post('/api/restore', [RestoreController::class, 'restore'])->middleware('throttle:5,1')->name('api.restore');
+        Route::post('/api/test-email', [TestEmailController::class, 'send'])->middleware('throttle:10,1')->name('api.test-email');
 
     });
 

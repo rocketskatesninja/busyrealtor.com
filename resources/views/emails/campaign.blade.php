@@ -72,7 +72,7 @@
                         <td style="padding:20px 16px;text-align:center;">
                             <p style="margin:0;font-size:11px;color:#9ca3af;line-height:1.5;">
                                 You're receiving this because you have an account on BusyRealtor.<br>
-                                <a href="{{ url('/email/unsubscribe/' . $unsubscribeToken) }}" style="color:#9ca3af;text-decoration:underline;">Unsubscribe</a>
+                                <a href="{{ $unsubscribeUrl }}" style="color:#9ca3af;text-decoration:underline;">Unsubscribe</a>
                                 &middot; &copy; {{ date('Y') }} Punchlist Labs
                             </p>
                         </td>

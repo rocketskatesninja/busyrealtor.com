@@ -51,6 +51,7 @@ class SettingsController extends Controller
             try {
                 Auth::user()->sendEmailVerificationNotification();
             } catch (\Exception $e) {
+                \Log::warning('Email verification send failed', ['user_id' => Auth::id(), 'error' => $e->getMessage()]);
                 return redirect()->route('tenant.admin.settings', ['account' => $account, 'tab' => 'profile'])
                     ->with('error', 'Email updated but verification email could not be sent. Please configure SMTP settings or contact support.');
             }

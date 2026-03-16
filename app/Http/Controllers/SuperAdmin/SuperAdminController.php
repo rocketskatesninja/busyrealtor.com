@@ -195,7 +195,7 @@ class SuperAdminController extends Controller
                     [$user->first_name, $user->last_name, $user->email],
                     $bodyTemplate
                 );
-                Mail::to($user->email)->send(new CampaignMail($subject, $personalizedBody, base64_encode($user->id)));
+                Mail::to($user->email)->send(new CampaignMail($subject, $personalizedBody, $user));
             }
         }
 
