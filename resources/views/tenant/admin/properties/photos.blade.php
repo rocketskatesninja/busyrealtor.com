@@ -216,7 +216,7 @@
         fd.append('property_id', propertyId);
         fd.append('_token',      CSRF);
         try {
-            const res  = await fetch(API_URL, { method: 'POST', body: fd });
+            const res  = await fetch(API_URL, { method: 'POST', body: fd, headers: { 'Accept': 'application/json' } });
             const data = await res.json();
             if (!res.ok) {
                 setErr(li, data?.message ?? data?.errors?.image?.[0] ?? ('HTTP ' + res.status));

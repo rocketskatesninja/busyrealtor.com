@@ -176,6 +176,15 @@ apt-get install -y -qq "php${PHP_VER}-fpm"
 systemctl enable "php${PHP_VER}-fpm" --quiet
 systemctl start  "php${PHP_VER}-fpm"
 
+# Increase PHP upload limits for image uploads
+PHP_FPM_INI="/etc/php/${PHP_VER}/fpm/php.ini"
+if [ -f "$PHP_FPM_INI" ]; then
+    sed -i 's/^upload_max_filesize = .*/upload_max_filesize = 20M/' "$PHP_FPM_INI"
+    sed -i 's/^post_max_size = .*/post_max_size = 25M/' "$PHP_FPM_INI"
+    systemctl reload "php${PHP_VER}-fpm"
+    info "PHP upload limits set to 20M / 25M"
+fi
+
 info "Installing Composer..."
 if ! command -v composer &>/dev/null; then
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
