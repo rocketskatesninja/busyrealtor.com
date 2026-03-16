@@ -435,10 +435,10 @@ $heroPresets = [
                     <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Property Type <span class="text-red-400">*</span></label>
                     <select x-model="data.prop_type" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         <option value="">Select...</option>
-                        <option value="single-family">Single Family</option>
+                        <option value="house">House / Single Family</option>
                         <option value="condo">Condo</option>
                         <option value="townhouse">Townhouse</option>
-                        <option value="multi-family">Multi-Family</option>
+                        <option value="multi_family">Multi-Family</option>
                         <option value="land">Land</option>
                         <option value="commercial">Commercial</option>
                     </select>
@@ -714,7 +714,7 @@ function setupWizard() {
                             return;
                         }
                         body.append('title', this.data.prop_title);
-                        body.append('property_type', this.data.prop_type || 'single-family');
+                        body.append('property_type', this.data.prop_type || 'house');
                         body.append('price', this.data.prop_price);
                         body.append('address', this.data.prop_address);
                         body.append('city', this.data.prop_city);
