@@ -119,6 +119,22 @@
         .dark .hover\:bg-blue-50:hover  { background-color: rgba(59,130,246,0.15) !important; }
         .dark .hover\:bg-red-50:hover   { background-color: rgba(239,68,68,0.15) !important; }
         .dark .hover\:bg-green-50:hover { background-color: rgba(16,185,129,0.15) !important; }
+
+        /* Status badges (amber, green, red, blue) */
+        .dark .bg-amber-50  { background-color: rgba(245,158,11,0.15) !important; }
+        .dark .text-amber-700 { color: #fbbf24 !important; }
+        .dark .border-amber-200 { border-color: rgba(245,158,11,0.3) !important; }
+        .dark .bg-green-50  { background-color: rgba(16,185,129,0.15) !important; }
+        .dark .text-green-700 { color: #34d399 !important; }
+        .dark .border-green-200 { border-color: rgba(16,185,129,0.3) !important; }
+        .dark .bg-red-50    { background-color: rgba(239,68,68,0.15) !important; }
+        .dark .text-red-700 { color: #fca5a5 !important; }
+        .dark .border-red-200 { border-color: rgba(239,68,68,0.3) !important; }
+        .dark .bg-blue-50   { background-color: rgba(59,130,246,0.15) !important; }
+        .dark .text-blue-800 { color: #93c5fd !important; }
+        .dark .text-blue-700 { color: #93c5fd !important; }
+        .dark .border-blue-100 { border-color: rgba(59,130,246,0.2) !important; }
+        .dark .border-blue-400 { border-color: rgba(59,130,246,0.5) !important; }
         .dark .hover\:text-blue-600:hover { color: #93c5fd !important; }
         .dark .hover\:text-red-600:hover  { color: #fca5a5 !important; }
         .dark .hover\:text-gray-600:hover { color: #94a3b8 !important; }
