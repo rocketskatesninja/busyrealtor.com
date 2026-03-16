@@ -36,14 +36,6 @@ $tabs = array_merge(...array_values($groups));
 @endphp
 <div class="max-w-7xl mx-auto px-4" x-data="{ activeTab: '{{ $tab }}' }" x-effect="const url = new URL(window.location); url.searchParams.set('tab', activeTab); history.replaceState(null, '', url)">
 
-    <div class="mb-3">
-        <a href="{{ route('tenant.admin.setup', $account) }}"
-           class="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-            Re-run Setup Wizard
-        </a>
-    </div>
-
     {{-- Mobile: horizontal scrollable tab strip --}}
     <div class="md:hidden mb-4 -mx-4 px-4 relative">
         <div class="flex overflow-x-auto gap-1 pb-2 scrollbar-hide" id="mobile-tab-strip">
@@ -62,7 +54,14 @@ $tabs = array_merge(...array_values($groups));
     </div>
 
     {{-- Save button row --}}
-    <div class="flex justify-end mb-2">
+    <div class="flex justify-between items-center mb-2">
+        <div>
+            <a x-show="activeTab === 'data'" style="display:none" href="{{ route('tenant.admin.setup', $account) }}"
+               class="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                Re-run Setup Wizard
+            </a>
+        </div>
         <button id="settings-save-btn" form="settings-form" type="submit"
                 class="btn-primary inline-flex items-center gap-2 px-8 py-2.5 rounded-xl font-semibold text-sm transition
                        disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
