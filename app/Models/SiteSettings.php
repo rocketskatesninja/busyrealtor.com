@@ -14,6 +14,7 @@ class SiteSettings extends Model
 
     protected $fillable = [
         'tenant_id',
+        'setup_completed',
         'site_title',
         'tagline',
         'logo_image',
@@ -101,6 +102,7 @@ class SiteSettings extends Model
         'stats_items'                => 'array',
         'faq_items'                  => 'array',
         'dashboard_config'           => 'array',
+        'setup_completed'            => 'boolean',
         'chatbot_enabled'            => 'boolean',
         'enable_email_notifications' => 'boolean',
         'search_engine_visibility'   => 'boolean',

@@ -23,7 +23,7 @@
     <div class="relative flex justify-center text-xs text-gray-400"><span class="bg-white dark:bg-slate-800 px-3">or sign up with email</span></div>
 </div>
 
-<form method="POST" action="{{ route('register.submit') }}" class="space-y-4" x-data="{ slug: '{{ old('slug') }}' }">
+<form method="POST" action="{{ route('register.submit') }}" class="space-y-4" x-data="{ slug: '{{ old('slug') }}', agreed: false }">
     @csrf
     <div class="grid grid-cols-2 gap-4">
         <div>
@@ -104,10 +104,10 @@
     }
     </script>
     <div class="flex items-start">
-        <input type="checkbox" name="terms" id="terms" required class="mt-1 mr-2 rounded">
+        <input type="checkbox" name="terms" id="terms" required x-model="agreed" class="mt-1 mr-2 rounded">
         <label for="terms" class="text-sm text-gray-600">I agree to the <a href="/terms" class="text-blue-600 hover:underline">Terms of Service</a> and <a href="/privacy-policy" class="text-blue-600 hover:underline">Privacy Policy</a></label>
     </div>
-    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition text-sm">
+    <button type="submit" :disabled="!agreed" :class="agreed ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-300 cursor-not-allowed'" class="w-full text-white font-semibold py-3 rounded-lg transition text-sm">
         Start Free 14-Day Trial
     </button>
 </form>

@@ -34,7 +34,15 @@ $groups = [
 ];
 $tabs = array_merge(...array_values($groups));
 @endphp
-<div class="max-w-7xl mx-auto px-4" x-data="{ activeTab: '{{ $tab }}' }">
+<div class="max-w-7xl mx-auto px-4" x-data="{ activeTab: '{{ $tab }}' }" x-effect="const url = new URL(window.location); url.searchParams.set('tab', activeTab); history.replaceState(null, '', url)">
+
+    <div class="mb-3">
+        <a href="{{ route('tenant.admin.setup', $account) }}"
+           class="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Re-run Setup Wizard
+        </a>
+    </div>
 
     {{-- Mobile: horizontal scrollable tab strip --}}
     <div class="md:hidden mb-4 -mx-4 px-4 relative">
@@ -53,8 +61,8 @@ $tabs = array_merge(...array_values($groups));
         </div>
     </div>
 
-    {{-- Save button row (hidden on data tab) --}}
-    <div x-show="activeTab !== 'data'" class="flex justify-end mb-2">
+    {{-- Save button row --}}
+    <div class="flex justify-end mb-2">
         <button id="settings-save-btn" form="settings-form" type="submit"
                 class="btn-primary inline-flex items-center gap-2 px-8 py-2.5 rounded-xl font-semibold text-sm transition
                        disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
@@ -524,14 +532,13 @@ $tabs = array_merge(...array_values($groups));
                                         {{-- Type selector: radio inputs handle form submission; peer-checked CSS handles visual state --}}
                                         <div class="flex gap-2 flex-wrap mb-3">
                                             @foreach(['preset'=>'Preset Image','image'=>'Custom Image','gradient'=>'Gradient'] as $bval=>$blabel)
-                                            <label class="cursor-pointer" @click="bgType='{{ $bval }}'">
-                                                <input type="radio" name="hero_background_type" value="{{ $bval }}"
-                                                       class="sr-only peer"
-                                                       {{ ($settings->hero_background_type ?? 'preset') === $bval ? 'checked' : '' }}>
-                                                <span class="block px-3 py-1.5 rounded-lg text-xs font-medium transition
-                                                             peer-checked:bg-[var(--primary)] peer-checked:text-white
-                                                             bg-gray-100 text-gray-600 hover:bg-gray-200">{{ $blabel }}</span>
-                                            </label>
+                                            <button type="button" @click="bgType='{{ $bval }}'; $el.closest('form').querySelector('input[name=hero_background_type][value={{ $bval }}]') || null"
+                                                    class="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+                                                    :style="bgType === '{{ $bval }}' ? 'background-color: var(--primary); color: white' : ''"
+                                                    :class="bgType === '{{ $bval }}' ? '' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'">{{ $blabel }}</button>
+                                            <input type="radio" name="hero_background_type" value="{{ $bval }}" class="sr-only"
+                                                   {{ ($settings->hero_background_type ?? 'preset') === $bval ? 'checked' : '' }}
+                                                   :checked="bgType === '{{ $bval }}'">
                                             @endforeach
                                         </div>
                                         {{-- Preset image grid — radio inputs + CSS peer-checked for selection highlight (no Alpine needed) --}}
@@ -1228,7 +1235,7 @@ $tabs = array_merge(...array_values($groups));
                         @php $maps = $integrations->get('google_maps'); @endphp
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps API Key</label>
-                            <input type="text" name="google_maps_key" value="{{ $maps?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="AIza...">
+                            <input type="password" name="google_maps_key" value="{{ $maps?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="AIza...">
                             <p class="text-xs text-gray-500 mt-1">Required for the map page. Get a key at Google Cloud Console.</p>
                         </div>
                     </div>

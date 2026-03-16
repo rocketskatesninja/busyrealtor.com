@@ -15,6 +15,12 @@ class DashboardController extends Controller
     {
         $tenant   = app('tenant');
         $settings = SiteSettings::where('tenant_id', $tenant->id)->first();
+
+        // Redirect to setup wizard if not completed
+        if ($settings && !$settings->setup_completed) {
+            return redirect()->route('tenant.admin.setup', ['account' => $account]);
+        }
+
         $dashConfig = $settings->dashboard_config ?? [];
         $show = fn($key) => $dashConfig[$key] ?? true;
 

@@ -12,6 +12,7 @@ use App\Http\Controllers\SuperAdmin\SystemSettingsController;
 use App\Http\Controllers\SuperAdmin\FeedbackController as SuperFeedbackController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\SetupWizardController;
 use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\MessageController;
@@ -150,6 +151,9 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
     // Admin routes
     Route::prefix('admin')->middleware(['auth', 'verified', 'tenant.active', 'tenant.admin', 'no.cache'])->name('admin.')->group(function () {
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/setup', [SetupWizardController::class, 'show'])->name('setup');
+        Route::post('/setup', [SetupWizardController::class, 'save'])->name('setup.save');
+        Route::post('/setup/skip', [SetupWizardController::class, 'skip'])->name('setup.skip');
         Route::post('/dashboard-order', [DashboardOrderController::class, 'save'])->name('dashboard.order');
 
         // Properties
