@@ -698,7 +698,7 @@ function updateCookiePrefsLink() {
             <button type="submit" id="chatbot-send" class="px-4 py-2 rounded-full text-white text-sm font-medium shrink-0" style="background-color:var(--primary)">Send</button>
         </form>
         <div id="chatbot-typing" class="hidden text-xs text-gray-400 mt-2 px-1">Typing...</div>
-        <p class="text-center text-gray-400 mt-1.5 px-1" style="font-size:0.65rem;line-height:1.3">AI assistant &middot; Not legal, financial, or real estate advice &middot; Conversations are not stored</p>
+        <p class="text-center text-gray-400 mt-1.5 px-1" style="font-size:0.65rem;line-height:1.3">AI assistant &middot; Not legal, financial, or real estate advice</p>
     </div>
 </div>`;
 

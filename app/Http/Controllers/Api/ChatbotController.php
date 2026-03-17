@@ -49,9 +49,31 @@ class ChatbotController extends Controller
             return response()->json(['reply' => 'Chatbot is not configured yet.']);
         }
 
-        $sessionId = $request->session_id ?? Str::uuid()->toString();
+        $sessionId = $request->session_id;
+        if ($sessionId && (!is_string($sessionId) || strlen($sessionId) > 100 || !preg_match('/^[a-zA-Z0-9\-]+$/', $sessionId))) {
+            $sessionId = null;
+        }
+        $sessionId = $sessionId ?? Str::uuid()->toString();
+
         // Scope history to this tenant to prevent cross-tenant data leakage
-        $history   = ChatLog::where('tenant_id', $tenant->id)->where('session_id', $sessionId)->orderBy('created_at')->get();
+        // Limit to last 20 messages to prevent token blowup on long conversations
+        $history = ChatLog::where('tenant_id', $tenant->id)
+            ->where('session_id', $sessionId)
+            ->orderByDesc('created_at')
+            ->limit(20)
+            ->get()
+            ->sortBy('created_at')
+            ->values();
+
+        // Flood guard: max 30 user messages per session per hour
+        $recentMsgCount = ChatLog::where('tenant_id', $tenant->id)
+            ->where('session_id', $sessionId)
+            ->where('role', 'user')
+            ->where('created_at', '>=', now()->subHour())
+            ->count();
+        if ($recentMsgCount >= 30) {
+            return response()->json(['reply' => "You've sent a lot of messages. Please call or email us if you need further help.", 'session_id' => $sessionId]);
+        }
 
         // Build system prompt
         $activeProps = Property::where('tenant_id', $tenant->id)
@@ -230,6 +252,19 @@ class ChatbotController extends Controller
 
     private function createAppointment(array $input, $tenant, $settings, string $lastMessage = ''): string
     {
+        // Max 2 chatbot appointments per email per 24 hours
+        $email = $input['visitor_email'] ?? '';
+        if ($email) {
+            $apptCount = Appointment::where('tenant_id', $tenant->id)
+                ->where('source', 'chatbot')
+                ->where('visitor_email', $email)
+                ->where('created_at', '>=', now()->subDay())
+                ->count();
+            if ($apptCount >= 2) {
+                return "You've already scheduled appointments with us. Please call or email us directly for additional bookings.";
+            }
+        }
+
         try {
             $date = Carbon::parse($input['appointment_date'] ?? 'tomorrow');
             if ($date->isPast()) { $date = now()->addDay(); }

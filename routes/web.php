@@ -141,7 +141,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
 
     // Public APIs
     Route::post('/api/contact', [ContactController::class, 'submit'])->middleware('throttle:10,1')->name('api.contact');
-    Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->middleware('throttle:20,1')->name('api.chatbot');
+    Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->middleware('throttle:5,1')->name('api.chatbot');
     Route::get('/api/properties', [PropertyApiController::class, 'index'])->middleware('throttle:60,1')->name('api.properties');
 
     // Appointment booking (public, no auth)
