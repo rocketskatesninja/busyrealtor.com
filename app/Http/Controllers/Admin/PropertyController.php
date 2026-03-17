@@ -147,7 +147,7 @@ class PropertyController extends Controller
             'square_feet'     => $request->sqft,
             'lot_size'        => $request->lot_size,
             'year_built'      => $request->year_built,
-            'garage'          => $request->garage_spaces,
+            'garage'          => $request->garage_spaces ?? 0,
             'hoa_fee'         => $request->hoa_fees,
             'description'     => $request->description,
             'mls_number'      => $request->mls_number,
