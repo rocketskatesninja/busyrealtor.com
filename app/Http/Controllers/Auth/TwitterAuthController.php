@@ -45,10 +45,21 @@ class TwitterAuthController extends Controller
             }
         }
 
+        $name = $socialUser->getName() ?? $socialUser->getNickname() ?? '';
+        $parts = explode(' ', $name, 2);
+
         session([
-            'oauth_name'  => $socialUser->getName(),
-            'oauth_email' => $email, // may be null
+            'oauth_first_name' => $parts[0] ?? '',
+            'oauth_last_name'  => $parts[1] ?? '',
+            'oauth_email'      => $email,
+            'oauth_provider'   => 'twitter',
         ]);
+
+        // Twitter may not return email — send to complete page if we have it,
+        // otherwise let them fill in email on the registration form
+        if ($email) {
+            return redirect()->route('register.complete');
+        }
 
         return redirect()->route('register.complete');
     }

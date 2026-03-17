@@ -41,9 +41,14 @@ class FacebookAuthController extends Controller
             return redirect()->route('tenant.admin.dashboard', ['account' => $user->tenant->slug]);
         }
 
+        $name = $socialUser->getName() ?? '';
+        $parts = explode(' ', $name, 2);
+
         session([
-            'oauth_name'  => $socialUser->getName(),
-            'oauth_email' => $socialUser->getEmail(),
+            'oauth_first_name' => $parts[0] ?? '',
+            'oauth_last_name'  => $parts[1] ?? '',
+            'oauth_email'      => $socialUser->getEmail(),
+            'oauth_provider'   => 'facebook',
         ]);
 
         return redirect()->route('register.complete');

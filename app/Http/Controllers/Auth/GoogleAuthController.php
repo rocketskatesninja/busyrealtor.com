@@ -63,7 +63,7 @@ class GoogleAuthController extends Controller
 
     public function showComplete()
     {
-        if (!session('oauth_email')) {
+        if (!session('oauth_email') && !session('oauth_provider')) {
             return redirect()->route('register');
         }
         return view('auth.register-complete');
