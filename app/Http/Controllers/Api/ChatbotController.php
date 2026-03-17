@@ -59,8 +59,8 @@ class ChatbotController extends Controller
             ->map(fn($p) => "- [ID:{$p->id}] {$p->title} at {$p->address_street}, {$p->address_city} (\${$p->price})")->implode("\n");
 
         $sysPrompt  = "You are a friendly real estate assistant for {$tenant->name}. ";
-        if ($settings?->chatbot_realtor_bio) {
-            $sysPrompt .= "About the realtor: {$settings->chatbot_realtor_bio}. ";
+        if ($settings?->chatbot_bio) {
+            $sysPrompt .= "About the realtor: {$settings->chatbot_bio}. ";
         }
         if ($settings) {
             $sysPrompt .= "Office contact: {$settings->contact_email}, {$settings->contact_phone}. ";
