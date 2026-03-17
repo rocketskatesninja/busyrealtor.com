@@ -27,7 +27,6 @@ use App\Http\Controllers\Api\PropertyApiController;
 use App\Http\Controllers\Api\DashboardOrderController;
 use App\Http\Controllers\Api\StaffOrderController;
 use App\Http\Controllers\Api\PropertyImagesController;
-use App\Http\Controllers\Api\GenerateDescriptionController;
 use App\Http\Controllers\Api\ExportController;
 use App\Http\Controllers\Api\BackupController;
 use App\Http\Controllers\Api\RestoreController;
@@ -171,7 +170,6 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::post('/api/property-images/{id}/primary', [PropertyImagesController::class, 'setPrimary'])->name('api.property-images.primary');
         Route::post('/api/property-images/{id}/reorder', [PropertyImagesController::class, 'reorder'])->name('api.property-images.reorder');
         Route::delete('/api/property-images/{id}', [PropertyImagesController::class, 'destroy'])->name('api.property-images.destroy');
-        Route::post('/api/generate-description', [GenerateDescriptionController::class, 'generate'])->name('api.generate-description');
 
         // Staff
         Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');

@@ -65,14 +65,8 @@
                     <input type="number" name="hoa_fees" value="{{ old('hoa_fees', $property->hoa_fees ?? '') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div class="md:col-span-2">
-                    <div class="flex items-center justify-between mb-1">
+                    <div class="mb-1">
                         <label class="block text-sm font-medium text-gray-700">Description</label>
-                        <button type="button" @click="generateDescription()" :disabled="generating"
-                                class="text-xs px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1.5"
-                                style="background-color: rgba(var(--primary-rgb), 0.1); color: var(--primary)">
-                            <svg class="w-3.5 h-3.5" :class="generating ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                            <span x-text="generating ? 'Generating...' : 'Generate with AI'"></span>
-                        </button>
                     </div>
                     <textarea id="description" name="description" rows="5" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none">{{ old('description', $property->description ?? '') }}</textarea>
                 </div>
@@ -282,7 +276,7 @@ const _csrf         = '{{ csrf_token() }}';
 function propertyForm() {
     return {
         activeTab: 'basic',
-        generating: false,
+
         _sortableReady: false,
         init() {
             this.$watch('activeTab', (val) => {
@@ -357,27 +351,7 @@ function propertyForm() {
                 btn.innerHTML = origText;
             }
         },
-        async generateDescription() {
-            const form = document.querySelector('form');
-            const data = new FormData(form);
-            this.generating = true;
-            try {
-                const res = await fetch('{{ route('tenant.admin.api.generate-description', $account) }}', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': _csrf },
-                    body: JSON.stringify({
-                        title: data.get('title'), property_type: data.get('property_type'),
-                        price: data.get('price'), bedrooms: data.get('bedrooms'),
-                        bathrooms: data.get('bathrooms'), sqft: data.get('sqft'),
-                        address: data.get('address'), city: data.get('city'), state: data.get('state'),
-                        amenities: [...document.querySelectorAll('input[name="amenities[]"]:checked')].map(i=>i.value).join(', ')
-                    })
-                });
-                const d = await res.json();
-                if (d.description) document.getElementById('description').value = d.description;
-            } catch(e) { alert('AI generation failed. Please try again.'); }
-            this.generating = false;
-        }
+
     };
 }
 
