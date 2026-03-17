@@ -55,8 +55,13 @@ class ChatbotController extends Controller
 
         // Build system prompt
         $activeProps = Property::where('tenant_id', $tenant->id)
-            ->where('listing_status', 'active')->limit(6)->get()
+            ->where('listing_status', 'active')->limit(50)->get()
             ->map(fn($p) => "- [ID:{$p->id}] {$p->title} at {$p->address_street}, {$p->address_city} (\${$p->price})")->implode("\n");
+
+        $propCounts = Property::where('tenant_id', $tenant->id)
+            ->selectRaw("listing_status, count(*) as cnt")
+            ->groupBy('listing_status')
+            ->pluck('cnt', 'listing_status');
 
         $sysPrompt  = "You are a friendly real estate assistant for {$tenant->name}. ";
         if ($settings?->chatbot_bio) {
@@ -68,6 +73,12 @@ class ChatbotController extends Controller
         if ($activeProps) {
             $sysPrompt .= "Active listings:\n{$activeProps}\n";
         }
+        $total = $propCounts->sum();
+        $sysPrompt .= "Portfolio summary: {$total} total properties";
+        if ($propCounts->get('active'))  $sysPrompt .= ", {$propCounts->get('active')} active";
+        if ($propCounts->get('pending')) $sysPrompt .= ", {$propCounts->get('pending')} pending";
+        if ($propCounts->get('sold'))    $sysPrompt .= ", {$propCounts->get('sold')} sold";
+        $sysPrompt .= ".\n";
         $sysPrompt .= "\nWhen a visitor wants to schedule a showing, consultation, or any appointment, "
                     . "collect their full name, email address, preferred date, preferred time, appointment type "
                     . "(showing, consultation, virtual, or other), and which property they are interested in "
