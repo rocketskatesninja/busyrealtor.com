@@ -152,18 +152,22 @@ class PostPropertyToSocial implements ShouldQueue
 
         $imageUrl = $this->getImageUrl($property);
         if ($imageUrl) {
-            // Media upload still uses v1.1
+            // Media upload still uses v1.1 — library expects a file path, not raw bytes
+            $tmpFile = tempnam(sys_get_temp_dir(), 'tw_');
             $imageContents = @file_get_contents($imageUrl);
-            if ($imageContents !== false) {
-                $media = $connection->upload('media/upload', ['media' => $imageContents]);
+            if ($imageContents !== false && file_put_contents($tmpFile, $imageContents)) {
+                $media = $connection->upload('media/upload', ['media' => $tmpFile]);
+                @unlink($tmpFile);
                 if (isset($media->media_id_string)) {
                     $params['media'] = ['media_ids' => [$media->media_id_string]];
                 }
+            } else {
+                @unlink($tmpFile);
             }
         }
 
         $connection->setApiVersion('2');
-        $result = $connection->post('tweets', $params, true);
+        $result = $connection->post('tweets', $params, ['jsonPayload' => true]);
 
         if ($connection->getLastHttpCode() >= 400) {
             Log::error("Social auto-post: Twitter API error for property #{$property->id}: " . json_encode($result));
