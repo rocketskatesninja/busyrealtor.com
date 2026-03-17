@@ -7,6 +7,7 @@
     <form method="POST" enctype="multipart/form-data"
           action="{{ $isEdit ? route('tenant.admin.properties.update', [$account, $property->id]) : route('tenant.admin.properties.store', $account) }}"
           x-data="propertyForm()"
+          @submit="submitCreate($event)"
           class="space-y-6">
         @csrf
         @if($isEdit) @method('PUT') @endif
@@ -218,9 +219,8 @@
         {{-- Media Tab --}}
         <div x-show="activeTab === 'media'" x-cloak class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
 
-            {{-- EDIT: always show sortable grid (even if no photos yet) --}}
-            @if($isEdit)
-            <div class="flex items-center justify-between mb-3">
+            {{-- Photo grid (edit: server images, create: local previews) --}}
+            <div class="flex items-center justify-between mb-3" id="photos-header" @if(!$isEdit) style="display:none!important" @endif>
                 <h3 class="font-semibold text-gray-800">Photos</h3>
                 <span class="text-xs text-gray-400 flex items-center gap-1">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
@@ -228,6 +228,7 @@
                 </span>
             </div>
             <div class="grid grid-cols-3 md:grid-cols-6 gap-3 mb-4" id="image-grid">
+                @if($isEdit)
                 @foreach($property->images->sortBy('sort_order') as $img)
                 <div class="relative group rounded-xl overflow-hidden aspect-square bg-gray-100 cursor-grab active:cursor-grabbing select-none"
                      data-id="{{ $img->id }}"
@@ -250,8 +251,8 @@
                     </div>
                 </div>
                 @endforeach
+                @endif
             </div>
-            @endif
 
             {{-- Upload zone --}}
             <div>
@@ -259,21 +260,8 @@
                 <label for="images" id="upload-zone" class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors cursor-pointer">
                     <svg id="upload-icon" class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     <span id="upload-label" class="text-gray-500 text-sm">Click to select photos <span class="text-gray-400">(JPG, PNG, WebP — max 10MB each)</span></span>
-                    {{-- Edit: no name → AJAX handles upload; Create: name="images[]" → form handles upload --}}
-                    <input type="file" id="images" {{ $isEdit ? '' : 'name="images[]"' }} multiple accept="image/*" class="sr-only" onchange="handleFileSelect(this.files)">
+                    <input type="file" id="images" multiple accept="image/*" class="sr-only" onchange="handleFileSelect(this.files)">
                 </label>
-
-                {{-- CREATE only: sortable preview grid --}}
-                @if(!$isEdit)
-                <div class="flex items-center justify-between mt-4 mb-2" id="preview-header" style="display:none!important">
-                    <h3 class="font-semibold text-gray-800 text-sm">Selected Photos</h3>
-                    <span class="text-xs text-gray-400 flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
-                        Drag to reorder &mdash; first photo will be the main listing image
-                    </span>
-                </div>
-                <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="preview-grid"></div>
-                @endif
             </div>
         </div>
 
@@ -318,16 +306,55 @@ function propertyForm() {
                     });
                 }
             });
-            // Create: rebuild FileList in sorted order before form submit
-            if (!_isEdit) {
-                this.$el.closest('form').addEventListener('submit', function() {
-                    const grid = document.getElementById('preview-grid');
-                    const input = document.getElementById('images');
-                    if (!grid || !input) return;
-                    const dt = new DataTransfer();
-                    grid.querySelectorAll('[data-preview]').forEach(card => { if (card._file) dt.items.add(card._file); });
-                    input.files = dt.files;
+        },
+        async submitCreate(e) {
+            if (_isEdit) return true;
+            e.preventDefault();
+            const form = this.$el.closest('form');
+            const btn = form.querySelector('button[type=submit]');
+            const origText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Saving...';
+            try {
+                // 1. Submit form data to create property
+                const fd = new FormData(form);
+                // Remove the file input data (we'll upload via AJAX)
+                fd.delete('images[]');
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    body: fd,
+                    headers: { 'Accept': 'application/json' }
                 });
+                const data = await res.json();
+                if (!res.ok) {
+                    // Validation errors — reload with errors
+                    if (data.errors) {
+                        let msg = Object.values(data.errors).flat().join('\n');
+                        alert(msg);
+                    }
+                    btn.disabled = false;
+                    btn.innerHTML = origText;
+                    return;
+                }
+                // 2. Upload pending photos
+                const propertyId = data.id;
+                const validFiles = _pendingFiles.filter(f => f !== null);
+                for (const file of validFiles) {
+                    const imgFd = new FormData();
+                    imgFd.append('image', file);
+                    imgFd.append('property_id', propertyId);
+                    await fetch(_uploadUrl, {
+                        method: 'POST',
+                        headers: { 'X-CSRF-TOKEN': _csrf, 'Accept': 'application/json' },
+                        body: imgFd
+                    });
+                }
+                // 3. Redirect to properties index
+                window.location.href = data.redirect || form.action.replace('/store', '');
+            } catch(err) {
+                alert('Error creating property: ' + err.message);
+                btn.disabled = false;
+                btn.innerHTML = origText;
             }
         },
         async generateDescription() {
@@ -354,20 +381,79 @@ function propertyForm() {
     };
 }
 
-// ─── File select handler — branches on edit vs create ────────────────────
+// ─── File select handler — unified for both create and edit ──────────────
 function handleFileSelect(files) {
     if (_isEdit) {
+        // Edit: upload immediately via AJAX
         Array.from(files).forEach(file => uploadImmediate(file));
     } else {
-        Array.from(files).forEach(file => addPreviewCard(file));
-        // show header
-        const hdr = document.getElementById('preview-header');
-        if (hdr && document.querySelectorAll('#preview-grid [data-preview]').length > 0) {
-            hdr.style.removeProperty('display');
-        }
+        // Create: store files locally, show preview cards, upload after form submit
+        Array.from(files).forEach(file => {
+            _pendingFiles.push(file);
+            addLocalPreviewCard(file, _pendingFiles.length - 1);
+        });
     }
-    // reset input so same files can be re-selected
     document.getElementById('images').value = '';
+}
+
+let _pendingFiles = [];
+
+function addLocalPreviewCard(file, idx) {
+    const grid = document.getElementById('image-grid');
+    const hdr  = document.getElementById('photos-header');
+    if (!grid) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const card = document.createElement('div');
+        card.className = 'relative group rounded-xl overflow-hidden aspect-square bg-gray-100 cursor-grab active:cursor-grabbing select-none';
+        card.dataset.localIdx = idx;
+        card.innerHTML =
+            '<img src="' + e.target.result + '" class="w-full h-full object-cover pointer-events-none">' +
+            '<span class="main-badge absolute top-1.5 left-1.5 items-center gap-1 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-md font-semibold shadow" style="display:none">' +
+            '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>' +
+            'Main</span>' +
+            '<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">' +
+            '<button type="button" onclick="removeLocalPreview(this)" class="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors pointer-events-auto" title="Remove">' +
+            '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>' +
+            '<div class="absolute bottom-1 right-1 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">' +
+            '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 6a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm8-16a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4z"/></svg></div>';
+        grid.appendChild(card);
+        refreshMainBadge();
+        if (hdr) hdr.style.removeProperty('display');
+        // Init sortable on first card
+        if (!_localSortable && typeof Sortable !== 'undefined') {
+            _localSortable = Sortable.create(grid, {
+                animation: 150, ghostClass: 'opacity-30', dragClass: 'shadow-xl',
+                onEnd() { refreshMainBadge(); reindexPendingFiles(); }
+            });
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+let _localSortable = null;
+
+function removeLocalPreview(btn) {
+    const card = btn.closest('[data-local-idx]');
+    const idx = parseInt(card.dataset.localIdx);
+    _pendingFiles[idx] = null;
+    card.remove();
+    refreshMainBadge();
+    if (!document.querySelectorAll('#image-grid [data-local-idx]').length) {
+        const hdr = document.getElementById('photos-header');
+        if (hdr) hdr.style.setProperty('display', 'none', 'important');
+    }
+}
+
+function reindexPendingFiles() {
+    const cards = document.querySelectorAll('#image-grid [data-local-idx]');
+    const reordered = [];
+    cards.forEach(card => {
+        const idx = parseInt(card.dataset.localIdx);
+        if (_pendingFiles[idx]) reordered.push(_pendingFiles[idx]);
+    });
+    _pendingFiles = reordered;
+    cards.forEach((card, i) => card.dataset.localIdx = i);
 }
 
 // ─── EDIT: upload a single file immediately via AJAX ─────────────────────
@@ -421,76 +507,16 @@ function buildGridCard(id, url, deleteUrl, primaryUrl) {
     return card;
 }
 
-// ─── CREATE: add a local preview card to #preview-grid ───────────────────
-let _previewSortable = null;
-function addPreviewCard(file) {
-    const grid = document.getElementById('preview-grid');
-    if (!grid) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-        const card = document.createElement('div');
-        card.className = 'relative group rounded-xl overflow-hidden aspect-square bg-gray-100 cursor-grab active:cursor-grabbing select-none';
-        card.dataset.preview = '1';
-        card._file = file;
-        card.innerHTML = `
-            <img src="${e.target.result}" class="w-full h-full object-cover pointer-events-none">
-            <span class="main-badge absolute top-1.5 left-1.5 items-center gap-1 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-md font-semibold shadow" style="display:none">
-                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                Main
-            </span>
-            <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                <button type="button" onclick="removePreview(this)" class="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors pointer-events-auto" title="Remove">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
-            </div>`;
-        grid.appendChild(card);
-        refreshPreviewBadge();
-        // show the header hint
-        const hdr = document.getElementById('preview-header');
-        if (hdr) hdr.style.removeProperty('display');
-        // ensure sortable is active on preview grid
-        if (!_previewSortable && typeof Sortable !== 'undefined') {
-            _previewSortable = Sortable.create(grid, {
-                animation: 150, ghostClass: 'opacity-30', dragClass: 'shadow-xl',
-                onEnd() { refreshPreviewBadge(); }
-            });
-        }
-    };
-    reader.readAsDataURL(file);
-}
 
-function initPreviewSortable() {
-    const grid = document.getElementById('preview-grid');
-    if (grid && !_previewSortable && typeof Sortable !== 'undefined') {
-        _previewSortable = Sortable.create(grid, {
-            animation: 150, ghostClass: 'opacity-30', dragClass: 'shadow-xl',
-            onEnd() { refreshPreviewBadge(); }
-        });
-    }
-}
-
-function removePreview(btn) {
-    btn.closest('[data-preview]').remove();
-    refreshPreviewBadge();
-    const hdr = document.getElementById('preview-header');
-    if (hdr && !document.querySelectorAll('#preview-grid [data-preview]').length) {
-        hdr.style.setProperty('display', 'none', 'important');
-    }
-}
 
 // ─── Badge helpers ────────────────────────────────────────────────────────
 function refreshMainBadge() {
-    document.querySelectorAll('#image-grid > [data-id]').forEach(function(card, i) {
+    document.querySelectorAll('#image-grid > div').forEach(function(card, i) {
         const b = card.querySelector('.main-badge');
         if (b) b.style.display = i === 0 ? 'inline-flex' : 'none';
     });
 }
-function refreshPreviewBadge() {
-    document.querySelectorAll('#preview-grid > [data-preview]').forEach(function(card, i) {
-        const b = card.querySelector('.main-badge');
-        if (b) b.style.display = i === 0 ? 'inline-flex' : 'none';
-    });
-}
+
 
 // ─── Persist sort order to server (edit only) ─────────────────────────────
 function persistOrder() {
@@ -515,4 +541,5 @@ function deleteImage(id, btn) {
             }
         });
 }
+
 @endsection
