@@ -121,6 +121,7 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin', 'no.cache'])->n
     Route::post('/mailer/send', [SuperAdminController::class, 'sendMail'])->name('mailer.send');
     Route::get('/activity', [ActivityLogController::class, 'index'])->name('activity');
     Route::delete('/activity', [ActivityLogController::class, 'clear'])->name('activity.clear');
+    Route::get('/activity/export', [ActivityLogController::class, 'export'])->name('activity.export');
 });
 
 // Tenant routes

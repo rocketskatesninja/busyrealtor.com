@@ -20,6 +20,7 @@ class Tenant extends Model
         'profile_image',
         'plan',
         'is_active',
+        'notes',
         'trial_ends_at',
         'pm_type',
         'pm_last_four',

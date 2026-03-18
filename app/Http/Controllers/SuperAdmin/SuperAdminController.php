@@ -91,9 +91,10 @@ class SuperAdminController extends Controller
             'slug'          => 'required|string|max:60|unique:tenants,slug,' . $tenant->id,
             'plan'          => 'required|in:trial,starter,pro',
             'trial_ends_at' => 'nullable|date',
+            'notes'         => 'nullable|string|max:5000',
         ]);
 
-        $tenant->fill($request->only('name', 'slug', 'trial_ends_at'));
+        $tenant->fill($request->only('name', 'slug', 'trial_ends_at', 'notes'));
         $tenant->plan = $request->plan;
         $tenant->save();
         logActivity('updated', "Updated tenant: {$tenant->name}", $tenant);
