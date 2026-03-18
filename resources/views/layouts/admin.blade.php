@@ -99,7 +99,9 @@
 
         /* Divide */
         .dark .divide-y > * + *,
-        .dark .divide-x > * + * { border-color: #334155 !important; }
+        .dark .divide-x > * + *,
+        .dark .divide-y > :not(:last-child),
+        .dark .divide-x > :not(:last-child) { border-color: #334155 !important; }
 
         /* Inputs, selects, textareas */
         .dark input:not([type=checkbox]):not([type=radio]):not([type=range]),
