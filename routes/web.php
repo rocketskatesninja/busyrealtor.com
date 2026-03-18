@@ -10,6 +10,7 @@ use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\ImpersonationController;
 use App\Http\Controllers\SuperAdmin\SystemSettingsController;
 use App\Http\Controllers\SuperAdmin\FeedbackController as SuperFeedbackController;
+use App\Http\Controllers\SuperAdmin\ActivityLogController;
 use App\Http\Controllers\Admin\FeedbackController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SetupWizardController;
@@ -118,6 +119,8 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin', 'no.cache'])->n
     Route::delete('/feedback/{id}', [SuperFeedbackController::class, 'destroy'])->name('feedback.destroy');
     Route::get('/mailer', [SuperAdminController::class, 'mailer'])->name('mailer');
     Route::post('/mailer/send', [SuperAdminController::class, 'sendMail'])->name('mailer.send');
+    Route::get('/activity', [ActivityLogController::class, 'index'])->name('activity');
+    Route::delete('/activity', [ActivityLogController::class, 'clear'])->name('activity.clear');
 });
 
 // Tenant routes

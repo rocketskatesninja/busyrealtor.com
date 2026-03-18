@@ -77,8 +77,17 @@
         {{-- Header --}}
         <tr>
           <td align="center" style="background:linear-gradient(135deg,#0f2744 0%,#1e3a5f 40%,#1d4ed8 100%);padding:34px 40px 28px;border-radius:8px 8px 0 0;">
-            <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:0.5px;display:block;line-height:1;">BusyRealtor</span>
-            <span style="font-size:11px;color:#93c5fd;letter-spacing:2px;text-transform:uppercase;display:block;margin-top:6px;">Real Estate Platform</span>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+                <tr>
+                    <td style="vertical-align:middle;padding-right:10px;">
+                        <img src="{{ url('/img/email-logo.png') }}" alt="" width="36" height="36" style="display:block;border-radius:9px;border:0;" />
+                    </td>
+                    <td style="vertical-align:middle;">
+                        <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:0.5px;line-height:1;">BusyRealtor</span>
+                    </td>
+                </tr>
+            </table>
+            <span style="font-size:11px;color:#93c5fd;letter-spacing:2px;text-transform:uppercase;display:block;margin-top:8px;">Real Estate Platform</span>
           </td>
         </tr>
 

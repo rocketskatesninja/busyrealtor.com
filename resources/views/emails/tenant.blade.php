@@ -9,6 +9,8 @@
 @php
     $primaryColor = $settings->primary_color ?? '#2563eb';
     $siteTitle    = $settings->site_title ?? ($tenant->name ?? 'BusyRealtor');
+    $faviconUrl   = ($settings->favicon_preset ?? null) ? url('/' . $tenant->slug . '/favicon.svg?color=ffffff') : null;
+    $faviconBg    = 'rgba(255,255,255,0.2)';
     $contactEmail = $settings->contact_email ?? null;
     $address      = $settings->contact_address ?? null;
 
@@ -81,7 +83,24 @@
         {{-- Header --}}
         <tr>
           <td align="center" style="background-color:{{ $primaryColor }};padding:28px 40px 24px;border-radius:8px 8px 0 0;">
-            <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:0.3px;display:block;line-height:1.2;">{{ $siteTitle }}</span>
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+                <tr>
+                    @if($faviconUrl)
+                    <td style="vertical-align:middle;padding-right:10px;width:40px;">
+                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="36" style="width:36px;">
+                            <tr>
+                                <td align="center" width="36" height="36" style="width:36px;height:36px;border-radius:8px;border:2px solid rgba(255,255,255,0.5);background:rgba(255,255,255,0.2);">
+                                    <img src="{{ $faviconUrl }}" alt="" width="22" height="22" style="display:block;margin:0 auto;border:0;" />
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    @endif
+                    <td style="vertical-align:middle;">
+                        <span style="font-size:20px;font-weight:700;color:#ffffff;letter-spacing:0.3px;line-height:1.2;">{{ $siteTitle }}</span>
+                    </td>
+                </tr>
+            </table>
           </td>
         </tr>
 

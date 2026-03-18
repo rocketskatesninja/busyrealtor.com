@@ -133,11 +133,13 @@ class AppointmentController extends Controller
         $appt   = Appointment::where('tenant_id', $tenant->id)->findOrFail($id);
 
         if ($request->status === 'delete') {
+            logActivity('deleted', "Deleted appointment with {$appt->visitor_name}", $appt);
             $appt->delete();
             return redirect()->back()->with('success', 'Appointment deleted.');
         }
 
         $appt->update(['status' => $request->status]);
+        logActivity('updated', "Changed appointment with {$appt->visitor_name} to {$request->status}", $appt);
 
         // Send confirmation/cancellation email to visitor
         if (in_array($request->status, ['confirmed', 'cancelled']) && $appt->visitor_email) {
@@ -183,6 +185,8 @@ class AppointmentController extends Controller
         } elseif ($request->action) {
             Appointment::where('tenant_id', $tenant->id)->whereIn('id', $ids)->update(['status' => $request->action]);
         }
+        $count = count($ids);
+        logActivity($request->action === 'delete' ? 'deleted' : 'updated', "Bulk {$request->action}: {$count} appointments");
         return redirect()->back()->with('success', 'Done.');
     }
 }

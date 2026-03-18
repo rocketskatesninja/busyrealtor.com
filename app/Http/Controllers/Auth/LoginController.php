@@ -50,6 +50,7 @@ class LoginController extends Controller
                 'failed_login_attempts' => 0,
                 'locked_until' => null,
             ]);
+            logActivity('login', "User logged in: {$user->email}");
 
             if ($user->is_super_admin) {
                 return redirect()->route('super.dashboard')->with('success', 'Welcome back, ' . $user->first_name . '!');
@@ -93,6 +94,7 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        logActivity('logout', "User logged out: " . auth()->user()->email);
         $request->session()->forget(['impersonating_tenant_id', 'super_admin_id']);
         Auth::logout();
         $request->session()->invalidate();

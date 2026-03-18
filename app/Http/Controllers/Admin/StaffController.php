@@ -43,7 +43,8 @@ class StaffController extends Controller
             $data['photo_url'] = $this->uploadPhoto($request->file('profile_image'), $tenant->id);
         }
 
-        StaffMember::create($data);
+        $member = StaffMember::create($data);
+        logActivity('created', "Added staff member: {$member->name}", $member);
         return redirect()->route('tenant.admin.staff.index', ['account' => $tenant->slug])
             ->with('success', 'Staff member added.');
     }
@@ -72,6 +73,7 @@ class StaffController extends Controller
         }
 
         $member->update($data);
+        logActivity('updated', "Updated staff member: {$member->name}", $member);
         return redirect()->route('tenant.admin.staff.index', ['account' => $tenant->slug])
             ->with('success', 'Staff member updated.');
     }
@@ -80,6 +82,7 @@ class StaffController extends Controller
     {
         $tenant = app('tenant');
         $member = StaffMember::where('tenant_id', $tenant->id)->findOrFail($id);
+        logActivity('deleted', "Removed staff member: {$member->name}", $member);
         if ($member->photo_url) Storage::disk('public')->delete($member->photo_url);
         $member->delete();
         return redirect()->route('tenant.admin.staff.index', ['account' => $tenant->slug])

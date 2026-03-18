@@ -1,6 +1,7 @@
 @extends('layouts.super-admin')
 @section('title', 'Feedback')
 @section('page-title', 'Realtor Feedback')
+@section('page-description', 'Review and manage feedback from realtors')
 
 @section('content')
 <div class="space-y-4">

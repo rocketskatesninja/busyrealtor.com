@@ -96,12 +96,14 @@ class SuperAdminController extends Controller
         $tenant->fill($request->only('name', 'slug', 'trial_ends_at'));
         $tenant->plan = $request->plan;
         $tenant->save();
+        logActivity('updated', "Updated tenant: {$tenant->name}", $tenant);
 
         return back()->with('success', 'Tenant updated successfully.');
     }
 
     public function destroyTenant(Tenant $tenant)
     {
+        logActivity('deleted', "Deleted tenant: {$tenant->name} ({$tenant->slug})", $tenant);
         $tenant->delete();
         return redirect()->route('super.tenants')->with('success', 'Tenant deleted.');
     }
@@ -122,6 +124,7 @@ class SuperAdminController extends Controller
         $owner->email = $request->email;
         $owner->email_verified_at = null;
         $owner->save();
+        logActivity('updated', "Changed tenant owner email to {$request->email} for {$tenant->name}", $tenant);
 
         try {
             $owner->sendEmailVerificationNotification();
@@ -139,6 +142,7 @@ class SuperAdminController extends Controller
 
         $owner->email_verified_at = now();
         $owner->save();
+        logActivity('updated', "Manually verified owner email for {$tenant->name}", $tenant);
 
         return back()->with('success', 'Owner email marked as verified.');
     }
@@ -150,6 +154,7 @@ class SuperAdminController extends Controller
 
         try {
             $owner->sendEmailVerificationNotification();
+            logActivity('updated', "Resent verification email to {$owner->email} for {$tenant->name}", $tenant);
             return back()->with('success', 'Verification email sent to ' . $owner->email);
         } catch (\Exception $e) {
             \Log::warning('Failed to resend verification for user ' . $owner->id . ': ' . $e->getMessage());
@@ -205,6 +210,7 @@ class SuperAdminController extends Controller
             'recipient_count' => $users->count(),
             'sent_at'         => now(),
         ]);
+        logActivity('created', "Sent campaign email \"{$subject}\" to {$users->count()} recipients");
 
         return back()->with('success', "Email sent to {$users->count()} recipients.");
     }

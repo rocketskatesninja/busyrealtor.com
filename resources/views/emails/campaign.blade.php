@@ -25,9 +25,16 @@
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td align="center">
-                                        {{-- Orange house icon (hosted PNG for email client compat) --}}
-                                        <img src="{{ url('/img/email-logo.png') }}" alt="BusyRealtor" width="44" height="44" style="display:block;margin:0 auto 14px;border-radius:11px;border:0;" />
-                                        <h1 style="margin:0;font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.3px;">Busy<span style="color:#fdba74;">Realtor</span></h1>
+                                        <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:0 auto;">
+                                            <tr>
+                                                <td style="vertical-align:middle;padding-right:10px;">
+                                                    <img src="{{ url('/img/email-logo.png') }}" alt="" width="36" height="36" style="display:block;border-radius:9px;border:0;" />
+                                                </td>
+                                                <td style="vertical-align:middle;">
+                                                    <h1 style="margin:0;font-size:24px;font-weight:800;color:#ffffff;letter-spacing:-0.3px;">Busy<span style="color:#fdba74;">Realtor</span></h1>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                             </table>

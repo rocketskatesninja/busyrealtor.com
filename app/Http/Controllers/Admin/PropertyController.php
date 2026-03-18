@@ -64,6 +64,7 @@ class PropertyController extends Controller
             'contentType' => $request->header('Content-Type'),
         ]);
         $this->handleImages($request, $property);
+        logActivity('created', "Created property: {$property->title}", $property);
         if (($data['listing_status'] ?? '') === 'active') {
             if ($tenant->isPro()) {
                 PostPropertyToSocial::dispatch($property->fresh()->load('images', 'tenant'), 'new_listing');
@@ -95,6 +96,7 @@ class PropertyController extends Controller
         $data      = $this->validateAndPrepare($request);
         $property->update($data);
         $this->handleImages($request, $property);
+        logActivity('updated', "Updated property: {$property->title}", $property);
         if ($oldStatus !== $data['listing_status']) {
             if ($data['listing_status'] === 'active') {
                 if ($tenant->isPro()) {
@@ -114,6 +116,7 @@ class PropertyController extends Controller
     {
         $tenant   = app('tenant');
         $property = Property::where('tenant_id', $tenant->id)->findOrFail($id);
+        logActivity('deleted', "Deleted property: {$property->title}", $property);
         $property->delete();
         return redirect()->route('tenant.admin.properties.index', ['account' => app('tenant')->slug])
             ->with('success', 'Property deleted.');

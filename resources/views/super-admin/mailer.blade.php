@@ -1,6 +1,7 @@
 @extends('layouts.super-admin')
 @section('title', 'Mailer')
 @section('page-title', 'Mailing List')
+@section('page-description', 'Send emails to tenant owners')
 
 @section('content')
 <div x-data="mailerApp()" x-effect="search; filterPlan; currentPage = 1" class="space-y-6">

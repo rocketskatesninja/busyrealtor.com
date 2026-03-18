@@ -16,3 +16,8 @@ Schedule::command('app:process-dunning')->dailyAt('08:05');
 
 // Run daily — purge expired chatbot conversation logs per tenant's chatbot_expiration setting
 Schedule::command('app:purge-chat-logs')->daily();
+
+// Run daily at 3am — prune activity log entries older than 90 days
+Schedule::call(function () {
+    \App\Models\ActivityLog::where('created_at', '<', now()->subDays(90))->delete();
+})->dailyAt('03:00');

@@ -78,6 +78,7 @@ class BillingController extends Controller
                 $tenant->plan             = $request->plan;
                 $tenant->stripe_cancel_at = null;
                 $tenant->save();
+                logActivity('updated', "Switched billing plan to {$request->plan}", $tenant);
                 return redirect()
                     ->route('tenant.admin.billing', ['account' => $tenant->slug])
                     ->with('success', 'Your plan has been updated to ' . ucfirst($request->plan) . '.');
@@ -90,6 +91,7 @@ class BillingController extends Controller
                         . '?session_id={CHECKOUT_SESSION_ID}',
                     'cancel_url'  => route('tenant.admin.billing', ['account' => $tenant->slug]),
                 ]);
+            logActivity('created', "Initiated {$request->plan} plan subscription checkout", $tenant);
             return redirect($checkout->url);
         } catch (\Exception $e) {
             Log::error('Stripe billing error', ['tenant_id' => $tenant->id, 'error' => $e->getMessage()]);
@@ -136,6 +138,7 @@ class BillingController extends Controller
             ]);
             $tenant->stripe_cancel_at = Carbon::createFromTimestamp($sub->cancel_at);
             $tenant->save();
+            logActivity('updated', "Cancelled subscription (effective {$tenant->stripe_cancel_at->format('Y-m-d')})", $tenant);
 
             return redirect()
                 ->route('tenant.admin.billing', ['account' => $tenant->slug])
@@ -162,6 +165,7 @@ class BillingController extends Controller
             ]);
             $tenant->stripe_cancel_at = null;
             $tenant->save();
+            logActivity('updated', "Resumed subscription", $tenant);
 
             return redirect()
                 ->route('tenant.admin.billing', ['account' => $tenant->slug])

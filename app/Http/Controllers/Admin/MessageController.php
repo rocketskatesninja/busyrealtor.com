@@ -51,6 +51,15 @@ class MessageController extends Controller
             'delete' => $msg->delete(),
             default  => null,
         };
+        $desc = match ($request->action) {
+            'star'   => ($msg->is_starred ? 'Starred' : 'Unstarred') . " message from {$msg->sender_name}",
+            'read'   => "Marked message from {$msg->sender_name} as read",
+            'unread' => "Marked message from {$msg->sender_name} as unread",
+            'status' => "Changed message status to {$request->status} for {$msg->sender_name}",
+            'delete' => "Deleted message from {$msg->sender_name}",
+            default  => "Message action: {$request->action}",
+        };
+        logActivity($request->action === 'delete' ? 'deleted' : 'updated', $desc, $msg);
         return response()->json(['success' => true]);
     }
 
@@ -65,6 +74,8 @@ class MessageController extends Controller
             'delete' => Message::where('tenant_id', $tenant->id)->whereIn('id', $ids)->delete(),
             default  => null,
         };
+        $count = count($ids);
+        logActivity($request->action === 'delete' ? 'deleted' : 'updated', "Bulk {$request->action}: {$count} messages");
         return redirect()->back()->with('success', 'Bulk action done.');
     }
 }

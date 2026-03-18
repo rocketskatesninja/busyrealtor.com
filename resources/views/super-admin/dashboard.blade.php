@@ -1,5 +1,7 @@
 @extends('layouts.super-admin')
 @section('title', 'Super Admin Dashboard')
+@section('page-title', 'Dashboard')
+@section('page-description', 'Platform overview and statistics')
 @section('content')
 <div class="space-y-6">
     {{-- Stats Row --}}

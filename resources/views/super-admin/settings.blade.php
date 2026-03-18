@@ -1,13 +1,10 @@
 @extends('layouts.super-admin')
 @section('title', 'System Settings')
 @section('page-title', 'System Settings')
+@section('page-description', 'Global controls for the BusyRealtor platform')
 
 @section('content')
 <div class="max-w-2xl space-y-6">
-
-    <div>
-        <p class="text-gray-400 text-sm">Global controls for the BusyRealtor platform.</p>
-    </div>
 
     <form method="POST" action="{{ route('super.settings.update') }}" enctype="multipart/form-data">
         @csrf

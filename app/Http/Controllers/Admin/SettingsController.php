@@ -244,6 +244,7 @@ class SettingsController extends Controller
             $twData
         );
 
+        logActivity('updated', "Updated tenant settings (tab: {$tab})");
         return redirect()->route('tenant.admin.settings', ['account' => $account, 'tab' => $tab])->with('success', 'Settings saved.');
     }
 }

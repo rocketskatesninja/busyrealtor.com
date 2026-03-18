@@ -38,6 +38,7 @@ class FeedbackController extends Controller
             $selectedItem = Feedback::withoutGlobalScopes()->with(['tenant', 'user'])->find($id);
             if ($selectedItem && $selectedItem->status === 'new') {
                 $selectedItem->update(['status' => 'reviewed']);
+                logActivity('updated', "Reviewed feedback: {$selectedItem->subject}", $selectedItem);
             }
         }
 
@@ -71,6 +72,7 @@ class FeedbackController extends Controller
     public function destroy(int $id)
     {
         $item = Feedback::withoutGlobalScopes()->findOrFail($id);
+        logActivity('deleted', "Deleted feedback: {$item->subject}", $item);
         $item->delete();
 
         return redirect()->route('super.feedback')->with('success', 'Feedback deleted.');

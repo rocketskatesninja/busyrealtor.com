@@ -1,12 +1,9 @@
 @extends('layouts.super-admin')
 @section('title', 'Tenants')
 @section('page-title', 'Tenants')
+@section('page-description', 'Manage all realtor accounts on the platform')
 @section('content')
 <div class="space-y-6">
-    <div>
-        <p class="text-gray-400 text-sm">Manage all realtor accounts on the platform</p>
-    </div>
-
     {{-- Header + Search --}}
     <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
         <form method="GET" class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:items-end">
