@@ -10,27 +10,44 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FeedbackController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $feedback = Feedback::withoutGlobalScopes()->with(['tenant', 'user'])
-            ->orderByRaw("FIELD(status, 'new', 'reviewed')")
-            ->orderByDesc('created_at')
-            ->paginate(25);
+        $query = Feedback::withoutGlobalScopes()->with(['tenant', 'user']);
 
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('subject', 'like', "%{$search}%")
+                  ->orWhere('message', 'like', "%{$search}%")
+                  ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"));
+            });
+        }
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        $query->orderByRaw("FIELD(status, 'new', 'reviewed')")
+              ->orderByDesc('created_at');
+
+        $feedback = $query->paginate(25);
         $newCount = Feedback::withoutGlobalScopes()->where('status', 'new')->count();
 
-        return view('super-admin.feedback.index', compact('feedback', 'newCount'));
+        // Load selected item if ?id= is present
+        $selectedItem = null;
+        if ($id = $request->input('id')) {
+            $selectedItem = Feedback::withoutGlobalScopes()->with(['tenant', 'user'])->find($id);
+            if ($selectedItem && $selectedItem->status === 'new') {
+                $selectedItem->update(['status' => 'reviewed']);
+            }
+        }
+
+        return view('super-admin.feedback.index', compact('feedback', 'newCount', 'selectedItem'));
     }
 
     public function show(int $id)
     {
-        $item = Feedback::withoutGlobalScopes()->with(['tenant', 'user'])->findOrFail($id);
-
-        if ($item->status === 'new') {
-            $item->update(['status' => 'reviewed']);
-        }
-
-        return view('super-admin.feedback.show', compact('item'));
+        // Redirect to combined view with ?id= param
+        return redirect()->route('super.feedback', ['id' => $id]);
     }
 
     public function screenshot(int $id, int $index = 0): StreamedResponse

@@ -82,7 +82,7 @@
         .nav-active { color: var(--primary) !important; }
         .hover-primary:hover { color: var(--primary) !important; }
         .btn-primary { background-color: var(--primary); color: white; }
-        .btn-primary:hover { opacity: 0.9; }
+        .btn-primary:hover:not(:disabled) { opacity: 0.9; }
 
         /* ===================== DARK MODE ===================== */
         .dark, .dark body { color-scheme: dark; }

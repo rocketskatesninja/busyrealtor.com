@@ -89,7 +89,7 @@
                 <p class="text-sm text-gray-600 leading-relaxed truncate" title="{{ $appt->notes }}">{{ Str::limit($appt->notes, 80) }}</p>
                 @endif
             </div>
-            <div class="flex flex-wrap gap-2 border-t pt-3">
+            <div class="flex flex-wrap gap-2 border-t border-gray-200 dark:border-gray-700 pt-3">
                 @if($appt->status === 'pending')
                 <form method="POST" action="{{ route('tenant.admin.appointments.action', [$account, $appt->id]) }}">
                     @csrf <input type="hidden" name="status" value="confirmed">

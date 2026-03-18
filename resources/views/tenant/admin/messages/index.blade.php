@@ -6,7 +6,7 @@
 <div class="max-w-7xl mx-auto px-4">
 
     {{-- Filter Bar --}}
-    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-6">
+    <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
         <form method="GET" class="flex flex-wrap gap-3 items-end justify-center md:justify-start">
             <div class="w-full md:flex-1 md:min-w-40">
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Search messages..." class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
@@ -38,15 +38,15 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Messages List --}}
         <div class="lg:col-span-1">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-4 py-3 border-b flex items-center justify-between">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div class="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
                     <p class="text-sm text-gray-500 dark:text-gray-400">{{ $messages->total() }} {{ Str::plural('message', $messages->total()) }}</p>
                     @if($unreadCount > 0)
                         <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300">{{ $unreadCount }} unread</span>
                     @endif
                 </div>
                 @if($messages->count())
-                <div class="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
+                <div class="divide-y divide-gray-100 dark:divide-gray-700 max-h-[600px] overflow-y-auto">
                     @foreach($messages as $msg)
                     @php
                         $isActive = request('view') == $msg->id;
@@ -87,7 +87,7 @@
                     </a>
                     @endforeach
                 </div>
-                <div class="p-3 border-t">{{ $messages->links() }}</div>
+                <div class="p-3 border-t border-gray-100 dark:border-gray-700">{{ $messages->links() }}</div>
                 @else
                 <div class="text-center py-12 text-gray-400">
                     <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
@@ -103,9 +103,9 @@
         {{-- Message Detail --}}
         <div class="lg:col-span-2">
             @if($message)
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
                 {{-- Detail Header --}}
-                <div class="px-6 py-4 border-b bg-gray-50/50 dark:bg-slate-800/50 flex items-start justify-between gap-4">
+                <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50 flex items-start justify-between gap-4">
                     <div class="flex items-center gap-4">
                         <div class="w-11 h-11 rounded-full flex items-center justify-center text-white font-semibold text-lg flex-shrink-0" style="background-color: var(--primary)">
                             {{ strtoupper(substr($message->sender_name ?? 'U', 0, 1)) }}
@@ -137,7 +137,7 @@
                 </div>
 
                 {{-- Meta --}}
-                <div class="px-6 py-3 border-b flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                <div class="px-6 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
                     <span>{{ $message->created_at->format('M j, Y \a\t g:i A') }}</span>
                     <span class="text-gray-300">&middot;</span>
                     <span class="font-medium px-2 py-0.5 rounded-full {{ match($message->source) { 'contact_form' => 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400', 'chatbot' => 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400', default => 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400' } }}">
@@ -155,7 +155,7 @@
                 </div>
 
                 {{-- Reply --}}
-                <div class="px-6 py-4 border-t bg-gray-50/50 dark:bg-slate-800/50">
+                <div class="px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-slate-800/50">
                     @if($message->sender_email)
                     <a href="mailto:{{ $message->sender_email }}?subject=Re: Your Inquiry" class="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition inline-flex items-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10l1.5 1.5L3 13M3 10l8 5 8-5M21 10l-1.5 1.5L21 13M21 10v7a2 2 0 01-2 2H5a2 2 0 01-2-2v-7"/></svg>
@@ -165,7 +165,7 @@
                 </div>
             </div>
             @else
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 flex items-center justify-center" style="min-height: 400px">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 flex items-center justify-center" style="min-height: 400px">
                 <div class="text-center text-gray-400 dark:text-gray-500">
                     <svg class="w-16 h-16 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                     <p class="font-medium">Select a message to view</p>
