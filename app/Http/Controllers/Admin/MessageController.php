@@ -22,7 +22,13 @@ class MessageController extends Controller
               ->orWhere('message',      'like', '%' . $request->search . '%');
         });
 
-        $messages    = $query->latest()->paginate(25)->withQueryString();
+        match ($request->sort) {
+            'oldest'  => $query->oldest(),
+            'starred' => $query->orderByDesc('is_starred')->latest(),
+            default   => $query->latest(),
+        };
+
+        $messages    = $query->paginate(25)->withQueryString();
         $message     = null;
         if ($request->view) {
             $message = Message::where('tenant_id', $tenant->id)->findOrFail($request->view);

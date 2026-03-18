@@ -25,8 +25,19 @@ class AppointmentController extends Controller
         if ($request->status)     $query->where('status', $request->status);
         if ($request->date_from)  $query->where('appointment_date', '>=', $request->date_from);
         if ($request->date_to)    $query->where('appointment_date', '<=', $request->date_to);
+        if ($request->search)     $query->where(function ($q) use ($request) {
+            $q->where('visitor_name',  'like', '%' . $request->search . '%')
+              ->orWhere('visitor_email', 'like', '%' . $request->search . '%');
+        });
 
-        $appointments = $query->orderBy('appointment_date')->paginate(25)->withQueryString();
+        match ($request->sort) {
+            'oldest'    => $query->orderBy('appointment_date', 'asc'),
+            'newest'    => $query->orderBy('appointment_date', 'desc'),
+            'created'   => $query->latest(),
+            default     => $query->orderBy('appointment_date', 'asc'),
+        };
+
+        $appointments = $query->paginate(25)->withQueryString();
         return view('tenant.admin.appointments.index', compact('tenant', 'appointments'));
     }
 
