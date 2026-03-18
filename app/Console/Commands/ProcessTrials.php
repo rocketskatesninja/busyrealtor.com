@@ -33,13 +33,13 @@ class ProcessTrials extends Command
 
             $billingUrl = url("/{$tenant->slug}/admin/billing");
             $subject    = 'Your BusyRealtor trial has ended';
-            $body       = "Hi {$tenant->name},\n\n"
-                        . "Your 14-day free trial has ended and your account has been deactivated.\n\n"
-                        . "Subscribe to a plan to reactivate your account and keep your listings live:\n"
-                        . "{$billingUrl}\n\n"
-                        . "The BusyRealtor Team";
+            $body  = "Your 14-day free trial has ended and your account has been deactivated.\n";
+            $body .= str_repeat('─', 40) . "\n";
+            $body .= "Status: Deactivated\n";
+            $body .= "Reason: Trial expired\n";
+            $body .= "\nSubscribe to a plan to reactivate your account and keep your listings live:\n{$billingUrl}";
 
-            TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
+            TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
         }
 
         $this->line("Deactivated {$expired->count()} expired trial(s).");
@@ -65,13 +65,13 @@ class ProcessTrials extends Command
                     ? 'Your BusyRealtor trial ends tomorrow'
                     : "Your BusyRealtor trial ends in {$days} days";
 
-                $body = "Hi {$tenant->name},\n\n"
-                      . "Your free trial ends in {$days} " . ($days === 1 ? 'day' : 'days') . ".\n\n"
-                      . "Subscribe now to keep your listings live and avoid any interruption:\n"
-                      . "{$billingUrl}\n\n"
-                      . "The BusyRealtor Team";
+                $body  = "Your free trial ends in {$days} " . ($days === 1 ? 'day' : 'days') . ".\n";
+                $body .= str_repeat('─', 40) . "\n";
+                $body .= "Plan: Trial\n";
+                $body .= "Expires: " . $tenant->trial_ends_at->format('l, F j, Y') . "\n";
+                $body .= "\nSubscribe now to keep your listings live and avoid any interruption:\n{$billingUrl}";
 
-                TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
+                TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
 
                 $sent   = $tenant->trial_reminders_sent ?? [];
                 $sent[] = $days;

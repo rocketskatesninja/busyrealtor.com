@@ -106,16 +106,14 @@ class HandleStripeWebhook
         $date     = date('F j, Y', $obj['created'] ?? time());
 
         $subject = "Payment received — {$amount}";
-        $body    = "Hi {$tenant->name},\n\n"
-                 . "We've received your payment of {$amount} for your BusyRealtor {$planName}.\n\n"
-                 . "Date: {$date}\n"
-                 . "Amount: {$amount}\n"
-                 . "Plan: {$planName}\n\n"
-                 . "You can view your full billing history at any time from your account dashboard.\n\n"
-                 . "Thank you for using BusyRealtor!\n\n"
-                 . "The BusyRealtor Team";
+        $body  = "We've received your payment. Thank you!\n";
+        $body .= str_repeat('─', 40) . "\n";
+        $body .= "Date: {$date}\n";
+        $body .= "Amount: {$amount}\n";
+        $body .= "Plan: {$planName}\n";
+        $body .= "\nYou can view your full billing history from your account dashboard.";
 
-        TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
+        TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
 
         Log::info('Billing receipt sent', ['tenant_id' => $tenant->id, 'amount' => $amount]);
     }
@@ -132,14 +130,13 @@ class HandleStripeWebhook
         $billingUrl = url("/{$tenant->slug}/admin/billing");
 
         $subject = 'Action required: Payment failed';
-        $body    = "Hi {$tenant->name},\n\n"
-                 . "We were unable to process your payment of {$amount} for your BusyRealtor subscription.\n\n"
-                 . "Please update your payment method to keep your account active:\n"
-                 . "{$billingUrl}\n\n"
-                 . "We'll retry automatically, but you can also update your card now to avoid any interruption.\n\n"
-                 . "The BusyRealtor Team";
+        $body  = "We were unable to process your payment.\n";
+        $body .= str_repeat('─', 40) . "\n";
+        $body .= "Amount Due: {$amount}\n";
+        $body .= "\nPlease update your payment method to keep your account active:\n{$billingUrl}\n";
+        $body .= "\nWe'll retry automatically, but you can update your card now to avoid any interruption.";
 
-        TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
+        TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
 
         Log::warning('Stripe payment failed', [
             'tenant_id'  => $tenant->id,

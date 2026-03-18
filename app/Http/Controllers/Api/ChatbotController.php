@@ -75,6 +75,17 @@ class ChatbotController extends Controller
             return response()->json(['reply' => "You've sent a lot of messages. Please call or email us if you need further help.", 'session_id' => $sessionId]);
         }
 
+        // IP flood guard: max 60 chatbot messages per IP per hour (catches session-id rotation)
+        $ipKey = 'chatbot_ip_' . $tenant->id . '_' . md5($request->ip());
+        $ipCount = (int) cache($ipKey, 0);
+        if ($ipCount >= 60) {
+            return response()->json([
+                'reply' => "You've sent a lot of messages. Please call or email us if you need further help.",
+                'session_id' => $sessionId,
+            ]);
+        }
+        cache([$ipKey => $ipCount + 1], now()->addHour());
+
         // Build system prompt
         $activeProps = Property::where('tenant_id', $tenant->id)
             ->where('listing_status', 'active')->limit(50)->get()
@@ -101,13 +112,15 @@ class ChatbotController extends Controller
         if ($propCounts->get('pending')) $sysPrompt .= ", {$propCounts->get('pending')} pending";
         if ($propCounts->get('sold'))    $sysPrompt .= ", {$propCounts->get('sold')} sold";
         $sysPrompt .= ".\n";
-        $sysPrompt .= "\nWhen a visitor wants to schedule a showing, consultation, or any appointment, "
-                    . "collect their full name, email address, preferred date, preferred time, appointment type "
-                    . "(showing, consultation, virtual, or other), and which property they are interested in "
-                    . "(use the listing IDs shown above — if they mention a property by name or address, match it to an ID). "
-                    . "Ask for one missing piece of info at a time. If there are active listings, ask which property. "
-                    . "Once you have all required details, call the book_appointment tool immediately. "
-                    . "Do not ask for confirmation before calling it — just book it. Be concise and warm.";
+        $sysPrompt .= "\nAppointment booking rules:"
+                    . "\n- Only begin the booking process when the visitor CLEARLY asks to schedule, book, or tour a property."
+                    . "\n- Do NOT interpret random words, numbers, or off-topic messages as booking answers."
+                    . "\n- Collect: full name, email address, preferred date, preferred time, appointment type (showing, consultation, virtual, or other), and which property."
+                    . "\n- Validate each piece of info: names must look like real names (not numbers), emails must contain @, dates must be recognizable dates."
+                    . "\n- If an answer doesn't look valid, politely ask again."
+                    . "\n- Before calling book_appointment, briefly confirm all details with the visitor (e.g. 'Just to confirm: John Smith, john@email.com, showing on March 20 at 2pm for 123 Main St — shall I book this?')."
+                    . "\n- Use the listing IDs from above to match properties by name or address."
+                    . "\nBe concise and warm. If the visitor is just browsing or asking questions, help them without pushing appointments.";
 
         $messages = $history->map(fn($log) => [
             'role'    => $log->role,
@@ -297,7 +310,7 @@ class ChatbotController extends Controller
             ]);
 
             // Notify owner
-            $ownerEmail = $settings?->contact_email ?: $tenant->email;
+            $ownerEmail = $tenant->ownerEmail();
             if ($ownerEmail) {
                 $typeLabel = ucwords(str_replace('_', ' ', $appt->appointment_type));
                 $body  = "New appointment request via chatbot\n";

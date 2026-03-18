@@ -12,6 +12,7 @@
     $contactEmail = $settings->contact_email ?? null;
     $address      = $settings->contact_address ?? null;
 
+    if (!function_exists('renderEmailBody')) {
     function renderEmailBody(string $raw): string {
         $lines  = explode("\n", $raw);
         $output = '';
@@ -66,6 +67,7 @@
         );
         return $text;
     }
+    } // end function_exists
 @endphp
 
 <div style="display:none;max-height:0;overflow:hidden;mso-hide:all;">{{ $subject }} &nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>

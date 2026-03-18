@@ -40,10 +40,15 @@
                             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content, 'Accept': 'application/json' },
                             body: JSON.stringify(this.form)
                         });
+                        if (res.status === 429) {
+                            try { const data = await res.json(); this.error = data.error || 'Too many requests. Please wait a few minutes and try again.'; }
+                            catch { this.error = 'Too many requests. Please wait a few minutes and try again.'; }
+                            return;
+                        }
                         const data = await res.json();
                         if (data.success) { this.success = true; this.form = { name: '', email: '', phone: '', message: '' }; }
                         else this.error = data.error || 'Failed to send. Please try again.';
-                    } catch(e) { this.error = 'Network error. Please try again.'; }
+                    } catch(e) { this.error = 'Something went wrong. Please try again.'; }
                     finally { this.submitting = false; }
                 }
             }">

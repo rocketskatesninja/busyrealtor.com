@@ -44,6 +44,7 @@ class TenantMailer
                 'mail.mailers.smtp.port'     => $port,
                 'mail.mailers.smtp.username' => $cfg['smtp_username'] ?? null,
                 'mail.mailers.smtp.password' => $cfg['smtp_password'] ?? null,
+                'mail.mailers.smtp.timeout'  => 10,
                 'mail.from.address'          => $cfg['smtp_from_email'] ?? config('mail.from.address'),
                 'mail.from.name'             => $cfg['smtp_from_name'] ?? config('mail.from.name'),
             ]);
@@ -69,7 +70,7 @@ class TenantMailer
             });
             Log::info('TenantMailer sent OK', ['to' => $to]);
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             Log::error('TenantMailer send failed', [
                 'tenant_id' => $tenantId,
                 'to'        => $to,

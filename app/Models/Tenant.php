@@ -145,4 +145,15 @@ class Tenant extends Model
     {
         return $this->isPro() ? null : 10;
     }
+
+    /**
+     * The single notification email for this tenant.
+     * Fallback: contact_email → primary user login email → tenant.email
+     */
+    public function ownerEmail(): string
+    {
+        return $this->siteSettings?->contact_email
+            ?: $this->users()->first()?->email
+            ?: $this->email;
+    }
 }

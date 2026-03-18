@@ -37,14 +37,14 @@ class ProcessDunning extends Command
                 ]);
 
                 $subject = 'Your BusyRealtor account has been suspended';
-                $body    = "Hi {$tenant->name},\n\n"
-                         . "Your account has been suspended due to an unresolved payment failure.\n\n"
-                         . "To reactivate your account, please update your payment method:\n"
-                         . "{$billingUrl}\n\n"
-                         . "Your data is safe and your account can be reactivated at any time.\n\n"
-                         . "The BusyRealtor Team";
+                $body  = "Your account has been suspended due to an unresolved payment failure.\n";
+                $body .= str_repeat('─', 40) . "\n";
+                $body .= "Status: Suspended\n";
+                $body .= "Reason: Payment failure\n";
+                $body .= "\nTo reactivate your account, please update your payment method:\n{$billingUrl}\n";
+                $body .= "\nYour data is safe and your account can be reactivated at any time.";
 
-                TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
+                TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
                 Log::warning('Account suspended — payment unresolved', ['tenant_id' => $tenant->id, 'days_failed' => $daysFailed]);
                 $suspended++;
 
@@ -55,14 +55,13 @@ class ProcessDunning extends Command
                     $daysLeft = self::SUSPEND_DAY - $daysFailed;
 
                     $subject = 'Reminder: Payment issue — account suspends soon';
-                    $body    = "Hi {$tenant->name},\n\n"
-                             . "We still haven't been able to process your payment.\n\n"
-                             . "Your account will be suspended in {$daysLeft} " . ($daysLeft === 1 ? 'day' : 'days') . " if not resolved.\n\n"
-                             . "Please update your payment method now:\n"
-                             . "{$billingUrl}\n\n"
-                             . "The BusyRealtor Team";
+                    $body  = "We still haven't been able to process your payment.\n";
+                    $body .= str_repeat('─', 40) . "\n";
+                    $body .= "Status: Past due\n";
+                    $body .= "Suspends in: {$daysLeft} " . ($daysLeft === 1 ? 'day' : 'days') . "\n";
+                    $body .= "\nPlease update your payment method now:\n{$billingUrl}";
 
-                    TenantMailer::send($tenant->id, $tenant->email, $subject, $body, 'platform');
+                    TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
 
                     $sent[] = 'dunning_followup';
                     $tenant->update(['trial_reminders_sent' => $sent]);

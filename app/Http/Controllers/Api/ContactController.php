@@ -22,6 +22,30 @@ class ContactController extends Controller
         ]);
 
         $tenant = app('tenant');
+
+        // Rate limit: max 3 contact messages per email per hour
+        $recentFromEmail = Message::where('tenant_id', $tenant->id)
+            ->where('sender_email', $request->email)
+            ->where('created_at', '>=', now()->subHour())
+            ->count();
+        if ($recentFromEmail >= 3) {
+            return response()->json([
+                'success' => false,
+                'error' => "You've already sent several messages. Please wait or call us directly.",
+            ], 429);
+        }
+
+        // Rate limit: max 10 contact messages per IP per hour
+        $ipKey = 'contact_ip_' . $tenant->id . '_' . md5($request->ip());
+        $ipCount = (int) cache($ipKey, 0);
+        if ($ipCount >= 10) {
+            return response()->json([
+                'success' => false,
+                'error' => "Too many messages from this connection. Please try again later or call us.",
+            ], 429);
+        }
+        cache([$ipKey => $ipCount + 1], now()->addHour());
+
         Message::create([
             'tenant_id'    => $tenant->id,
             'property_id'  => $request->property_id,
@@ -38,21 +62,33 @@ class ContactController extends Controller
         $notifyEnabled = !$settings || $settings->notify_on_contact !== false;
 
         if ($notifyEnabled) {
-            // Always notify the account owner
-            $ownerEmail = $settings?->contact_email ?: $tenant->email;
+            $ownerEmail = $tenant->ownerEmail();
             $subject    = 'New Contact Message from ' . $request->name;
-            $body       = "New contact message from {$request->name} ({$request->email}):\nPhone: {$request->phone}\n\n{$request->message}";
+
+            $body  = "New contact form submission\n";
+            $body .= str_repeat('─', 40) . "\n";
+            $body .= "Name: {$request->name}\n";
+            $body .= "Email: {$request->email}\n";
+            if ($request->phone) $body .= "Phone: {$request->phone}\n";
+
+            // Look up property for label and staff notification
+            $property  = null;
+            $propLabel = null;
+            if ($request->property_id) {
+                $property = Property::with('staffMember')->find($request->property_id);
+                if ($property) $propLabel = "{$property->title} — {$property->address_street}, {$property->address_city}";
+            }
+            if ($propLabel) $body .= "Property: {$propLabel}\n";
+
+            $body .= "\n{$request->message}";
+
             TenantMailer::send($tenant->id, $ownerEmail, $subject, $body);
 
-            // Pro: also notify the staff member assigned to the property
-            if ($tenant->isPro() && $request->property_id) {
-                $property = Property::with('staffMember')->find($request->property_id);
-                if ($property && $property->staffMember && $property->staffMember->email) {
-                    $staffEmail = $property->staffMember->email;
-                    if ($staffEmail !== $ownerEmail) {
-                        $bodyStaff = "New contact message regarding your listing: {$property->title}\n\n" . $body;
-                        TenantMailer::send($tenant->id, $staffEmail, $subject, $bodyStaff);
-                    }
+            // Pro: also notify the assigned staff member
+            if ($tenant->isPro() && $property && $property->staffMember && $property->staffMember->email) {
+                $staffEmail = $property->staffMember->email;
+                if ($staffEmail !== $ownerEmail) {
+                    TenantMailer::send($tenant->id, $staffEmail, $subject, $body);
                 }
             }
         }

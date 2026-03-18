@@ -7,6 +7,7 @@
 </head>
 <body style="margin:0;padding:0;background-color:#eef0f3;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
 @php
+    if (!function_exists('renderPlatformEmailBody')) {
     function renderPlatformEmailBody(string $raw): string {
         $lines  = explode("\n", $raw);
         $output = '';
@@ -61,6 +62,7 @@
         );
         return $text;
     }
+    } // end function_exists
 @endphp
 
 {{-- Preheader --}}
@@ -74,15 +76,15 @@
 
         {{-- Header --}}
         <tr>
-          <td align="center" style="background-color:#1e3a5f;padding:30px 40px;border-radius:8px 8px 0 0;">
-            <span style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:0.5px;display:block;">BusyRealtor</span>
-            <span style="font-size:12px;color:#93c5fd;letter-spacing:1px;text-transform:uppercase;display:block;margin-top:4px;">Real Estate Platform</span>
+          <td align="center" style="background:linear-gradient(135deg,#0f2744 0%,#1e3a5f 40%,#1d4ed8 100%);padding:34px 40px 28px;border-radius:8px 8px 0 0;">
+            <span style="font-size:26px;font-weight:800;color:#ffffff;letter-spacing:0.5px;display:block;line-height:1;">BusyRealtor</span>
+            <span style="font-size:11px;color:#93c5fd;letter-spacing:2px;text-transform:uppercase;display:block;margin-top:6px;">Real Estate Platform</span>
           </td>
         </tr>
 
-        {{-- Accent stripe --}}
+        {{-- Accent stripe (orange → blue gradient) --}}
         <tr>
-          <td style="background-color:#3b82f6;height:3px;font-size:0;line-height:0;">&nbsp;</td>
+          <td style="height:4px;font-size:0;line-height:0;background:linear-gradient(90deg,#f97316 0%,#fb923c 30%,#3b82f6 70%,#2563eb 100%);">&nbsp;</td>
         </tr>
 
         {{-- Body --}}
@@ -90,7 +92,7 @@
           <td style="background-color:#ffffff;padding:36px 44px 32px;">
 
             {{-- Subject heading --}}
-            <h2 style="margin:0 0 24px;font-size:19px;font-weight:700;color:#111827;line-height:1.3;border-bottom:2px solid #1e3a5f;padding-bottom:14px;">
+            <h2 style="margin:0 0 24px;font-size:19px;font-weight:700;color:#111827;line-height:1.3;border-bottom:2px solid #f97316;padding-bottom:14px;">
               {{ $subject }}
             </h2>
 

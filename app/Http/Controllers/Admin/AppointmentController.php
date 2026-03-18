@@ -7,6 +7,7 @@ use App\Models\Appointment;
 use App\Models\Property;
 use App\Models\SiteSettings;
 use App\Services\TenantMailer;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -45,6 +46,18 @@ class AppointmentController extends Controller
             'property_id'    => 'nullable|integer',
         ]);
 
+        // Rate limit: max 3 appointment requests per email per 24 hours
+        $recentAppts = Appointment::where('tenant_id', $tenant->id)
+            ->where('visitor_email', $request->visitor_email)
+            ->where('created_at', '>=', now()->subDay())
+            ->count();
+        if ($recentAppts >= 3) {
+            return response()->json([
+                'success' => false,
+                'message' => "You've already submitted several appointment requests. Please call or email us directly.",
+            ], 429);
+        }
+
         // Resolve assigned staff member from property (Pro only)
         $staffMemberId = null;
         $staffEmail    = null;
@@ -75,19 +88,29 @@ class AppointmentController extends Controller
 
         // Always notify the account owner
         $settings   = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
-        $ownerEmail = $settings?->contact_email ?: $tenant->email;
-        $subject    = 'New Appointment Request from ' . $request->visitor_name;
-        $body       = "New appointment request from {$request->visitor_name} ({$request->visitor_email})\n" .
-                      "Phone: {$request->visitor_phone}\n" .
-                      "Date: {$request->appointment_date}\nType: {$request->appointment_type}\n" .
-                      "Message: {$request->message}";
+        $ownerEmail = $tenant->ownerEmail();
+        $typeLabel  = ucwords($appt->appointment_type);
+        $dateLabel  = Carbon::parse($appt->appointment_date)->format('l, F j, Y');
+        $timeLabel  = Carbon::parse($appt->appointment_time)->format('g:i A');
+        $propLabel  = isset($property) ? "{$property->title} — {$property->address_street}, {$property->address_city}" : null;
+
+        $subject = "New {$typeLabel} Request — {$request->visitor_name}";
+        $body  = "New appointment request\n";
+        $body .= str_repeat('─', 40) . "\n";
+        $body .= "Name: {$appt->visitor_name}\n";
+        $body .= "Email: {$appt->visitor_email}\n";
+        if ($appt->visitor_phone) $body .= "Phone: {$appt->visitor_phone}\n";
+        $body .= "Type: {$typeLabel}\n";
+        $body .= "Date: {$dateLabel} at {$timeLabel}\n";
+        if ($propLabel) $body .= "Property: {$propLabel}\n";
+        if ($appt->notes) $body .= "Notes: {$appt->notes}\n";
+        $body .= "\nView in admin: " . route('tenant.admin.appointments.index', $tenant->slug);
+
         TenantMailer::send($tenant->id, $ownerEmail, $subject, $body);
 
         // Pro: also notify the assigned staff member
         if ($staffEmail && $staffEmail !== $ownerEmail) {
-            $propTitle  = isset($property) ? $property->title : 'a property';
-            $bodyStaff  = "New appointment request for your listing: {$propTitle}\n\n" . $body;
-            TenantMailer::send($tenant->id, $staffEmail, $subject, $bodyStaff);
+            TenantMailer::send($tenant->id, $staffEmail, $subject, $body);
         }
 
         return response()->json(['success' => true, 'message' => 'Appointment request sent!']);
@@ -105,15 +128,34 @@ class AppointmentController extends Controller
 
         $appt->update(['status' => $request->status]);
 
-        // Send confirmation email to visitor
-        if ($request->status === 'confirmed' && $appt->visitor_email) {
-            $tenant = app('tenant');
-            TenantMailer::send(
-                $tenant->id,
-                $appt->visitor_email,
-                'Appointment Confirmed',
-                "Your appointment has been confirmed!\nDate: {$appt->appointment_date}\n\nWe look forward to seeing you. Please reply to this email if you need to make any changes."
-            );
+        // Send confirmation/cancellation email to visitor
+        if (in_array($request->status, ['confirmed', 'cancelled']) && $appt->visitor_email) {
+            $typeLabel = ucwords($appt->appointment_type);
+            $dateLabel = Carbon::parse($appt->appointment_date)->format('l, F j, Y');
+            $timeLabel = Carbon::parse($appt->appointment_time)->format('g:i A');
+            $propLabel = null;
+            if ($appt->property_id) {
+                $prop = \App\Models\Property::find($appt->property_id);
+                if ($prop) $propLabel = "{$prop->title} — {$prop->address_street}, {$prop->address_city}";
+            }
+
+            if ($request->status === 'confirmed') {
+                $body  = "Your appointment has been confirmed!\n";
+                $body .= str_repeat('─', 40) . "\n";
+                $body .= "Type: {$typeLabel}\n";
+                $body .= "Date: {$dateLabel} at {$timeLabel}\n";
+                if ($propLabel) $body .= "Property: {$propLabel}\n";
+                $body .= "\nWe look forward to seeing you! Please reply to this email if you need to make any changes.";
+                TenantMailer::send($tenant->id, $appt->visitor_email, 'Appointment Confirmed', $body);
+            } else {
+                $body  = "Your appointment has been cancelled.\n";
+                $body .= str_repeat('─', 40) . "\n";
+                $body .= "Type: {$typeLabel}\n";
+                $body .= "Date: {$dateLabel} at {$timeLabel}\n";
+                if ($propLabel) $body .= "Property: {$propLabel}\n";
+                $body .= "\nIf you'd like to reschedule, please contact us or visit our website.";
+                TenantMailer::send($tenant->id, $appt->visitor_email, 'Appointment Cancelled', $body);
+            }
         }
 
         return redirect()->back()->with('success', 'Appointment updated.');

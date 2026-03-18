@@ -512,6 +512,15 @@ $" . number_format($property->price) : '') . "
                         },
                         body: JSON.stringify(this.form)
                     });
+                    if (res.status === 429) {
+                        try {
+                            const data = await res.json();
+                            this.error = data.message || 'Too many requests. Please wait a few minutes and try again.';
+                        } catch {
+                            this.error = 'Too many requests. Please wait a few minutes and try again.';
+                        }
+                        return;
+                    }
                     const data = await res.json();
                     if (data.success) {
                         this.success = true;
@@ -519,7 +528,7 @@ $" . number_format($property->price) : '') . "
                         this.error = data.message || 'Something went wrong. Please try again.';
                     }
                 } catch (e) {
-                    this.error = 'Network error. Please try again.';
+                    this.error = 'Something went wrong. Please try again.';
                 } finally {
                     this.submitting = false;
                 }
