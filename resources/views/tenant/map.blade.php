@@ -202,13 +202,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 @section('content')
 @php
-$activeFilters = collect(['type','status','price_min','price_max','beds','baths'])
-    ->filter(fn($k) => request($k) !== null && request($k) !== '')->count();
+$activeFilters = collect(['type','status','price_min','price_max','beds','baths','sqft_min','sqft_max','year_min','year_max','garage_spaces','hoa','hoa_max'])
+    ->filter(fn($k) => request($k) !== null && request($k) !== '')->count()
+    + count(request('features', []));
 @endphp
 <div class="relative" style="height: calc(100vh - 80px)" x-data="{ mobileOpen: false }">
     {{-- Desktop Map Filter Panel (hidden on mobile) --}}
     <div id="map-filter-panel" class="hidden md:flex absolute top-16 left-4 z-10 bg-white rounded-2xl shadow-xl w-72 max-h-[calc(100vh-120px)] flex-col">
         <div id="map-filter-handle" class="flex items-center gap-2 p-4 flex-shrink-0 cursor-grab select-none">
+            <svg class="w-4 h-4 text-gray-300 flex-shrink-0" viewBox="0 0 16 16" fill="currentColor"><circle cx="4" cy="3" r="1.5"/><circle cx="12" cy="3" r="1.5"/><circle cx="4" cy="8" r="1.5"/><circle cx="12" cy="8" r="1.5"/><circle cx="4" cy="13" r="1.5"/><circle cx="12" cy="13" r="1.5"/></svg>
             <button type="button" onclick="applyMapFilter()" class="btn-primary flex-1 py-2 rounded-xl font-semibold text-sm hover:opacity-90 transition">Apply Filters</button>
             <button type="button" onclick="clearMapFilter()" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition">Clear</button>
         </div>
@@ -217,7 +219,7 @@ $activeFilters = collect(['type','status','price_min','price_max','beds','baths'
                 @include('tenant.partials.filter-fields', ['filterSuffix' => '_map'])
             </form>
         </div>
-        <div class="p-5 pt-3 flex-shrink-0 border-t">
+        <div class="px-5 pb-5 pt-3 flex-shrink-0 border-t">
             <p class="text-xs text-gray-500 font-medium">Properties on map: <span id="prop-count">{{ $properties->count() }}</span></p>
         </div>
     </div>
@@ -287,7 +289,7 @@ $activeFilters = collect(['type','status','price_min','price_max','beds','baths'
             {{-- Fixed footer --}}
             <div class="flex-shrink-0 p-4 border-t bg-gray-50 flex gap-3">
                 <button type="button"
-                        onclick="clearMapFilter(); Alpine.$data(document.querySelector('[x-data]')).mobileOpen = false"
+                        onclick="clearMapFilter(); Alpine.$data(document.querySelector('[x-data*="mobileOpen"]')).mobileOpen = false"
                         class="flex-1 py-3 text-center border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-100 transition">Clear All</button>
                 <button type="button"
                         onclick="applyMapFilterFromMobile()"
@@ -296,7 +298,5 @@ $activeFilters = collect(['type','status','price_min','price_max','beds','baths'
             </div>
         </div>
     </div>
-
-
 </div>
 @endsection

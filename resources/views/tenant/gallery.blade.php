@@ -8,10 +8,10 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
     ->filter(fn($k) => request($k) !== null && request($k) !== '')->count()
     + count(request('features', []));
 @endphp
-<div class="relative" x-data="{ mobileOpen: false }">
+<div class="md:flex md:gap-6 md:pl-6" x-data="{ mobileOpen: false }">
 
     {{-- Desktop Floating Filter Panel (hidden on mobile) --}}
-    <div class="hidden md:flex absolute top-4 left-4 z-10 bg-white rounded-2xl shadow-xl w-72 max-h-[calc(100vh-120px)] flex-col">
+    <div class="hidden md:flex self-start bg-white rounded-2xl shadow-xl flex-col w-64 lg:w-72 max-h-[calc(100vh-8rem)]" style="position: sticky; top: 100px; margin-top: 24px;">
         <div class="flex items-center gap-2 p-4 flex-shrink-0">
             <button type="submit" form="gallery-filter" class="btn-primary flex-1 py-2 rounded-xl font-semibold text-sm hover:opacity-90 transition">Apply Filters</button>
             <a href="{{ route('tenant.gallery', $account) }}" class="px-3 py-2 rounded-xl text-sm font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition">Clear</a>
@@ -29,11 +29,10 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
                 @include('tenant.partials.filter-fields')
             </form>
         </div>
-
     </div>
 
     {{-- Property Grid --}}
-    <div class="md:ml-80 px-4 md:px-6 py-10">
+    <div class="flex-1 min-w-0 px-4 md:pl-0 md:pr-6 py-10">
         <div class="flex items-center justify-between mb-6">
             <p class="text-sm text-gray-500">{{ $properties->total() }} {{ Str::plural('property', $properties->total()) }} found<span id="favs-hint" style="display:none"> — Favorites listed first</span></p>
             <form method="GET" action="{{ route('tenant.gallery', $account) }}" class="flex items-center gap-2">
@@ -176,8 +175,6 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
             </div>
         </div>
     </div>
-
-
 </div>
 @endsection
 

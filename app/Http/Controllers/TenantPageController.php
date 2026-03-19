@@ -23,7 +23,7 @@ class TenantPageController extends Controller
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
-        $featured = Property::where('is_featured', true)->where('listing_status', 'active')->limit(6)->get();
+        $featured = Property::where('is_featured', true)->whereIn('listing_status', ['active', 'featured'])->limit(6)->get();
         $staff    = \App\Models\StaffMember::where('display_on_homepage', true)->orderBy('sort_order')->get();
 
         return view('tenant.home', compact('tenant', 'settings', 'featured', 'staff'));
