@@ -48,6 +48,56 @@
         </div>
     </div>
 
+    {{-- Health Alerts --}}
+    @if($alerts['expiringTrials']->count() || $alerts['failedPayments']->count() || $alerts['inactiveTenants']->count())
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100">
+            <h3 class="font-semibold text-gray-800 flex items-center gap-2">
+                <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg>
+                Attention Needed
+            </h3>
+        </div>
+        <div class="divide-y divide-gray-100">
+            @foreach($alerts['expiringTrials'] as $t)
+            <div class="px-6 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-yellow-400 flex-shrink-0"></span>
+                    <div>
+                        <p class="text-sm font-medium text-gray-800">{{ $t->name }}</p>
+                        <p class="text-xs text-gray-400">Trial expires {{ $t->trial_ends_at->diffForHumans() }}</p>
+                    </div>
+                </div>
+                <a href="{{ route('super.tenants.show', $t->slug) }}" class="text-xs text-blue-600 font-medium hover:underline">View</a>
+            </div>
+            @endforeach
+            @foreach($alerts['failedPayments'] as $t)
+            <div class="px-6 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-red-500 flex-shrink-0"></span>
+                    <div>
+                        <p class="text-sm font-medium text-gray-800">{{ $t->name }}</p>
+                        <p class="text-xs text-gray-400">Payment failed {{ $t->payment_failed_at->diffForHumans() }}</p>
+                    </div>
+                </div>
+                <a href="{{ route('super.tenants.show', $t->slug) }}" class="text-xs text-blue-600 font-medium hover:underline">View</a>
+            </div>
+            @endforeach
+            @foreach($alerts['inactiveTenants'] as $t)
+            <div class="px-6 py-3 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 rounded-full bg-gray-400 flex-shrink-0"></span>
+                    <div>
+                        <p class="text-sm font-medium text-gray-800">{{ $t->name }}</p>
+                        <p class="text-xs text-gray-400">No activity in 30+ days</p>
+                    </div>
+                </div>
+                <a href="{{ route('super.tenants.show', $t->slug) }}" class="text-xs text-blue-600 font-medium hover:underline">View</a>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {{-- Recent Signups --}}
         <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">

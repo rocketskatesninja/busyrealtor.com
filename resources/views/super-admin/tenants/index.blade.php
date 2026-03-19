@@ -63,7 +63,7 @@
             </div>
             @endif
             <div class="flex items-center justify-between border-t border-gray-100 pt-3">
-                <span class="text-xs text-gray-400">Joined {{ $tenant->created_at->format('M j, Y') }}</span>
+                <span class="text-xs text-gray-400">{{ $tenant->properties_count }} {{ Str::plural('property', $tenant->properties_count) }} &middot; Joined {{ $tenant->created_at->format('M j, Y') }}</span>
                 <div class="flex items-center gap-4">
                     <a href="{{ route('super.tenants.show', $tenant->slug) }}" class="text-blue-600 text-xs font-medium">Details</a>
                     <a href="{{ url('/' . $tenant->slug) }}" target="_blank" class="text-gray-400 text-xs">Site ↗</a>
@@ -97,6 +97,7 @@
                         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Business</th>
                         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Owner</th>
                         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
+                        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Properties</th>
                         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
                         <th class="px-6 py-3"></th>
@@ -125,6 +126,9 @@
                             <span class="px-2.5 py-1 rounded-full text-xs font-semibold {{ $tenant->plan === 'pro' ? 'bg-purple-100 text-purple-700' : ($tenant->plan === 'starter' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700') }}">
                                 {{ ucfirst($tenant->plan) }}
                             </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="text-sm text-gray-700 font-medium">{{ $tenant->properties_count }}</span>
                         </td>
                         <td class="px-6 py-4">
                             @if($tenant->stripe_subscription_status === 'active')
@@ -157,7 +161,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-16 text-center text-gray-400">
+                        <td colspan="7" class="px-6 py-16 text-center text-gray-400">
                             <svg class="w-12 h-12 mx-auto mb-3 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                             <p class="font-medium">No tenants found</p>
                         </td>

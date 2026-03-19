@@ -74,6 +74,11 @@ class Tenant extends Model
         return 'slug';
     }
 
+    public function activityLogs()
+    {
+        return $this->hasMany(\App\Models\ActivityLog::class);
+    }
+
     public function users(): HasMany
     {
         return $this->hasMany(User::class);

@@ -38,12 +38,35 @@ class SuperAdminController extends Controller
 
         $recentTenants = Tenant::with('users')->latest()->limit(10)->get();
 
-        return view('super-admin.dashboard', compact('stats', 'recentTenants'));
+        // Health alerts
+        $expiringTrials = Tenant::where('plan', 'trial')
+            ->where('is_active', true)
+            ->whereNotNull('trial_ends_at')
+            ->where('trial_ends_at', '>', now())
+            ->where('trial_ends_at', '<=', now()->addDays(7))
+            ->orderBy('trial_ends_at')
+            ->get();
+
+        $failedPayments = Tenant::whereNotNull('payment_failed_at')
+            ->where('is_active', true)
+            ->orderBy('payment_failed_at', 'desc')
+            ->get();
+
+        $inactiveTenants = Tenant::where('is_active', true)
+            ->whereDoesntHave('activityLogs', fn ($q) => $q->where('created_at', '>', now()->subDays(30)))
+            ->whereHas('users')
+            ->get();
+
+        $alerts = compact('expiringTrials', 'failedPayments', 'inactiveTenants');
+
+        return view('super-admin.dashboard', compact('stats', 'recentTenants', 'alerts'));
     }
 
     public function tenants(Request $request)
     {
-        $query = Tenant::with('users')->latest();
+        $query = Tenant::with('users')
+            ->withCount('properties')
+            ->latest();
 
         if ($request->search) {
             $search = $request->search;
@@ -82,6 +105,20 @@ class SuperAdminController extends Controller
         ];
 
         return view('super-admin.tenants.show', compact('tenant', 'stats'));
+    }
+
+    public function searchTenants(Request $request)
+    {
+        $q = $request->input('q', '');
+        if (strlen($q) < 2) return response()->json([]);
+
+        $tenants = Tenant::where('name', 'like', "%{$q}%")
+            ->orWhere('slug', 'like', "%{$q}%")
+            ->orWhere('email', 'like', "%{$q}%")
+            ->limit(8)
+            ->get(['name', 'slug', 'plan']);
+
+        return response()->json($tenants);
     }
 
     public function updateTenant(Request $request, Tenant $tenant)

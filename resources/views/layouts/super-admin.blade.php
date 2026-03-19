@@ -218,7 +218,26 @@
             <span class="text-gray-500 text-sm font-normal">&mdash; @yield('page-description')</span>
             @endif
         </div>
-        <span class="text-gray-400 text-sm">{{ now()->format('M j, Y') }}</span>
+        <div class="flex items-center gap-4">
+            <div class="relative" x-data="tenantSearch()" @click.outside="open = false">
+                <div class="relative">
+                    <svg class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <input type="text" x-model="query" @input.debounce.300ms="search()" @focus="if(results.length) open = true" placeholder="Jump to tenant..." class="w-56 bg-gray-700 border border-gray-600 rounded-lg pr-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" style="padding-left: 2.25rem;">
+                </div>
+                <div x-show="open && results.length > 0" x-cloak class="absolute right-0 mt-1 w-72 bg-gray-800 border border-gray-600 rounded-xl shadow-xl z-50 overflow-hidden">
+                    <template x-for="t in results" :key="t.slug">
+                        <a :href="'/super-admin/tenants/' + t.slug" class="flex items-center justify-between px-4 py-2.5 hover:bg-gray-700 transition-colors">
+                            <div>
+                                <p class="text-sm font-medium text-white" x-text="t.name"></p>
+                                <p class="text-xs text-gray-400" x-text="t.slug"></p>
+                            </div>
+                            <span class="text-xs px-2 py-0.5 rounded-full font-medium" :class="t.plan === 'pro' ? 'bg-purple-900 text-purple-300' : (t.plan === 'starter' ? 'bg-blue-900 text-blue-300' : 'bg-yellow-900 text-yellow-300')" x-text="t.plan.charAt(0).toUpperCase() + t.plan.slice(1)"></span>
+                        </a>
+                    </template>
+                </div>
+            </div>
+            <span class="text-gray-400 text-sm">{{ now()->format('M j, Y') }}</span>
+        </div>
     </div>
 
     @include('partials.flash')
@@ -231,6 +250,23 @@
 
 <script>
 @yield('scripts')
+</script>
+<script>
+function tenantSearch() {
+    return {
+        query: '',
+        results: [],
+        open: false,
+        async search() {
+            if (this.query.length < 2) { this.results = []; this.open = false; return; }
+            try {
+                const res = await fetch('/super-admin/api/tenants/search?q=' + encodeURIComponent(this.query));
+                this.results = await res.json();
+                this.open = this.results.length > 0;
+            } catch (e) { this.results = []; this.open = false; }
+        }
+    };
+}
 </script>
 </body>
 </html>
