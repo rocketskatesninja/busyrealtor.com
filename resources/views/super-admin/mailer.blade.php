@@ -4,10 +4,17 @@
 @section('page-description', 'Send emails to tenant owners')
 
 @section('content')
+<style>
+    .dark .mailer-card { background-color: #283548 !important; border-color: #3b4f6b !important; }
+    .dark .mailer-card:hover { background-color: #2d3a4d !important; }
+    .dark .mailer-card.mailer-card--selected { background-color: #1e3a5f !important; border-color: #3b82f6 !important; }
+    .dark .mailer-card .mailer-card-email { color: #94a3b8 !important; }
+    .dark .mailer-card .mailer-card-tenant { color: #64748b !important; }
+</style>
 <div x-data="mailerApp()" x-effect="search; filterPlan; currentPage = 1" class="space-y-6">
 
     {{-- Compose Panel --}}
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
         <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
             <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
             Compose Email
@@ -36,7 +43,7 @@
                     <input type="hidden" name="user_ids[]" :value="id">
                 </template>
 
-                <div class="flex items-center justify-between">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <p class="text-sm">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-medium text-xs" style="background: rgba(59,130,246,0.15); color: #93c5fd;">
                             <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>
@@ -60,7 +67,7 @@
     </div>
 
     {{-- Recipients Panel --}}
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
@@ -83,7 +90,41 @@
                 </div>
             </div>
         </div>
-        <div class="overflow-x-auto">
+        {{-- Mobile card list --}}
+        <div class="sm:hidden">
+            <label class="flex items-center gap-2 px-1 py-2 mb-2 text-sm font-medium text-gray-600">
+                <input type="checkbox" :checked="allVisibleSelected" :indeterminate.prop="someVisibleSelected && !allVisibleSelected"
+                       @change="toggleAllVisible()"
+                       class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                Select all (<span x-text="visibleCount"></span>)
+            </label>
+            <div class="space-y-2">
+                <template x-for="u in paginatedUsers" :key="u.id">
+                    <label class="mailer-card flex items-start gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors cursor-pointer"
+                           :class="selectedIds.includes(u.id) ? 'mailer-card--selected bg-blue-50/50 border-blue-200' : ''">
+                        <input type="checkbox" :checked="selectedIds.includes(u.id)"
+                               @change="toggleUser(u.id)"
+                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 mt-0.5">
+                        <div class="min-w-0 flex-1">
+                            <p class="font-medium text-gray-900 text-sm truncate" x-text="u.name"></p>
+                            <p class="mailer-card-email text-xs text-gray-600 truncate" x-text="u.email"></p>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="mailer-card-tenant text-xs text-gray-500 truncate" x-text="u.tenant || '\u2014'"></span>
+                                <span x-show="u.plan" class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium"
+                                      :class="u.plan === 'pro' ? 'bg-purple-100 text-purple-800' : (u.plan === 'starter' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800')"
+                                      x-text="u.plan ? u.plan.charAt(0).toUpperCase() + u.plan.slice(1) : ''"></span>
+                            </div>
+                        </div>
+                    </label>
+                </template>
+                <template x-if="sortedUsers.length === 0">
+                    <p class="py-8 text-center text-gray-400 text-sm">No users match your filters.</p>
+                </template>
+            </div>
+        </div>
+
+        {{-- Desktop table --}}
+        <div class="hidden sm:block overflow-x-auto">
             <table class="w-full text-sm">
                 <thead>
                     <tr class="border-b border-gray-100">
@@ -132,7 +173,7 @@
                             </td>
                             <td class="py-2 px-3 font-medium text-gray-900" x-text="u.name"></td>
                             <td class="py-2 px-3 text-gray-600" x-text="u.email"></td>
-                            <td class="py-2 px-3 text-gray-600" x-text="u.tenant || '\u2014'"></td>
+                            <td class="py-2 px-3 text-gray-600" x-text="u.tenant || '—'"></td>
                             <td class="py-2 px-3">
                                 <span x-show="u.plan" class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium"
                                       :class="u.plan === 'pro' ? 'bg-purple-100 text-purple-800' : (u.plan === 'starter' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800')"
@@ -173,7 +214,7 @@
 
     {{-- Campaign History --}}
     @if($campaigns->count())
-    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200" x-data="{ historyOpen: false }">
+    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200" x-data="{ historyOpen: false }">
         <button @click="historyOpen = !historyOpen" class="flex items-center justify-between w-full">
             <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>

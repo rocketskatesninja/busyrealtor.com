@@ -154,7 +154,7 @@
 </div>
 
 {{-- Desktop layout --}}
-<div class="flex flex-1">
+<div class="flex flex-1 overflow-hidden">
 
 {{-- Dark Sidebar --}}
 <aside class="hidden md:flex w-64 min-h-screen bg-gray-800 flex-col flex-shrink-0">
@@ -209,7 +209,7 @@
 </aside>
 
 {{-- Main Content --}}
-<div class="flex-1 flex flex-col min-h-screen">
+<div class="flex-1 flex flex-col min-h-screen min-w-0">
     {{-- Top bar --}}
     <div class="hidden md:flex bg-gray-800 border-b border-gray-700 px-6 py-3 items-center justify-between">
         <div class="flex items-center gap-3">
@@ -242,7 +242,7 @@
 
     @include('partials.flash')
 
-    <main class="flex-1 p-6 bg-gray-900">
+    <main class="flex-1 p-4 md:p-6 bg-gray-900 overflow-x-auto">
         @yield('content')
     </main>
 </div>
