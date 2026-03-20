@@ -31,7 +31,7 @@ use App\Http\Controllers\Api\BackupController;
 use App\Http\Controllers\Api\RestoreController;
 use App\Http\Controllers\Api\TestEmailController;
 use App\Http\Controllers\MarketingController;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Support\Facades\Auth;
 
 
 // Stripe webhook — must be outside auth/tenant middleware (no CSRF)
@@ -69,17 +69,31 @@ Route::middleware('auth')->group(function () {
         return view('auth.verify-email');
     })->name('verification.notice');
 
-    Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-        $request->fulfill();
-        $user = $request->user();
-        return redirect()->route('tenant.admin.dashboard', ['account' => $user->tenant->slug]);
-    })->middleware('signed')->name('verification.verify');
 
     Route::post('/email/resend', function (\Illuminate\Http\Request $request) {
         $request->user()->sendEmailVerificationNotification();
         return back()->with('status', 'verification-link-sent');
     })->middleware('throttle:6,1')->name('verification.send');
 });
+
+// Email verification callback — no auth required (signed URL is sufficient)
+Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $request, $id, $hash) {
+    $user = \App\Models\User::findOrFail($id);
+
+    if (!hash_equals(sha1($user->getEmailForVerification()), $hash)) {
+        abort(403, 'Invalid verification link.');
+    }
+
+    if (!$user->hasVerifiedEmail()) {
+        $user->markEmailAsVerified();
+    }
+
+    if (!Auth::check()) {
+        Auth::login($user);
+    }
+
+    return redirect()->route('tenant.admin.dashboard', ['account' => $user->tenant->slug]);
+})->middleware('signed')->name('verification.verify');
 Route::middleware(['registrations.enabled'])->group(function () {
     Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:3,1')->name('register.submit');
@@ -107,6 +121,7 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin', 'no.cache'])->n
     Route::post('/stop-impersonate', [ImpersonationController::class, 'stop'])->name('stop-impersonate');
     Route::get('/settings', [SystemSettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [SystemSettingsController::class, 'update'])->name('settings.update');
+    Route::put('/settings/email', [SystemSettingsController::class, 'updateEmail'])->name('settings.email');
     Route::get('/feedback', [SuperFeedbackController::class, 'index'])->name('feedback');
     Route::get('/feedback/{id}', [SuperFeedbackController::class, 'show'])->name('feedback.show');
     Route::get('/feedback/{id}/screenshot/{index?}', [SuperFeedbackController::class, 'screenshot'])->name('feedback.screenshot');

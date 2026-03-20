@@ -96,4 +96,16 @@ class SystemSettingsController extends Controller
 
         return redirect()->route('super.settings')->with('success', 'Settings saved.');
     }
+
+    public function updateEmail(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|max:255|unique:users,email,' . $request->user()->id,
+        ]);
+
+        $request->user()->update(['email' => $request->email]);
+        logActivity('updated', 'Updated super admin email to ' . $request->email);
+
+        return redirect()->route('super.settings')->with('success', 'Email updated.');
+    }
 }
