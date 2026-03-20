@@ -33,7 +33,7 @@ class SystemSetting extends Model
         'mail_from_name',
     ];
 
-    protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret', 'google_client_id', 'google_client_secret', 'facebook_client_id', 'facebook_client_secret', 'twitter_client_id', 'twitter_client_secret', 'smtp_username', 'smtp_password'];
+    protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret', 'google_client_id', 'google_client_secret', 'smtp_username', 'smtp_password'];
 
     protected $casts = [
         'registrations_enabled'  => 'boolean',
@@ -43,10 +43,6 @@ class SystemSetting extends Model
         'stripe_webhook_secret'  => 'encrypted',
         'google_client_id'       => 'encrypted',
         'google_client_secret'   => 'encrypted',
-        'facebook_client_id'     => 'encrypted',
-        'facebook_client_secret' => 'encrypted',
-        'twitter_client_id'      => 'encrypted',
-        'twitter_client_secret'  => 'encrypted',
         'smtp_username'          => 'encrypted',
         'smtp_password'          => 'encrypted',
     ];
@@ -70,16 +66,6 @@ class SystemSetting extends Model
     public function hasGoogle(): bool
     {
         return !empty($this->google_client_id) && !empty($this->google_client_secret);
-    }
-
-    public function hasFacebook(): bool
-    {
-        return !empty($this->facebook_client_id) && !empty($this->facebook_client_secret);
-    }
-
-    public function hasTwitter(): bool
-    {
-        return !empty($this->twitter_client_id) && !empty($this->twitter_client_secret);
     }
 
     public function hasMail(): bool

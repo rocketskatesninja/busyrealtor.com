@@ -3,8 +3,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\GoogleAuthController;
-use App\Http\Controllers\Auth\FacebookAuthController;
-use App\Http\Controllers\Auth\TwitterAuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\ImpersonationController;
@@ -90,10 +88,6 @@ Route::middleware(['registrations.enabled'])->group(function () {
 // OAuth
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
-Route::get('/auth/facebook', [FacebookAuthController::class, 'redirect'])->name('auth.facebook');
-Route::get('/auth/facebook/callback', [FacebookAuthController::class, 'callback'])->name('auth.facebook.callback');
-Route::get('/auth/twitter', [TwitterAuthController::class, 'redirect'])->name('auth.twitter');
-Route::get('/auth/twitter/callback', [TwitterAuthController::class, 'callback'])->name('auth.twitter.callback');
 Route::middleware(['registrations.enabled'])->group(function () {
     Route::get('/register/complete', [GoogleAuthController::class, 'showComplete'])->name('register.complete');
     Route::post('/register/complete', [GoogleAuthController::class, 'completeRegistration'])->name('register.complete.submit');
