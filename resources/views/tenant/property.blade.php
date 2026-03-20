@@ -6,8 +6,7 @@
 
 @section('head')
 @php
-$mapsKeyRecord = \App\Models\Integration::where('tenant_id', $tenant->id)->where('integration_type', 'google_maps')->first();
-$mapsKey = $mapsKeyRecord ? $mapsKeyRecord->decryptKey() : null;
+$mapsKey = \App\Models\SystemSetting::get()->google_maps_key;
 @endphp
 @if($mapsKey && $property->latitude && $property->longitude)
 <script>

@@ -112,15 +112,15 @@ class ChatbotController extends Controller
         if ($propCounts->get('pending')) $sysPrompt .= ", {$propCounts->get('pending')} pending";
         if ($propCounts->get('sold'))    $sysPrompt .= ", {$propCounts->get('sold')} sold";
         $sysPrompt .= ".\n";
-        $sysPrompt .= "\nAppointment booking rules:"
-                    . "\n- Only begin the booking process when the visitor CLEARLY asks to schedule, book, or tour a property."
-                    . "\n- Do NOT interpret random words, numbers, or off-topic messages as booking answers."
+        $sysPrompt .= "\nAppointment request rules:"
+                    . "\n- Only begin the appointment request process when the visitor CLEARLY asks to schedule, view, or tour a property."
+                    . "\n- Do NOT interpret random words, numbers, or off-topic messages as appointment request answers."
                     . "\n- Collect: full name, email address, preferred date, preferred time, appointment type (showing, consultation, virtual, or other), and which property."
                     . "\n- Validate each piece of info: names must look like real names (not numbers), emails must contain @, dates must be recognizable dates."
                     . "\n- If an answer doesn't look valid, politely ask again."
-                    . "\n- Before calling book_appointment, briefly confirm all details with the visitor (e.g. 'Just to confirm: John Smith, john@email.com, showing on March 20 at 2pm for 123 Main St — shall I book this?')."
+                    . "\n- Before calling book_appointment, briefly confirm all details with the visitor (e.g. 'Just to confirm: John Smith, john@email.com, showing on March 20 at 2pm for 123 Main St — shall I submit this request?')."
                     . "\n- Use the listing IDs from above to match properties by name or address."
-                    . "\nBe concise and warm. If the visitor is just browsing or asking questions, help them without pushing appointments.";
+                    . "\nBe concise and warm. If the visitor is just browsing or asking questions, help them without pushing appointment requests. Make clear that appointments require confirmation by the agency.";
 
         $messages = $history->map(fn($log) => [
             'role'    => $log->role,
@@ -186,7 +186,7 @@ class ChatbotController extends Controller
     {
         return [
             'name'        => 'book_appointment',
-            'description' => 'Book a property appointment. Call this as soon as you have the visitor\'s name, email, preferred date, and appointment type.',
+            'description' => 'Request a property appointment. Call this as soon as you have the visitor\'s name, email, preferred date, and appointment type.',
             'input_schema' => [
                 'type'       => 'object',
                 'properties' => [
@@ -242,7 +242,7 @@ class ChatbotController extends Controller
             'type'     => 'function',
             'function' => [
                 'name'        => 'book_appointment',
-                'description' => 'Book a property appointment. Call this as soon as you have the visitor\'s name, email, preferred date, and appointment type.',
+                'description' => 'Request a property appointment. Call this as soon as you have the visitor\'s name, email, preferred date, and appointment type.',
                 'parameters'  => [
                     'type'       => 'object',
                     'properties' => [
@@ -274,7 +274,7 @@ class ChatbotController extends Controller
                 ->where('created_at', '>=', now()->subDay())
                 ->count();
             if ($apptCount >= 2) {
-                return "You've already scheduled appointments with us. Please call or email us directly for additional bookings.";
+                return "You've already submitted several appointment requests. Please call or email us directly for additional requests.";
             }
         }
 
@@ -355,7 +355,7 @@ class ChatbotController extends Controller
             $parts[] = 'Visitor message: "' . $lastMessage . '"';
         }
         if (empty($parts)) {
-            $parts[] = 'Booked via chatbot.';
+            $parts[] = 'Requested via chatbot.';
         }
         return implode(' | ', $parts);
     }

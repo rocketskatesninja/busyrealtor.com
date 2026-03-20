@@ -87,13 +87,6 @@ class SetupWizardController extends Controller
                         ['config' => $aiConfig, 'provider' => $aiConfig['preferred'], 'is_active' => true]
                     );
                 }
-                // Google Maps
-                if ($request->filled('google_maps_key')) {
-                    Integration::updateOrCreate(
-                        ['tenant_id' => $tenant->id, 'integration_type' => 'google_maps'],
-                        ['api_key' => $request->google_maps_key, 'is_active' => true]
-                    );
-                }
                 // Google Analytics
                 if ($request->filled('ga_measurement_id')) {
                     Integration::updateOrCreate(
@@ -103,8 +96,14 @@ class SetupWizardController extends Controller
                 }
                 // Facebook
                 if ($request->filled('fb_access_token') || $request->filled('fb_page_id')) {
+                    $existingFb = Integration::where('tenant_id', $tenant->id)->where('integration_type', 'facebook')->first();
+                    $existingFbConfig = $existingFb?->config ?? [];
                     $fbData = [
-                        'config'    => ['page_id' => $request->fb_page_id],
+                        'config'    => [
+                            'page_id'             => $request->fb_page_id ?: ($existingFbConfig['page_id'] ?? null),
+                            'post_on_new_listing' => true,
+                            'post_on_sold'        => true,
+                        ],
                         'is_active' => $request->boolean('fb_enabled'),
                     ];
                     if ($request->filled('fb_access_token')) {
@@ -117,11 +116,15 @@ class SetupWizardController extends Controller
                 }
                 // Twitter/X
                 if ($request->filled('tw_api_key') || $request->filled('tw_api_secret')) {
+                    $existingTw = Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first();
+                    $existingTwConfig = $existingTw?->config ?? [];
                     $twData = [
                         'config' => [
-                            'api_secret'          => $request->tw_api_secret,
-                            'access_token'        => $request->tw_access_token,
-                            'access_token_secret' => $request->tw_access_token_secret,
+                            'api_secret'          => $request->tw_api_secret          ?: ($existingTwConfig['api_secret'] ?? null),
+                            'access_token'        => $request->tw_access_token        ?: ($existingTwConfig['access_token'] ?? null),
+                            'access_token_secret' => $request->tw_access_token_secret ?: ($existingTwConfig['access_token_secret'] ?? null),
+                            'post_on_new_listing' => true,
+                            'post_on_sold'        => true,
                         ],
                         'is_active' => $request->boolean('tw_enabled'),
                     ];

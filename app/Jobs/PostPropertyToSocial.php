@@ -17,6 +17,11 @@ class PostPropertyToSocial implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    public $tries = 3;
+    public $timeout = 60;
+
+    private const FB_API_VERSION = 'v19.0';
+
     public function __construct(
         public readonly Property $property,
         public readonly string $event // 'new_listing' | 'sold'
@@ -27,6 +32,14 @@ class PostPropertyToSocial implements ShouldQueue
         $property = $this->property->loadMissing('images', 'tenant');
         $tenantId = $property->tenant_id;
 
+        // Dedup: skip if we posted about this property in the last 10 minutes
+        if ($property->last_social_posted_at && $property->last_social_posted_at->gt(now()->subMinutes(10))) {
+            Log::info("Social auto-post: skipping property #{$property->id} — posted {$property->last_social_posted_at->diffForHumans()}");
+            return;
+        }
+
+        $posted = false;
+
         // Facebook
         try {
             $fb = Integration::where('tenant_id', $tenantId)
@@ -35,6 +48,7 @@ class PostPropertyToSocial implements ShouldQueue
                 ->first();
             if ($fb && $this->shouldPost($fb, $this->event)) {
                 $this->postToFacebook($fb, $property);
+                $posted = true;
             }
         } catch (\Throwable $e) {
             Log::error("Social auto-post: Facebook failed for property #{$property->id}: " . $e->getMessage());
@@ -48,9 +62,14 @@ class PostPropertyToSocial implements ShouldQueue
                 ->first();
             if ($tw && $this->shouldPost($tw, $this->event)) {
                 $this->postToTwitter($tw, $property);
+                $posted = true;
             }
         } catch (\Throwable $e) {
             Log::error("Social auto-post: Twitter failed for property #{$property->id}: " . $e->getMessage());
+        }
+
+        if ($posted) {
+            $property->update(['last_social_posted_at' => now()]);
         }
     }
 
@@ -113,13 +132,13 @@ class PostPropertyToSocial implements ShouldQueue
         $imageUrl = $this->getImageUrl($property);
 
         if ($imageUrl) {
-            $response = Http::post("https://graph.facebook.com/v19.0/{$pageId}/photos", [
+            $response = Http::timeout(15)->post("https://graph.facebook.com/" . self::FB_API_VERSION . "/{$pageId}/photos", [
                 'access_token' => $token,
                 'message'      => $text,
                 'url'          => $imageUrl,
             ]);
         } else {
-            $response = Http::post("https://graph.facebook.com/v19.0/{$pageId}/feed", [
+            $response = Http::timeout(15)->post("https://graph.facebook.com/" . self::FB_API_VERSION . "/{$pageId}/feed", [
                 'access_token' => $token,
                 'message'      => $text,
             ]);
@@ -147,7 +166,14 @@ class PostPropertyToSocial implements ShouldQueue
             $apiKey, $apiSecret, $accessToken, $accessTokenSecret
         );
 
-        $text   = mb_substr($this->buildText($property), 0, 280);
+        $text   = $this->buildText($property);
+        // Twitter wraps URLs to 23 chars via t.co; truncate description portion only if needed
+        if (mb_strlen($text) > 280) {
+            $url = route('tenant.property', ['account' => $property->tenant->slug, 'id' => $property->id]);
+            $textWithoutUrl = str_replace($url, '', $text);
+            $maxDesc = 280 - 23 - 2; // 23 for t.co URL + newline + space
+            $text = mb_substr(trim($textWithoutUrl), 0, $maxDesc) . "\n" . $url;
+        }
         $params = ['text' => $text];
 
         $imageUrl = $this->getImageUrl($property);

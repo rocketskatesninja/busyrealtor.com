@@ -893,8 +893,11 @@ function updateCookiePrefsLink() {
         const root = document.getElementById('contact-widget-root');
         root.innerHTML = `
 <button id="contact-btn" class="fixed w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white z-50 cursor-grab active:cursor-grabbing select-none" style="background-color:var(--primary);left:16px;bottom:16px">
-    <svg class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg id="contact-icon-mail" class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+    </svg>
+    <svg id="contact-icon-x" class="w-6 h-6 pointer-events-none hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
     </svg>
 </button>
 <div id="contact-modal" class="fixed w-96 bg-white rounded-xl shadow-2xl z-50 hidden" style="max-width:calc(100vw - 2rem)">
@@ -1000,10 +1003,17 @@ function updateCookiePrefsLink() {
         state.isOpen = !state.isOpen;
         const btn = document.getElementById('contact-btn');
         const modal = document.getElementById('contact-modal');
+        document.getElementById('contact-icon-mail').classList.toggle('hidden', state.isOpen);
+        document.getElementById('contact-icon-x').classList.toggle('hidden', !state.isOpen);
         if (state.isOpen) { modal.classList.remove('hidden'); positionModal(btn, modal); document.getElementById('contact-name').focus(); }
         else modal.classList.add('hidden');
     }
-    function close() { state.isOpen = false; document.getElementById('contact-modal').classList.add('hidden'); }
+    function close() {
+        state.isOpen = false;
+        document.getElementById('contact-icon-mail').classList.remove('hidden');
+        document.getElementById('contact-icon-x').classList.add('hidden');
+        document.getElementById('contact-modal').classList.add('hidden');
+    }
 
     function setupPropertyContext() {
         const m = location.pathname.match(/\/property\/(\d+)/);

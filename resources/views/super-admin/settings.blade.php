@@ -176,6 +176,46 @@
             </div>
         </div>
 
+        {{-- Google Maps --}}
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6">
+            <div class="px-6 py-4 border-b border-gray-700">
+                <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+                    </svg>
+                    Google Maps
+                </h2>
+                <p class="text-gray-400 text-sm mt-1">Platform-level Maps API key shared by all tenants.</p>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Maps API Key</label>
+                    <input type="text" name="google_maps_key"
+                           value="{{ $settings->google_maps_key ? '••••••••' . substr($settings->google_maps_key, -8) : '' }}"
+                           placeholder="AIzaSy..."
+                           class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500">
+                    <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing. Paste full value to update.</p>
+                </div>
+                <div class="bg-gray-900 rounded-lg p-3 text-xs text-gray-400 space-y-1">
+                    <p class="font-medium text-gray-300">Setup instructions:</p>
+                    <p>1. Go to <span class="text-blue-400">console.cloud.google.com</span> &rarr; APIs &amp; Services &rarr; Credentials</p>
+                    <p>2. Create an API key and enable the Maps JavaScript API</p>
+                    <p>3. Restrict the key to HTTP referrers matching your tenant domains</p>
+                </div>
+                @if($settings->hasMaps())
+                <div class="flex items-center gap-2 text-green-400 text-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    Google Maps is configured. All tenant map pages will use this key.
+                </div>
+                @else
+                <div class="flex items-center gap-2 text-yellow-400 text-xs">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Google Maps is not configured. Tenant map pages will show a placeholder.
+                </div>
+                @endif
+            </div>
+        </div>
+
         {{-- Stripe / Billing --}}
         <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6">
             <div class="px-6 py-4 border-b border-gray-700">

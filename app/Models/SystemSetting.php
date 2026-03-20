@@ -31,9 +31,10 @@ class SystemSetting extends Model
         'smtp_encryption',
         'mail_from_address',
         'mail_from_name',
+        'google_maps_key',
     ];
 
-    protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret', 'google_client_id', 'google_client_secret', 'smtp_username', 'smtp_password'];
+    protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret', 'google_client_id', 'google_client_secret', 'smtp_username', 'smtp_password', 'google_maps_key'];
 
     protected $casts = [
         'registrations_enabled'  => 'boolean',
@@ -45,6 +46,7 @@ class SystemSetting extends Model
         'google_client_secret'   => 'encrypted',
         'smtp_username'          => 'encrypted',
         'smtp_password'          => 'encrypted',
+        'google_maps_key'        => 'encrypted',
     ];
 
     public static function get(): self
@@ -71,5 +73,10 @@ class SystemSetting extends Model
     public function hasMail(): bool
     {
         return !empty($this->smtp_host) && !empty($this->smtp_port);
+    }
+
+    public function hasMaps(): bool
+    {
+        return !empty($this->google_maps_key);
     }
 }

@@ -24,7 +24,7 @@ $groups = [
         'notifications' => ['label' => 'Notifications',  'icon' => 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'],
     ],
     'INTEGRATIONS' => [
-        'connected'     => ['label' => 'Social Media', 'icon' => 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z'],
+        'connected'     => ['label' => 'Connected', 'icon' => 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z'],
         'chatbot'       => ['label' => 'Chatbot',        'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
     ],
     'TOOLS' => [
@@ -413,6 +413,9 @@ $tabs = array_merge(...array_values($groups));
                 <div x-show="activeTab === 'homepage'" x-cloak>
                 {{-- HOMEPAGE TAB --}}
                 @php
+                $iconOptions = ['home'=>'🏠 Home','search'=>'🔍 Search','star'=>'⭐ Star','shield'=>'🛡️ Shield','chat'=>'💬 Chat','dollar'=>'💵 Dollar','key'=>'🔑 Key','map'=>'📍 Map','chart'=>'📈 Chart','building'=>'🏢 Building'];
+                @endphp
+                @php
                 $sectionDefs = [
                     ['key'=>'hero',         'label'=>'Hero',         'emoji'=>'🏠', 'desc'=>'Main banner — headline, subtitle and call-to-action buttons', 'locked'=>true],
                     ['key'=>'features',     'label'=>'Why Choose Us', 'emoji'=>'✨', 'desc'=>'Highlight your key selling points and why clients should choose you'],
@@ -683,17 +686,8 @@ $tabs = array_merge(...array_values($groups));
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Icon</label>
                                                 <select x-model="feature.icon" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                            <option value="home">🏠 Home</option>
-                                            <option value="search">🔍 Search</option>
-                                            <option value="star">⭐ Star</option>
-                                            <option value="shield">🛡️ Shield</option>
-                                            <option value="chat">💬 Chat</option>
-                                            <option value="dollar">💵 Dollar</option>
-                                            <option value="key">🔑 Key</option>
-                                            <option value="map">📍 Map</option>
-                                            <option value="chart">📈 Chart</option>
-                                            <option value="building">🏢 Building</option>
-                                        </select>
+                                                    @foreach($iconOptions as $val => $lbl) <option value="{{ $val }}">{{ $lbl }}</option> @endforeach
+                                                </select>
                                             </div>
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
@@ -719,17 +713,8 @@ $tabs = array_merge(...array_values($groups));
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Icon</label>
                                                 <select x-model="service.icon" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                            <option value="home">🏠 Home</option>
-                                            <option value="search">🔍 Search</option>
-                                            <option value="star">⭐ Star</option>
-                                            <option value="shield">🛡️ Shield</option>
-                                            <option value="chat">💬 Chat</option>
-                                            <option value="dollar">💵 Dollar</option>
-                                            <option value="key">🔑 Key</option>
-                                            <option value="map">📍 Map</option>
-                                            <option value="chart">📈 Chart</option>
-                                            <option value="building">🏢 Building</option>
-                                        </select>
+                                                    @foreach($iconOptions as $val => $lbl) <option value="{{ $val }}">{{ $lbl }}</option> @endforeach
+                                                </select>
                                             </div>
                                             <div>
                                                 <label class="block text-xs font-medium text-gray-600 mb-1">Title</label>
@@ -829,7 +814,7 @@ $tabs = array_merge(...array_values($groups));
                                 <p class="text-sm text-gray-500">Shows your contact form and office details. Update your phone, email, and address in <a href="#" @click.prevent="activeTab = 'general'" class="text-[var(--primary)] hover:underline">General settings</a>.</p>
 
                                 @elseif($key === 'map')
-                                <p class="text-sm text-gray-500">Displays an embedded map of your office location. Make sure you have a Google Maps API key set in <a href="#" @click.prevent="activeTab = 'data'" class="text-[var(--primary)] hover:underline">Data</a>.</p>
+                                <p class="text-sm text-gray-500">Displays an embedded map of your office location on the homepage.</p>
                                 <div class="mt-4 pt-4 border-t border-gray-100">
                                     <label class="block text-sm font-medium text-gray-700 mb-2">
                                         Office Photo <span class="text-gray-400 font-normal">(optional)</span>
@@ -967,6 +952,16 @@ $tabs = array_merge(...array_values($groups));
                                 <input type="checkbox" name="notify_on_appointment" value="1" class="rounded" {{ $settings->notify_on_appointment ? 'checked' : '' }}>
                                 <span class="text-sm text-gray-700">Notify me on new appointment requests</span>
                             </label>
+                            @php $gcalConnected = ($integrations->get('google_calendar')?->is_active ?? false); $gcalDisabled = !$gcalConnected || !$tenant->isPro(); @endphp
+                            <label class="flex items-center gap-3 {{ !$gcalDisabled ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed' }}">
+                                <input type="checkbox" name="gcal_sync_appointments" value="1" class="rounded" {{ $settings->gcal_sync_appointments ? 'checked' : '' }} {{ $gcalDisabled ? 'disabled' : '' }}>
+                                <span class="text-sm text-gray-700">Add confirmed appointments to Google Calendar</span>
+                                @if(!$tenant->isPro())
+                                    <span class="text-xs text-gray-400">(available on Pro plan)</span>
+                                @elseif(!$gcalConnected)
+                                    <span class="text-xs text-gray-400">(<a href="#" @click.prevent="activeTab = 'connected'" class="text-[var(--primary)] hover:underline">connect first</a>)</span>
+                                @endif
+                            </label>
                             <label class="flex items-center gap-3 cursor-pointer">
                                 <input type="checkbox" name="platform_emails" value="1" class="rounded" {{ !auth()->user()->unsubscribed_at ? 'checked' : '' }}>
                                 <span class="text-sm text-gray-700">Receive platform updates and announcements from BusyRealtor</span>
@@ -993,6 +988,20 @@ $tabs = array_merge(...array_values($groups));
                 </div>
                 <div x-show="activeTab === 'chatbot'" x-cloak>
                 {{-- CHATBOT TAB --}}
+                @if(!$tenant->isPro())
+                <div class="space-y-6">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700 text-center">
+                        <div class="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-7 h-7 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                        </div>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">AI Chatbot</h2>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">The AI chatbot is available on Pro plans. Upgrade to add an intelligent assistant to your site that can answer visitor questions about your listings.</p>
+                        <a href="{{ route('tenant.admin.billing', $tenant->slug) }}" class="inline-flex items-center px-5 py-2.5 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition">
+                            Upgrade to Unlock
+                        </a>
+                    </div>
+                </div>
+                @else
                 <div class="space-y-6">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <h2 class="text-lg font-bold text-gray-900 mb-5">AI Chatbot</h2>
@@ -1069,6 +1078,7 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
                 </div>{{-- /space-y-6 --}}
+                @endif
 
                 </div>
                 <div x-show="activeTab === 'connected'" x-cloak>
@@ -1221,6 +1231,62 @@ $tabs = array_merge(...array_values($groups));
                             </div>
                         </div>
                     </div>
+
+                    {{-- Google Calendar --}}
+                    @php $gcal = $integrations->get('google_calendar'); $gcalConfig = $gcal?->config ?? []; @endphp
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100{{ !$tenant->isPro() ? ' opacity-75' : '' }}">
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#4285F4">
+                                <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-900">Google Calendar</h2>
+                                <p class="text-xs text-gray-500">Auto-add confirmed appointments to your calendar</p>
+                            </div>
+                            <div class="ml-auto">
+                                @if(!$tenant->isPro())
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Pro Feature</span>
+                                @elseif($gcal && $gcal->is_active)
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Connected</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        @if(!$tenant->isPro())
+                            {{-- Not Pro --}}
+                            <div class="text-center py-4">
+                                <p class="text-sm text-gray-500 mb-3">Upgrade to Pro to automatically sync confirmed appointments to your Google Calendar.</p>
+                                <a href="{{ route('tenant.admin.billing', $tenant->slug) }}" class="inline-flex items-center px-4 py-2 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition">
+                                    Upgrade to Pro
+                                </a>
+                            </div>
+                        @elseif($gcal && $gcal->is_active)
+                            {{-- Connected --}}
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl p-4">
+                                    <div>
+                                        <p class="text-sm font-medium text-green-800">Connected as {{ $gcalConfig['connected_email'] ?? 'unknown' }}</p>
+                                        <p class="text-xs text-green-600 mt-0.5">Confirmed appointments will be added to your primary Google Calendar.</p>
+                                    </div>
+                                </div>
+                                <button type="button"
+                                    onclick="if(confirm('Disconnect Google Calendar? Future confirmed appointments will no longer be synced.')){let f=document.createElement('form');f.method='POST';f.action='{{ route('tenant.admin.google-calendar.disconnect', $tenant->slug) }}';let t=document.createElement('input');t.type='hidden';t.name='_token';t.value='{{ csrf_token() }}';f.appendChild(t);document.body.appendChild(f);f.submit();}"
+                                    class="inline-flex items-center px-4 py-2 border border-red-300 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50 transition">
+                                    Disconnect
+                                </button>
+                            </div>
+                        @else
+                            {{-- Pro but not connected --}}
+                            <div class="space-y-4">
+                                <p class="text-sm text-gray-600">Connect your Google Calendar to automatically add confirmed appointments as calendar events. Visitors will also receive a Google Calendar invite.</p>
+                                <a href="{{ route('tenant.admin.google-calendar.connect', $tenant->slug) }}"
+                                   class="inline-flex items-center px-4 py-2 bg-[#4285F4] text-white text-sm font-medium rounded-lg hover:bg-[#3367D6] transition">
+                                    <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
+                                    Connect Google Calendar
+                                </a>
+                            </div>
+                        @endif
+                    </div>
                 </div>
 
                 </div>
@@ -1228,21 +1294,18 @@ $tabs = array_merge(...array_values($groups));
                 {{-- DATA TAB --}}
                 <div class="space-y-6">
 
-                    {{-- Google Maps --}}
-                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">Google Maps</h2>
-                        @php $maps = $integrations->get('google_maps'); @endphp
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Google Maps API Key</label>
-                            <input type="password" name="google_maps_key" value="{{ $maps?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="AIza...">
-                            <p class="text-xs text-gray-500 mt-1">Required for the map page. Get a key at Google Cloud Console.</p>
-                        </div>
-                    </div>
-
                     {{-- Google Analytics --}}
+                    @php $ga = $integrations->get('google_analytics'); @endphp
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">Google Analytics</h2>
-                        @php $ga = $integrations->get('google_analytics'); @endphp
+                        <div class="flex items-center gap-3 mb-5">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#4285F4">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-900">Google Analytics</h2>
+                                <p class="text-xs text-gray-500">Track visitor activity on your site</p>
+                            </div>
+                        </div>
                         <div class="flex items-center gap-4">
                             <div class="flex-1">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Measurement ID</label>
@@ -1269,42 +1332,26 @@ $tabs = array_merge(...array_values($groups));
                             </div>
                         </div>
                         <div class="divide-y divide-gray-50">
+                            @foreach(['properties' => ['Properties', 'All listings with photos, details, and status'], 'messages' => ['Messages', 'All contact form submissions']] as $exportType => [$exportLabel, $exportDesc])
                             <div class="px-6 py-4 flex items-center justify-between gap-4">
                                 <div>
-                                    <p class="text-sm font-medium text-gray-800">Properties</p>
-                                    <p class="text-xs text-gray-400 mt-0.5">All listings with photos, details, and status</p>
+                                    <p class="text-sm font-medium text-gray-800">{{ $exportLabel }}</p>
+                                    <p class="text-xs text-gray-400 mt-0.5">{{ $exportDesc }}</p>
                                 </div>
                                 <div class="flex items-center gap-2 shrink-0">
-                                    <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=json"
+                                    <a href="{{ route('tenant.admin.api.export', [$account, $exportType]) }}?format=json"
                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                         JSON
                                     </a>
-                                    <a href="{{ route('tenant.admin.api.export', [$account, 'properties']) }}?format=csv"
+                                    <a href="{{ route('tenant.admin.api.export', [$account, $exportType]) }}?format=csv"
                                        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 text-xs font-semibold transition">
                                         <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                         CSV
                                     </a>
                                 </div>
                             </div>
-                            <div class="px-6 py-4 flex items-center justify-between gap-4">
-                                <div>
-                                    <p class="text-sm font-medium text-gray-800">Messages</p>
-                                    <p class="text-xs text-gray-400 mt-0.5">All contact form submissions</p>
-                                </div>
-                                <div class="flex items-center gap-2 shrink-0">
-                                    <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=json"
-                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                        JSON
-                                    </a>
-                                    <a href="{{ route('tenant.admin.api.export', [$account, 'messages']) }}?format=csv"
-                                       class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-50 hover:bg-green-100 text-green-700 text-xs font-semibold transition">
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                        CSV
-                                    </a>
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                     </div>
 
@@ -1475,15 +1522,8 @@ function updateTitlePreview() {
         }
     });
 }
-document.querySelector('input[name="site_title"]')?.addEventListener('input', updateTitlePreview);
-document.querySelector('select[name="site_title_font_size"]')?.addEventListener('change', updateTitlePreview);
-document.querySelector('select[name="site_title_font_weight"]')?.addEventListener('change', updateTitlePreview);
-document.querySelector('select[name="site_title_letter_spacing"]')?.addEventListener('change', updateTitlePreview);
-document.querySelector('select[name="title_color_type"]')?.addEventListener('change', updateTitlePreview);
-document.querySelector('input[name="title_gradient_start"]')?.addEventListener('input', updateTitlePreview);
-document.querySelector('input[name="title_gradient_via"]')?.addEventListener('input', updateTitlePreview);
-document.querySelector('input[name="title_gradient_end"]')?.addEventListener('input', updateTitlePreview);
-document.querySelector('input[name="title_color_solid"]')?.addEventListener('input', updateTitlePreview);
+['site_title','title_gradient_start','title_gradient_via','title_gradient_end','title_color_solid'].forEach(n => document.querySelector('[name="'+n+'"]')?.addEventListener('input', updateTitlePreview));
+['site_title_font_size','site_title_font_weight','site_title_letter_spacing','title_color_type'].forEach(n => document.querySelector('[name="'+n+'"]')?.addEventListener('change', updateTitlePreview));
 // Test email
 document.getElementById('test-email-btn')?.addEventListener('click', async () => {
     const email = prompt('Send test to email:');
@@ -1619,27 +1659,23 @@ async function doRestore() {
 
 // ── Homepage section ordering ─────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
+    // ── Homepage section ordering ──
     const container = document.getElementById('sections-container');
-    if (!container) return;
-
-    // Init the hidden input on load
-    updateSectionsData();
-
-    // Re-sync on every toggle change
-    container.addEventListener('change', function(e) {
-        if (e.target.classList.contains('section-toggle')) updateSectionsData();
-    });
-
-    // SortableJS — disabled on mobile
-    if (typeof Sortable !== 'undefined' && window.innerWidth >= 640) {
-        new Sortable(container, {
-            animation: 150,
-            ghostClass: 'opacity-50',
-            handle: '.drag-handle',
-            filter: '.locked-section',
-            preventOnFilter: false,
-            onEnd: updateSectionsData
+    if (container) {
+        updateSectionsData();
+        container.addEventListener('change', function(e) {
+            if (e.target.classList.contains('section-toggle')) updateSectionsData();
         });
+        if (typeof Sortable !== 'undefined' && window.innerWidth >= 640) {
+            new Sortable(container, {
+                animation: 150,
+                ghostClass: 'opacity-50',
+                handle: '.drag-handle',
+                filter: '.locked-section',
+                preventOnFilter: false,
+                onEnd: updateSectionsData
+            });
+        }
     }
 
     function updateSectionsData() {
@@ -1648,15 +1684,44 @@ document.addEventListener('DOMContentLoaded', function() {
             const key     = item.dataset.section;
             const toggle  = item.querySelector('.section-toggle');
             const locked  = item.dataset.locked === '1';
-            sections.push({
-                key:     key,
-                enabled: locked ? true : (toggle ? toggle.checked : true),
-                order:   i,
-                locked:  locked
-            });
+            sections.push({ key: key, enabled: locked ? true : (toggle ? toggle.checked : true), order: i, locked: locked });
         });
         const input = document.getElementById('hp_sections_input');
         if (input) input.value = JSON.stringify(sections);
+    }
+
+    // ── Form submit: sync Alpine data to hidden inputs ──
+    var form = document.getElementById('settings-form');
+    var btn  = document.getElementById('settings-save-btn');
+    if (form) {
+        form.addEventListener('submit', function() {
+            var tabInput = form.querySelector('input[name="tab"]');
+            if (tabInput && window.Alpine) {
+                try { tabInput.value = Alpine.$data(form.closest('[x-data]')).activeTab; } catch(e) {}
+            }
+            var hpDiv = form.querySelector('[x-data="hpSectionData()"]');
+            if (hpDiv && window.Alpine) {
+                try {
+                    var data = Alpine.$data(hpDiv);
+                    var map = { 'features_items':'features', 'services_items':'services', 'testimonials_items':'testimonials', 'stats_items':'stats', 'faq_items':'faq' };
+                    Object.entries(map).forEach(function(pair) {
+                        var el = form.querySelector('[name="' + pair[0] + '"]');
+                        if (el && data[pair[1]] !== undefined) el.value = JSON.stringify(data[pair[1]]);
+                    });
+                } catch(e) {}
+            }
+            if (btn) btn.disabled = true;
+        }, true);
+
+        // ── Dirty tracking ──
+        if (btn) {
+            function markDirty() { btn.disabled = false; }
+            form.addEventListener('input',  markDirty, true);
+            form.addEventListener('change', markDirty, true);
+            window.addEventListener('beforeunload', function(e) {
+                if (!btn.disabled) { e.preventDefault(); e.returnValue = ''; }
+            });
+        }
     }
 });
 
@@ -1725,59 +1790,10 @@ document.addEventListener('DOMContentLoaded', function() {
 })();
 
 // ── Serialise Alpine-managed homepage data just before form submit ───────────────
-document.addEventListener('DOMContentLoaded', function() {
-    var form = document.getElementById('settings-form');
-    if (!form) return;
-    form.addEventListener('submit', function() {
-        // Sync active tab to hidden input so we return to the same tab after save
-        var tabInput = form.querySelector('input[name="tab"]');
-        if (tabInput && window.Alpine) {
-            try { tabInput.value = Alpine.$data(form.closest('[x-data]')).activeTab; } catch(e) {}
-        }
-        var hpDiv = form.querySelector('[x-data="hpSectionData()"]');
-        if (hpDiv && window.Alpine) {
-            try {
-                var data = Alpine.$data(hpDiv);
-                var map = {
-                    'features_items':     'features',
-                    'services_items':     'services',
-                    'testimonials_items': 'testimonials',
-                    'stats_items':        'stats',
-                    'faq_items':          'faq',
-                };
-                Object.entries(map).forEach(function(pair) {
-                    var el = form.querySelector('[name="' + pair[0] + '"]');
-                    if (el && data[pair[1]] !== undefined) {
-                        el.value = JSON.stringify(data[pair[1]]);
-                    }
-                });
-            } catch(e) { /* Alpine.$data unavailable - static value fallback used */ }
-        }
-    }, true);
-});
+
 
 // ── Dirty tracking: enable Save when anything changes ─────────────────────────
-(function() {
-    document.addEventListener('DOMContentLoaded', function() {
-        var form = document.getElementById('settings-form');
-        var btn  = document.getElementById('settings-save-btn');
-        if (!form || !btn) return;
 
-        function markDirty() { btn.disabled = false; }
-
-        // Capture phase ensures we see events even if something stops propagation
-        form.addEventListener('input',  markDirty, true);
-        form.addEventListener('change', markDirty, true);
-
-        // Reset after save
-        form.addEventListener('submit', function() { btn.disabled = true; });
-
-        // Warn before navigating away with unsaved changes
-        window.addEventListener('beforeunload', function(e) {
-            if (!btn.disabled) { e.preventDefault(); e.returnValue = ''; }
-        });
-    });
-})();
 
 document.addEventListener('alpine:init', () => {
     Alpine.data('dashGroup', (id) => ({

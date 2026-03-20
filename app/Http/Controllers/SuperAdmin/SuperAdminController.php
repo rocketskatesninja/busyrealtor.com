@@ -127,7 +127,7 @@ class SuperAdminController extends Controller
             'name'          => 'required|string|max:255',
             'slug'          => 'required|string|max:60|unique:tenants,slug,' . $tenant->id,
             'plan'          => 'required|in:trial,starter,pro',
-            'trial_ends_at' => 'nullable|date',
+            'trial_ends_at' => 'nullable|date|before:2100-01-01',
             'notes'         => 'nullable|string|max:5000',
         ]);
 

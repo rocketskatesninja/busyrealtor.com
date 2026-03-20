@@ -46,11 +46,6 @@ class PropertyController extends Controller
 
     public function store($account, Request $request)
     {
-        file_put_contents('/tmp/img_debug.txt', json_encode([
-            'hasFile' => $request->hasFile('images'),
-            'FILES' => $_FILES,
-            'time' => date('H:i:s'),
-        ]) . "\n", FILE_APPEND);
         $tenant = app('tenant');
         $limit  = $tenant->propertyLimit();
         if ($limit !== null && Property::count() >= $limit) {
@@ -58,11 +53,6 @@ class PropertyController extends Controller
         }
         $data = $this->validateAndPrepare($request);
         $property = Property::create($data);
-        \Log::info('IMG_DEBUG', [
-            'hasFile' => $request->hasFile('images'),
-            'allFiles' => array_keys($request->allFiles()),
-            'contentType' => $request->header('Content-Type'),
-        ]);
         $this->handleImages($request, $property);
         logActivity('created', "Created property: {$property->title}", $property);
         if (($data['listing_status'] ?? '') === 'active') {
@@ -120,13 +110,6 @@ class PropertyController extends Controller
         $property->delete();
         return redirect()->route('tenant.admin.properties.index', ['account' => app('tenant')->slug])
             ->with('success', 'Property deleted.');
-    }
-
-    public function photos($account)
-    {
-        $tenant     = app('tenant');
-        $properties = Property::with('images')->orderBy('title')->get();
-        return view('tenant.admin.properties.photos', compact('tenant', 'properties'));
     }
 
     private function validateAndPrepare(Request $request)

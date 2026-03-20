@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\PropertyController;
 use App\Http\Controllers\Admin\StaffController;
 use App\Http\Controllers\Admin\MessageController;
 use App\Http\Controllers\Admin\AppointmentController;
+use App\Http\Controllers\Admin\GoogleCalendarController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\BillingController;
 use App\Http\Controllers\Admin\AdminChatController;
@@ -102,6 +103,10 @@ Route::middleware(['registrations.enabled'])->group(function () {
 // OAuth
 Route::get('/auth/google', [GoogleAuthController::class, 'redirect'])->name('auth.google');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+
+// Google Calendar OAuth callback (single URL for all tenants - slug stored in session)
+Route::get('/auth/google-calendar/callback', [GoogleCalendarController::class, 'callback'])
+    ->middleware('auth')->name('google-calendar.callback');
 Route::middleware(['registrations.enabled'])->group(function () {
     Route::get('/register/complete', [GoogleAuthController::class, 'showComplete'])->name('register.complete');
     Route::post('/register/complete', [GoogleAuthController::class, 'completeRegistration'])->name('register.complete.submit');
@@ -173,7 +178,6 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/properties', [PropertyController::class, 'index'])->name('properties.index');
         Route::get('/properties/create', [PropertyController::class, 'create'])->name('properties.create');
         Route::post('/properties', [PropertyController::class, 'store'])->name('properties.store');
-        Route::get('/properties/photos', [PropertyController::class, 'photos'])->name('properties.photos');
         Route::get('/properties/{id}/edit', [PropertyController::class, 'edit'])->name('properties.edit');
         Route::put('/properties/{id}', [PropertyController::class, 'update'])->name('properties.update');
         Route::delete('/properties/{id}', [PropertyController::class, 'destroy'])->name('properties.destroy');
@@ -201,6 +205,11 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
         Route::post('/appointments/{id}/action', [AppointmentController::class, 'action'])->name('appointments.action');
         Route::post('/appointments/bulk', [AppointmentController::class, 'bulk'])->name('appointments.bulk');
+        Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+
+        // Google Calendar OAuth
+        Route::get('/google-calendar/connect', [GoogleCalendarController::class, 'redirect'])->name('google-calendar.connect');
+        Route::post('/google-calendar/disconnect', [GoogleCalendarController::class, 'disconnect'])->name('google-calendar.disconnect');
 
         // AI Assistant (Pro only — enforced in controller)
         Route::get('/assistant', [AdminChatController::class, 'index'])->name('assistant');

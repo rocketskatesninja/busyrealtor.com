@@ -246,7 +246,6 @@ $heroPresets = [
             @php
                 $aiInteg = $integrations->get('ai_provider');
                 $aiConfig = $aiInteg?->config ?? [];
-                $mapsInteg = $integrations->get('google_maps');
                 $gaInteg = $integrations->get('google_analytics');
                 $fbInteg = $integrations->get('facebook');
                 $fbConfig = $fbInteg?->config ?? [];
@@ -297,27 +296,6 @@ $heroPresets = [
                             <option value="gpt-4o">GPT-4o (Most capable)</option>
                         </select>
                     </div>
-                </div>
-            </div>
-
-            {{-- Google Maps --}}
-            <div x-data="{ open: false }" class="border border-gray-200 dark:border-gray-600 rounded-xl overflow-hidden">
-                <button type="button" @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        </div>
-                        <div>
-                            <div class="text-sm font-medium text-gray-900 dark:text-white">Google Maps</div>
-                            <div class="text-xs text-gray-500 dark:text-gray-400">Property map on your homepage</div>
-                        </div>
-                    </div>
-                    <svg class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
-                </button>
-                <div x-show="open" x-collapse class="px-4 pb-4">
-                    <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Google Maps API Key</label>
-                    <input type="password" x-model="data.google_maps_key" placeholder="AIza..."
-                           class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
             </div>
 
@@ -662,7 +640,6 @@ function setupWizard() {
             ai_anthropic_model: @json($aiConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001'),
             ai_openai_key: '',
             ai_openai_model: @json($aiConfig['openai_model'] ?? 'gpt-4o-mini'),
-            google_maps_key: '',
             ga_measurement_id: @json($gaInteg->api_key ?? ''),
             ga_enabled: @json((bool)($gaInteg->is_active ?? false)),
             fb_access_token: '',
@@ -752,7 +729,6 @@ function setupWizard() {
                             ai_anthropic_model: this.data.ai_anthropic_model,
                             ai_openai_key: this.data.ai_openai_key,
                             ai_openai_model: this.data.ai_openai_model,
-                            google_maps_key: this.data.google_maps_key,
                             ga_measurement_id: this.data.ga_measurement_id,
                             ga_enabled: this.data.ga_enabled,
                             fb_access_token: this.data.fb_access_token,

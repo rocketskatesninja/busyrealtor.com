@@ -4,8 +4,7 @@
 @section('head')
 @php
 $account = $tenant->slug;
-$mapsKeyRecord = \App\Models\Integration::where('tenant_id', $tenant->id)->where('integration_type', 'google_maps')->first();
-$mapsKey = $mapsKeyRecord ? $mapsKeyRecord->decryptKey() : null;
+$mapsKey = \App\Models\SystemSetting::get()->google_maps_key;
 @endphp
 @if($mapsKey)
 <script>
@@ -231,7 +230,7 @@ $activeFilters = collect(['type','status','price_min','price_max','beds','baths'
     <div class="w-full h-full bg-gray-200 flex flex-col items-center justify-center">
         <svg class="w-20 h-20 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
         <h3 class="text-xl font-semibold text-gray-600 mb-2">Map Not Configured</h3>
-        <p class="text-gray-500 text-sm mb-4">Add a Google Maps API key in Settings → Integrations.</p>
+        <p class="text-gray-500 text-sm mb-4">The map is not currently available. Please contact your administrator.</p>
         <a href="{{ route('tenant.gallery', $account) }}" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">View as List Instead</a>
     </div>
     @endif

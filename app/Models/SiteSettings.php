@@ -80,6 +80,7 @@ class SiteSettings extends Model
         'cta_secondary_link',
         'notify_on_contact',
         'notify_on_appointment',
+        'gcal_sync_appointments',
         'hero_background_type',
         'hero_preset',
         'hero_image',
@@ -112,6 +113,7 @@ class SiteSettings extends Model
         'smtp_password'              => 'encrypted',
         'notify_on_contact'          => 'boolean',
         'notify_on_appointment'      => 'boolean',
+        'gcal_sync_appointments'     => 'boolean',
     ];
 
     public function tenant(): BelongsTo

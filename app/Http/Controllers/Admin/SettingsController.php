@@ -103,10 +103,11 @@ class SettingsController extends Controller
             // notifications
             'notify_on_contact'     => $request->boolean('notify_on_contact'),
             'notify_on_appointment' => $request->boolean('notify_on_appointment'),
+            'gcal_sync_appointments' => $request->boolean('gcal_sync_appointments'),
             // chatbot
             'chatbot_enabled'     => $request->boolean('chatbot_enabled'),
-            'chatbot_personality' => $request->chatbot_personality,
-            'chatbot_bio' => $request->chatbot_bio,
+            'chatbot_personality' => $request->chatbot_personality ?? $settings->chatbot_personality ?? 'professional',
+            'chatbot_bio' => $request->chatbot_bio ?? $settings->chatbot_bio,
             // homepage
             'homepage_sections'    => $homepageSections,
             'features_items'       => !empty($request->features_items)     ? (json_decode($request->features_items, true)     ?? $settings->features_items     ?? []) : ($settings->features_items     ?? []),
@@ -179,12 +180,6 @@ class SettingsController extends Controller
             Integration::updateOrCreate(
                 ['tenant_id' => $tenant->id, 'integration_type' => 'smtp'],
                 ['config' => $request->only('smtp_host','smtp_port','smtp_encryption','smtp_username','smtp_password','smtp_from_email','smtp_from_name'), 'is_active' => true]
-            );
-        }
-        if ($request->filled('google_maps_key')) {
-            Integration::updateOrCreate(
-                ['tenant_id' => $tenant->id, 'integration_type' => 'google_maps'],
-                ['api_key' => $request->google_maps_key, 'is_active' => true]
             );
         }
         // AI provider — always update config so preferred/model changes persist even without new keys

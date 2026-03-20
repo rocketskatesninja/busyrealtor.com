@@ -25,6 +25,7 @@ class Property extends Model
         'half_baths',
         'staff_member_id',
         'listing_status',
+        'last_social_posted_at',
         'property_type',
         'price',
         'address_street',
@@ -61,6 +62,7 @@ class Property extends Model
     ];
 
     protected $casts = [
+        'last_social_posted_at' => 'datetime',
         'price'        => 'decimal:2',
         'has_pool'     => 'boolean',
         'has_basement' => 'boolean',
