@@ -59,6 +59,8 @@ class Property extends Model
         'view_count',
         'is_featured',
         'amenities',
+        'nearby_places_cache',
+        'nearby_places_fetched_at',
     ];
 
     protected $casts = [
@@ -73,6 +75,8 @@ class Property extends Model
         'near_transit' => 'boolean',
         'is_featured'  => 'boolean',
         'amenities'    => 'array',
+        'nearby_places_cache' => 'array',
+        'nearby_places_fetched_at' => 'datetime',
         'view_count'   => 'integer',
     ];
 
@@ -115,4 +119,11 @@ class Property extends Model
     public function getGarageSpacesAttribute(): mixed { return $this->garage; }
 
 
+
+    public function hasNearbyPlacesCache(int $maxAgeDays = 60): bool
+    {
+        return $this->nearby_places_cache
+            && $this->nearby_places_fetched_at
+            && $this->nearby_places_fetched_at->diffInDays(now()) < $maxAgeDays;
+    }
 }

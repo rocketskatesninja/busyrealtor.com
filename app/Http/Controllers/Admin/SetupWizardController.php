@@ -188,6 +188,7 @@ class SetupWizardController extends Controller
 
             case 'complete':
                 $settings->update(['setup_completed' => true]);
+                session()->flash('success', 'Welcome to your BusyRealtor account! You\'re all set up and ready to go.');
                 return response()->json(['redirect' => route('tenant.admin.dashboard', ['account' => $tenant->slug])]);
         }
 
@@ -199,6 +200,7 @@ class SetupWizardController extends Controller
         $tenant   = app('tenant');
         $settings = SiteSettings::firstOrCreate(['tenant_id' => $tenant->id]);
         $settings->update(['setup_completed' => true]);
-        return redirect()->route('tenant.admin.dashboard', ['account' => $tenant->slug]);
+        return redirect()->route('tenant.admin.dashboard', ['account' => $tenant->slug])
+            ->with('success', 'Welcome to your BusyRealtor account! You\'re all set up and ready to go.');
     }
 }

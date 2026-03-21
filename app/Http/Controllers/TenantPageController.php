@@ -95,7 +95,30 @@ class TenantPageController extends Controller
             ->where('listing_status', 'active')
             ->limit(3)->get();
 
-        return view('tenant.property', compact('tenant', 'settings', 'property', 'related'));
+        // Nearby Places — lazy-fetch and cache
+        $nearbyPlaces = null;
+        $mapsKey = \App\Models\SystemSetting::get()->google_maps_key;
+        if ($mapsKey && $property->latitude && $property->longitude) {
+            if (!$property->hasNearbyPlacesCache()) {
+                try {
+                    $data = (new \App\Services\GooglePlacesService())->fetchNearbyPlaces($property);
+                    if ($data) {
+                        $property->update([
+                            'nearby_places_cache'     => $data,
+                            'nearby_places_fetched_at' => now(),
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Nearby places fetch failed', [
+                        'property_id' => $property->id,
+                        'error'       => $e->getMessage(),
+                    ]);
+                }
+            }
+            $nearbyPlaces = $property->nearby_places_cache;
+        }
+
+        return view('tenant.property', compact('tenant', 'settings', 'property', 'related', 'nearbyPlaces'));
     }
 
     public function contact($account)

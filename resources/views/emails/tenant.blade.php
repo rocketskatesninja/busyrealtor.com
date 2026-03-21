@@ -119,6 +119,40 @@
           </td>
         </tr>
 
+        {{-- Agent card --}}
+        @if(!empty($agent['name']))
+        <tr>
+          <td style="background-color:#ffffff;padding:0 44px 28px;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border-top:1px solid #e5e7eb;padding-top:20px;">
+              <tr>
+                <td colspan="2" style="padding-bottom:12px;text-align:center;">
+                  <p style="margin:0;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;">Your Agent</p>
+                </td>
+              </tr>
+              <tr>
+                @if(!empty($agent['photo']))
+                <td width="96" style="vertical-align:middle;padding-right:16px;">
+                  <img src="{{ $agent['photo'] }}" alt="{{ $agent['name'] }}" width="80" height="80" style="display:block;width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid {{ $settings->primary_color ?? '#2563eb' }};" />
+                </td>
+                @endif
+                <td style="vertical-align:middle;">
+                  <p style="margin:0;font-size:15px;font-weight:700;color:#111827;">{{ $agent['name'] }}</p>
+                  @if(!empty($agent['title']))
+                  <p style="margin:3px 0 0;font-size:13px;color:{{ $settings->primary_color ?? '#2563eb' }};">{{ $agent['title'] }}</p>
+                  @endif
+                  @if(!empty($agent['email']))
+                  <p style="margin:5px 0 0;font-size:12px;color:#6b7280;"><a href="mailto:{{ $agent['email'] }}" style="color:#6b7280;text-decoration:none;">{{ $agent['email'] }}</a></p>
+                  @endif
+                  @if(!empty($agent['phone']))
+                  <p style="margin:2px 0 0;font-size:12px;color:#6b7280;"><a href="tel:{{ $agent['phone'] }}" style="color:#6b7280;text-decoration:none;">{{ $agent['phone'] }}</a></p>
+                  @endif
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        @endif
+
         {{-- Footer --}}
         <tr>
           <td style="background-color:#f8f9fb;border-top:1px solid #e5e7eb;border-radius:0 0 8px 8px;padding:20px 44px;">

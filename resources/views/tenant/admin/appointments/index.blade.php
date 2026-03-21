@@ -24,7 +24,30 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
     {{-- Add Appointment Panel --}}
     <div id="add-appt-panel" style="display:none" class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700 mb-8">
         <h3 class="font-semibold text-gray-800 dark:text-white mb-4">New Appointment</h3>
-        <form method="POST" action="{{ route('tenant.admin.appointments.store', $account) }}" class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ apptStatus: 'confirmed' }">
+        <form method="POST" action="{{ route('tenant.admin.appointments.store', $account) }}" class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{
+                apptStatus: 'confirmed',
+                propSearch: '',
+                propId: '',
+                propOpen: false,
+                properties: {{ Js::from($properties->map(fn($p) => ['id' => $p->id, 'label' => $p->title ?? $p->address_street, 'staff_id' => $p->staff_member_id])) }},
+                get filteredProps() {
+                    if (!this.propSearch) return this.properties;
+                    const q = this.propSearch.toLowerCase();
+                    return this.properties.filter(p => p.label.toLowerCase().includes(q));
+                },
+                selectProp(p) {
+                    this.propId = p.id;
+                    this.propSearch = p.label;
+                    this.propOpen = false;
+                    if (p.staff_id) {
+                        this.$refs.staffSelect.value = p.staff_id;
+                    }
+                },
+                clearProp() {
+                    this.propId = '';
+                    this.propSearch = '';
+                }
+            }" >
             @csrf
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Client Name *</label>
@@ -58,18 +81,35 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
                 <input type="time" name="appointment_time" value="{{ old('appointment_time', '10:00') }}" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
             </div>
-            <div>
+            <div class="relative">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property</label>
-                <select name="property_id" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                    <option value="">— None —</option>
-                    @foreach($properties as $prop)
-                        <option value="{{ $prop->id }}" {{ old('property_id') == $prop->id ? 'selected' : '' }}>{{ $prop->title ?? $prop->address_street }}</option>
-                    @endforeach
-                </select>
+                <input type="hidden" name="property_id" :value="propId">
+                <div class="relative">
+                    <input type="text" x-model="propSearch" @focus="propOpen = true" @click.away="propOpen = false"
+                           @keydown.escape="propOpen = false"
+                           placeholder="Search properties..."
+                           autocomplete="off"
+                           class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] pr-8">
+                    <button type="button" x-show="propId" @click="clearProp()" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <div x-show="propOpen && filteredProps.length" x-cloak
+                     class="absolute z-20 mt-1 w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    <template x-for="p in filteredProps" :key="p.id">
+                        <button type="button" @click="selectProp(p)"
+                                class="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 transition"
+                                x-text="p.label"></button>
+                    </template>
+                </div>
+                <div x-show="propOpen && propSearch && !filteredProps.length" x-cloak
+                     class="absolute z-20 mt-1 w-full bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg shadow-lg px-4 py-3 text-sm text-gray-400">
+                    No properties found
+                </div>
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign To</label>
-                <select name="staff_member_id" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <select name="staff_member_id" x-ref="staffSelect" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                     <option value="">— Unassigned —</option>
                     @foreach($staffMembers as $staff)
                         <option value="{{ $staff->id }}" {{ old('staff_member_id') == $staff->id ? 'selected' : '' }}>{{ $staff->name }}</option>
@@ -80,42 +120,46 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
                 <textarea name="notes" rows="2" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none">{{ old('notes') }}</textarea>
             </div>
-            <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Initial Status</label>
-                <div class="flex gap-4">
-                    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                        <input type="radio" name="status" value="confirmed" x-model="apptStatus" class="text-[var(--primary)]"> Confirmed
-                    </label>
-                    <label class="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                        <input type="radio" name="status" value="pending" x-model="apptStatus" class="text-[var(--primary)]"> Pending
-                    </label>
+            <div class="md:col-span-2 flex flex-wrap items-start gap-6 pt-2 border-t border-gray-100 dark:border-gray-700">
+                {{-- Status --}}
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
+                    <div class="flex gap-3">
+                        <label class="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                            <input type="radio" name="status" value="confirmed" x-model="apptStatus" class="text-[var(--primary)]"> Confirmed
+                        </label>
+                        <label class="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
+                            <input type="radio" name="status" value="pending" x-model="apptStatus" class="text-[var(--primary)]"> Pending
+                        </label>
+                    </div>
                 </div>
-            </div>
-            <div class="md:col-span-2" x-show="apptStatus === 'confirmed'" x-collapse x-cloak>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Notifications</label>
-                <div class="flex flex-wrap gap-x-6 gap-y-2">
-                    @if($gcalConnected)
-                    <label class="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                        <input type="checkbox" name="send_calendar" value="1" checked class="rounded text-[var(--primary)] w-3.5 h-3.5">
-                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        Add to Google Calendar
-                    </label>
-                    @endif
-                    <label class="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                        <input type="checkbox" name="send_visitor_email" value="1" class="rounded text-[var(--primary)] w-3.5 h-3.5">
-                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        Email client
-                    </label>
-                    <label class="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                        <input type="checkbox" name="send_admin_email" value="1" class="rounded text-[var(--primary)] w-3.5 h-3.5">
-                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                        Email me a copy
-                    </label>
+
+                {{-- Notifications --}}
+                <div x-show="apptStatus === 'confirmed'" x-collapse x-cloak>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Notify</label>
+                    <div class="grid grid-cols-2 gap-x-5 gap-y-1">
+                        <label class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
+                            <input type="checkbox" name="send_visitor_email" value="1" {{ $siteSettings->notify_on_appointment ? 'checked' : '' }} class="rounded text-[var(--primary)] w-3 h-3"> Client
+                        </label>
+                        <label class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
+                            <input type="checkbox" name="send_admin_email" value="1" {{ $siteSettings->notify_on_appointment ? 'checked' : '' }} class="rounded text-[var(--primary)] w-3 h-3"> Me
+                        </label>
+                        <label class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
+                            <input type="checkbox" name="send_staff_email" value="1" {{ $siteSettings->notify_on_appointment ? 'checked' : '' }} class="rounded text-[var(--primary)] w-3 h-3"> Agent
+                        </label>
+                        @if($gcalConnected)
+                        <label class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
+                            <input type="checkbox" name="send_calendar" value="1" checked class="rounded text-[var(--primary)] w-3 h-3"> Calendar
+                        </label>
+                        @endif
+                    </div>
                 </div>
-            </div>
-            <div class="md:col-span-2 flex justify-end gap-3">
-                <button type="button" onclick="document.getElementById('add-appt-panel').style.display='none'" class="px-5 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
-                <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Create Appointment</button>
+
+                {{-- Buttons --}}
+                <div class="flex gap-3 ml-auto self-end">
+                    <button type="button" onclick="document.getElementById('add-appt-panel').style.display='none'" class="px-5 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">Cancel</button>
+                    <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Create Appointment</button>
+                </div>
             </div>
         </form>
     </div>
@@ -208,23 +252,28 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                  x-data="{
                     send_calendar: {{ ($gcalConnected && ($siteSettings->gcal_sync_appointments ?? true)) ? 'true' : 'false' }},
                     send_visitor_email: true,
-                    send_admin_email: true
+                    send_admin_email: true,
+                    send_staff_email: true
                  }">
-                <div class="flex flex-col gap-1.5 text-xs text-gray-600 dark:text-gray-400">
-                    @if($gcalConnected)
-                    <label class="flex items-center gap-1.5 cursor-pointer">
-                        <input type="checkbox" x-model="send_calendar" class="rounded text-[var(--primary)] w-3.5 h-3.5">
-                        Add to Google Calendar
-                    </label>
-                    @endif
+                <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs text-gray-600 dark:text-gray-400">
                     <label class="flex items-center gap-1.5 cursor-pointer">
                         <input type="checkbox" x-model="send_visitor_email" class="rounded text-[var(--primary)] w-3.5 h-3.5">
                         Email visitor
                     </label>
                     <label class="flex items-center gap-1.5 cursor-pointer">
                         <input type="checkbox" x-model="send_admin_email" class="rounded text-[var(--primary)] w-3.5 h-3.5">
-                        Email me a copy
+                        Email me
                     </label>
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                        <input type="checkbox" x-model="send_staff_email" class="rounded text-[var(--primary)] w-3.5 h-3.5">
+                        Email agent
+                    </label>
+                    @if($gcalConnected)
+                    <label class="flex items-center gap-1.5 cursor-pointer">
+                        <input type="checkbox" x-model="send_calendar" class="rounded text-[var(--primary)] w-3.5 h-3.5">
+                        Google Calendar
+                    </label>
+                    @endif
                 </div>
                 <div class="flex items-center gap-1.5">
                     <form method="POST" action="{{ route('tenant.admin.appointments.action', [$account, $appt->id]) }}">
@@ -232,12 +281,14 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                         <template x-if="send_calendar"><input type="hidden" name="send_calendar" value="1"></template>
                         <template x-if="send_visitor_email"><input type="hidden" name="send_visitor_email" value="1"></template>
                         <template x-if="send_admin_email"><input type="hidden" name="send_admin_email" value="1"></template>
+                        <template x-if="send_staff_email"><input type="hidden" name="send_staff_email" value="1"></template>
                         <button type="submit" class="px-3 py-1.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg text-xs font-semibold hover:bg-green-200 dark:hover:bg-green-900/50 transition">Confirm</button>
                     </form>
                     <form method="POST" action="{{ route('tenant.admin.appointments.action', [$account, $appt->id]) }}">
                         @csrf <input type="hidden" name="status" value="cancelled">
                         <template x-if="send_visitor_email"><input type="hidden" name="send_visitor_email" value="1"></template>
                         <template x-if="send_admin_email"><input type="hidden" name="send_admin_email" value="1"></template>
+                        <template x-if="send_staff_email"><input type="hidden" name="send_staff_email" value="1"></template>
                         <button type="submit" class="px-3 py-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg text-xs font-semibold hover:bg-red-200 dark:hover:bg-red-900/50 transition">Decline</button>
                     </form>
                     <form method="POST" action="{{ route('tenant.admin.appointments.action', [$account, $appt->id]) }}" class="ml-auto" onsubmit="return confirm('Delete this appointment?')">

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Integration;
 use App\Models\Property;
+use App\Models\StaffMember;
 use App\Services\GoogleCalendarService;
 use App\Services\TenantMailer;
 use Carbon\Carbon;
@@ -71,20 +72,20 @@ class AppointmentController extends Controller
             ], 429);
         }
 
-        // Resolve assigned staff member from property (Pro only)
+        // Resolve assigned staff member from property
         $staffMemberId = null;
         $staffEmail    = null;
         if ($request->property_id) {
-            $property = \App\Models\Property::with('staffMember')->find($request->property_id);
+            $property = Property::with('staffMember')->find($request->property_id);
             if ($property && $property->staff_member_id) {
                 $staffMemberId = $property->staff_member_id;
-                if ($tenant->isPro() && $property->staffMember && $property->staffMember->email) {
+                if ($property->staffMember && $property->staffMember->email) {
                     $staffEmail = $property->staffMember->email;
                 }
             }
         }
 
-        $appt   = Appointment::create([
+        $appt = Appointment::create([
             'tenant_id'            => $tenant->id,
             'property_id'          => $request->property_id,
             'staff_member_id'      => $staffMemberId,
@@ -99,29 +100,17 @@ class AppointmentController extends Controller
             'confirmation_token'   => Str::random(40),
         ]);
 
-        // Always notify the account owner
-        $settings   = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
+        $fmt = self::formatAppt($appt);
+
+        // Notify account owner
         $ownerEmail = $tenant->ownerEmail();
-        $typeLabel  = ucwords($appt->appointment_type);
-        $dateLabel  = Carbon::parse($appt->appointment_date)->format('l, F j, Y');
-        $timeLabel  = Carbon::parse($appt->appointment_time)->format('g:i A');
-        $propLabel  = isset($property) ? "{$property->title} — {$property->address_street}, {$property->address_city}" : null;
-
-        $subject = "New {$typeLabel} Request — {$request->visitor_name}";
-        $body  = "New appointment request\n";
-        $body .= str_repeat('─', 40) . "\n";
-        $body .= "Name: {$appt->visitor_name}\n";
-        $body .= "Email: {$appt->visitor_email}\n";
-        if ($appt->visitor_phone) $body .= "Phone: {$appt->visitor_phone}\n";
-        $body .= "Type: {$typeLabel}\n";
-        $body .= "Date: {$dateLabel} at {$timeLabel}\n";
-        if ($propLabel) $body .= "Property: {$propLabel}\n";
-        if ($appt->notes) $body .= "Notes: {$appt->notes}\n";
-        $body .= "\nView in admin: " . route('tenant.admin.appointments.index', $tenant->slug);
-
+        $subject = "New {$fmt['type']} Request — {$appt->visitor_name}";
+        $body = self::buildEmailBody("New appointment request", $appt, $fmt, [
+            'admin_link' => route('tenant.admin.appointments.index', $tenant->slug),
+        ]);
         TenantMailer::send($tenant->id, $ownerEmail, $subject, $body);
 
-        // Pro: also notify the assigned staff member
+        // Notify assigned staff member
         if ($staffEmail && $staffEmail !== $ownerEmail) {
             TenantMailer::send($tenant->id, $staffEmail, $subject, $body);
         }
@@ -163,78 +152,49 @@ class AppointmentController extends Controller
 
         logActivity('created', "Created appointment for {$appt->visitor_name}", $appt);
 
-        // Shared formatting
-        $typeLabel = ucwords(str_replace('_', ' ', $appt->appointment_type));
-        $dateLabel = Carbon::parse($appt->appointment_date)->format('l, F j, Y');
-        $timeLabel = Carbon::parse($appt->appointment_time)->format('g:i A');
-        $propLabel = null;
-        if ($appt->property_id) {
-            $prop = Property::find($appt->property_id);
-            if ($prop) $propLabel = "{$prop->title} — {$prop->address_street}, {$prop->address_city}";
+        // Assign staff member to the property
+        if ($request->staff_member_id && $request->property_id) {
+            Property::where('id', $request->property_id)->update([
+                'staff_member_id' => $request->staff_member_id,
+            ]);
         }
+
+        $fmt = self::formatAppt($appt);
 
         // Email visitor
         if ($appt->visitor_email && $request->boolean('send_visitor_email')) {
-            if ($appt->status === 'confirmed') {
-                $body  = "Your appointment has been confirmed!\n";
-                $body .= str_repeat('─', 40) . "\n";
-                $body .= "Type: {$typeLabel}\n";
-                $body .= "Date: {$dateLabel} at {$timeLabel}\n";
-                if ($propLabel) $body .= "Property: {$propLabel}\n";
-                $body .= "\nWe look forward to seeing you! Please reply to this email if you need to make any changes.";
-                TenantMailer::send($tenant->id, $appt->visitor_email, 'Appointment Confirmed', $body);
-            } else {
-                $body  = "Your appointment request has been received.\n";
-                $body .= str_repeat('─', 40) . "\n";
-                $body .= "Type: {$typeLabel}\n";
-                $body .= "Date: {$dateLabel} at {$timeLabel}\n";
-                if ($propLabel) $body .= "Property: {$propLabel}\n";
-                $body .= "\nWe'll confirm your appointment shortly. Please reply to this email if you have any questions.";
-                TenantMailer::send($tenant->id, $appt->visitor_email, 'Appointment Request Received', $body);
-            }
+            $isConfirmed = $appt->status === 'confirmed';
+            $subject = $isConfirmed ? 'Appointment Confirmed' : 'Appointment Request Received';
+            $headline = $isConfirmed
+                ? "Your appointment has been confirmed!"
+                : "Your appointment request has been received.";
+            $footer = $isConfirmed
+                ? "We look forward to seeing you! Please reply to this email if you need to make any changes."
+                : "We'll confirm your appointment shortly. Please reply to this email if you have any questions.";
+            $body = self::buildEmailBody($headline, $appt, $fmt, ['footer' => $footer, 'visitor' => true]);
+            $agent = self::resolveAgent($appt, $tenant);
+            TenantMailer::send($tenant->id, $appt->visitor_email, $subject, $body, 'tenant', null, null, $agent);
         }
 
         // Email admin
         if ($request->boolean('send_admin_email')) {
             $ownerEmail = $tenant->ownerEmail();
             if ($ownerEmail) {
-                $adminBody  = "New appointment created (by admin)\n";
-                $adminBody .= str_repeat('─', 40) . "\n";
-                $adminBody .= "Client: {$appt->visitor_name}\n";
-                if ($appt->visitor_email) $adminBody .= "Email: {$appt->visitor_email}\n";
-                if ($appt->visitor_phone) $adminBody .= "Phone: {$appt->visitor_phone}\n";
-                $adminBody .= "Type: {$typeLabel}\n";
-                $adminBody .= "Date: {$dateLabel} at {$timeLabel}\n";
-                if ($propLabel) $adminBody .= "Property: {$propLabel}\n";
-                $adminBody .= "Status: " . ucfirst($appt->status) . "\n";
-                TenantMailer::send($tenant->id, $ownerEmail, "New Appointment: {$appt->visitor_name} — {$typeLabel}", $adminBody);
+                $body = self::buildEmailBody("New appointment created (by admin)", $appt, $fmt, ['include_status' => true]);
+                TenantMailer::send($tenant->id, $ownerEmail, "New Appointment: {$appt->visitor_name} — {$fmt['type']}", $body);
             }
         }
+
+        // Email assigned staff
+        self::sendStaffEmail($tenant, $appt, $fmt, $request->boolean('send_staff_email'), 'assigned');
 
         // Google Calendar
-        if ($request->boolean('send_calendar') && $appt->status === 'confirmed') {
-            try {
-                $gcalIntegration = Integration::where('tenant_id', $tenant->id)
-                    ->where('integration_type', 'google_calendar')
-                    ->where('is_active', true)
-                    ->first();
-
-                if ($gcalIntegration && $tenant->isPro()) {
-                    $gcalService = new GoogleCalendarService($gcalIntegration);
-                    $eventId = $gcalService->createEvent($appt);
-                    if ($eventId) {
-                        $appt->update(['google_calendar_event_id' => $eventId]);
-                    }
-                }
-            } catch (\Throwable $e) {
-                Log::error('Google Calendar sync failed on admin create', ['appointment_id' => $appt->id, 'error' => $e->getMessage()]);
-            }
-        }
+        self::syncCalendar($tenant, $appt, $request->boolean('send_calendar'), 'confirmed');
 
         return redirect()->back()->with('success', 'Appointment created.');
     }
 
-        public function action($account, Request $request, $id)
+    public function action($account, Request $request, $id)
     {
         $tenant = app('tenant');
         $appt   = Appointment::where('tenant_id', $tenant->id)->findOrFail($id);
@@ -252,79 +212,38 @@ class AppointmentController extends Controller
             return redirect()->back()->with('success', 'Appointment updated.');
         }
 
-        // Shared formatting for emails
-        $typeLabel = ucwords($appt->appointment_type ?? 'showing');
-        $dateLabel = Carbon::parse($appt->appointment_date)->format('l, F j, Y');
-        $timeLabel = Carbon::parse($appt->appointment_time)->format('g:i A');
-        $propLabel = null;
-        if ($appt->property_id) {
-            $prop = Property::find($appt->property_id);
-            if ($prop) $propLabel = "{$prop->title} — {$prop->address_street}, {$prop->address_city}";
-        }
+        $fmt = self::formatAppt($appt);
+        $isConfirmed = $request->status === 'confirmed';
+        $statusWord  = $isConfirmed ? 'Confirmed' : 'Cancelled';
 
         // Email visitor
         if ($appt->visitor_email && $request->boolean('send_visitor_email')) {
-            if ($request->status === 'confirmed') {
-                $body  = "Your appointment has been confirmed!\n";
-                $body .= str_repeat('─', 40) . "\n";
-                $body .= "Type: {$typeLabel}\n";
-                $body .= "Date: {$dateLabel} at {$timeLabel}\n";
-                if ($propLabel) $body .= "Property: {$propLabel}\n";
-                $body .= "\nWe look forward to seeing you! Please reply to this email if you need to make any changes.";
-                TenantMailer::send($tenant->id, $appt->visitor_email, 'Appointment Confirmed', $body);
-            } else {
-                $body  = "Your appointment has been cancelled.\n";
-                $body .= str_repeat('─', 40) . "\n";
-                $body .= "Type: {$typeLabel}\n";
-                $body .= "Date: {$dateLabel} at {$timeLabel}\n";
-                if ($propLabel) $body .= "Property: {$propLabel}\n";
-                $body .= "\nIf you'd like to reschedule, please contact us or visit our website.";
-                TenantMailer::send($tenant->id, $appt->visitor_email, 'Appointment Cancelled', $body);
-            }
+            $headline = $isConfirmed
+                ? "Your appointment has been confirmed!"
+                : "Your appointment has been cancelled.";
+            $footer = $isConfirmed
+                ? "We look forward to seeing you! Please reply to this email if you need to make any changes."
+                : "If you'd like to reschedule, please contact us or visit our website.";
+            $body = self::buildEmailBody($headline, $appt, $fmt, ['footer' => $footer, 'visitor' => true]);
+            $agent = self::resolveAgent($appt, $tenant);
+            TenantMailer::send($tenant->id, $appt->visitor_email, "Appointment {$statusWord}", $body, 'tenant', null, null, $agent);
         }
 
-        // Email admin a copy
+        // Email admin
         if ($request->boolean('send_admin_email')) {
             $ownerEmail = $tenant->ownerEmail();
             if ($ownerEmail) {
-                $statusWord = $request->status === 'confirmed' ? 'Confirmed' : 'Cancelled';
-                $adminBody  = "Appointment {$request->status}\n";
-                $adminBody .= str_repeat('─', 40) . "\n";
-                $adminBody .= "Visitor: {$appt->visitor_name}\n";
-                $adminBody .= "Email: {$appt->visitor_email}\n";
-                if ($appt->visitor_phone) $adminBody .= "Phone: {$appt->visitor_phone}\n";
-                $adminBody .= "Type: {$typeLabel}\n";
-                $adminBody .= "Date: {$dateLabel} at {$timeLabel}\n";
-                if ($propLabel) $adminBody .= "Property: {$propLabel}\n";
-                TenantMailer::send($tenant->id, $ownerEmail, "{$statusWord}: {$appt->visitor_name} — {$typeLabel}", $adminBody);
+                $body = self::buildEmailBody("Appointment {$request->status}", $appt, $fmt);
+                TenantMailer::send($tenant->id, $ownerEmail, "{$statusWord}: {$appt->visitor_name} — {$fmt['type']}", $body);
             }
         }
 
-        // Google Calendar — create on confirm, delete on cancel
-        if ($request->boolean('send_calendar') || ($request->status === 'cancelled' && $appt->google_calendar_event_id)) {
-            try {
-                $gcalIntegration = Integration::where('tenant_id', $tenant->id)
-                    ->where('integration_type', 'google_calendar')
-                    ->where('is_active', true)
-                    ->first();
+        // Email assigned staff
+        $action = $isConfirmed ? 'confirmed' : 'cancelled';
+        self::sendStaffEmail($tenant, $appt, $fmt, $request->boolean('send_staff_email'), $action);
 
-                if ($gcalIntegration && $tenant->isPro()) {
-                    $gcalService = new GoogleCalendarService($gcalIntegration);
-
-                    if ($request->status === 'confirmed') {
-                        $eventId = $gcalService->createEvent($appt);
-                        if ($eventId) {
-                            $appt->update(['google_calendar_event_id' => $eventId]);
-                        }
-                    } elseif ($request->status === 'cancelled' && $appt->google_calendar_event_id) {
-                        $gcalService->deleteEvent($appt->google_calendar_event_id);
-                        $appt->update(['google_calendar_event_id' => null]);
-                    }
-                }
-            } catch (\Throwable $e) {
-                Log::error('Google Calendar sync failed', ['appointment_id' => $appt->id, 'error' => $e->getMessage()]);
-            }
-        }
+        // Google Calendar
+        self::syncCalendar($tenant, $appt, $request->boolean('send_calendar'), $request->status);
 
         return redirect()->back()->with('success', 'Appointment updated.');
     }
@@ -343,5 +262,150 @@ class AppointmentController extends Controller
         $count = count($ids);
         logActivity($request->action === 'delete' ? 'deleted' : 'updated', "Bulk {$request->action}: {$count} appointments");
         return redirect()->back()->with('success', 'Done.');
+    }
+
+    /**
+     * Resolve agent info for email cards: staff member if assigned, else tenant owner.
+     */
+    private static function resolveAgent(Appointment $appt, $tenant): ?array
+    {
+        $settings = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
+
+        if ($appt->staff_member_id) {
+            $staff = StaffMember::find($appt->staff_member_id);
+            if ($staff) {
+                return [
+                    'name'  => $staff->name,
+                    'title' => $staff->title ?? null,
+                    'email' => $staff->email ?? null,
+                    'phone' => $staff->phone ?? null,
+                    'photo' => $staff->photo_url ? asset('storage/' . $staff->photo_url) : null,
+                ];
+            }
+        }
+
+        if ($settings && $settings->owner_name) {
+            return [
+                'name'  => $settings->owner_name,
+                'title' => null,
+                'email' => $settings->contact_email ?? null,
+                'phone' => $settings->contact_phone ?? null,
+                'photo' => $settings->owner_photo ? asset('storage/' . $settings->owner_photo) : null,
+            ];
+        }
+
+        return null;
+    }
+
+    // ── Helpers ────────────────────────────────────────────────────────
+
+    /**
+     * Format appointment fields for email templates.
+     */
+    private static function formatAppt(Appointment $appt): array
+    {
+        $propLabel = null;
+        if ($appt->property_id) {
+            $prop = Property::find($appt->property_id);
+            if ($prop) $propLabel = "{$prop->title} — {$prop->address_street}, {$prop->address_city}";
+        }
+
+        return [
+            'type'     => ucwords(str_replace('_', ' ', $appt->appointment_type ?? 'showing')),
+            'date'     => Carbon::parse($appt->appointment_date)->format('l, F j, Y'),
+            'time'     => Carbon::parse($appt->appointment_time)->format('g:i A'),
+            'property' => $propLabel,
+        ];
+    }
+
+    /**
+     * Build a plain-text email body for appointment notifications.
+     */
+    private static function buildEmailBody(string $headline, Appointment $appt, array $fmt, array $opts = []): string
+    {
+        $isVisitor = $opts['visitor'] ?? false;
+
+        $body  = "{$headline}\n";
+        $body .= str_repeat('─', 40) . "\n";
+
+        if (!$isVisitor) {
+            $body .= "Client: {$appt->visitor_name}\n";
+            if ($appt->visitor_email) $body .= "Email: {$appt->visitor_email}\n";
+            if ($appt->visitor_phone) $body .= "Phone: {$appt->visitor_phone}\n";
+        }
+
+        $body .= "Type: {$fmt['type']}\n";
+        $body .= "Date: {$fmt['date']} at {$fmt['time']}\n";
+        if ($fmt['property']) $body .= "Property: {$fmt['property']}\n";
+
+        if (!empty($opts['include_status'])) {
+            $body .= "Status: " . ucfirst($appt->status) . "\n";
+        }
+
+        if (!empty($opts['admin_link'])) {
+            if ($appt->notes) $body .= "Notes: {$appt->notes}\n";
+            $body .= "\nView in admin: {$opts['admin_link']}";
+        }
+
+        if (!empty($opts['footer'])) {
+            $body .= "\n{$opts['footer']}";
+        }
+
+        return $body;
+    }
+
+    /**
+     * Send email to assigned staff member if requested.
+     */
+    private static function sendStaffEmail($tenant, Appointment $appt, array $fmt, bool $send, string $action): void
+    {
+        if (!$send || !$appt->staff_member_id) return;
+
+        $staff = StaffMember::find($appt->staff_member_id);
+        if (!$staff || !$staff->email) return;
+
+        $headlines = [
+            'assigned'  => "You've been assigned a new appointment.",
+            'confirmed' => "An appointment you're assigned to has been confirmed.",
+            'cancelled' => "An appointment you're assigned to has been cancelled.",
+        ];
+
+        $body = self::buildEmailBody($headlines[$action] ?? $headlines['assigned'], $appt, $fmt, ['include_status' => true]);
+        $subject = match($action) {
+            'confirmed' => "Appointment Confirmed: {$appt->visitor_name} — {$fmt['type']}",
+            'cancelled' => "Appointment Cancelled: {$appt->visitor_name} — {$fmt['type']}",
+            default     => "Appointment Assigned: {$appt->visitor_name} — {$fmt['type']}",
+        };
+
+        TenantMailer::send($tenant->id, $staff->email, $subject, $body);
+    }
+
+    /**
+     * Sync appointment with Google Calendar (create on confirm, delete on cancel).
+     */
+    private static function syncCalendar($tenant, Appointment $appt, bool $send, string $status): void
+    {
+        if (!$send && !($status === 'cancelled' && $appt->google_calendar_event_id)) return;
+
+        try {
+            $gcalIntegration = Integration::where('tenant_id', $tenant->id)
+                ->where('integration_type', 'google_calendar')
+                ->where('is_active', true)
+                ->first();
+
+            if (!$gcalIntegration || !$tenant->isPro()) return;
+
+            $gcalService = new GoogleCalendarService($gcalIntegration);
+
+            if ($status === 'confirmed') {
+                $eventId = $gcalService->createEvent($appt);
+                if ($eventId) $appt->update(['google_calendar_event_id' => $eventId]);
+            } elseif ($status === 'cancelled' && $appt->google_calendar_event_id) {
+                $gcalService->deleteEvent($appt->google_calendar_event_id);
+                $appt->update(['google_calendar_event_id' => null]);
+            }
+        } catch (\Throwable $e) {
+            Log::error('Google Calendar sync failed', ['appointment_id' => $appt->id, 'error' => $e->getMessage()]);
+        }
     }
 }

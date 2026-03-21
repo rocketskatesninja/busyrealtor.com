@@ -89,7 +89,7 @@ function initPropertyMap() {
 }
 @media print {
     header, footer, nav, .no-print,
-    #booking-section, #map-section, #related-section { display: none !important; }
+    #booking-section, #map-section, #nearby-section, #related-section { display: none !important; }
     .shadow, .shadow-sm { box-shadow: none !important; }
     .max-w-7xl { max-width: 100% !important; padding: 0 !important; }
     @page { margin: 1.5cm; size: letter; }
@@ -292,9 +292,12 @@ $" . number_format($property->price) : '') . "
             @endif
 
 
+    {{-- Mortgage Calculator + Nearby Places --}}
+    <div class="grid md:grid-cols-2 gap-6 mb-6">
+
     {{-- Mortgage Calculator --}}
     @if($property->price)
-    <div class="bg-white rounded-2xl p-6 mb-6 shadow border border-gray-200"
+    <div class="bg-white rounded-2xl p-6 shadow border border-gray-200 min-w-0 overflow-hidden"
          x-data="{
              price: {{ (int)$property->price }},
              downPct: 20,
@@ -426,16 +429,55 @@ $" . number_format($property->price) : '') . "
             </p>
         </div>
 
-        <p class="text-xs text-gray-400 mt-3">* Estimate only. Does not include taxes, insurance, HOA, or PMI.</p>
+        {{-- Cost Breakdown --}}
+        <div class="mt-4 pt-4 border-t border-gray-200">
+            <h4 class="text-sm font-semibold text-gray-700 mb-3">Estimated Monthly Costs</h4>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Principal & Interest</span>
+                    <span class="font-medium text-gray-800" x-text="fmt(monthly)"></span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Property Tax <span class="text-gray-400 text-xs">(est.)</span></span>
+                    <span class="font-medium text-gray-800" x-text="fmt(price * 0.012 / 12)"></span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">Home Insurance <span class="text-gray-400 text-xs">(est.)</span></span>
+                    <span class="font-medium text-gray-800" x-text="fmt(price * 0.004 / 12)"></span>
+                </div>
+                @if($property->hoa_fee && $property->hoa_fee > 0)
+                <div class="flex justify-between text-sm">
+                    <span class="text-gray-500">HOA Fee</span>
+                    <span class="font-medium text-gray-800">${{ number_format($property->hoa_fee, 0) }}</span>
+                </div>
+                @endif
+                <div x-show="downPct < 20" x-cloak class="flex justify-between text-sm">
+                    <span class="text-gray-500">PMI <span class="text-gray-400 text-xs">(est.)</span></span>
+                    <span class="font-medium text-gray-800" x-text="fmt(loanAmt * 0.005 / 12)"></span>
+                </div>
+                <div class="flex justify-between text-sm pt-2 border-t border-gray-100">
+                    <span class="font-semibold text-gray-700">Total Monthly</span>
+                    <span class="font-bold" style="color: var(--primary)"
+                          x-text="fmt(monthly + (price * 0.012 / 12) + (price * 0.004 / 12) + {{ $property->hoa_fee ?? 0 }} + (downPct < 20 ? loanAmt * 0.005 / 12 : 0))"></span>
+                </div>
+            </div>
+            <p class="text-xs text-gray-400 mt-3">* Tax (1.2%) and insurance (0.4%) are national averages. PMI applies when down payment is under 20%.</p>
+        </div>
     </div>
     @endif
 
+    {{-- Nearby Places --}}
+    @if($nearbyPlaces ?? null)
+        @include('tenant.partials.nearby-places', ['nearbyPlaces' => $nearbyPlaces])
+    @endif
+
+    </div>{{-- end grid --}}
+
     {{-- Your Agent card --}}
     @if($property->staffMember)
-    <div class="mt-8">
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Your Agent</p>
-        <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 mb-6 flex items-start gap-4">
-            <div class="w-14 h-14 rounded-full bg-gray-100 overflow-hidden flex-shrink-0">
+    <div class="bg-white rounded-2xl mt-8 shadow border border-gray-200 overflow-hidden">
+        <div class="px-6 pt-5 pb-4 flex items-center gap-4" style="background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), rgba(var(--primary-rgb), 0.02))">
+            <div class="w-14 h-14 rounded-full bg-white overflow-hidden flex-shrink-0 shadow-sm border-2" style="border-color: var(--primary)">
                 @if($property->staffMember->photo_url)
                     <img src="{{ asset('storage/' . $property->staffMember->photo_url) }}" alt="{{ $property->staffMember->name }}" class="w-full h-full object-cover">
                 @else
@@ -445,35 +487,39 @@ $" . number_format($property->price) : '') . "
                 @endif
             </div>
             <div class="flex-1 min-w-0">
-                <p class="font-semibold text-gray-800 text-base">{{ $property->staffMember->name }}</p>
+                <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Your Agent</p>
+                <p class="font-semibold text-gray-900 text-lg leading-tight">{{ $property->staffMember->name }}</p>
                 @if($property->staffMember->title)
-                    <p class="text-sm text-gray-500 mb-1">{{ $property->staffMember->title }}</p>
-                @endif
-
-                @if($property->staffMember->bio)
-                    <p class="text-sm text-gray-500 mt-2 leading-relaxed">{{ Str::limit($property->staffMember->bio, 100) }}</p>
+                    <p class="text-sm" style="color: var(--primary)">{{ $property->staffMember->title }}</p>
                 @endif
             </div>
         </div>
+        @if($property->staffMember->bio)
+        <div class="px-6 py-4">
+            <p class="text-sm text-gray-600 leading-relaxed">{{ $property->staffMember->bio }}</p>
+        </div>
+        @endif
     </div>
     @elseif($settings->owner_photo || $settings->owner_bio || $settings->owner_name)
-    <div class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
-        <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">Your Agent</h3>
-        <div class="flex items-start gap-4">
+    <div class="bg-white rounded-2xl mt-8 shadow border border-gray-200 overflow-hidden">
+        <div class="px-6 pt-5 pb-4 flex items-center gap-4" style="background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), rgba(var(--primary-rgb), 0.02))">
             @if($settings->owner_photo)
-            <img src="{{ asset('storage/' . $settings->owner_photo) }}"
-                 alt="{{ $settings->owner_name }}"
-                 class="w-16 h-16 rounded-full object-cover flex-shrink-0">
+            <div class="w-14 h-14 rounded-full bg-white overflow-hidden flex-shrink-0 shadow-sm border-2" style="border-color: var(--primary)">
+                <img src="{{ asset('storage/' . $settings->owner_photo) }}" alt="{{ $settings->owner_name }}" class="w-full h-full object-cover">
+            </div>
             @endif
-            <div>
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Your Agent</p>
                 @if($settings->owner_name)
-                <p class="font-semibold text-gray-800 text-base">{{ $settings->owner_name }}</p>
-                @endif
-                @if($settings->owner_bio)
-                <p class="text-sm text-gray-500 mt-2 leading-relaxed">{{ Str::limit($settings->owner_bio, 100) }}</p>
+                <p class="font-semibold text-gray-900 text-lg leading-tight">{{ $settings->owner_name }}</p>
                 @endif
             </div>
         </div>
+        @if($settings->owner_bio)
+        <div class="px-6 py-4">
+            <p class="text-sm text-gray-600 leading-relaxed">{{ $settings->owner_bio }}</p>
+        </div>
+        @endif
     </div>
     @endif
 

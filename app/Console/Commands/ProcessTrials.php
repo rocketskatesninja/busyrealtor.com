@@ -71,13 +71,16 @@ class ProcessTrials extends Command
                 $body .= "Expires: " . $tenant->trial_ends_at->format('l, F j, Y') . "\n";
                 $body .= "\nSubscribe now to keep your listings live and avoid any interruption:\n{$billingUrl}";
 
-                TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
+                $ok = TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
 
-                $sent   = $tenant->trial_reminders_sent ?? [];
-                $sent[] = $days;
-                $tenant->update(['trial_reminders_sent' => $sent]);
-
-                Log::info("Trial warning sent ({$days}d)", ['tenant_id' => $tenant->id]);
+                if ($ok) {
+                    $sent   = $tenant->trial_reminders_sent ?? [];
+                    $sent[] = $days;
+                    $tenant->update(['trial_reminders_sent' => $sent]);
+                    Log::info("Trial warning sent ({$days}d)", ['tenant_id' => $tenant->id]);
+                } else {
+                    Log::warning("Trial warning FAILED ({$days}d)", ['tenant_id' => $tenant->id, 'email' => $tenant->ownerEmail()]);
+                }
             }
 
             $this->line("Sent {$tenants->count()} {$days}-day trial warning(s).");

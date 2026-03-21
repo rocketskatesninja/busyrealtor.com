@@ -189,18 +189,27 @@
             </div>
             <div class="px-6 py-5 space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">Maps API Key</label>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Maps API Key <span class="text-gray-500 font-normal">(browser — HTTP referrer restricted)</span></label>
                     <input type="text" name="google_maps_key"
                            value="{{ $settings->google_maps_key ? '••••••••' . substr($settings->google_maps_key, -8) : '' }}"
                            placeholder="AIzaSy..."
                            class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500">
-                    <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing. Paste full value to update.</p>
+                    <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing. Restrict to HTTP referrers (*.busyrealtor.com/*).</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Places API Key <span class="text-gray-500 font-normal">(server — IP restricted)</span></label>
+                    <input type="text" name="google_places_key"
+                           value="{{ $settings->google_places_key ? '••••••••' . substr($settings->google_places_key, -8) : '' }}"
+                           placeholder="AIzaSy..."
+                           class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500">
+                    <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing. Restrict to server IPs.</p>
                 </div>
                 <div class="bg-gray-900 rounded-lg p-3 text-xs text-gray-400 space-y-1">
                     <p class="font-medium text-gray-300">Setup instructions:</p>
                     <p>1. Go to <span class="text-blue-400">console.cloud.google.com</span> &rarr; APIs &amp; Services &rarr; Credentials</p>
                     <p>2. Create an API key and enable the Maps JavaScript API</p>
-                    <p>3. Restrict the key to HTTP referrers matching your tenant domains</p>
+                    <p>3. Maps key: restrict to HTTP referrers (*.busyrealtor.com/*)</p>
+                    <p>4. Places key: restrict to server IP addresses</p>
                 </div>
                 @if($settings->hasMaps())
                 <div class="flex items-center gap-2 text-green-400 text-xs">

@@ -32,6 +32,7 @@ class SystemSettingsController extends Controller
             'google_client_id'        => 'nullable|string|max:500',
             'google_client_secret'    => 'nullable|string|max:500',
             'google_maps_key'         => 'nullable|string|max:500',
+            'google_places_key'       => 'nullable|string|max:500',
             'smtp_host'               => 'nullable|string|max:255',
             'smtp_port'               => 'nullable|integer|min:1|max:65535',
             'smtp_encryption'         => 'nullable|in:tls,ssl',
@@ -79,6 +80,9 @@ class SystemSettingsController extends Controller
         }
         if ($request->filled('google_maps_key') && !str_starts_with($request->google_maps_key, '••••')) {
             $data['google_maps_key'] = $request->google_maps_key;
+        }
+        if ($request->filled('google_places_key') && !str_starts_with($request->google_places_key, '••••')) {
+            $data['google_places_key'] = $request->google_places_key;
         }
         if ($request->filled('smtp_username') && !str_starts_with($request->smtp_username, '••••')) {
             $data['smtp_username'] = $request->smtp_username;
