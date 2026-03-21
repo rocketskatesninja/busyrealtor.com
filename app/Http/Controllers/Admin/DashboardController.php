@@ -124,7 +124,8 @@ class DashboardController extends Controller
         // ── Tables ─────────────────────────────────────────────────────────
         $recentMessages   = Message::latest()->limit(5)->get();
         $starredMessages  = Message::where('is_starred', true)->latest()->limit(5)->get();
-        $upcomingAppts    = Appointment::where('status', 'pending')
+        $upcomingAppts    = Appointment::where('status', 'confirmed')
+            ->where('appointment_date', '>=', now()->toDateString())
             ->orderBy('appointment_date')->limit(5)->get();
         $topProperties    = Property::with('images')->orderBy('view_count', 'desc')->limit(5)->get();
         $recentProperties = Property::with('images')->latest()->limit(5)->get();

@@ -2,7 +2,7 @@
 @section('hide_header')@endsection
 @section('title', $property->title . ' — ' . ($settings->site_title ?? 'BusyRealtor'))
 @section('meta_description', Str::limit(strip_tags($property->description ?? $settings->site_description ?? ''), 155))
-@section('og_image', $property->images->first() ? asset('storage/' . $property->images->first()->image_url) : '')
+@section('og_image', $property->images->first() ? asset('storage/' . $property->images->first()->image_path) : '')
 
 @section('head')
 @php
@@ -73,7 +73,7 @@ function initPropertyMap() {
   }
   @endif
   @if($property->images->first())
-  ,"image": {!! json_encode(asset('storage/' . $property->images->first()->image_url)) !!}
+  ,"image": {!! json_encode(asset('storage/' . $property->images->first()->image_path)) !!}
   @endif
 }
 </script>
@@ -105,9 +105,8 @@ function initPropertyMap() {
 <div class="max-w-7xl mx-auto px-4 py-10">
 
 
-    <div>
             {{-- Image Gallery --}}
-            @php $images = $property->images->sortByDesc('is_primary'); @endphp
+            @php $images = $property->images->sortByDesc('is_primary'); $imageUrls = $images->values()->map(fn($i) => asset('storage/'.$i->image_path))->all(); @endphp
             @if($images->count())
             <div x-data="{
                 current: 0, lightbox: false, lightboxIdx: 0, touchX: 0,
@@ -122,8 +121,9 @@ function initPropertyMap() {
                 }
             }" class="mb-8">
                 {{-- Main image --}}
-                <div class="relative rounded-2xl overflow-hidden bg-gray-100 mb-3 cursor-pointer" style="height: 720px" @click="lightbox = true; lightboxIdx = current" @touchstart.passive="touchX = $event.changedTouches[0].clientX" @touchend.passive="swipe($event)">
-                    <template x-for="(img, idx) in {{ json_encode($images->values()->map(fn($i) => asset('storage/'.$i->image_path))) }}" :key="idx">
+                <div class="relative">
+                <div class="relative rounded-2xl overflow-hidden bg-gray-100 cursor-pointer" style="height: 720px" @click="lightbox = true; lightboxIdx = current" @touchstart.passive="touchX = $event.changedTouches[0].clientX" @touchend.passive="swipe($event)">
+                    <template x-for="(img, idx) in {{ json_encode($imageUrls) }}" :key="idx">
                         <img :src="img" :class="current === idx ? 'opacity-100 carousel-img-active' : 'opacity-0'" class="w-full h-full object-cover absolute inset-0 transition-opacity duration-700 ease-in-out">
                     </template>
                     @if($images->count() > 1)
@@ -133,26 +133,35 @@ function initPropertyMap() {
                     <button @click.stop="current = current < {{ $images->count() - 1 }} ? current + 1 : 0" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-sm text-white p-2.5 rounded-full hover:bg-black/60 transition-all hover:scale-110 shadow-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                     </button>
-                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
-                        @for($d = 0; $d < $images->count(); $d++)
-                        <button @click.stop="current = {{ $d }}"
-                                :class="current === {{ $d }} ? 'w-6 bg-white' : 'w-2 bg-white/50 hover:bg-white/70'"
-                                class="h-2 rounded-full transition-all duration-300 shadow-sm"></button>
-                        @endfor
-                    </div>
-                    <div class="absolute bottom-4 right-4 bg-black/40 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full shadow" x-text="`${current + 1} / {{ $images->count() }}`"></div>
+
+                    <div class="absolute bottom-14 right-4 bg-black/40 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full shadow" x-text="`${current + 1} / {{ $images->count() }}`"></div>
                     @endif
                 </div>
                 {{-- Thumbnails --}}
                 @if($images->count() > 1)
-                <div class="flex gap-2 overflow-x-auto pb-1">
+                <div x-data="{
+                    scales: Array({{ $images->count() }}).fill(1),
+                    calcScales(e) {
+                        const buttons = e.currentTarget.querySelectorAll('[data-thumb]');
+                        buttons.forEach((btn, i) => {
+                            const rect = btn.getBoundingClientRect();
+                            const center = rect.left + rect.width / 2;
+                            const dist = e.clientX - center;
+                            this.scales[i] = 1 + 0.45 * Math.exp(-(dist * dist) / 3000);
+                        });
+                    },
+                    resetScales() {
+                        this.scales = Array({{ $images->count() }}).fill(1);
+                    }
+                }" @mousemove="calcScales($event)" @mouseleave="resetScales()" class="flex justify-center gap-2 pb-2 pt-2 items-end absolute bottom-4 left-0 right-0 z-10">
                     @foreach($images as $i => $img)
-                    <button @click="current = {{ $i }}" class="flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition" :class="current === {{ $i }} ? 'border-2' : 'border-transparent'" :style="current === {{ $i }} ? 'border-color: var(--primary)' : ''">
-                        <img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">
+                    <button data-thumb @click.stop="current = {{ $i }}" class="flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-transform duration-150 ease-out" :class="current === {{ $i }} ? '' : 'border-transparent'" :style="`transform: scale(${scales[{{ $i }}]}); transform-origin: bottom; ${current === {{ $i }} ? 'border-color: var(--primary)' : ''}`">
+                        <img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover pointer-events-none">
                     </button>
                     @endforeach
                 </div>
                 @endif
+                </div>
                 {{-- Lightbox --}}
                 <div x-show="lightbox" x-cloak @keydown.escape.window="lightbox = false" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
                     <button @click="lightbox = false" class="absolute top-4 right-4 text-white/70 hover:text-white">
@@ -161,7 +170,7 @@ function initPropertyMap() {
                     <button @click="lightboxIdx = lightboxIdx > 0 ? lightboxIdx - 1 : {{ $images->count() - 1 }}" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white">
                         <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     </button>
-                    <template x-for="(img, idx) in {{ json_encode($images->values()->map(fn($i) => asset('storage/'.$i->image_path))) }}" :key="idx">
+                    <template x-for="(img, idx) in {{ json_encode($imageUrls) }}" :key="idx">
                         <img :src="img" x-show="lightboxIdx === idx" class="max-w-full max-h-screen object-contain rounded-xl">
                     </template>
                     <button @click="lightboxIdx = lightboxIdx < {{ $images->count() - 1 }} ? lightboxIdx + 1 : 0" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white">
@@ -185,12 +194,13 @@ $" . number_format($property->price) : '') . "
 
 " . request()->fullUrl());
             @endphp
-            <div class="bg-white rounded-2xl p-6 mb-6 shadow border border-gray-200">
+            <div class="bg-white rounded-2xl p-6 md:p-8 mb-6 shadow border border-gray-200">
 
                 {{-- Status + Share row --}}
+                @php $statusColor = match($property->listing_status) { 'active' => '#10b981', 'pending' => '#f59e0b', 'sold' => '#ef4444', default => '#6b7280' }; @endphp
                 <div class="flex items-center justify-between mb-4">
                     <div class="flex items-center gap-2">
-                        <span class="inline-flex items-center text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
+                        <span class="inline-flex items-center text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $statusColor }}">
                             {{ ucfirst($property->listing_status) }}
                         </span>
                         <span id="fav-badge" class="inline-flex items-center gap-1 text-xs font-semibold text-yellow-900 bg-yellow-400 px-3 py-1 rounded-full" style="display:none">
@@ -224,47 +234,71 @@ $" . number_format($property->price) : '') . "
                 </div>
 
 
-                {{-- Title + Address + Price --}}
-                <div class="flex flex-wrap items-end justify-between gap-3 mb-5">
-                    <div>
-                        <h1 class="text-2xl font-bold text-gray-900 leading-tight">{{ $property->title }}</h1>
-                        @if($property->address)
-                        <p class="flex items-center gap-1.5 text-gray-500 text-sm mt-1">
-                            <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            {{ $property->address }}@if($property->address_line_2), {{ $property->address_line_2 }}@endif{{ $property->city ? ', ' . $property->city : '' }}{{ $property->state ? ', ' . $property->state : '' }}{{ $property->zip ? ' ' . $property->zip : '' }}
-                        </p>
-                        @endif
-                    </div>
+                {{-- Price + Title + Address --}}
+                <div class="mb-6">
                     @if($property->price)
-                    <p class="text-3xl font-bold whitespace-nowrap" style="color: var(--primary)">${{ number_format($property->price) }}</p>
+                    <p class="text-4xl font-bold mb-2" style="color: var(--primary)">${{ number_format($property->price) }}</p>
+                    @endif
+                    <h1 class="text-2xl font-bold text-gray-900 leading-tight">{{ $property->title }}</h1>
+                    @if($property->address)
+                    <p class="flex items-center gap-1.5 text-gray-500 mt-1.5">
+                        <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        {{ $property->address }}@if($property->address_line_2), {{ $property->address_line_2 }}@endif{{ $property->city ? ', ' . $property->city : '' }}{{ $property->state ? ', ' . $property->state : '' }}{{ $property->zip ? ' ' . $property->zip : '' }}
+                    </p>
                     @endif
                 </div>
 
                 {{-- Quick Stats --}}
-                @php $stats = array_filter([
-                    $property->bedrooms  ? ['val' => $property->bedrooms,                  'label' => 'Beds']   : null,
-                    $property->bathrooms ? ['val' => $property->bathrooms,                 'label' => 'Baths']  : null,
-                    $property->sqft      ? ['val' => number_format($property->sqft),       'label' => 'Sq Ft']  : null,
-                    $property->year_built? ['val' => $property->year_built,               'label' => 'Built']  : null,
-                    $property->garage    ? ['val' => $property->garage,                   'label' => 'Garage'] : null,
-                    $property->property_type ? ['val' => ucfirst(str_replace('-',' ',$property->property_type)), 'label' => 'Type'] : null,
-                ]); @endphp
-                @if(count($stats))
-                <div class="grid grid-cols-3 sm:grid-cols-6 gap-px bg-gray-100 rounded-xl overflow-hidden border border-gray-100 mb-5">
-                    @foreach($stats as $stat)
-                    <div class="bg-white text-center px-3 py-3">
-                        <p class="text-lg font-bold text-gray-900">{{ $stat['val'] }}</p>
-                        <p class="text-xs text-gray-500 mt-0.5">{{ $stat['label'] }}</p>
+                <div class="grid grid-cols-3 sm:grid-cols-6 gap-3 mb-6">
+                    @if($property->bedrooms)
+                    <div class="text-center p-3 bg-gray-50 rounded-xl">
+                        <svg class="w-5 h-5 mx-auto mb-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0h4m-4 0v-4a1 1 0 011-1h2a1 1 0 011 1v4"/></svg>
+                        <p class="text-xl font-bold text-gray-900">{{ $property->bedrooms }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Beds</p>
                     </div>
-                    @endforeach
+                    @endif
+                    @if($property->bathrooms)
+                    <div class="text-center p-3 bg-gray-50 rounded-xl">
+                        <svg class="w-5 h-5 mx-auto mb-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16h16M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M4 16l-1-9h1a2 2 0 012 2v1m14 6V9a2 2 0 00-2-2h-1"/></svg>
+                        <p class="text-xl font-bold text-gray-900">{{ $property->bathrooms }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Baths</p>
+                    </div>
+                    @endif
+                    @if($property->sqft)
+                    <div class="text-center p-3 bg-gray-50 rounded-xl">
+                        <svg class="w-5 h-5 mx-auto mb-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5"/></svg>
+                        <p class="text-xl font-bold text-gray-900">{{ number_format($property->sqft) }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Sq Ft</p>
+                    </div>
+                    @endif
+                    @if($property->year_built)
+                    <div class="text-center p-3 bg-gray-50 rounded-xl">
+                        <svg class="w-5 h-5 mx-auto mb-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <p class="text-xl font-bold text-gray-900">{{ $property->year_built }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Built</p>
+                    </div>
+                    @endif
+                    @if($property->garage)
+                    <div class="text-center p-3 bg-gray-50 rounded-xl">
+                        <svg class="w-5 h-5 mx-auto mb-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 17h8M8 17v4h8v-4M8 17H4l2-9h12l2 9h-4M9 7h6"/></svg>
+                        <p class="text-xl font-bold text-gray-900">{{ $property->garage }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Garage</p>
+                    </div>
+                    @endif
+                    @if($property->property_type)
+                    <div class="text-center p-3 bg-gray-50 rounded-xl">
+                        <svg class="w-5 h-5 mx-auto mb-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        <p class="text-xl font-bold text-gray-900">{{ ucfirst(str_replace('-',' ',$property->property_type)) }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">Type</p>
+                    </div>
+                    @endif
                 </div>
-                @endif
 
                 {{-- Description --}}
                 @if($property->description)
-                <div class="border-t border-gray-100 pt-4">
-                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-2">About This Property</h3>
-                    <p class="text-gray-700 leading-relaxed whitespace-pre-wrap text-sm">{{ $property->description }}</p>
+                <div class="border-t border-gray-100 pt-5 mt-1">
+                    <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-3">About This Property</h3>
+                    <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">{{ $property->description }}</p>
                 </div>
                 @endif
 
@@ -317,6 +351,7 @@ $" . number_format($property->price) : '') . "
              get totalPaid() { return this.monthly * this.term * 12; },
              get totalInterest() { return Math.max(0, this.totalPaid - this.loanAmt); },
              get principalPct() { return this.totalPaid > 0 ? (this.loanAmt / this.totalPaid * 100) : 0; },
+             get totalMonthly() { return this.monthly + (this.price * 0.012 / 12) + (this.price * 0.004 / 12) + {{ $property->hoa_fee ?? 0 }} + (this.downPct < 20 ? this.loanAmt * 0.005 / 12 : 0); },
              fmt(n) { return isNaN(n) ? '$0' : new Intl.NumberFormat('en-US', {style:'currency',currency:'USD',maximumFractionDigits:0}).format(n); },
              syncDown() {
                  if (this.downMode === 'pct') {
@@ -445,7 +480,7 @@ $" . number_format($property->price) : '') . "
                     <span class="text-gray-500">Home Insurance <span class="text-gray-400 text-xs">(est.)</span></span>
                     <span class="font-medium text-gray-800" x-text="fmt(price * 0.004 / 12)"></span>
                 </div>
-                @if($property->hoa_fee && $property->hoa_fee > 0)
+                @if($property->hoa_fee > 0)
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500">HOA Fee</span>
                     <span class="font-medium text-gray-800">${{ number_format($property->hoa_fee, 0) }}</span>
@@ -458,7 +493,7 @@ $" . number_format($property->price) : '') . "
                 <div class="flex justify-between text-sm pt-2 border-t border-gray-100">
                     <span class="font-semibold text-gray-700">Total Monthly</span>
                     <span class="font-bold" style="color: var(--primary)"
-                          x-text="fmt(monthly + (price * 0.012 / 12) + (price * 0.004 / 12) + {{ $property->hoa_fee ?? 0 }} + (downPct < 20 ? loanAmt * 0.005 / 12 : 0))"></span>
+                          x-text="fmt(totalMonthly)"></span>
                 </div>
             </div>
             <p class="text-xs text-gray-400 mt-3">* Tax (1.2%) and insurance (0.4%) are national averages. PMI applies when down payment is under 20%.</p>
@@ -474,12 +509,19 @@ $" . number_format($property->price) : '') . "
     </div>{{-- end grid --}}
 
     {{-- Your Agent card --}}
-    @if($property->staffMember)
+    @php
+        $agent = $property->staffMember
+            ? (object)['name' => $property->staffMember->name, 'title' => $property->staffMember->title, 'photo' => $property->staffMember->photo_url ? asset('storage/' . $property->staffMember->photo_url) : null, 'bio' => $property->staffMember->bio]
+            : (($settings->owner_name || $settings->owner_photo || $settings->owner_bio)
+                ? (object)['name' => $settings->owner_name, 'title' => null, 'photo' => $settings->owner_photo ? asset('storage/' . $settings->owner_photo) : null, 'bio' => $settings->owner_bio]
+                : null);
+    @endphp
+    @if($agent)
     <div class="bg-white rounded-2xl mt-8 shadow border border-gray-200 overflow-hidden">
         <div class="px-6 pt-5 pb-4 flex items-center gap-4" style="background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), rgba(var(--primary-rgb), 0.02))">
             <div class="w-14 h-14 rounded-full bg-white overflow-hidden flex-shrink-0 shadow-sm border-2" style="border-color: var(--primary)">
-                @if($property->staffMember->photo_url)
-                    <img src="{{ asset('storage/' . $property->staffMember->photo_url) }}" alt="{{ $property->staffMember->name }}" class="w-full h-full object-cover">
+                @if($agent->photo)
+                    <img src="{{ $agent->photo }}" alt="{{ $agent->name }}" class="w-full h-full object-cover">
                 @else
                     <div class="w-full h-full flex items-center justify-center" style="background-color: rgba(var(--primary-rgb), 0.1)">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -488,36 +530,17 @@ $" . number_format($property->price) : '') . "
             </div>
             <div class="flex-1 min-w-0">
                 <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Your Agent</p>
-                <p class="font-semibold text-gray-900 text-lg leading-tight">{{ $property->staffMember->name }}</p>
-                @if($property->staffMember->title)
-                    <p class="text-sm" style="color: var(--primary)">{{ $property->staffMember->title }}</p>
+                @if($agent->name)
+                <p class="font-semibold text-gray-900 text-lg leading-tight">{{ $agent->name }}</p>
+                @endif
+                @if($agent->title)
+                    <p class="text-sm" style="color: var(--primary)">{{ $agent->title }}</p>
                 @endif
             </div>
         </div>
-        @if($property->staffMember->bio)
+        @if($agent->bio)
         <div class="px-6 py-4">
-            <p class="text-sm text-gray-600 leading-relaxed">{{ $property->staffMember->bio }}</p>
-        </div>
-        @endif
-    </div>
-    @elseif($settings->owner_photo || $settings->owner_bio || $settings->owner_name)
-    <div class="bg-white rounded-2xl mt-8 shadow border border-gray-200 overflow-hidden">
-        <div class="px-6 pt-5 pb-4 flex items-center gap-4" style="background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), rgba(var(--primary-rgb), 0.02))">
-            @if($settings->owner_photo)
-            <div class="w-14 h-14 rounded-full bg-white overflow-hidden flex-shrink-0 shadow-sm border-2" style="border-color: var(--primary)">
-                <img src="{{ asset('storage/' . $settings->owner_photo) }}" alt="{{ $settings->owner_name }}" class="w-full h-full object-cover">
-            </div>
-            @endif
-            <div class="flex-1 min-w-0">
-                <p class="text-xs font-medium uppercase tracking-wider text-gray-400">Your Agent</p>
-                @if($settings->owner_name)
-                <p class="font-semibold text-gray-900 text-lg leading-tight">{{ $settings->owner_name }}</p>
-                @endif
-            </div>
-        </div>
-        @if($settings->owner_bio)
-        <div class="px-6 py-4">
-            <p class="text-sm text-gray-600 leading-relaxed">{{ $settings->owner_bio }}</p>
+            <p class="text-sm text-gray-600 leading-relaxed">{{ $agent->bio }}</p>
         </div>
         @endif
     </div>
