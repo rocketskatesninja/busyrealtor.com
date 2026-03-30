@@ -345,9 +345,22 @@ $iconPaths = [
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             @foreach($featured as $property)
             <a href="{{ route('tenant.property', [$account, $property->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-xl transition-shadow group reveal" style="transition-delay: {{ $loop->index * 0.1 }}s">
-                <div class="relative h-52 bg-gray-200 overflow-hidden">
-                    @if($property->primaryImage)
-                        <img src="{{ asset('storage/' . $property->primaryImage->image_path) }}" alt="{{ $property->title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <div class="relative h-52 bg-gray-200 overflow-hidden"
+                     @if($property->images->count() > 1)
+                     x-data="{ i: 0 }"
+                     x-init="setInterval(() => i = (i + 1) % {{ $property->images->count() }}, 3500)"
+                     @endif>
+                    @if($property->images->isNotEmpty())
+                        @foreach($property->images as $idx => $img)
+                        <img src="{{ asset('storage/' . $img->image_path) }}"
+                             alt="{{ $property->title }}"
+                             @if($property->images->count() > 1)
+                             class="absolute inset-0 w-full h-full object-cover transition-opacity duration-700"
+                             :class="i === {{ $idx }} ? 'opacity-100' : 'opacity-0'"
+                             @else
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                             @endif>
+                        @endforeach
                     @else
                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
                             <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
