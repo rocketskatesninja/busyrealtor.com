@@ -348,7 +348,7 @@ $iconPaths = [
                 <div class="relative h-52 bg-gray-200 overflow-hidden"
                      @if($property->images->count() > 1)
                      x-data="{ i: 0 }"
-                     x-init="setInterval(() => i = (i + 1) % {{ $property->images->count() }}, 3500)"
+                     x-init="setTimeout(() => setInterval(() => i = (i + 1) % {{ $property->images->count() }}, 3500), {{ $loop->index * 250 }})"
                      @endif>
                     @if($property->images->isNotEmpty())
                         @foreach($property->images as $idx => $img)
