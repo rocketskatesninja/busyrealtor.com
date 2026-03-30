@@ -2,7 +2,7 @@
 @if($nearbyPlaces && (count($nearbyPlaces['schools'] ?? []) || count($nearbyPlaces['hospitals'] ?? []) || count($nearbyPlaces['shopping'] ?? [])))
 <div id="nearby-section" class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow border border-gray-200 dark:border-gray-700 min-w-0 overflow-hidden"
      x-data="{ tab: '{{ count($nearbyPlaces['schools'] ?? []) ? 'schools' : (count($nearbyPlaces['hospitals'] ?? []) ? 'hospitals' : 'shopping') }}' }">
-    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">Nearby Places</h2>
+    <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Nearby Places</h2>
 
     {{-- Tabs --}}
     <div class="flex gap-2 mb-5 border-b border-gray-200 dark:border-gray-600">

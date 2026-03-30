@@ -103,7 +103,7 @@
         <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 flex flex-col" data-widget="{{ $chartKey }}">
             @switch($chartKey)
                 @case('type_chart')
-                    <h3 class="font-semibold text-gray-800 mb-4">Properties by Type</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>Properties by Type</h3>
                     @if($propertiesByType->isEmpty())
                         <p class="text-gray-400 text-sm text-center py-16">No data yet.</p>
                     @else
@@ -111,7 +111,7 @@
                     @endif
                 @break
                 @case('status_chart')
-                    <h3 class="font-semibold text-gray-800 mb-4">Listing Status</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>Listing Status</h3>
                     @if($propertiesByStatus->isEmpty())
                         <p class="text-gray-400 text-sm text-center py-16">No data yet.</p>
                     @else
@@ -119,7 +119,7 @@
                     @endif
                 @break
                 @case('views_chart')
-                    <h3 class="font-semibold text-gray-800 mb-4">Views by Property</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Views by Property</h3>
                     @if($viewsByProperty->isEmpty())
                         <p class="text-gray-400 text-sm text-center py-16 flex-1 flex items-center justify-center">No views tracked yet.</p>
                     @else
@@ -129,15 +129,15 @@
                     @endif
                 @break
                 @case('views_30days')
-                    <h3 class="font-semibold text-gray-800 mb-4">Property Views — Last 30 Days</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Property Views — Last 30 Days</h3>
                     <div class="flex-1 relative min-h-[140px]"><canvas id="views30Chart" class="w-full h-full"></canvas></div>
                 @break
                 @case('messages_7days')
-                    <h3 class="font-semibold text-gray-800 mb-4">Messages — Last 7 Days</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>Messages — Last 7 Days</h3>
                     <div class="flex-1 relative min-h-[140px]"><canvas id="msgs7Chart" class="w-full h-full"></canvas></div>
                 @break
                 @case('price_distribution')
-                    <h3 class="font-semibold text-gray-800 mb-4">Price Range Distribution</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Price Range Distribution</h3>
                     @if($priceDistribution->sum() === 0)
                         <p class="text-gray-400 text-sm text-center py-16 flex-1 flex items-center justify-center">No data yet.</p>
                     @else
@@ -145,15 +145,15 @@
                     @endif
                 @break
                 @case('listings_over_time')
-                    <h3 class="font-semibold text-gray-800 mb-4">Listings Added (12 Months)</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Listings Added (12 Months)</h3>
                     <div class="flex-1 relative min-h-[140px]"><canvas id="listingsTimeChart" class="w-full h-full"></canvas></div>
                 @break
                 @case('revenue_trend')
-                    <h3 class="font-semibold text-gray-800 mb-4">Revenue Trend (12 Months)</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Revenue Trend (12 Months)</h3>
                     <div class="flex-1 relative min-h-[140px]"><canvas id="revenueChart" class="w-full h-full"></canvas></div>
                 @break
                 @case('appt_status')
-                    <h3 class="font-semibold text-gray-800 mb-4">Appointment Status</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>Appointment Status</h3>
                     @if($apptByStatus->isEmpty())
                         <p class="text-gray-400 text-sm text-center py-16">No appointments yet.</p>
                     @else
@@ -161,7 +161,7 @@
                     @endif
                 @break
                 @case('message_sources')
-                    <h3 class="font-semibold text-gray-800 mb-4">Message Sources</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>Message Sources</h3>
                     @if($messageSources->isEmpty())
                         <p class="text-gray-400 text-sm text-center py-16">No messages yet.</p>
                     @else
@@ -183,7 +183,7 @@
             @case('top_properties')
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="top_properties">
                 <div class="flex items-center justify-between p-5 dash-header-border">
-                    <h3 class="font-semibold text-gray-800">Top Properties by Views</h3>
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Top Properties by Views</h3>
                     <a href="{{ route('tenant.admin.properties.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
                 <div class="dash-divide">
@@ -209,7 +209,7 @@
             @case('recent_messages')
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="recent_messages">
                 <div class="flex items-center justify-between p-5 dash-header-border">
-                    <h3 class="font-semibold text-gray-800">Recent Messages</h3>
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Recent Messages</h3>
                     <a href="{{ route('tenant.admin.messages.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
                 <div class="dash-divide">
@@ -240,7 +240,7 @@
             @case('starred_messages')
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="starred_messages">
                 <div class="flex items-center justify-between p-5 dash-header-border">
-                    <h3 class="font-semibold text-gray-800">Starred Messages</h3>
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>Starred Messages</h3>
                     <a href="{{ route('tenant.admin.messages.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
                 <div class="dash-divide">
@@ -269,7 +269,7 @@
             @case('upcoming_appts')
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="upcoming_appts">
                 <div class="flex items-center justify-between p-5 dash-header-border">
-                    <h3 class="font-semibold text-gray-800">Upcoming Appointments</h3>
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Upcoming Appointments</h3>
                     <a href="{{ route('tenant.admin.appointments.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
                 <div class="dash-divide">
@@ -296,7 +296,7 @@
             @php $sc = ['active'=>'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400','pending'=>'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400','sold'=>'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300']; @endphp
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="recent_properties">
                 <div class="flex items-center justify-between p-5 dash-header-border">
-                    <h3 class="font-semibold text-gray-800">Recently Added</h3>
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Recently Added</h3>
                     <a href="{{ route('tenant.admin.properties.create', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">+ Add New</a>
                 </div>
                 <div class="dash-divide">

@@ -306,7 +306,7 @@ $" . number_format($property->price) : '') . "
 
             @if($property->amenities && count($property->amenities))
             <div class="bg-white rounded-2xl p-6 mb-6 shadow border border-gray-200">
-                <h3 class="font-semibold text-gray-800 mb-4">Amenities & Features</h3>
+                <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>Amenities & Features</h3>
                 <div class="flex flex-wrap gap-2">
                     @foreach((array)$property->amenities as $amenity)
                     <span class="px-3 py-1.5 rounded-full text-sm font-medium" style="background-color: rgba(var(--primary-rgb), 0.1); color: var(--primary)">{{ $amenity }}</span>
@@ -317,7 +317,7 @@ $" . number_format($property->price) : '') . "
 
             @if($property->virtual_tour_url)
             <div class="bg-white rounded-2xl p-6 mb-6 shadow border border-gray-200">
-                <h3 class="font-semibold text-gray-800 mb-3">Virtual Tour</h3>
+                <h3 class="font-semibold text-gray-800 mb-3 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Virtual Tour</h3>
                 <a href="{{ $property->virtual_tour_url }}" target="_blank" class="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                     View Virtual Tour
@@ -504,6 +504,14 @@ $" . number_format($property->price) : '') . "
     {{-- Nearby Places --}}
     @if($nearbyPlaces ?? null)
         @include('tenant.partials.nearby-places', ['nearbyPlaces' => $nearbyPlaces])
+    @else
+    <div class="bg-white rounded-2xl p-6 shadow border border-gray-200 min-w-0 overflow-hidden">
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Nearby Places</h2>
+        <div class="flex flex-col items-center justify-center py-6 text-center">
+            <svg class="w-10 h-10 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <p class="text-sm text-gray-400">Nearby places unavailable</p>
+        </div>
+    </div>
     @endif
 
     </div>{{-- end grid --}}
@@ -602,7 +610,7 @@ $" . number_format($property->price) : '') . "
                 }
             }
         }">
-            <h2 class="text-xl font-semibold text-gray-800 mb-1">Schedule a Showing</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-1 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Schedule a Showing</h2>
             <p class="text-sm text-gray-500 mb-6">Fill out the form below and we'll be in touch to confirm your appointment.</p>
 
             {{-- Success state --}}
@@ -702,7 +710,7 @@ $" . number_format($property->price) : '') . "
 
         @else
         {{-- Starter plan: show contact details instead --}}
-        <h2 class="text-xl font-semibold text-gray-800 mb-1">Interested in This Property?</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-1 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Interested in This Property?</h2>
         <p class="text-sm text-gray-500 mb-6">Contact us directly to schedule a showing or ask any questions.</p>
         <div class="flex flex-col sm:flex-row gap-3">
             <a href="{{ route('tenant.contact', $account) }}"
@@ -720,7 +728,7 @@ $" . number_format($property->price) : '') . "
     {{-- Location: Map & Street View --}}
     @if($property->latitude && $property->longitude)
     <div id="map-section" class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">Location</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Location</h2>
         @if(isset($mapsKey) && $mapsKey)
         <div class="grid md:grid-cols-2 gap-4">
             <div>
@@ -748,7 +756,7 @@ $" . number_format($property->price) : '') . "
     {{-- Related Properties --}}
     @if($related->count())
     <div id="related-section" class="mt-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6">Similar Properties</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Similar Properties</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach($related as $rel)
             <a href="{{ route('tenant.property', [$account, $rel->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-lg transition-shadow group">

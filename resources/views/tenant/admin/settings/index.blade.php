@@ -102,7 +102,7 @@ $tabs = array_merge(...array_values($groups));
                 <div x-show="activeTab === 'general'" x-cloak>
                 {{-- GENERAL TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5">General Settings</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>General Settings</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Site Title</label>
@@ -132,7 +132,7 @@ $tabs = array_merge(...array_values($groups));
                 <div x-show="activeTab === 'profile'" x-cloak>
                 {{-- PROFILE TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5">Profile</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>Profile</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
@@ -201,7 +201,7 @@ $tabs = array_merge(...array_values($groups));
                 <div x-show="activeTab === 'appearance'" x-cloak>
                 {{-- APPEARANCE TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5">Appearance</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>Appearance</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
@@ -440,7 +440,7 @@ $tabs = array_merge(...array_values($groups));
                 @endphp
 
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-1">Homepage Sections</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>Homepage Sections</h2>
                     <p class="text-sm text-gray-500 mb-5">Drag to reorder. Click a section to edit its content. Toggle to show/hide.</p>
 
                     <script>
@@ -942,7 +942,7 @@ $tabs = array_merge(...array_values($groups));
                 {{-- NOTIFICATIONS TAB --}}
                 <div class="space-y-6">
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">Email Notifications</h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>Email Notifications</h2>
                         <div class="space-y-3">
                             <label class="flex items-center gap-3 cursor-pointer">
                                 <input type="checkbox" name="notify_on_contact" value="1" class="rounded" {{ $settings->notify_on_contact ? 'checked' : '' }}>
@@ -969,7 +969,7 @@ $tabs = array_merge(...array_values($groups));
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">SMTP Configuration</h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>SMTP Configuration</h2>
                         @php $smtp = $integrations->get('smtp'); $smtpConfig = $smtp?->config ?? []; @endphp
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="md:col-span-2 flex gap-3"><div class="flex-[2]"><label class="block text-xs font-medium text-gray-600 mb-1">SMTP Host</label><input type="text" name="smtp_host" value="{{ $smtpConfig['smtp_host'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Port</label><input type="number" name="smtp_port" value="{{ $smtpConfig['smtp_port'] ?? 587 }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Encryption</label><select name="smtp_encryption" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"><option value="tls" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === 'tls')>TLS / STARTTLS (port 587)</option><option value="ssl" @selected(($smtpConfig['smtp_encryption'] ?? '') === 'ssl')>SSL (port 465)</option><option value="" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === '')>None (port 25)</option></select></div></div>
@@ -994,7 +994,7 @@ $tabs = array_merge(...array_values($groups));
                         <div class="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-4">
                             <svg class="w-7 h-7 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                         </div>
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">AI Chatbot</h2>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>AI Chatbot</h2>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">The AI chatbot is available on Pro plans. Upgrade to add an intelligent assistant to your site that can answer visitor questions about your listings.</p>
                         <a href="{{ route('tenant.admin.billing', $tenant->slug) }}" class="inline-flex items-center px-5 py-2.5 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition">
                             Upgrade to Unlock
@@ -1004,7 +1004,7 @@ $tabs = array_merge(...array_values($groups));
                 @else
                 <div class="space-y-6">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5">AI Chatbot</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>AI Chatbot</h2>
                     <div class="space-y-4">
                         <div class="flex items-center gap-4">
                             <label class="flex items-center gap-3 cursor-pointer shrink-0">
@@ -1026,7 +1026,7 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-1">AI Provider</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>AI Provider</h2>
                     <p class="text-sm text-gray-500 mb-5">Used by the AI Assistant. Configure one or both providers and choose which one is active.</p>
                     @php $ai = $integrations->get('ai_provider'); $aiConfig = $ai?->config ?? []; @endphp
                     <div class="space-y-5">
@@ -1085,7 +1085,7 @@ $tabs = array_merge(...array_values($groups));
                 {{-- SOCIAL MEDIA TAB --}}
                 <div class="space-y-6">
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5">Social Links</h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>Social Links</h2>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach(['social_facebook'=>'Facebook URL','social_instagram'=>'Instagram URL','social_twitter'=>'Twitter/X URL','social_linkedin'=>'LinkedIn URL','social_youtube'=>'YouTube URL'] as $field=>$label)
                             <div>
@@ -1433,7 +1433,7 @@ $tabs = array_merge(...array_values($groups));
                 <div x-show="activeTab === 'legal'" x-cloak>
                 {{-- LEGAL TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5">Legal Pages</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>Legal Pages</h2>
                     <div class="space-y-6">
                         @foreach(['privacy' => 'Privacy Policy', 'terms' => 'Terms of Service'] as $type => $title)
                         <div>
@@ -1448,7 +1448,7 @@ $tabs = array_merge(...array_values($groups));
                 <div x-show="activeTab === 'seo'" x-cloak>
                 {{-- SEO TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5">SEO Settings</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>SEO Settings</h2>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Site Description</label>

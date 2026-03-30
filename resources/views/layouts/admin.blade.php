@@ -85,6 +85,8 @@
         .dark .text-gray-600  { color: #94a3b8 !important; }
         .dark .text-gray-500  { color: #64748b !important; }
         .dark .text-gray-400  { color: #475569 !important; }
+        .panel-icon              { color: #9ca3af; }
+        .dark .panel-icon        { color: #94a3b8 !important; }
 
         /* Borders */
         .dark .border-gray-50  { border-color: #1e293b !important; }
