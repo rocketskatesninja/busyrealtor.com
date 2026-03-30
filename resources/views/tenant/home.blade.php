@@ -355,7 +355,7 @@ $iconPaths = [
                         <img src="{{ asset('storage/' . $img->image_path) }}"
                              alt="{{ $property->title }}"
                              @if($property->images->count() > 1)
-                             class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000"
+                             class="absolute inset-0 w-full h-full object-cover" style="transition: opacity 1.5s ease-in-out"
                              :class="i === {{ $idx }} ? 'opacity-100' : 'opacity-0'"
                              @else
                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
