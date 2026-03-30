@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 @section('title', 'Create Account')
 @section('content')
-<h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">BusyRealtor Registration</h2>
+<div class="mb-6 text-center"><span style="font-size:1.875rem;font-weight:800;line-height:1;"><span style="color:#7dd3fc;">Busy</span><span style="color:#fb923c;">Realtor</span></span><p class="text-gray-500 dark:text-gray-400 text-sm font-normal mt-1">Create your account</p></div>
 
 <div class="flex flex-col gap-2">
 <a href="{{ route('auth.google') }}" class="google-btn w-full flex items-center justify-center gap-3 border border-gray-300 rounded-lg px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">

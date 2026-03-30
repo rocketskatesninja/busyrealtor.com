@@ -40,6 +40,11 @@ class SystemSettingsController extends Controller
             'smtp_password'           => 'nullable|string|max:500',
             'mail_from_address'       => 'nullable|email|max:255',
             'mail_from_name'          => 'nullable|string|max:255',
+            'social_facebook'         => 'nullable|url|max:500',
+            'social_instagram'        => 'nullable|url|max:500',
+            'social_x'                => 'nullable|url|max:500',
+            'social_linkedin'         => 'nullable|url|max:500',
+            'social_youtube'          => 'nullable|url|max:500',
         ], [
             'stripe_starter_price_id.regex' => 'Starter price ID must start with price_',
             'stripe_pro_price_id.regex'     => 'Pro price ID must start with price_',
@@ -54,6 +59,13 @@ class SystemSettingsController extends Controller
             'starter_price'           => $request->starter_price ?? 29,
             'pro_price'               => $request->pro_price ?? 59,
         ];
+
+        // Social links
+        $data['social_facebook']  = $request->social_facebook;
+        $data['social_instagram'] = $request->social_instagram;
+        $data['social_x']         = $request->social_x;
+        $data['social_linkedin']  = $request->social_linkedin;
+        $data['social_youtube']   = $request->social_youtube;
 
         // Non-secret SMTP fields
         $data['smtp_host']         = $request->smtp_host;

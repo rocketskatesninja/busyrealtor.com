@@ -33,6 +33,7 @@ class SystemSetting extends Model
         'mail_from_name',
         'google_maps_key', 'google_places_key',
         'google_places_key',
+        'social_facebook', 'social_instagram', 'social_x', 'social_linkedin', 'social_youtube',
     ];
 
     protected $hidden = ['stripe_key', 'stripe_secret', 'stripe_webhook_secret', 'google_client_id', 'google_client_secret', 'smtp_username', 'smtp_password', 'google_maps_key', 'google_places_key'];

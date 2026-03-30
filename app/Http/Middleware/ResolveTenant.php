@@ -17,7 +17,13 @@ class ResolveTenant
             abort(404);
         }
 
-        $tenant = Tenant::where('slug', $slug)->where('is_active', true)->first();
+        $isImpersonating = session()->has('super_admin_id');
+
+        $query = Tenant::where('slug', $slug);
+        if (!$isImpersonating) {
+            $query->where('is_active', true);
+        }
+        $tenant = $query->first();
 
         if (!$tenant) {
             abort(404);

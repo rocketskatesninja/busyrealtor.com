@@ -86,6 +86,10 @@
             from { opacity: 0; transform: scale(0.92); }
             to   { opacity: 1; transform: scale(1); }
         }
+        .hero-dot-grid {
+            background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px);
+            background-size: 28px 28px;
+        }
         /* Hero entrance (fires on page load) */
         .hero-animate { animation: heroIn 0.75s cubic-bezier(.22,1,.36,1) both; opacity: 0; }
         .hero-d1 { animation-delay: 0.05s; }

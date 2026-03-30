@@ -159,7 +159,7 @@
 {{-- Dark Sidebar --}}
 <aside class="hidden md:flex w-64 min-h-screen bg-gray-800 flex-col flex-shrink-0">
     <div class="p-6 border-b border-gray-700">
-        <h1 class="text-xl font-bold text-white">BusyRealtor</h1>
+        <h1><span style="font-size:1.25rem;font-weight:800;line-height:1;"><span style="color:#7dd3fc;">Busy</span><span style="color:#fb923c;">Realtor</span></span></h1>
         <p class="text-gray-400 text-xs mt-1">Super Admin Panel</p>
     </div>
     <nav class="flex-1 p-4 space-y-1">
