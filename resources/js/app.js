@@ -7,11 +7,23 @@ Alpine.plugin(intersect);
 Alpine.plugin(collapse);
 
 Alpine.store('theme', {
-    dark: document.documentElement.classList.contains('dark'),
+    dark: false,
+    init() {
+        const saved = localStorage.getItem('theme');
+        if (saved) {
+            this.dark = saved === 'dark';
+        } else {
+            this.dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        }
+        this.apply();
+    },
     toggle() {
         this.dark = !this.dark;
-        document.documentElement.classList.toggle('dark', this.dark);
         localStorage.setItem('theme', this.dark ? 'dark' : 'light');
+        this.apply();
+    },
+    apply() {
+        document.documentElement.classList.toggle('dark', this.dark);
     }
 });
 

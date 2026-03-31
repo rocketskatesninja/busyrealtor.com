@@ -181,10 +181,16 @@ document.addEventListener('click', function(e) {
             </div>
         </div>
     </div>
+
+    {{-- Scroll-down arrow (reusable: just copy this block + the @keyframes scrollBounce CSS) --}}
+    <a href="javascript:void(0)" onclick="window.scrollTo({top:window.innerHeight*0.55,behavior:'smooth'})" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-white/60 hover:text-white transition-colors group" aria-label="Scroll down">
+        <span class="text-xs font-medium tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity">Scroll</span>
+        <svg class="w-6 h-6" style="animation: scrollBounce 2s ease-in-out infinite;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+    </a>
 </section>
 
 {{-- ════════════════════════════════════════════════════════ STATS BAR ═══ --}}
-<section class="bg-gray-900 text-white py-10 stats-bar">
+<section id="below-hero" class="bg-gray-900 text-white py-10 stats-bar">
     <div class="max-w-5xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
         <div><div class="text-3xl font-black text-orange-400 mb-1"><span class="count-up">10 min</span></div><div class="text-gray-400 text-sm">Average setup time</div></div>
         <div><div class="text-3xl font-black text-orange-400 mb-1">24/7</div><div class="text-gray-400 text-sm">AI chatbot availability</div></div>
@@ -375,10 +381,10 @@ document.addEventListener('click', function(e) {
         <div class="grid md:grid-cols-5 gap-8 mb-10">
             <div class="md:col-span-2">
                 <div class="flex items-center gap-2 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
+                    <div class="w-6 h-6 rounded-md bg-orange-500 flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                     </div>
-                    <span style="font-size:1.875rem;font-weight:800;line-height:1;"><span style="color:#7dd3fc;">Busy</span><span style="color:#fb923c;">Realtor</span></span>
+                    <span style="font-size:1.25rem;font-weight:800;line-height:1;"><span style="color:#7dd3fc;">Busy</span><span style="color:#fb923c;">Realtor</span></span>
                 </div>
                 <p class="text-sm leading-relaxed max-w-xs">The complete real estate website platform for modern agents. Built by <a href="https://punchlistlabs.com" rel="noopener noreferrer" class="text-orange-500 dark:text-orange-400 hover:text-orange-600 dark:hover:text-orange-300 transition-colors">Punchlist Labs</a>.</p>
                 @if($settings->social_facebook || $settings->social_instagram || $settings->social_x || $settings->social_linkedin || $settings->social_youtube)

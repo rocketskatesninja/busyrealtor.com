@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth" x-data :class="{ 'dark': $store.theme.dark }">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,12 +28,10 @@
     <meta name="twitter:description" content="@yield('description', 'Launch a stunning real estate website with AI chatbot, interactive property map, and powerful admin tools — in minutes.')">
     <script>
         (function() {
-            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            var t = localStorage.getItem('theme');
+            if (t === 'dark' || (t !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
             }
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-                e.matches ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark');
-            });
         })();
     </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -85,6 +83,11 @@
         @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.92); }
             to   { opacity: 1; transform: scale(1); }
+        }
+        /* Scroll-down bounce (reusable: copy this keyframe to any layout) */
+        @keyframes scrollBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(8px); }
         }
         .hero-dot-grid {
             background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px);
@@ -366,5 +369,10 @@ function updateCookiePrefsLink() {
 })();
 
 </script>
+    {{-- Floating dark mode toggle --}}
+    <button @click="$store.theme.toggle()" class="fixed bottom-4 right-4 z-50 p-2.5 rounded-full bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 shadow-lg hover:shadow-xl transition text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white" title="Toggle dark mode">
+        <svg x-show="!$store.theme.dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+        <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+    </button>
 </body>
 </html>
