@@ -11,10 +11,41 @@ $mapsKey = \App\Models\SystemSetting::get()->google_maps_key;
 var _allMarkers = [];
 var _map = null;
 
+var DARK_MAP_STYLES = [
+    { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
+    { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] },
+    { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
+    { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
+    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#263c3f' }] },
+    { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#6b9a76' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#38414e' }] },
+    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#212a37' }] },
+    { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9ca5b3' }] },
+    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#746855' }] },
+    { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#1f2835' }] },
+    { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#f3d19c' }] },
+    { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2f3948' }] },
+    { featureType: 'transit.station', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
+    { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#515c6d' }] },
+    { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#17263c' }] }
+];
+
+function getMapStyles() {
+    return document.documentElement.classList.contains('dark') ? DARK_MAP_STYLES : [];
+}
+
 function initMap() {
     var mapEl = document.getElementById('main-map');
     if (!mapEl) return;
-    _map = new google.maps.Map(mapEl, { zoom: 11, center: { lat: 33.749, lng: -84.388 }, styles: [] });
+    _map = new google.maps.Map(mapEl, { zoom: 11, center: { lat: 33.749, lng: -84.388 }, styles: getMapStyles() });
+
+    // React to dark-mode toggle without reloading
+    new MutationObserver(function() {
+        _map.setOptions({ styles: getMapStyles() });
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+
     var propertiesData = {!! json_encode($properties->map(fn($p) => [
         'id'         => $p->id,
         'lat'        => (float)$p->latitude,

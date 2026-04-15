@@ -763,12 +763,13 @@ $iconPaths = [
         <div class="{{ ($hasMap && $hasPhoto) ? 'grid grid-cols-1 md:grid-cols-2 gap-6' : '' }}">
 
             @if($hasMap)
-            <div class="rounded-2xl overflow-hidden shadow border border-gray-200 reveal hover:shadow-xl transition-shadow duration-300" style="height: 420px">
-                <iframe width="100%" height="100%" frameborder="0" style="border:0"
+            <div class="rounded-2xl overflow-hidden shadow border border-gray-200 dark:border-gray-700 reveal hover:shadow-xl transition-shadow duration-300" style="height: 420px">
+                <iframe width="100%" height="100%" frameborder="0" class="map-iframe-themed" style="border:0"
                     src="https://maps.google.com/maps?q={{ urlencode($mapAddress) }}&output=embed&iwloc=&z=14"
                     allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
                 </iframe>
             </div>
+            <style>.dark .map-iframe-themed { filter: invert(92%) hue-rotate(180deg) saturate(0.8) contrast(0.9); }</style>
             @endif
 
             @if($hasPhoto)
