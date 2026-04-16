@@ -361,10 +361,11 @@ function updateCookiePrefsLink() {
             header.classList.toggle('is-scrolled', scrolled);
         }
         window.addEventListener('scroll', updateHeader, { passive: true });
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
-            isDark = e.matches;
-            if (window.scrollY > 40) updateHeader();
-        });
+        // React to dark mode toggle widget (class change on <html>)
+        new MutationObserver(function() {
+            isDark = document.documentElement.classList.contains('dark');
+            updateHeader();
+        }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     })();
 })();
 
