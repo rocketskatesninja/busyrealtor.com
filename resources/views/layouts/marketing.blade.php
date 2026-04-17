@@ -359,8 +359,11 @@ function updateCookiePrefsLink() {
                 : 'transparent';
             header.classList.toggle('shadow-md', scrolled);
             header.classList.toggle('is-scrolled', scrolled);
+            var toggle = document.getElementById('theme-toggle');
+            if (toggle) { toggle.style.opacity = scrolled ? '1' : '0'; toggle.style.pointerEvents = scrolled ? 'auto' : 'none'; }
         }
         window.addEventListener('scroll', updateHeader, { passive: true });
+        updateHeader();
         // React to dark mode toggle widget (class change on <html>)
         new MutationObserver(function() {
             isDark = document.documentElement.classList.contains('dark');
@@ -371,7 +374,7 @@ function updateCookiePrefsLink() {
 
 </script>
     {{-- Floating dark mode toggle --}}
-    <button @click="$store.theme.toggle()" :style="$store.theme.dark ? 'background:#ffffff;border-color:#d1d5db;color:#374151' : 'background:#1e293b;border-color:#475569;color:#e2e8f0'" class="fixed bottom-4 right-4 z-50 p-2.5 rounded-full border shadow-lg hover:shadow-xl transition" title="Toggle dark mode">
+    <button id="theme-toggle" @click="$store.theme.toggle()" x-init="$nextTick(() => { let s = window.scrollY > 40; $el.style.opacity = s ? '1' : '0'; $el.style.pointerEvents = s ? 'auto' : 'none'; })" :style="($store.theme.dark ? 'background:#ffffff;border-color:#d1d5db;color:#374151' : 'background:#1e293b;border-color:#475569;color:#e2e8f0') + ';transition:opacity 0.4s ease'" class="fixed bottom-4 right-4 z-50 p-2.5 rounded-full border shadow-lg hover:shadow-xl transition opacity-0 pointer-events-none" title="Toggle dark mode">
         <svg x-show="!$store.theme.dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
         <svg x-show="$store.theme.dark" x-cloak class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
     </button>
