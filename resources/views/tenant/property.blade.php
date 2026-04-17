@@ -1,3 +1,17 @@
+<style>
+/* Soften Google Maps default UI controls in dark mode (avoids glaring white) */
+.dark .gm-style .gm-bundled-control,
+.dark .gm-style .gm-bundled-control-on-bottom,
+.dark .gm-style .gm-fullscreen-control,
+.dark .gm-style .gm-svpc,
+.dark .gm-style .gm-svpc > *,
+.dark .gm-style .gm-style-mtc > button,
+.dark .gm-style .gm-style-mtc > div,
+.dark .gm-style div[draggable="true"][title*="Street"],
+.dark .gm-style div[title*="Street View"] {
+    filter: invert(0.82) hue-rotate(180deg);
+}
+</style>
 @extends('layouts.tenant')
 @section('hide_header')@endsection
 @section('title', $property->title . ' — ' . ($settings->site_title ?? 'BusyRealtor'))
@@ -10,15 +24,59 @@ $mapsKey = \App\Models\SystemSetting::get()->google_maps_key;
 @endphp
 @if($mapsKey && $property->latitude && $property->longitude)
 <script>
+var DARK_MAP_STYLES = [
+    { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },
+    { elementType: 'labels.text.stroke', stylers: [{ color: '#242f3e' }] },
+    { elementType: 'labels.text.fill', stylers: [{ color: '#746855' }] },
+    { featureType: 'administrative.locality', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
+    { featureType: 'poi', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
+    { featureType: 'poi.park', elementType: 'geometry', stylers: [{ color: '#263c3f' }] },
+    { featureType: 'poi.park', elementType: 'labels.text.fill', stylers: [{ color: '#6b9a76' }] },
+    { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#38414e' }] },
+    { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#212a37' }] },
+    { featureType: 'road', elementType: 'labels.text.fill', stylers: [{ color: '#9ca5b3' }] },
+    { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#746855' }] },
+    { featureType: 'road.highway', elementType: 'geometry.stroke', stylers: [{ color: '#1f2835' }] },
+    { featureType: 'road.highway', elementType: 'labels.text.fill', stylers: [{ color: '#f3d19c' }] },
+    { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#2f3948' }] },
+    { featureType: 'transit.station', elementType: 'labels.text.fill', stylers: [{ color: '#d59563' }] },
+    { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#17263c' }] },
+    { featureType: 'water', elementType: 'labels.text.fill', stylers: [{ color: '#515c6d' }] },
+    { featureType: 'water', elementType: 'labels.text.stroke', stylers: [{ color: '#17263c' }] }
+];
+
+function getMapStyles() {
+    return document.documentElement.classList.contains('dark') ? DARK_MAP_STYLES : [];
+}
+
+function getBrandMarkerIcon() {
+    var primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3b82f6';
+    return {
+        path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z',
+        fillColor: primary,
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+        scale: 1.8,
+        anchor: new google.maps.Point(12, 22)
+    };
+}
+
 function initPropertyMap() {
     var loc = { lat: {{ (float)$property->latitude }}, lng: {{ (float)$property->longitude }} };
 
     var map = new google.maps.Map(document.getElementById('propertyMap'), {
         center: loc, zoom: 15,
         mapTypeControl: false, streetViewControl: true, fullscreenControl: true,
-        mapId: 'DEMO_MAP_ID'
+        styles: getMapStyles()
     });
-    new google.maps.marker.AdvancedMarkerElement({ position: loc, map: map, title: {!! json_encode($property->title) !!} });
+    var marker = new google.maps.Marker({ position: loc, map: map, title: {!! json_encode($property->title) !!}, icon: getBrandMarkerIcon() });
+
+    // React to dark-mode toggle without reloading
+    new MutationObserver(function() {
+        map.setOptions({ styles: getMapStyles() });
+        marker.setIcon(getBrandMarkerIcon());
+    }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
     var streetViewDiv = document.getElementById('propertyStreetView');
     var panorama = new google.maps.StreetViewPanorama(streetViewDiv, {

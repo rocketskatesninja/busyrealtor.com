@@ -1,3 +1,17 @@
+<style>
+/* Soften Google Maps default UI controls in dark mode (avoids glaring white) */
+.dark .gm-style .gm-bundled-control,
+.dark .gm-style .gm-bundled-control-on-bottom,
+.dark .gm-style .gm-fullscreen-control,
+.dark .gm-style .gm-svpc,
+.dark .gm-style .gm-svpc > *,
+.dark .gm-style .gm-style-mtc > button,
+.dark .gm-style .gm-style-mtc > div,
+.dark .gm-style div[draggable="true"][title*="Street"],
+.dark .gm-style div[title*="Street View"] {
+    filter: invert(0.82) hue-rotate(180deg);
+}
+</style>
 @extends('layouts.tenant')
 @section('title', 'Map — ' . ($settings->site_title ?? 'BusyRealtor'))
 
@@ -36,6 +50,19 @@ function getMapStyles() {
     return document.documentElement.classList.contains('dark') ? DARK_MAP_STYLES : [];
 }
 
+function getBrandMarkerIcon() {
+    var primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3b82f6';
+    return {
+        path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z',
+        fillColor: primary,
+        fillOpacity: 1,
+        strokeColor: '#ffffff',
+        strokeWeight: 2,
+        scale: 1.8,
+        anchor: new google.maps.Point(12, 22)
+    };
+}
+
 function initMap() {
     var mapEl = document.getElementById('main-map');
     if (!mapEl) return;
@@ -44,6 +71,8 @@ function initMap() {
     // React to dark-mode toggle without reloading
     new MutationObserver(function() {
         _map.setOptions({ styles: getMapStyles() });
+        var icon = getBrandMarkerIcon();
+        _allMarkers.forEach(function(m) { m.marker.setIcon(icon); });
     }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
     var propertiesData = {!! json_encode($properties->map(fn($p) => [
@@ -70,7 +99,7 @@ function initMap() {
     var bounds = new google.maps.LatLngBounds();
     propertiesData.forEach(function(p) {
         if (!p.lat || !p.lng) return;
-        var marker = new google.maps.Marker({ map: _map, position: { lat: p.lat, lng: p.lng }, title: p.title });
+        var marker = new google.maps.Marker({ map: _map, position: { lat: p.lat, lng: p.lng }, title: p.title, icon: getBrandMarkerIcon() });
         bounds.extend({ lat: p.lat, lng: p.lng });
         marker.addListener('click', function() {
             var dark    = document.documentElement.classList.contains('dark');
