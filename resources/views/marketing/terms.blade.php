@@ -9,14 +9,14 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-16">
             <a href="/" class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
+                <div class="w-8 h-8 rounded-lg bg-orange-500 flex items-center justify-center">
                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                 </div>
-                <span class="font-bold text-gray-900 dark:text-white text-lg">BusyRealtor</span>
+                <span style="font-size:1.875rem;font-weight:800;line-height:1;"><span style="color:#7dd3fc;">Busy</span><span style="color:#fb923c;">Realtor</span></span>
             </a>
             <div class="flex items-center gap-4">
                 <a href="/" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">&larr; Back to Home</a>
-                <a href="/register" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Get Started Free</a>
+                <a href="/register" class="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">Get Started Free</a>
             </div>
         </div>
     </div>
@@ -351,45 +351,12 @@
 </div>
 
 {{-- FOOTER --}}
-<footer class="bg-gray-950 text-gray-400 py-12">
-    <div class="max-w-6xl mx-auto px-4">
-        <div class="grid md:grid-cols-4 gap-8 mb-10">
-            <div class="md:col-span-2">
-                <div class="flex items-center gap-2 mb-4">
-                    <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
-                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
-                    </div>
-                    <span class="text-white font-bold text-lg">BusyRealtor</span>
-                </div>
-                <p class="text-sm leading-relaxed max-w-xs">The complete real estate website platform for modern agents. Built by <a href="https://punchlistlabs.com" class="text-blue-400 hover:text-blue-300 transition-colors">Punchlist Labs</a>.</p>
-                <div class="mt-4 text-xs text-gray-500">
-                    Sister products:
-                    <a href="https://routepilot.pro" class="text-blue-400 hover:text-blue-300 transition-colors ml-1">RoutePilot</a>
-                    <span class="mx-1">·</span>
-                    <a href="https://punchlistify.com" class="text-blue-400 hover:text-blue-300 transition-colors">Punchlistify</a>
-                </div>
-            </div>
-            <div>
-                <h4 class="text-white font-semibold text-sm mb-4">Product</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="/#features" class="hover:text-white transition-colors">Features</a></li>
-                    <li><a href="/#pricing" class="hover:text-white transition-colors">Pricing</a></li>
-                    <li><a href="/demo-realty" target="_blank" class="hover:text-white transition-colors">Live Demo</a></li>
-                    <li><a href="/register" class="hover:text-white transition-colors">Get Started</a></li>
-                    <li><a href="/login" class="hover:text-white transition-colors">Sign In</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="text-white font-semibold text-sm mb-4">Legal</h4>
-                <ul class="space-y-2 text-sm">
-                    <li><a href="/privacy-policy" class="hover:text-white transition-colors">Privacy Policy</a></li>
-                    <li><a href="/terms" class="text-white transition-colors">Terms of Service</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="border-t border-gray-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-3 text-xs">
-            <p>&copy; {{ date('Y') }} BusyRealtor &nbsp;·&nbsp; A Punchlist Labs Product</p>
-            <p>Made with &#9749; for hard-working realtors everywhere</p>
+<footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 py-4">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p class="text-sm text-gray-500 dark:text-gray-400">&copy; {{ date('Y') }} Punchlist Labs. All rights reserved.</p>
+        <div class="flex gap-4">
+            <a href="/privacy-policy" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/terms" class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">Terms of Service</a>
         </div>
     </div>
 </footer>
