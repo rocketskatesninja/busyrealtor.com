@@ -113,7 +113,7 @@ class HandleStripeWebhook
         $body .= "Plan: {$planName}\n";
         $body .= "\nYou can view your full billing history from your account dashboard.";
 
-        TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
+        TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
 
         Log::info('Billing receipt sent', ['tenant_id' => $tenant->id, 'amount' => $amount]);
     }
@@ -136,7 +136,7 @@ class HandleStripeWebhook
         $body .= "\nPlease update your payment method to keep your account active:\n{$billingUrl}\n";
         $body .= "\nWe'll retry automatically, but you can update your card now to avoid any interruption.";
 
-        TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
+        TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
 
         Log::warning('Stripe payment failed', [
             'tenant_id'  => $tenant->id,

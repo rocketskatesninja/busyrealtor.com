@@ -39,7 +39,7 @@ class ProcessTrials extends Command
             $body .= "Reason: Trial expired\n";
             $body .= "\nSubscribe to a plan to reactivate your account and keep your listings live:\n{$billingUrl}";
 
-            TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
+            TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
         }
 
         $this->line("Deactivated {$expired->count()} expired trial(s).");
@@ -71,7 +71,7 @@ class ProcessTrials extends Command
                 $body .= "Expires: " . $tenant->trial_ends_at->format('l, F j, Y') . "\n";
                 $body .= "\nSubscribe now to keep your listings live and avoid any interruption:\n{$billingUrl}";
 
-                $ok = TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
+                $ok = TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
 
                 if ($ok) {
                     $sent   = $tenant->trial_reminders_sent ?? [];
@@ -79,7 +79,7 @@ class ProcessTrials extends Command
                     $tenant->update(['trial_reminders_sent' => $sent]);
                     Log::info("Trial warning sent ({$days}d)", ['tenant_id' => $tenant->id]);
                 } else {
-                    Log::warning("Trial warning FAILED ({$days}d)", ['tenant_id' => $tenant->id, 'email' => $tenant->ownerEmail()]);
+                    Log::warning("Trial warning FAILED ({$days}d)", ['tenant_id' => $tenant->id, 'email' => $tenant->billingEmail()]);
                 }
             }
 

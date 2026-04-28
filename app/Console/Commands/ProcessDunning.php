@@ -6,6 +6,7 @@ use App\Models\Tenant;
 use App\Services\TenantMailer;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use Laravel\Cashier\Subscription;
 
 class ProcessDunning extends Command
 {
@@ -18,7 +19,15 @@ class ProcessDunning extends Command
 
     public function handle(): void
     {
-        $pastDue = Tenant::where('stripe_subscription_status', 'past_due')
+        // Cashier's subscriptions table is the source of truth for
+        // status — the custom listener mirrors past_due to
+        // tenant.stripe_subscription_status, but we read here from
+        // Cashier directly to avoid any drift between the two.
+        $pastDueTenantIds = Subscription::where('stripe_status', 'past_due')
+            ->pluck('tenant_id')
+            ->unique();
+
+        $pastDue = Tenant::whereIn('id', $pastDueTenantIds)
             ->whereNotNull('payment_failed_at')
             ->get();
 
@@ -44,7 +53,7 @@ class ProcessDunning extends Command
                 $body .= "\nTo reactivate your account, please update your payment method:\n{$billingUrl}\n";
                 $body .= "\nYour data is safe and your account can be reactivated at any time.";
 
-                TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
+                TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
                 Log::warning('Account suspended — payment unresolved', ['tenant_id' => $tenant->id, 'days_failed' => $daysFailed]);
                 $suspended++;
 
@@ -61,7 +70,7 @@ class ProcessDunning extends Command
                     $body .= "Suspends in: {$daysLeft} " . ($daysLeft === 1 ? 'day' : 'days') . "\n";
                     $body .= "\nPlease update your payment method now:\n{$billingUrl}";
 
-                    TenantMailer::send($tenant->id, $tenant->ownerEmail(), $subject, $body, 'platform');
+                    TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
 
                     $sent[] = 'dunning_followup';
                     $tenant->update(['trial_reminders_sent' => $sent]);

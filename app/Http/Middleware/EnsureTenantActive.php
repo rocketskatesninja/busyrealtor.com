@@ -19,6 +19,14 @@ class EnsureTenantActive
             return $next($request);
         }
 
+        // Billing route bypass — a deactivated tenant must still be able
+        // to reach /admin/billing to subscribe and reactivate. Without
+        // this, the redirect below would bounce back to itself.
+        $routeName = $request->route()?->getName() ?? '';
+        if (str_starts_with($routeName, 'tenant.admin.billing')) {
+            return $next($request);
+        }
+
         $tenant = app()->bound('tenant') ? app('tenant') : null;
 
         if (!$tenant || !$tenant->isActive()) {

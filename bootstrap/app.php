@@ -27,6 +27,11 @@ return Application::configure(basePath: dirname(__DIR__))
             'verified'             => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
             'no.cache'             => \App\Http\Middleware\NoCacheHeaders::class,
         ]);
+
+        // Stripe webhooks POST from outside our session — exclude from CSRF.
+        $middleware->validateCsrfTokens(except: [
+            'stripe/*',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (\Illuminate\Auth\AuthenticationException $e, \Illuminate\Http\Request $request) {

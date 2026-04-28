@@ -8,8 +8,13 @@
         'starter' => ['label' => 'Starter', 'price' => '$' . number_format($sys->starter_price ?? 12.99, 2), 'features' => ['Up to 10 listings', 'Public website, gallery & map', 'Contact forms & messaging', 'SMTP custom email', 'Custom branding', 'Email support']],
         'pro'     => ['label' => 'Pro',     'price' => '$' . number_format($sys->pro_price ?? 24.99, 2),     'features' => ['Unlimited listings', 'Appointment scheduling', 'AI chatbot (Claude / OpenAI)', 'Social media auto-posting', 'Google Maps & Analytics', 'Staff management', 'Priority support']],
     ];
-    $isSubscribed  = $tenant->stripe_subscription_status === 'active' && $tenant->stripe_subscription_id;
-    $isCanceling   = $isSubscribed && $tenant->stripe_cancel_at;
+    // Cashier-backed checks: $tenant->subscribed('default') is true while
+    // an active sub exists (including grace period after cancel-at-period-end).
+    // onGracePeriod() distinguishes "will cancel" from "fully active".
+    $activeSub     = $tenant->subscribed('default') ? $tenant->subscription('default') : null;
+    $isSubscribed  = (bool) $activeSub;
+    $isCanceling   = $activeSub && $activeSub->onGracePeriod();
+    $cancelDate    = $isCanceling ? $activeSub->ends_at : null;
     $isTrialing    = $tenant->plan === 'trial' && $tenant->trial_ends_at?->isFuture();
     $trialExpired  = $tenant->plan === 'trial' && !$isTrialing;
 @endphp
@@ -38,7 +43,7 @@
                     @elseif($isCanceling)
                         <span class="inline-flex items-center gap-1.5 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                            Active until {{ $tenant->stripe_cancel_at->format('M j, Y') }}
+                            Active until {{ $cancelDate->format('M j, Y') }}
                         </span>
                     @elseif($tenant->stripe_subscription_status === 'active')
                         <span class="inline-flex items-center gap-1.5 text-xs font-medium bg-green-50 text-green-700 border border-green-200 px-2.5 py-1 rounded-full">
@@ -57,20 +62,20 @@
                 @if($isCanceling)
                     <form method="POST" action="{{ route('tenant.admin.billing.resume', $account) }}">
                         @csrf
-                        <button type="submit" class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-xl font-semibold text-sm transition">
+                        <button type="submit" class="border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 px-4 py-2 rounded-xl font-semibold text-sm transition-colors duration-150">
                             Resume Subscription
                         </button>
                     </form>
                 @endif
                 @if($isSubscribed && !$isCanceling)
                     <button type="button" @click="showCancel = true"
-                            class="border border-red-200 text-red-600 hover:bg-red-50 px-4 py-2 rounded-xl font-semibold text-sm transition">
+                            class="border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 px-4 py-2 rounded-xl font-semibold text-sm transition-colors duration-150">
                         Cancel
                     </button>
                 @endif
                 @if($tenant->stripe_id)
                     <a href="{{ route('tenant.admin.billing.portal', $account) }}"
-                       class="btn-primary px-4 py-2 rounded-xl font-semibold text-sm hover:opacity-90 transition inline-flex items-center gap-1.5">
+                       class="btn-primary px-4 py-2 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity duration-150 inline-flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         Billing Portal
                     </a>
@@ -84,9 +89,6 @@
         @foreach($planData as $plan => $details)
         @php $isCurrent = $isSubscribed && $tenant->plan === $plan; @endphp
         <div class="bg-white rounded-2xl shadow-sm border {{ $plan === 'pro' ? 'border-blue-400 ring-1 ring-blue-400' : 'border-gray-100' }} relative flex flex-col">
-            @if($plan === 'pro')
-            <div class="absolute -top-px left-0 right-0 h-0.5 bg-gradient-to-r from-blue-400 to-indigo-500 rounded-t-2xl"></div>
-            @endif
             <div class="px-6 pt-6 pb-5 flex-1">
                 <div class="flex items-center justify-between mb-1">
                     <h3 class="font-bold text-gray-900 text-lg">{{ $details['label'] }}</h3>
@@ -119,11 +121,11 @@
                         @if($isSubscribed)
                             <button type="button"
                                     @click="open = true; toPlan = '{{ $plan }}'; toPrice = '{{ $details['price'] }}'; isUpgrade = {{ $tenant->plan === 'starter' ? 'true' : 'false' }}"
-                                    class="{{ $plan === 'pro' ? 'btn-primary' : 'border border-gray-300 text-gray-700 hover:bg-gray-50' }} w-full py-2.5 rounded-xl font-semibold text-sm transition">
+                                    class="{{ $plan === 'pro' ? 'btn-primary hover:opacity-90' : 'border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700' }} w-full py-2.5 rounded-xl font-semibold text-sm transition-colors duration-150">
                                 {{ $tenant->plan === 'starter' ? 'Upgrade to Pro' : 'Switch to Starter' }}
                             </button>
                         @else
-                            <button type="submit" class="{{ $plan === 'pro' ? 'btn-primary' : 'border border-gray-300 text-gray-700 hover:bg-gray-50' }} w-full py-2.5 rounded-xl font-semibold text-sm transition">
+                            <button type="submit" class="{{ $plan === 'pro' ? 'btn-primary hover:opacity-90' : 'border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700' }} w-full py-2.5 rounded-xl font-semibold text-sm transition-colors duration-150">
                                 Subscribe — {{ $details['price'] }}/mo
                             </button>
                         @endif
@@ -132,6 +134,21 @@
             </div>
         </div>
         @endforeach
+    </div>
+
+    {{-- Billing email note — explains where Stripe receipts and
+         payment-failure notices will be sent. Mirrors the
+         Tenant::stripeEmail() override (primary user's login
+         email, not the tenant's public contact). --}}
+    <div id="billing-email-note" class="flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400 px-1">
+        <svg class="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>
+            Receipts and payment-failure notices will be sent to
+            <span class="font-semibold text-gray-700 dark:text-gray-200">{{ $tenant->stripeEmail() }}</span>
+            (your login email). Update it from your account settings.
+        </span>
     </div>
 
     {{-- Billing History --}}
@@ -188,19 +205,19 @@
     <template x-if="open">
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="open = false">
             <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="open = false"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6" @click.stop>
-                <h3 class="text-lg font-bold text-gray-900 mb-1" x-text="isUpgrade ? 'Upgrade your plan' : 'Switch to Starter'"></h3>
-                <p class="text-sm text-gray-500 mb-4">You're switching to the <span class="font-semibold text-gray-700 capitalize" x-text="toPlan"></span> plan at <span class="font-semibold text-gray-700" x-text="toPrice"></span>/mo.</p>
-                <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 mb-5 text-sm text-blue-800">
+            <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6" @click.stop>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1" x-text="isUpgrade ? 'Upgrade your plan' : 'Switch to Starter'"></h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">You're switching to the <span class="font-semibold text-gray-700 dark:text-gray-200 capitalize" x-text="toPlan"></span> plan at <span class="font-semibold text-gray-700 dark:text-gray-200" x-text="toPrice"></span>/mo.</p>
+                <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-900/50 rounded-xl px-4 py-3 mb-5 text-sm text-blue-800 dark:text-blue-200">
                     <p class="font-semibold mb-1">How billing works</p>
                     <p>Your plan switches immediately. The prorated difference will appear as a credit or charge on your next invoice — you won't be charged right now.</p>
                 </div>
                 <div class="flex gap-3">
-                    <button @click="open = false" class="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 py-2.5 rounded-xl font-semibold text-sm transition">
+                    <button @click="open = false" class="flex-1 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 py-2.5 rounded-xl font-semibold text-sm transition-colors duration-150">
                         Cancel
                     </button>
                     <button @click="document.getElementById('plan-form-' + toPlan).submit()"
-                            class="flex-1 btn-primary py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">
+                            class="flex-1 btn-primary py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity duration-150">
                         Confirm switch
                     </button>
                 </div>
@@ -212,10 +229,10 @@
     <template x-if="showCancel">
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4" @keydown.escape.window="showCancel = false">
             <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showCancel = false"></div>
-            <div class="relative bg-white rounded-2xl shadow-2xl max-w-md w-full p-6" @click.stop>
-                <h3 class="text-lg font-bold text-gray-900 mb-1">Cancel your subscription?</h3>
-                <p class="text-sm text-gray-500 mb-4">You won't lose access right away.</p>
-                <div class="bg-amber-50 border border-amber-100 rounded-xl px-4 py-3 mb-5 text-sm text-amber-800">
+            <div class="relative bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full p-6" @click.stop>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">Cancel your subscription?</h3>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">You won't lose access right away.</p>
+                <div class="bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-900/50 rounded-xl px-4 py-3 mb-5 text-sm text-amber-800 dark:text-amber-200">
                     <p class="font-semibold mb-1.5">What happens when you cancel</p>
                     <ul class="space-y-1.5">
                         <li class="flex items-start gap-2"><svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Your account stays fully active until your billing period ends</li>
@@ -224,12 +241,12 @@
                     </ul>
                 </div>
                 <div class="flex gap-3">
-                    <button @click="showCancel = false" class="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 py-2.5 rounded-xl font-semibold text-sm transition">
+                    <button @click="showCancel = false" class="flex-1 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 py-2.5 rounded-xl font-semibold text-sm transition-colors duration-150">
                         Keep Subscription
                     </button>
                     <form method="POST" action="{{ route('tenant.admin.billing.cancel', $account) }}" class="flex-1">
                         @csrf
-                        <button type="submit" class="w-full border border-red-300 text-red-600 hover:bg-red-50 py-2.5 rounded-xl font-semibold text-sm transition">
+                        <button type="submit" class="w-full border border-red-300 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 py-2.5 rounded-xl font-semibold text-sm transition-colors duration-150">
                             Yes, cancel
                         </button>
                     </form>

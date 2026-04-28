@@ -162,4 +162,45 @@ class Tenant extends Model
             ?: $this->users()->first()?->email
             ?: $this->email;
     }
+
+    /**
+     * Email for account/billing notifications — trial-end, dunning,
+     * payment receipts. Routes to the human paying (the primary user)
+     * rather than the public contact_email, which is a customer-facing
+     * inbox meant for inquiries from leads.
+     *
+     * Compare to ownerEmail() above, which is for contact-form / lead /
+     * appointment notifications — those legitimately go to the tenant's
+     * configured contact_email.
+     */
+    public function billingEmail(): string
+    {
+        return $this->users()->orderBy('id')->first()?->email
+            ?: $this->siteSettings?->contact_email
+            ?: $this->email;
+    }
+
+    /**
+     * Email used when creating/updating the Stripe customer.
+     *
+     * Cashier's default reads $this->email, which on Tenant is the
+     * public contact (e.g. info@demorealty.com) — receipts and
+     * payment-failure dunning would land in a shared inbox no one
+     * watches. We use the primary user's login email so a real
+     * person gets billing notifications.
+     */
+    public function stripeEmail(): ?string
+    {
+        return $this->users()->orderBy('id')->first()?->email
+            ?: $this->email;
+    }
+
+    /**
+     * Name used when creating/updating the Stripe customer.
+     * Tenant's display name reads better on invoices than user's name.
+     */
+    public function stripeName(): ?string
+    {
+        return $this->name;
+    }
 }
