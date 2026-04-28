@@ -77,7 +77,15 @@ class GoogleAuthController extends Controller
 
         $request->validate([
             'business_name' => 'required|string|max:255',
-            'slug'          => 'required|string|max:60|unique:tenants,slug|regex:/^[a-z0-9\-]+$/',
+            // Same slug rules as the email-registration path
+            // (RegisterController::register). Mirrors P2.1 from the
+            // security report — must stay in sync between the two.
+            'slug'          => [
+                'required', 'string', 'min:3', 'max:50',
+                'regex:/^[a-z0-9](?:[a-z0-9]|-(?!-))*[a-z0-9]$/',
+                'not_in:' . implode(',', config('reserved_slugs', [])),
+                'unique:tenants,slug',
+            ],
             'terms'         => 'accepted',
         ]);
 

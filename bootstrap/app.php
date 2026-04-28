@@ -42,6 +42,27 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
+            // If the user is still authenticated (the typical case when
+            // they hit browser back to a stale form), keep them in the
+            // app — bounce them to a sensible landing page instead of
+            // /login. Only truly unauthenticated requests go to /login.
+            if ($user = auth()->user()) {
+                $msg = 'That form expired. Please try again.';
+
+                if ($user->is_super_admin) {
+                    return redirect()->route('super.dashboard')->with('status', $msg);
+                }
+
+                $tenant = $user->tenant_id ? \App\Models\Tenant::find($user->tenant_id) : null;
+                if ($tenant) {
+                    return redirect()
+                        ->route('tenant.admin.dashboard', ['account' => $tenant->slug])
+                        ->with('status', $msg);
+                }
+
+                // Authenticated but tenant lookup failed — fall through.
+            }
+
             return redirect()->route('login')->with('status', 'Your session expired. Please sign in again.');
         });
     })->create();

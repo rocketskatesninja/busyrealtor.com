@@ -56,9 +56,9 @@ Route::get('/email/unsubscribe/{user}', function (\App\Models\User $user) {
 // Auth routes (no tenant)
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showForm'])->name('login');
-    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:5,1')->name('login.submit');
+    Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:login')->name('login.submit');
     Route::get('/forgot-password', [PasswordResetController::class, 'showForm'])->name('password.request');
-    Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])->middleware('throttle:3,1')->name('password.email');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])->middleware('throttle:password.email')->name('password.email');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');
     Route::post('/reset-password', [PasswordResetController::class, 'reset'])->middleware('throttle:5,1')->name('password.update');
 });
@@ -97,7 +97,7 @@ Route::get('/email/verify/{id}/{hash}', function (\Illuminate\Http\Request $requ
 })->middleware('signed')->name('verification.verify');
 Route::middleware(['registrations.enabled'])->group(function () {
     Route::get('/register', [RegisterController::class, 'showForm'])->name('register');
-    Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:3,1')->name('register.submit');
+    Route::post('/register', [RegisterController::class, 'register'])->middleware('throttle:register')->name('register.submit');
 });
 
 // OAuth

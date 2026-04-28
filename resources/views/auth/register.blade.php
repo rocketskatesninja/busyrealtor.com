@@ -17,6 +17,14 @@
 
 <form method="POST" action="{{ route('register.submit') }}" class="space-y-4" x-data="{ slug: '{{ old('slug') }}', agreed: false }">
     @csrf
+
+    {{-- Honeypot: hidden from real users, filled by dumb bots. Server
+         rejects any submission where this is non-empty. Field name is
+         intentionally generic ("website") to look attractive to bots. --}}
+    <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
+        <label>Website</label>
+        <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+    </div>
     <div class="grid grid-cols-2 gap-4">
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
@@ -44,10 +52,10 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">Your URL Slug</label>
         <div class="flex rounded-lg border border-gray-300 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500">
             <span class="bg-gray-50 border-r border-gray-300 px-3 py-2.5 text-sm text-gray-500">busyrealtor.com/</span>
-            <input type="text" name="slug" x-model="slug" required pattern="[a-z0-9\-]+"
+            <input type="text" name="slug" x-model="slug" required minlength="3" maxlength="50" pattern="[a-z0-9][a-z0-9-]{1,48}[a-z0-9]"
                    class="flex-1 px-3 py-2.5 text-sm focus:outline-none">
         </div>
-        <p class="text-xs text-gray-500 mt-1">Only lowercase letters, numbers, and hyphens</p>
+        <p class="text-xs text-gray-500 mt-1">3 to 50 chars. Lowercase letters, numbers, and hyphens. Cannot start or end with a hyphen, and a few reserved names (admin, api, login, etc.) are not allowed.</p>
     </div>
     <div class="grid grid-cols-2 gap-4">
         <div>

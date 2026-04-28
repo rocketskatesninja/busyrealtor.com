@@ -11,12 +11,6 @@
     </div>
 </div>
 
-@if($errors->any())
-    <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
-        @foreach($errors->all() as $error)<p>{{ $error }}</p>@endforeach
-    </div>
-@endif
-
 <form method="POST" action="{{ route('register.complete.submit') }}" class="space-y-4" x-data="{ slug: '', agreed: false }">
     @csrf
     @if(!session('oauth_email'))

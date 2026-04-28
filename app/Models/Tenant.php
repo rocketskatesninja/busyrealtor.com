@@ -46,6 +46,28 @@ class Tenant extends Model
         parent::boot();
 
         static::deleting(function (Tenant $tenant): void {
+            // Stripe-side cleanup BEFORE we drop local rows. Stripe's
+            // customer.delete cancels any active subscriptions atomically,
+            // so they stop being billed, and revokes any latent Customer
+            // Portal access (session URLs + email login link). We catch
+            // and log any error so a Stripe outage / missing key doesn't
+            // block a super-admin from deleting the tenant locally.
+            if ($tenant->hasStripeId()) {
+                try {
+                    $tenant->deleteStripeCustomer();
+                    \Illuminate\Support\Facades\Log::info('Stripe customer deleted on tenant removal', [
+                        'tenant_id'  => $tenant->id,
+                        'stripe_id'  => $tenant->stripe_id,
+                    ]);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::error('Failed to delete Stripe customer on tenant removal', [
+                        'tenant_id' => $tenant->id,
+                        'stripe_id' => $tenant->stripe_id,
+                        'error'     => $e->getMessage(),
+                    ]);
+                }
+            }
+
             // Remove users that belong only to this tenant (FK is set null, not cascade)
             \Illuminate\Support\Facades\DB::table('users')
                 ->where('tenant_id', $tenant->id)

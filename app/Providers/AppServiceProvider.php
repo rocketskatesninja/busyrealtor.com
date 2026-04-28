@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Event;
 use Laravel\Cashier\Cashier;
 use App\Models\SystemSetting;
 use App\Models\Tenant;
+use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -50,6 +53,41 @@ class AppServiceProvider extends ServiceProvider
             \Laravel\Cashier\Events\WebhookReceived::class,
             \App\Listeners\HandleStripeWebhook::class,
         );
+
+        // ───────────────────────────────────────────────────────
+        // Auth-route throttles (F1 from security report).
+        // Each named limiter returns multiple Limit instances —
+        // a request must pass ALL of them, and is 429'd if any
+        // is exceeded.
+        // ───────────────────────────────────────────────────────
+        RateLimiter::for('login', function (Request $request) {
+            $emailKey = strtolower((string) $request->input('email')) . '|' . $request->ip();
+            return [
+                // Targeted brute force on a single account from one IP.
+                Limit::perMinute(5)->by($emailKey),
+                // Same per-IP cap as before (preserves prior behavior).
+                Limit::perMinute(5)->by($request->ip()),
+                // Catches a slow-paced credential stuffer who keeps under
+                // the per-minute cap by sleeping between attempts.
+                Limit::perHour(30)->by($request->ip()),
+            ];
+        });
+
+        RateLimiter::for('register', function (Request $request) {
+            return [
+                Limit::perMinute(3)->by($request->ip()),
+                Limit::perHour(10)->by($request->ip()),
+            ];
+        });
+
+        RateLimiter::for('password.email', function (Request $request) {
+            $emailKey = strtolower((string) $request->input('email')) . '|' . $request->ip();
+            return [
+                Limit::perMinute(3)->by($emailKey),
+                Limit::perMinute(3)->by($request->ip()),
+                Limit::perHour(10)->by($request->ip()),
+            ];
+        });
 
         View::composer('layouts.tenant', function ($view) {
             $tenant = null;
