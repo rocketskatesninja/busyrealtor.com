@@ -41,11 +41,21 @@ return Application::configure(basePath: dirname(__DIR__))
             return redirect()->guest(route('login'))->with('status', 'Your session has expired. Please sign in again.');
         });
 
-        $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, \Illuminate\Http\Request $request) {
-            // If the user is still authenticated (the typical case when
-            // they hit browser back to a stale form), keep them in the
-            // app — bounce them to a sensible landing page instead of
-            // /login. Only truly unauthenticated requests go to /login.
+        // 419 (Page Expired / CSRF mismatch) handler.
+        //
+        // Important: we cannot type-hint Illuminate\Session\TokenMismatchException
+        // here because Laravel's Handler::render() wraps it into a Symfony
+        // HttpException(419) inside prepareException() BEFORE our custom
+        // render callbacks are checked. So we catch HttpException, look
+        // for status 419, and return null for everything else (which lets
+        // the framework's default 404/403/500/etc. handlers run normally).
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, \Illuminate\Http\Request $request) {
+            if ($e->getStatusCode() !== 419) {
+                return null; // not a CSRF mismatch — let default rendering handle it
+            }
+
+            // Authenticated user with a stale form (browser-back, long-idle
+            // tab, etc.) — bounce them somewhere useful inside the app.
             if ($user = auth()->user()) {
                 $msg = 'That form expired. Please try again.';
 
@@ -59,10 +69,12 @@ return Application::configure(basePath: dirname(__DIR__))
                         ->route('tenant.admin.dashboard', ['account' => $tenant->slug])
                         ->with('status', $msg);
                 }
-
                 // Authenticated but tenant lookup failed — fall through.
             }
 
+            // Common case: session timed out, user clicks logout (or any
+            // POST with stale CSRF token). Send them to the login screen
+            // with a friendly status message — never the raw 419 page.
             return redirect()->route('login')->with('status', 'Your session expired. Please sign in again.');
         });
     })->create();

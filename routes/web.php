@@ -150,7 +150,6 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/property/{id}', [TenantPageController::class, 'property'])->name('property');
         Route::get('/privacy-policy', [TenantPageController::class, 'privacy'])->name('privacy');
         Route::get('/terms', [TenantPageController::class, 'terms'])->name('terms');
-        Route::get('/confirm-appointment/{token}', [TenantPageController::class, 'confirmAppointment'])->name('confirm-appointment');
         Route::get('/contact', [TenantPageController::class, 'contact'])->name('contact');
         Route::get('/chat', [TenantPageController::class, 'chat'])->name('chat');
         Route::get('/sitemap.xml', [TenantPageController::class, 'sitemap'])->name('sitemap');

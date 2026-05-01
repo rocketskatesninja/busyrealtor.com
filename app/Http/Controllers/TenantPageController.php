@@ -23,8 +23,19 @@ class TenantPageController extends Controller
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
-        $featured = Property::with('images')->where('is_featured', true)->whereIn('listing_status', ['active', 'featured'])->limit(6)->get();
-        $staff    = \App\Models\StaffMember::where('display_on_homepage', true)->orderBy('sort_order')->get();
+        // Tenant-scoped — without the tenant_id filter, this homepage would
+        // show featured listings from EVERY tenant in the system.
+        $featured = Property::with('images')
+            ->where('tenant_id', $tenant->id)
+            ->where('is_featured', true)
+            ->whereIn('listing_status', ['active', 'featured'])
+            ->limit(6)->get();
+        // Tenant-scoped — without this filter, this realtor's homepage
+        // would display staff members belonging to OTHER realtors.
+        $staff = \App\Models\StaffMember::where('tenant_id', $tenant->id)
+            ->where('display_on_homepage', true)
+            ->orderBy('sort_order')
+            ->get();
 
         return view('tenant.home', compact('tenant', 'settings', 'featured', 'staff'));
     }
@@ -34,7 +45,9 @@ class TenantPageController extends Controller
         $tenant   = app('tenant');
         $settings = $this->getSettings();
 
-        $query = Property::with('images');
+        // Tenant-scoped — without this filter, the public gallery would
+        // mix in properties from every other realtor on the platform.
+        $query = Property::with('images')->where('tenant_id', $tenant->id);
         if ($request->search)        $query->where(function($q) use ($request) { $q->where('title','like',"%{$request->search}%")->orWhere('address_street','like',"%{$request->search}%")->orWhere('address_city','like',"%{$request->search}%"); });
         if ($request->type)          $query->where('property_type', $request->type);
         if ($request->status)        $query->where('listing_status', $request->status);
@@ -72,7 +85,10 @@ class TenantPageController extends Controller
     {
         $tenant     = app('tenant');
         $settings   = $this->getSettings();
-        $properties = Property::whereNotNull('latitude')->whereNotNull('longitude')->get();
+        // Tenant-scoped — the map would otherwise show pins for every
+        // property across every tenant on the platform.
+        $properties = Property::where('tenant_id', $tenant->id)
+            ->whereNotNull('latitude')->whereNotNull('longitude')->get();
         return view('tenant.map', compact('tenant', 'settings', 'properties'));
     }
 
@@ -80,7 +96,11 @@ class TenantPageController extends Controller
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
-        $property = Property::with(['images', 'staffMember'])->findOrFail($id);
+        // Tenant-scoped — without this, anyone hitting /tenant-a/property/{any-id}
+        // could view ANY tenant's property by guessing IDs.
+        $property = Property::with(['images', 'staffMember'])
+            ->where('tenant_id', $tenant->id)
+            ->findOrFail($id);
 
         // Increment view count (simple, no rate limiting needed for MVP)
         try {
@@ -90,7 +110,11 @@ class TenantPageController extends Controller
             \Illuminate\Support\Facades\Log::error("PropertyView create failed: " . $e->getMessage());
         }
 
-        $related = Property::with('images')->where('property_type', $property->property_type)
+        // Tenant-scoped — "related listings" must come from the same realtor,
+        // not from any matching property type across all tenants.
+        $related = Property::with('images')
+            ->where('tenant_id', $tenant->id)
+            ->where('property_type', $property->property_type)
             ->where('id', '!=', $property->id)
             ->where('listing_status', 'active')
             ->limit(3)->get();
@@ -142,7 +166,11 @@ class TenantPageController extends Controller
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
-        $page     = LegalPage::where('page_type', 'privacy')->firstOrNew(['tenant_id' => $tenant->id, 'page_type' => 'privacy']);
+        // Tenant-scoped — without the tenant_id where, we could pick up
+        // ANOTHER tenant's privacy page if they had one and we did not.
+        $page = LegalPage::where('tenant_id', $tenant->id)
+            ->where('page_type', 'privacy')
+            ->firstOrNew(['tenant_id' => $tenant->id, 'page_type' => 'privacy']);
         return view('tenant.legal', compact('tenant', 'settings', 'page'));
     }
 
@@ -150,7 +178,10 @@ class TenantPageController extends Controller
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
-        $page     = LegalPage::where('page_type', 'terms')->firstOrNew(['tenant_id' => $tenant->id, 'page_type' => 'terms']);
+        // Tenant-scoped — same fix as privacy() above.
+        $page = LegalPage::where('tenant_id', $tenant->id)
+            ->where('page_type', 'terms')
+            ->firstOrNew(['tenant_id' => $tenant->id, 'page_type' => 'terms']);
         return view('tenant.legal', compact('tenant', 'settings', 'page'));
     }
 
@@ -276,14 +307,4 @@ class TenantPageController extends Controller
             ->header('Content-Type', 'text/plain; charset=utf-8');
     }
 
-    public function confirmAppointment($account, $token)
-    {
-        $tenant      = app('tenant');
-        $settings    = $this->getSettings();
-        $appointment = Appointment::where('confirmation_token', $token)
-            ->where('tenant_id', $tenant->id)
-            ->firstOrFail();
-        $appointment->update(['status' => 'confirmed']);
-        return view('tenant.confirm-appointment', compact('tenant', 'settings', 'appointment'));
-    }
 }

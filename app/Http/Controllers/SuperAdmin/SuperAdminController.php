@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Laravel\Cashier\Subscription;
+use App\Models\SystemSetting;
 use App\Mail\CampaignMail;
 use App\Models\MailCampaign;
 use Illuminate\Support\Facades\Mail;
@@ -123,20 +126,117 @@ class SuperAdminController extends Controller
 
     public function updateTenant(Request $request, Tenant $tenant)
     {
+        // Snapshot the old plan BEFORE validation/fill so we can detect
+        // forbidden transitions (trial -> paid, paid -> trial).
+        $oldPlan = $tenant->plan;
+        $newPlan = $request->input('plan');
+
         $request->validate([
             'name'          => 'required|string|max:255',
             'slug'          => 'required|string|max:60|unique:tenants,slug,' . $tenant->id,
-            'plan'          => 'required|in:trial,starter,pro',
+            'plan'          => [
+                'required',
+                Rule::in(['trial', 'starter', 'pro']),
+                // Forbid trial -> starter/pro from the super-admin path.
+                // Tenants must subscribe themselves via Stripe Checkout —
+                // there is no Stripe customer/subscription for a trial,
+                // so swap() cannot work, and a DB-only override would
+                // get reverted by the next webhook.
+                function ($attr, $value, $fail) use ($oldPlan) {
+                    if ($oldPlan === 'trial' && in_array($value, ['starter', 'pro'], true)) {
+                        $fail('Trial-to-paid upgrades must be initiated by the tenant via the billing page (Stripe Checkout). Super-admin cannot create a Stripe subscription on their behalf.');
+                    }
+                },
+                // Forbid starter/pro -> trial. Downgrading a paying tenant
+                // to trial would leave them with an active Stripe sub but a
+                // trial UI — confusing and billing-broken. Use the cancel
+                // flow instead (sub->cancel() in the existing billing path).
+                function ($attr, $value, $fail) use ($oldPlan) {
+                    if (in_array($oldPlan, ['starter', 'pro'], true) && $value === 'trial') {
+                        $fail('Downgrading a paid tenant to trial requires cancelling their Stripe subscription. Use the cancel/refund flow instead.');
+                    }
+                },
+            ],
             'trial_ends_at' => 'nullable|date|before:2100-01-01',
             'notes'         => 'nullable|string|max:5000',
         ]);
 
+        // Always allow these field edits independent of plan transitions.
         $tenant->fill($request->only('name', 'slug', 'trial_ends_at', 'notes'));
-        $tenant->plan = $request->plan;
+
+        // Plan transition logic. By the time we reach here, the validator
+        // has already rejected trial<->paid moves, so the only changes
+        // possible are: trial->trial, starter->pro, pro->starter, or same.
+        if ($newPlan !== $oldPlan && in_array($newPlan, ['starter', 'pro'], true)) {
+            // starter <-> pro: do the real Stripe swap so the customer is
+            // billed at the new prorated rate AND the local plan column
+            // stays in sync (Cashier's swap() updates both).
+            $sys = SystemSetting::get();
+            if (!$sys->hasStripe()) {
+                return back()->withErrors(['plan' => 'Stripe is not configured — cannot swap subscription plans.'])->withInput();
+            }
+
+            $priceId = $newPlan === 'pro' ? $sys->stripe_pro_price_id : $sys->stripe_starter_price_id;
+            if (!$priceId) {
+                return back()->withErrors(['plan' => "The {$newPlan} price ID is not configured in System Settings."])->withInput();
+            }
+
+            $sub = $this->activeSub($tenant);
+            if (!$sub) {
+                return back()->withErrors(['plan' => 'This tenant has no active Stripe subscription to swap. They may need to re-subscribe via the billing page.'])->withInput();
+            }
+
+            try {
+                // swap() calls Stripe AND updates Cashier's local subscription
+                // tables atomically. It also clears any pending
+                // cancel_at_period_end on the subscription.
+                $sub->swap($priceId);
+            } catch (\Stripe\Exception\ApiErrorException $e) {
+                // Loud failure — do NOT save the local plan change. We
+                // only update tenant.plan if Stripe accepted the swap.
+                \Illuminate\Support\Facades\Log::error('Super-admin plan swap failed', [
+                    'tenant_id' => $tenant->id,
+                    'from'      => $oldPlan,
+                    'to'        => $newPlan,
+                    'error'     => $e->getMessage(),
+                ]);
+                return back()->withErrors(['plan' => 'Stripe error: ' . $e->getMessage()])->withInput();
+            }
+
+            $tenant->plan             = $newPlan;
+            $tenant->stripe_cancel_at = null;
+            $tenant->save();
+            logActivity('updated', "Super-admin swapped plan from {$oldPlan} to {$newPlan} (Stripe synced)", $tenant);
+
+            return back()->with('success', "Tenant plan changed from {$oldPlan} to {$newPlan}. Stripe has been updated and the customer will be billed prorated.");
+        }
+
+        // No plan change (or trial -> trial). Just save other field edits
+        // (name, slug, notes, trial_ends_at). Useful for trial extensions:
+        // super-admin sets trial_ends_at to a future date and saves —
+        // no Stripe call needed because trial tenants have no Stripe sub.
+        $tenant->plan = $newPlan;
         $tenant->save();
-        logActivity('updated', "Updated tenant: {$tenant->name}", $tenant);
+
+        // Distinct activity message for trial extensions vs. plain edits
+        // so the audit log is useful when looking back.
+        if ($newPlan === 'trial' && $tenant->wasChanged('trial_ends_at')) {
+            logActivity('updated', "Super-admin extended trial to {$tenant->trial_ends_at?->format('Y-m-d')}", $tenant);
+        } else {
+            logActivity('updated', "Updated tenant: {$tenant->name}", $tenant);
+        }
 
         return back()->with('success', 'Tenant updated successfully.');
+    }
+
+    /*
+     * Returns the tenant's active Cashier subscription, or null. Mirrors
+     * the helper in Admin\BillingController — both controllers wrap the
+     * same Cashier conventions (default subscription per tenant).
+     */
+    private function activeSub(Tenant $tenant): ?Subscription
+    {
+        return $tenant->subscribed('default') ? $tenant->subscription('default') : null;
     }
 
     public function destroyTenant(Tenant $tenant)

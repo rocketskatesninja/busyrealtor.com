@@ -34,14 +34,11 @@ class Appointment extends Model
         'notes',
         'source',
         'visitor_ip',
-        'confirmation_token',
-        'token_expires',
         'google_calendar_event_id',
     ];
 
     protected $casts = [
         'appointment_date' => 'date',
-        'token_expires'    => 'datetime',
         'created_at'       => 'datetime',
     ];
 

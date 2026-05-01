@@ -14,7 +14,8 @@ class DashboardController extends Controller
     public function index($account)
     {
         $tenant   = app('tenant');
-        $settings = SiteSettings::where('tenant_id', $tenant->id)->first();
+        $tid      = $tenant->id;
+        $settings = SiteSettings::where('tenant_id', $tid)->first();
 
         // Redirect to setup wizard if not completed
         if ($settings && !$settings->setup_completed) {
@@ -24,43 +25,51 @@ class DashboardController extends Controller
         $dashConfig = $settings->dashboard_config ?? [];
         $show = fn($key) => $dashConfig[$key] ?? true;
 
-        $activeProps   = Property::where('listing_status', 'active');
-        $totalMessages = Message::count();
-        $readMessages  = Message::where('is_read', true)->count();
+        // ── Stats ──────────────────────────────────────────────────────────
+        // Every single query in this method must be scoped to the current
+        // tenant. Without that, every realtor's dashboard would aggregate
+        // ALL tenants' properties / messages / appointments — a major
+        // cross-tenant data leak.
+        $activeProps   = Property::where('tenant_id', $tid)->where('listing_status', 'active');
+        $totalMessages = Message::where('tenant_id', $tid)->count();
+        $readMessages  = Message::where('tenant_id', $tid)->where('is_read', true)->count();
 
         $stats = [
             'active_listings'  => $activeProps->clone()->count(),
             'portfolio_value'  => $activeProps->clone()->sum('price'),
-            'unread_messages'  => Message::where('is_read', false)->count(),
-            'appointments'     => Appointment::where('status', 'pending')->count(),
-            'total_properties' => Property::count(),
-            'sold_properties'  => Property::where('listing_status', 'sold')->count(),
-            'new_this_week'    => Property::where('created_at', '>=', now()->subDays(7))->count(),
+            'unread_messages'  => Message::where('tenant_id', $tid)->where('is_read', false)->count(),
+            'appointments'     => Appointment::where('tenant_id', $tid)->where('status', 'pending')->count(),
+            'total_properties' => Property::where('tenant_id', $tid)->count(),
+            'sold_properties'  => Property::where('tenant_id', $tid)->where('listing_status', 'sold')->count(),
+            'new_this_week'    => Property::where('tenant_id', $tid)->where('created_at', '>=', now()->subDays(7))->count(),
             'avg_price'        => (int) $activeProps->clone()->avg('price'),
-            'pending_listings' => Property::where('listing_status', 'pending')->count(),
-            'total_revenue'    => Property::where('listing_status', 'sold')->sum('price'),
+            'pending_listings' => Property::where('tenant_id', $tid)->where('listing_status', 'pending')->count(),
+            'total_revenue'    => Property::where('tenant_id', $tid)->where('listing_status', 'sold')->sum('price'),
             'response_rate'    => $totalMessages > 0 ? round(($readMessages / $totalMessages) * 100) : 0,
             'days_on_market'   => (int) ($activeProps->clone()->selectRaw('AVG(DATEDIFF(NOW(), created_at)) as avg_days')->value('avg_days') ?? 0),
-            'views_month'      => DB::table('property_views')->where('tenant_id', $tenant->id)->where('viewed_at', '>=', now()->subDays(30))->count(),
+            'views_month'      => DB::table('property_views')->where('tenant_id', $tid)->where('viewed_at', '>=', now()->subDays(30))->count(),
         ];
 
         // ── Existing charts ────────────────────────────────────────────────
-        $viewsByProperty = Property::where('view_count', '>', 0)
+        $viewsByProperty = Property::where('tenant_id', $tid)
+            ->where('view_count', '>', 0)
             ->orderBy('view_count', 'desc')->limit(10)
             ->get(['title', 'address_street', 'view_count']);
 
-        $propertiesByType = Property::selectRaw('property_type, count(*) as count')
+        $propertiesByType = Property::where('tenant_id', $tid)
+            ->selectRaw('property_type, count(*) as count')
             ->whereNotNull('property_type')->groupBy('property_type')
             ->pluck('count', 'property_type');
 
-        $propertiesByStatus = Property::selectRaw('listing_status, count(*) as count')
+        $propertiesByStatus = Property::where('tenant_id', $tid)
+            ->selectRaw('listing_status, count(*) as count')
             ->groupBy('listing_status')->pluck('count', 'listing_status');
 
         // ── New charts ─────────────────────────────────────────────────────
 
-        // Daily views — last 30 days
+        // Daily views — last 30 days (already tenant-scoped)
         $rawViews = DB::table('property_views')
-            ->where('tenant_id', $tenant->id)
+            ->where('tenant_id', $tid)
             ->where('viewed_at', '>=', now()->subDays(29)->startOfDay())
             ->selectRaw('DATE(viewed_at) as date, COUNT(*) as count')
             ->groupBy('date')->pluck('count', 'date');
@@ -70,7 +79,8 @@ class DashboardController extends Controller
         });
 
         // Daily messages — last 7 days
-        $rawMsgs = Message::selectRaw('DATE(created_at) as date, COUNT(*) as count')
+        $rawMsgs = Message::where('tenant_id', $tid)
+            ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
             ->where('created_at', '>=', now()->subDays(6)->startOfDay())
             ->groupBy('date')->pluck('count', 'date');
         $messages7days = collect(range(6, 0))->map(function ($d) use ($rawMsgs) {
@@ -79,7 +89,7 @@ class DashboardController extends Controller
         });
 
         // Price range distribution — single CASE WHEN query
-        $pdRaw = Property::selectRaw("
+        $pdRaw = Property::where('tenant_id', $tid)->selectRaw("
             SUM(CASE WHEN price < 200000 THEN 1 ELSE 0 END) as under_200k,
             SUM(CASE WHEN price >= 200000 AND price < 400000 THEN 1 ELSE 0 END) as p200_400k,
             SUM(CASE WHEN price >= 400000 AND price < 600000 THEN 1 ELSE 0 END) as p400_600k,
@@ -95,7 +105,8 @@ class DashboardController extends Controller
         ]);
 
         // Listings added per month — last 12 months (single GROUP BY query)
-        $rawListings = Property::selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, COUNT(*) as count")
+        $rawListings = Property::where('tenant_id', $tid)
+            ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, COUNT(*) as count")
             ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
             ->groupBy('ym')->pluck('count', 'ym');
         $listingsOverTime = collect(range(11, 0))->map(fn($m) => [
@@ -103,8 +114,9 @@ class DashboardController extends Controller
             'count' => (int) ($rawListings[now()->subMonths($m)->format('Y-m')] ?? 0),
         ]);
 
-        // Monthly revenue from sold properties — last 12 months (single GROUP BY query)
-        $rawRevenue = Property::where('listing_status', 'sold')
+        // Monthly revenue from sold properties — last 12 months
+        $rawRevenue = Property::where('tenant_id', $tid)
+            ->where('listing_status', 'sold')
             ->where('updated_at', '>=', now()->subMonths(11)->startOfMonth())
             ->selectRaw("DATE_FORMAT(updated_at, '%Y-%m') as ym, SUM(price) as revenue")
             ->groupBy('ym')->pluck('revenue', 'ym');
@@ -114,24 +126,27 @@ class DashboardController extends Controller
         ]);
 
         // Appointment status breakdown
-        $apptByStatus = Appointment::selectRaw('status, count(*) as count')
+        $apptByStatus = Appointment::where('tenant_id', $tid)
+            ->selectRaw('status, count(*) as count')
             ->groupBy('status')->pluck('count', 'status');
 
         // Message sources
-        $messageSources = Message::selectRaw('COALESCE(source, "direct") as source, count(*) as count')
+        $messageSources = Message::where('tenant_id', $tid)
+            ->selectRaw('COALESCE(source, "direct") as source, count(*) as count')
             ->groupBy('source')->pluck('count', 'source');
 
-        // ── Tables ─────────────────────────────────────────────────────────
-        $recentMessages   = Message::latest()->limit(5)->get();
-        $starredMessages  = Message::where('is_starred', true)->latest()->limit(5)->get();
-        $upcomingAppts    = Appointment::where('status', 'confirmed')
+        // ── Tables — these were the worst leak: actual PII rows ─────────────
+        $recentMessages   = Message::where('tenant_id', $tid)->latest()->limit(5)->get();
+        $starredMessages  = Message::where('tenant_id', $tid)->where('is_starred', true)->latest()->limit(5)->get();
+        $upcomingAppts    = Appointment::where('tenant_id', $tid)->where('status', 'confirmed')
             ->where('appointment_date', '>=', now()->toDateString())
             ->orderBy('appointment_date')->limit(5)->get();
-        $topProperties    = Property::with('images')->orderBy('view_count', 'desc')->limit(5)->get();
-        $recentProperties = Property::with('images')->latest()->limit(5)->get();
+        $topProperties    = Property::where('tenant_id', $tid)->with('images')->orderBy('view_count', 'desc')->limit(5)->get();
+        $recentProperties = Property::where('tenant_id', $tid)->with('images')->latest()->limit(5)->get();
 
         // Needs attention: low views, no photos, listing age > 30 days with low views
-        $needsAttention = Property::with('images')
+        $needsAttention = Property::where('tenant_id', $tid)
+            ->with('images')
             ->where('listing_status', 'active')
             ->where(function ($q) {
                 $q->where('view_count', 0)

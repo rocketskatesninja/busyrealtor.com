@@ -12,7 +12,6 @@ use App\Services\TenantMailer;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class AppointmentController extends Controller
 {
@@ -97,7 +96,6 @@ class AppointmentController extends Controller
             'appointment_type'     => $request->appointment_type ?? 'showing',
             'notes'                => $request->message,
             'status'               => 'pending',
-            'confirmation_token'   => Str::random(40),
         ]);
 
         $fmt = self::formatAppt($appt);
@@ -152,11 +150,13 @@ class AppointmentController extends Controller
 
         logActivity('created', "Created appointment for {$appt->visitor_name}", $appt);
 
-        // Assign staff member to the property
+        // Assign staff member to the property — TENANT SCOPED. Without
+        // the tenant_id filter, a tenant-A admin could pass a property_id
+        // belonging to tenant B and reassign tenant B's staff member.
         if ($request->staff_member_id && $request->property_id) {
-            Property::where('id', $request->property_id)->update([
-                'staff_member_id' => $request->staff_member_id,
-            ]);
+            Property::where('id', $request->property_id)
+                ->where('tenant_id', $tenant->id)
+                ->update(['staff_member_id' => $request->staff_member_id]);
         }
 
         $fmt = self::formatAppt($appt);
@@ -272,7 +272,10 @@ class AppointmentController extends Controller
         $settings = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
 
         if ($appt->staff_member_id) {
-            $staff = StaffMember::find($appt->staff_member_id);
+            // Defense in depth — even though $appt is already tenant-scoped
+            // by the caller, scope the staff lookup too so a future caller
+            // bug can't turn this into a cross-tenant leak.
+            $staff = StaffMember::where('tenant_id', $tenant->id)->find($appt->staff_member_id);
             if ($staff) {
                 return [
                     'name'  => $staff->name,
@@ -306,7 +309,9 @@ class AppointmentController extends Controller
     {
         $propLabel = null;
         if ($appt->property_id) {
-            $prop = Property::find($appt->property_id);
+            // Defense in depth — scope by the appointment's own tenant_id
+            // since $tenant is not in scope inside this static helper.
+            $prop = Property::where('tenant_id', $appt->tenant_id)->find($appt->property_id);
             if ($prop) $propLabel = "{$prop->title} — {$prop->address_street}, {$prop->address_city}";
         }
 
@@ -361,7 +366,8 @@ class AppointmentController extends Controller
     {
         if (!$send || !$appt->staff_member_id) return;
 
-        $staff = StaffMember::find($appt->staff_member_id);
+        // Defense in depth — scope the staff lookup by current tenant.
+        $staff = StaffMember::where('tenant_id', $tenant->id)->find($appt->staff_member_id);
         if (!$staff || !$staff->email) return;
 
         $headlines = [

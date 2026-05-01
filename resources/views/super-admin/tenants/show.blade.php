@@ -53,9 +53,53 @@
     {{-- Edit Form --}}
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 class="font-semibold text-gray-800 mb-5">Edit Tenant</h3>
-        <form method="POST" action="{{ route('super.tenants.update', $tenant->slug) }}" class="space-y-4">
+        <form method="POST" action="{{ route('super.tenants.update', $tenant->slug) }}" class="space-y-4"
+              x-data="{
+                origPlan: '{{ $tenant->plan }}',
+                plan: '{{ $tenant->plan }}',
+                trialDate: '{{ old('trial_ends_at', $tenant->trial_ends_at?->format('Y-m-d')) }}',
+                showConfirm: false,
+                confirmed: false,
+                /* trial -> starter/pro must go through Stripe Checkout (no
+                 * existing sub to swap). starter/pro -> trial would orphan
+                 * the active Stripe sub. Both are blocked server-side too. */
+                isForbidden(target) {
+                    if (this.origPlan === 'trial' && (target === 'starter' || target === 'pro')) return true;
+                    if ((this.origPlan === 'starter' || this.origPlan === 'pro') && target === 'trial') return true;
+                    return false;
+                },
+                /* True only for starter<->pro swaps, the case where we will
+                 * actually call Stripe and the customer\'s card will be
+                 * billed prorated. Worth a confirmation prompt. */
+                isStripeSwap() {
+                    return this.plan !== this.origPlan
+                        && (this.origPlan === 'starter' || this.origPlan === 'pro')
+                        && (this.plan === 'starter' || this.plan === 'pro');
+                },
+                extendTrial(days) {
+                    const base = this.trialDate ? new Date(this.trialDate + 'T00:00:00') : new Date();
+                    base.setDate(base.getDate() + days);
+                    this.trialDate = base.toISOString().slice(0, 10);
+                },
+                resetTrial() {
+                    const d = new Date();
+                    d.setDate(d.getDate() + 14);
+                    this.trialDate = d.toISOString().slice(0, 10);
+                },
+                onSubmit($event) {
+                    if (this.isStripeSwap() && !this.confirmed) {
+                        $event.preventDefault();
+                        this.showConfirm = true;
+                    }
+                }
+              }" @submit="onSubmit($event)">
             @csrf @method('PUT')
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ plan: '{{ $tenant->plan }}' }">
+            @php
+                // Live Stripe sub state — the source of truth, not tenants.plan.
+                $liveSub    = $tenant->subscribed('default') ? $tenant->subscription('default') : null;
+                $liveStatus = $liveSub?->stripe_status;
+            @endphp
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
                     <input type="text" name="name" value="{{ old('name', $tenant->name) }}" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -66,19 +110,80 @@
                     <p class="text-xs text-gray-400 mt-1">Changing slug will break existing links</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Plan Override</label>
+                    {{-- Plan select with live Stripe sub status badge. The badge
+                         tells super-admin whether a real Stripe swap will happen
+                         (active sub) or whether it's just a DB plan flag. --}}
+                    <div class="flex items-center justify-between mb-1">
+                        <label class="text-sm font-medium text-gray-700">Plan Override</label>
+                        @if($liveSub)
+                            <span class="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-emerald-500 text-white font-semibold shadow-sm">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                Stripe: {{ $liveStatus ?: 'unknown' }}
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-amber-500 text-white font-semibold shadow-sm">
+                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM10 13a1 1 0 100-2 1 1 0 000 2zm-.25-7a.75.75 0 00-.75.75v3.5a.75.75 0 001.5 0v-3.5a.75.75 0 00-.75-.75z" clip-rule="evenodd"/></svg>
+                                No active Stripe sub
+                            </span>
+                        @endif
+                    </div>
                     <select name="plan" x-model="plan" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="trial" {{ $tenant->plan === 'trial' ? 'selected' : '' }}>Trial</option>
-                        <option value="starter" {{ $tenant->plan === 'starter' ? 'selected' : '' }}>Starter</option>
-                        <option value="pro" {{ $tenant->plan === 'pro' ? 'selected' : '' }}>Pro</option>
+                        {{-- Each option disables itself for transitions the
+                             controller will reject. The :title attribute gives
+                             a hover hint explaining why. --}}
+                        <option value="trial"
+                                {{ $tenant->plan === 'trial' ? 'selected' : '' }}
+                                :disabled="isForbidden('trial')"
+                                :title="isForbidden('trial') ? 'Cannot downgrade paid tenant to trial — use cancel flow' : ''">
+                            Trial
+                        </option>
+                        <option value="starter"
+                                {{ $tenant->plan === 'starter' ? 'selected' : '' }}
+                                :disabled="isForbidden('starter')"
+                                :title="isForbidden('starter') ? 'Tenant must subscribe themselves via billing page' : ''">
+                            Starter
+                        </option>
+                        <option value="pro"
+                                {{ $tenant->plan === 'pro' ? 'selected' : '' }}
+                                :disabled="isForbidden('pro')"
+                                :title="isForbidden('pro') ? 'Tenant must subscribe themselves via billing page' : ''">
+                            Pro
+                        </option>
                     </select>
+                    <p class="text-xs text-gray-400 mt-1" x-show="isStripeSwap()">
+                        ⚠️ This will swap the live Stripe subscription and bill the customer prorated.
+                    </p>
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Trial Ends At</label>
-                    <input type="date" name="trial_ends_at" value="{{ old('trial_ends_at', $tenant->trial_ends_at?->format('Y-m-d')) }}"
+                    {{-- Date input is x-model-bound so the quick-extend
+                         buttons can update it directly. Disabled when plan
+                         isn't trial — paid tenants don't have a trial date. --}}
+                    <input type="date" name="trial_ends_at" x-model="trialDate"
                            :disabled="plan !== 'trial'"
                            :class="plan !== 'trial' ? 'opacity-50 cursor-not-allowed' : ''"
                            class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    {{-- Quick-extend buttons: avoid hand-typing dates. Click
+                         updates the input value via Alpine; saving still goes
+                         through the same PUT route. --}}
+                    <div class="flex flex-wrap gap-2 mt-2" x-show="plan === 'trial'">
+                        <button type="button" @click="extendTrial(7)"
+                                class="text-xs px-3 py-1 rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200 font-medium transition">
+                            +7 days
+                        </button>
+                        <button type="button" @click="extendTrial(14)"
+                                class="text-xs px-3 py-1 rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200 font-medium transition">
+                            +14 days
+                        </button>
+                        <button type="button" @click="extendTrial(30)"
+                                class="text-xs px-3 py-1 rounded-lg bg-yellow-100 text-yellow-800 hover:bg-yellow-200 font-medium transition">
+                            +30 days
+                        </button>
+                        <button type="button" @click="resetTrial()"
+                                class="text-xs px-3 py-1 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 font-medium transition">
+                            Reset (today + 14)
+                        </button>
+                    </div>
                 </div>
                 <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
@@ -97,7 +202,39 @@
             @endif
 
             <div class="flex justify-end">
-                <button type="submit" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition">Save Changes</button>
+                <button type="submit" id="superTenantSaveBtn"
+                        class="bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition">
+                    Save Changes
+                </button>
+            </div>
+
+            {{-- Confirmation modal — shown only when the user is about to swap
+                 a real Stripe sub (starter <-> pro). Clicking Confirm sets the
+                 confirmed flag and re-clicks Save, which now bypasses the
+                 onSubmit guard and lets the form POST. --}}
+            <div x-show="showConfirm" x-cloak
+                 class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+                 @keydown.escape.window="showConfirm = false">
+                <div class="bg-white rounded-2xl p-6 shadow-xl max-w-md w-full mx-4" @click.outside="showConfirm = false">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-2">Confirm Stripe plan swap</h4>
+                    <p class="text-sm text-gray-600 mb-4">
+                        This will <strong>immediately</strong> change the tenant's Stripe subscription
+                        from <strong x-text="origPlan"></strong> to <strong x-text="plan"></strong>.
+                        The customer will be billed prorated for the new plan starting now.
+                    </p>
+                    <p class="text-sm text-gray-600 mb-5">Are you sure?</p>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" @click="showConfirm = false"
+                                class="px-4 py-2 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-100 transition">
+                            Cancel
+                        </button>
+                        <button type="button"
+                                @click="confirmed = true; showConfirm = false; document.getElementById('superTenantSaveBtn').click()"
+                                class="px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 text-white hover:bg-blue-700 transition">
+                            Yes, swap plan
+                        </button>
+                    </div>
+                </div>
             </div>
         </form>
     </div>

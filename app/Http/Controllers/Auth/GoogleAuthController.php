@@ -43,6 +43,26 @@ class GoogleAuthController extends Controller
         // Existing user — log them in
         $user = User::where('email', $googleUser->getEmail())->first();
         if ($user && $user->tenant) {
+            // Email-registered user who never verified: do NOT let Google
+            // sign-in bypass the verification gate. They had a chance to
+            // verify via the email link; if they didn't, they have to go
+            // through that path. Letting them in here would mean someone
+            // who registered with another person's email (typo or worse)
+            // could be "claimed" by Google sign-in — silently logging the
+            // real owner into the impostor's account.
+            //
+            // OAuth-only users (no password set) DO get auto-verified —
+            // Google's OAuth is itself proof of email ownership for them.
+            if (!$user->email_verified_at && !empty($user->password)) {
+                \Illuminate\Support\Facades\Log::warning('OAuth blocked for unverified email-registered user', [
+                    'user_id' => $user->id, 'email' => $user->email,
+                ]);
+                return redirect()->route('login')
+                    ->withErrors(['email' => 'Please verify your email address first. Check your inbox for the verification link, or use the email + password sign-in form.']);
+            }
+
+            // OAuth-only user without prior verification — Google's sign-in
+            // counts as verification.
             if (!$user->email_verified_at) {
                 $user->email_verified_at = now();
                 $user->save();

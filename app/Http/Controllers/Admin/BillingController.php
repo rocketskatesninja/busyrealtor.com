@@ -102,6 +102,7 @@ class BillingController extends Controller
         $tenant = app('tenant');
         $sys    = SystemSetting::get();
 
+
         if (!$sys->hasStripe()) {
             return back()->with('error', 'Billing is not available right now. Please contact support.');
         }

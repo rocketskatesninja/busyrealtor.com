@@ -28,3 +28,6 @@ Thumbs.db
 /storage/logs/
 /bootstrap/cache/
 *.sqlite
+
+# Backup files (e.g., file.php.bak.something) created during patches
+*.bak*

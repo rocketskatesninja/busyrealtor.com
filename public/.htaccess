@@ -2,7 +2,17 @@
     Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=(), payment=(self \"https://js.stripe.com\")"
 
     Header always unset Content-Security-Policy
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' js.stripe.com maps.googleapis.com *.googletagmanager.com *.google-analytics.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com; font-src 'self' fonts.gstatic.com data:; img-src 'self' data: https: blob:; frame-src 'self' js.stripe.com maps.google.com https://www.google.com; connect-src 'self' api.stripe.com fonts.googleapis.com fonts.gstatic.com maps.googleapis.com maps.google.com *.googletagmanager.com *.google-analytics.com *.analytics.google.com; worker-src blob:;"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' js.stripe.com maps.googleapis.com *.googletagmanager.com *.google-analytics.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com; font-src 'self' fonts.gstatic.com data:; img-src 'self' data: https: blob:; frame-src 'self' js.stripe.com maps.google.com https://www.google.com; connect-src 'self' api.stripe.com fonts.googleapis.com fonts.gstatic.com maps.googleapis.com maps.google.com *.googletagmanager.com *.google-analytics.com *.analytics.google.com; worker-src blob:; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com; object-src 'none'; upgrade-insecure-requests;"
+</IfModule>
+
+<IfModule mod_setenvif.c>
+    # F5 BREACH mitigation: do not gzip-compress text/html responses on this
+    # vhost. CSRF tokens live in HTML; with compression on, an attacker who
+    # can both observe ciphertext sizes and inject reflected content into a
+    # response can recover the token byte-by-byte (BREACH attack). CSS, JS,
+    # and JSON are still compressed by the global mod_deflate config because
+    # they do not carry secrets.
+    SetEnvIfNoCase Content-Type "text/html" no-gzip
 </IfModule>
 
 <IfModule mod_rewrite.c>

@@ -51,15 +51,22 @@ function getMapStyles() {
 }
 
 function getBrandMarkerIcon() {
+    // Use a data-URI SVG instead of google.maps.Symbol path. The Symbol
+    // path parser in newer marker.js builds chokes on the lowercase 'z'
+    // close-path command ("Expected number at position 109, found z"),
+    // even though z is valid SVG. The data-URI route uses the browser's
+    // native SVG renderer so the parser bug is bypassed, and we still get
+    // dynamic per-tenant primary-color theming via string substitution.
     var primary = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3b82f6';
+    var svg =
+        '<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24">' +
+            '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" ' +
+                  'fill="' + primary + '" stroke="#ffffff" stroke-width="1.2"/>' +
+        '</svg>';
     return {
-        path: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z',
-        fillColor: primary,
-        fillOpacity: 1,
-        strokeColor: '#ffffff',
-        strokeWeight: 2,
-        scale: 1.8,
-        anchor: new google.maps.Point(12, 22)
+        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+        scaledSize: new google.maps.Size(36, 36),
+        anchor:     new google.maps.Point(18, 36)
     };
 }
 
