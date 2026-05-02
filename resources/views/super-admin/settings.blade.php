@@ -380,10 +380,10 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                        <input type="password" name="smtp_password"
-                               value="{{ $settings->smtp_password ? '••••••••••••' : '' }}"
+                        <x-password-input name="smtp_password"
+                               :value="$settings->smtp_password ? '••••••••••••' : ''"
                                placeholder="••••••••"
-                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
+                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500" />
                         <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing. Paste full value to update.</p>
                     </div>
                 </div>

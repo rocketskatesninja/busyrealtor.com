@@ -226,8 +226,17 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
 
     });
 
-    // Billing routes — accessible even with expired trial (auth only, no tenant.active check)
-    Route::prefix('admin')->middleware(['auth'])->name('admin.')->group(function () {
+    // Billing routes — accessible even with expired trial (no tenant.active check
+    // so a deactivated tenant can still reach billing to re-subscribe).
+    //
+    // SECURITY: tenant.admin middleware is REQUIRED here. Without it, any
+    // authenticated user could hit /tenant-b/admin/billing and see another
+    // tenant's invoices, open their Stripe portal, swap their plan, etc.
+    // The tenant.admin middleware (EnsureTenantAdmin) verifies that the
+    // logged-in user actually belongs to the URL-slug tenant — it does NOT
+    // check is_active, so the "deactivated tenant reaches billing" path
+    // still works.
+    Route::prefix('admin')->middleware(['auth', 'tenant.admin'])->name('admin.')->group(function () {
         Route::get('/billing', [BillingController::class, 'show'])->name('billing');
         Route::get('/billing/subscribed', [BillingController::class, 'subscribed'])->name('billing.subscribed');
         Route::post('/billing/subscribe', [BillingController::class, 'subscribe'])->name('billing.subscribe');

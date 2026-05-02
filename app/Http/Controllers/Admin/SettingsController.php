@@ -57,7 +57,21 @@ class SettingsController extends Controller
             }
         }
         if ($request->filled('new_password')) {
-            $request->validate(['new_password' => 'min:8|confirmed']);
+            // Require the user to prove they know the existing password
+            // before changing it. Without this, a hijacked session — or
+            // even an unattended browser tab — is enough to take over an
+            // account: the attacker just sets a new password without
+            // knowing the old one.
+            //
+            // Laravel's built-in `current_password` rule hashes the input
+            // and compares against the authenticated user's password.
+            $request->validate([
+                'current_password' => ['required', 'current_password'],
+                'new_password'     => ['required', 'min:8', 'confirmed'],
+            ], [
+                'current_password.required'         => 'Enter your current password to change it.',
+                'current_password.current_password' => 'Your current password is incorrect.',
+            ]);
             Auth::user()->update(['password' => Hash::make($request->new_password)]);
         }
 

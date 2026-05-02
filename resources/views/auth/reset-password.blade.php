@@ -8,13 +8,11 @@
     <input type="hidden" name="email" value="{{ $email }}">
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-        <input type="password" name="password" required minlength="8"
-               class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <x-password-input name="password" required minlength="8" autocomplete="new-password" />
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-        <input type="password" name="password_confirmation" required
-               class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <x-password-input name="password_confirmation" required autocomplete="new-password" />
     </div>
     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition text-sm">
         Reset Password

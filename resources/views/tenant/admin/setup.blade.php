@@ -277,8 +277,8 @@ $heroPresets = [
                     </div>
                     <div x-show="data.ai_preferred === 'anthropic'" class="space-y-2">
                         <label class="block text-xs text-gray-600 dark:text-gray-400">Anthropic API Key</label>
-                        <input type="password" x-model="data.ai_anthropic_key" placeholder="sk-ant-..."
-                               class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                        <x-password-input name="ai_anthropic_key" x-model="data.ai_anthropic_key" placeholder="sk-ant-..."
+                               class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 pr-10 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
                         <label class="block text-xs text-gray-600 dark:text-gray-400">Model</label>
                         <select x-model="data.ai_anthropic_model" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                             <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (Fast, affordable)</option>
@@ -288,8 +288,8 @@ $heroPresets = [
                     </div>
                     <div x-show="data.ai_preferred === 'openai'" class="space-y-2">
                         <label class="block text-xs text-gray-600 dark:text-gray-400">OpenAI API Key</label>
-                        <input type="password" x-model="data.ai_openai_key" placeholder="sk-..."
-                               class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                        <x-password-input name="ai_openai_key" x-model="data.ai_openai_key" placeholder="sk-..."
+                               class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 pr-10 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
                         <label class="block text-xs text-gray-600 dark:text-gray-400">Model</label>
                         <select x-model="data.ai_openai_model" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                             <option value="gpt-4o-mini">GPT-4o Mini (Fast, affordable)</option>
@@ -339,8 +339,8 @@ $heroPresets = [
                 </button>
                 <div x-show="open" x-collapse class="px-4 pb-4 space-y-2">
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Access Token</label>
-                    <input type="password" x-model="data.fb_access_token" placeholder="EAAx..."
-                           class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                    <x-password-input name="fb_access_token" x-model="data.fb_access_token" placeholder="EAAx..."
+                           class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 pr-10 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Page ID</label>
                     <input type="text" x-model="data.fb_page_id" placeholder="123456789"
                            class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
@@ -368,23 +368,23 @@ $heroPresets = [
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <div>
                             <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">API Key</label>
-                            <input type="password" x-model="data.tw_api_key"
-                                   class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <x-password-input name="tw_api_key" x-model="data.tw_api_key"
+                                   class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 pr-10 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
                         </div>
                         <div>
                             <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">API Secret</label>
-                            <input type="password" x-model="data.tw_api_secret"
-                                   class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <x-password-input name="tw_api_secret" x-model="data.tw_api_secret"
+                                   class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 pr-10 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
                         </div>
                         <div>
                             <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Access Token</label>
-                            <input type="password" x-model="data.tw_access_token"
-                                   class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <x-password-input name="tw_access_token" x-model="data.tw_access_token"
+                                   class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 pr-10 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
                         </div>
                         <div>
                             <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Access Token Secret</label>
-                            <input type="password" x-model="data.tw_access_token_secret"
-                                   class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <x-password-input name="tw_access_token_secret" x-model="data.tw_access_token_secret"
+                                   class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 pr-10 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" />
                         </div>
                     </div>
                     <label class="inline-flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
