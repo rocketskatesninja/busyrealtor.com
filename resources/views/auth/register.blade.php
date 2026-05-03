@@ -60,7 +60,7 @@
     <div class="grid grid-cols-2 gap-4">
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <x-password-input name="password" required minlength="10" autocomplete="new-password" />
+            <x-password-input name="password" required autocomplete="new-password" />
         </div>
         <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Confirm</label>

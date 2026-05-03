@@ -74,8 +74,8 @@
         el.style.transform = 'translateX(0)';
     }); });
 
-    // Auto-dismiss after 5s
-    setTimeout(function(){ dismissFlash(); }, 5000);
+    // Auto-dismiss after 8s
+    setTimeout(function(){ dismissFlash(); }, 8000);
 })();
 
 function dismissFlash() {
