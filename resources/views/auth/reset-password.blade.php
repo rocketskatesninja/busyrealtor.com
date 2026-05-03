@@ -8,7 +8,7 @@
     <input type="hidden" name="email" value="{{ $email }}">
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-        <x-password-input name="password" required minlength="8" autocomplete="new-password" />
+        <x-password-input name="password" required minlength="10" autocomplete="new-password" />
     </div>
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>

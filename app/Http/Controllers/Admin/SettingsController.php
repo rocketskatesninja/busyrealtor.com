@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 use Intervention\Image\Laravel\Facades\Image;
 
 class SettingsController extends Controller
@@ -67,7 +68,7 @@ class SettingsController extends Controller
             // and compares against the authenticated user's password.
             $request->validate([
                 'current_password' => ['required', 'current_password'],
-                'new_password'     => ['required', 'min:8', 'confirmed'],
+                'new_password'     => ['required', 'confirmed', Password::defaults()],
             ], [
                 'current_password.required'         => 'Enter your current password to change it.',
                 'current_password.current_password' => 'Your current password is incorrect.',

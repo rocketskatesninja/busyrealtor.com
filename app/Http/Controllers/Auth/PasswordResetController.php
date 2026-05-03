@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 use Carbon\Carbon;
 
 class PasswordResetController extends Controller
@@ -56,7 +57,7 @@ class PasswordResetController extends Controller
         $request->validate([
             'email'    => 'required|email',
             'token'    => 'required',
-            'password' => 'required|min:8|confirmed',
+            'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
         $record = DB::table('password_reset_tokens')->where('email', $request->email)->first();

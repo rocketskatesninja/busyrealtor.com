@@ -9,6 +9,7 @@ use App\Models\SiteSettings;
 use App\Models\LegalPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rules\Password;
 
 class RegisterController extends Controller
 {
@@ -35,7 +36,7 @@ class RegisterController extends Controller
             'first_name'    => 'required|string|max:255',
             'last_name'     => 'required|string|max:255',
             'email'         => 'required|email|unique:users,email',
-            'password'      => 'required|min:8|confirmed',
+            'password'      => ['required', 'confirmed', Password::defaults()],
             'business_name' => 'required|string|max:255',
             'slug'          => [
                 'required', 'string', 'min:3', 'max:50',

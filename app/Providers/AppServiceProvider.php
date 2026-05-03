@@ -11,6 +11,7 @@ use App\Models\Tenant;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,21 @@ class AppServiceProvider extends ServiceProvider
     {
         // Tell Cashier that Tenant is the billable model, not User
         Cashier::useCustomerModel(Tenant::class);
+
+        // Password rules used by the `Password::defaults()` validation
+        // rule. Set here in one place so the registration, reset, and
+        // change-password flows all enforce the same policy.
+        //   - min(10): length is the single most effective rule per NIST 800-63B
+        //   - mixedCase + numbers: light complexity nudge, doesn't punish strong
+        //     passphrases ("correct horse battery staple 7" passes both)
+        //   - uncompromised(): rejects passwords found in known data breaches
+        //     (haveibeenpwned k-anonymity API — only the first 5 chars of the
+        //     SHA-1 hash leave the server, full hash never does). This is the
+        //     load-bearing rule — it kills credential stuffing dead.
+        Password::defaults(fn () => Password::min(10)
+            ->mixedCase()
+            ->numbers()
+            ->uncompromised());
 
         // Inject Stripe keys from DB into Cashier config at runtime
         try {
