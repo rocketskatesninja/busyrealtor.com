@@ -113,7 +113,7 @@
                             <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Plan</th>
                             <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                             <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                            <th class="px-6 py-3"></th>
+                            <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-50">
@@ -145,7 +145,7 @@
                                     <a href="{{ route('super.tenants.show', $tenant->slug) }}" class="text-blue-600 hover:text-blue-800 text-xs font-medium">View</a>
                                     <form method="POST" action="{{ route('super.impersonate', $tenant->slug) }}">
                                         @csrf
-                                        <button type="submit" class="text-gray-500 hover:text-gray-800 text-xs">Impersonate</button>
+                                        <button type="submit" class="text-xs text-orange-600 hover:text-orange-800 font-medium">Impersonate</button>
                                     </form>
                                 </div>
                             </td>

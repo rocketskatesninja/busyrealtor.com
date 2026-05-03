@@ -48,7 +48,14 @@
                     @if($tenant->stripe_subscription_status === 'active')
                         <span class="inline-flex items-center gap-1 text-xs text-green-600 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active</span>
                     @elseif($tenant->plan === 'trial' && $tenant->trial_ends_at?->isFuture())
-                        <span class="inline-flex items-center gap-1 text-xs text-yellow-600 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Trial</span>
+                        @php
+                            // Total trial length and which day they're on.
+                            // Cap elapsed at total so a tenant who logs in
+                            // exactly at the boundary doesn't show "Day 15 of 14".
+                            $trialTotal = max(1, (int) round($tenant->created_at->diffInDays($tenant->trial_ends_at)));
+                            $trialDay   = min($trialTotal, (int) floor($tenant->created_at->diffInDays(now())) + 1);
+                        @endphp
+                        <span class="inline-flex items-center gap-1 text-xs text-yellow-600 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Day {{ $trialDay }} of {{ $trialTotal }}</span>
                     @elseif($tenant->stripe_subscription_status === 'canceled' || ($tenant->plan === 'trial' && !$tenant->trial_ends_at?->isFuture()))
                         <span class="inline-flex items-center gap-1 text-xs text-red-500 font-medium"><span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Expired</span>
                     @else
@@ -100,7 +107,7 @@
                         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Properties</th>
                         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Joined</th>
-                        <th class="px-6 py-3"></th>
+                        <th class="text-left px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-50">
@@ -136,8 +143,15 @@
                                     <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Active
                                 </span>
                             @elseif($tenant->plan === 'trial' && $tenant->trial_ends_at?->isFuture())
+                                @php
+                                    // Total trial length and which day they're on.
+                                    // Cap elapsed at total so a tenant who logs in
+                                    // exactly at the boundary doesn't show "Day 15 of 14".
+                                    $trialTotal = max(1, (int) round($tenant->created_at->diffInDays($tenant->trial_ends_at)));
+                                    $trialDay   = min($trialTotal, (int) floor($tenant->created_at->diffInDays(now())) + 1);
+                                @endphp
                                 <span class="inline-flex items-center gap-1 text-xs text-yellow-600 font-medium">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Trial
+                                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-500"></span> Day {{ $trialDay }} of {{ $trialTotal }}
                                 </span>
                             @elseif($tenant->stripe_subscription_status === 'canceled' || ($tenant->plan === 'trial' && !$tenant->trial_ends_at?->isFuture()))
                                 <span class="inline-flex items-center gap-1 text-xs text-red-500 font-medium">

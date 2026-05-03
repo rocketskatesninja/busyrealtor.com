@@ -403,7 +403,7 @@ class AdminChatController extends Controller
         $fields  = array_intersect_key($input['fields'] ?? [], array_flip($allowed));
         if (empty($fields)) return ['error' => 'No valid fields to update.'];
 
-        $validStatuses = ['active', 'pending', 'sold', 'featured', 'withdrawn'];
+        $validStatuses = ['active', 'pending', 'sold', 'off-market', 'withdrawn'];
         if (isset($fields['listing_status']) && !in_array($fields['listing_status'], $validStatuses)) {
             return ['error' => 'Invalid listing_status. Must be: ' . implode(', ', $validStatuses)];
         }
@@ -670,7 +670,7 @@ PROMPT;
                 'input_schema' => [
                     'type'       => 'object',
                     'properties' => [
-                        'status' => ['type' => 'string', 'enum' => ['active', 'pending', 'sold', 'featured', 'withdrawn'], 'description' => 'Filter by listing status'],
+                        'status' => ['type' => 'string', 'enum' => ['active', 'pending', 'sold', 'off-market', 'withdrawn'], 'description' => 'Filter by listing status'],
                         'search' => ['type' => 'string', 'description' => 'Search by title, street address, or city'],
                         'limit'  => ['type' => 'integer', 'description' => 'Max results (default 10, max 25)'],
                     ],
@@ -724,7 +724,7 @@ PROMPT;
                             'type'       => 'object',
                             'description' => 'Fields to update',
                             'properties' => [
-                                'listing_status' => ['type' => 'string', 'enum' => ['active', 'pending', 'sold', 'featured', 'withdrawn']],
+                                'listing_status' => ['type' => 'string', 'enum' => ['active', 'pending', 'sold', 'off-market', 'withdrawn']],
                                 'price'          => ['type' => 'number'],
                                 'description'    => ['type' => 'string'],
                                 'is_featured'    => ['type' => 'boolean'],

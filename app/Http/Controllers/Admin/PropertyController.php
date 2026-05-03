@@ -116,7 +116,7 @@ class PropertyController extends Controller
     {
         $request->validate([
             'title'          => 'required|string|max:300',
-            'listing_status' => 'required|in:active,pending,sold,off-market,featured,withdrawn',
+            'listing_status' => 'required|in:active,pending,sold,off-market,withdrawn',
             'property_type'  => 'required|string',
             'price'          => 'nullable|numeric',
             'images'         => 'nullable|array|max:20',

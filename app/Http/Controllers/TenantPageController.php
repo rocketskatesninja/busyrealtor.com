@@ -28,7 +28,8 @@ class TenantPageController extends Controller
         $featured = Property::with('images')
             ->where('tenant_id', $tenant->id)
             ->where('is_featured', true)
-            ->whereIn('listing_status', ['active', 'featured'])
+            ->where('listing_status', 'active')
+            ->orderBy('updated_at', 'desc')
             ->limit(6)->get();
         // Tenant-scoped — without this filter, this realtor's homepage
         // would display staff members belonging to OTHER realtors.

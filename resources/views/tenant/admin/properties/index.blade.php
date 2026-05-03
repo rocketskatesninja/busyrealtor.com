@@ -58,7 +58,7 @@
             </select>
             <select name="status" class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 <option value="">All Statuses</option>
-                @foreach(['active'=>'Active','pending'=>'Pending','sold'=>'Sold','off-market'=>'Off Market','featured'=>'Featured','withdrawn'=>'Withdrawn'] as $v=>$l)
+                @foreach(['active'=>'Active','pending'=>'Pending','sold'=>'Sold','off-market'=>'Off Market','withdrawn'=>'Withdrawn'] as $v=>$l)
                     <option value="{{ $v }}" {{ request('status') === $v ? 'selected' : '' }}>{{ $l }}</option>
                 @endforeach
             </select>
@@ -88,7 +88,7 @@
                     'active'     => 'bg-green-100 text-green-700',
                     'pending'    => 'bg-yellow-100 text-yellow-700',
                     'sold'       => 'bg-gray-100 text-gray-600',
-                    'featured'   => 'bg-blue-100 text-blue-700',
+
                     'off-market' => 'bg-orange-100 text-orange-700',
                     'withdrawn'  => 'bg-red-100 text-red-600',
                     default      => 'bg-gray-100 text-gray-600',
@@ -167,7 +167,7 @@
                         <td class="px-5 py-4 font-semibold text-gray-800">${{ number_format($property->price) }}</td>
                         <td class="px-5 py-4 text-sm text-gray-600 capitalize">{{ str_replace('-', ' ', $property->property_type) }}</td>
                         <td class="px-5 py-4">
-                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ match($property->listing_status) { 'active' => 'bg-green-100 text-green-700', 'pending' => 'bg-yellow-100 text-yellow-700', 'sold' => 'bg-gray-100 text-gray-600', 'featured' => 'bg-blue-100 text-blue-700', 'off-market' => 'bg-orange-100 text-orange-700', 'withdrawn' => 'bg-red-100 text-red-600', default => 'bg-gray-100 text-gray-600' } }}">
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ match($property->listing_status) { 'active' => 'bg-green-100 text-green-700', 'pending' => 'bg-yellow-100 text-yellow-700', 'sold' => 'bg-gray-100 text-gray-600', 'off-market' => 'bg-orange-100 text-orange-700', 'withdrawn' => 'bg-red-100 text-red-600', default => 'bg-gray-100 text-gray-600' } }}">
                                 {{ str_replace('-', ' ', ucwords($property->listing_status, '-')) }}
                             </span>
                         </td>

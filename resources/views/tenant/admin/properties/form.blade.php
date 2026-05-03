@@ -40,7 +40,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Listing Status *</label>
                     <select name="listing_status" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                        @foreach(['active'=>'Active','pending'=>'Pending','sold'=>'Sold','off-market'=>'Off Market','featured'=>'Featured','withdrawn'=>'Withdrawn'] as $v=>$l)
+                        @foreach(['active'=>'Active','pending'=>'Pending','sold'=>'Sold','off-market'=>'Off Market','withdrawn'=>'Withdrawn'] as $v=>$l)
                         <option value="{{ $v }}" {{ old('listing_status', $property->listing_status ?? 'active') === $v ? 'selected' : '' }}>{{ $l }}</option>
                         @endforeach
                     </select>
