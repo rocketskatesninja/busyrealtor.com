@@ -41,13 +41,25 @@
     var bar = document.getElementById('flash-bar');
     if (!el || !bar) return;
 
-    // Position just below the header
+    // Position just below the header.
+    // Use getBoundingClientRect().bottom (not offsetHeight) so the flash sits
+    // BELOW the header's actual bottom edge in the viewport. This matters when
+    // a banner above the header (e.g. the yellow "you are impersonating X"
+    // banner in admin.blade.php) pushes the header down: offsetHeight only
+    // returns the header's own height and the flash would slide in UNDER it.
+    // Re-run on scroll because the header is `sticky top-0` — once the user
+    // scrolls past the impersonation banner, the header sticks to the top
+    // and .bottom shrinks back to just the header height.
     var header = document.querySelector('header[id]') || document.querySelector('header');
-    if (header) {
-        el.style.top = header.offsetHeight + 'px';
-    } else {
-        el.style.top = '0';
+    function positionFlash() {
+        if (header) {
+            el.style.top = Math.max(0, header.getBoundingClientRect().bottom) + 'px';
+        } else {
+            el.style.top = '0';
+        }
     }
+    positionFlash();
+    window.addEventListener('scroll', positionFlash, { passive: true });
 
     // Dark mode colors
     if (document.documentElement.classList.contains('dark') || document.body.classList.contains('dark')) {
