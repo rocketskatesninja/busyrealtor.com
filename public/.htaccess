@@ -22,12 +22,12 @@
 
     RewriteEngine On
 
-    # Canonicalize www.busyrealtor.com -> busyrealtor.com (matches APP_URL).
+    # Canonicalize busyrealtor.com -> www.busyrealtor.com (matches APP_URL).
     # Without this, both hosts serve the app independently and the session
     # cookie (host-scoped, no Domain attr) doesn't follow users across.
-    # Only fires on the production www host; test.busyrealtor.com is unaffected.
-    RewriteCond %{HTTP_HOST} ^www\.busyrealtor\.com$ [NC]
-    RewriteRule ^(.*)$ https://busyrealtor.com/$1 [R=301,L]
+    # Only fires on the production apex host; test.busyrealtor.com is unaffected.
+    RewriteCond %{HTTP_HOST} ^busyrealtor\.com$ [NC]
+    RewriteRule ^(.*)$ https://www.busyrealtor.com/$1 [R=301,L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

@@ -633,7 +633,7 @@ function updateCookiePrefsLink() {
         </div>
         <div class="border-t border-gray-300 pt-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-gray-500">
             <p>&copy; {{ date('Y') }} <span style="color: var(--primary)">{{ $settings->site_title ?: 'Your Agency Name Here' }}</span>. All rights reserved.</p>
-            <p>Powered by <a href="https://busyrealtor.com" class="transition-colors" style="color: var(--primary)">BusyRealtor</a></p>
+            <p>Powered by <a href="https://www.busyrealtor.com" class="transition-colors" style="color: var(--primary)">BusyRealtor</a></p>
         </div>
     </div>
 </footer>

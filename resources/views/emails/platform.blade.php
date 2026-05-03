@@ -120,7 +120,7 @@
               <tr>
                 <td style="color:#6b7280;font-size:12px;line-height:1.7;">
                   <strong style="color:#374151;">The BusyRealtor Team</strong>
-                  <br><a href="https://busyrealtor.com" style="color:#6b7280;text-decoration:none;">busyrealtor.com</a>
+                  <br><a href="https://www.busyrealtor.com" style="color:#6b7280;text-decoration:none;">busyrealtor.com</a>
                 </td>
                 <td align="right" style="color:#9ca3af;font-size:11px;vertical-align:bottom;">
                   &copy; {{ date('Y') }} BusyRealtor<br>

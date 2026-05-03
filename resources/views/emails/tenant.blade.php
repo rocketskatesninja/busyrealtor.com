@@ -166,7 +166,7 @@
             <p style="margin:0;font-size:12px;color:#6b7280;">{{ $address }}</p>
             @endif
             <p style="margin:14px 0 0;padding-top:12px;border-top:1px solid #e5e7eb;font-size:11px;color:#9ca3af;">
-              Powered by <a href="https://busyrealtor.com" style="color:#9ca3af;text-decoration:none;font-weight:600;">BusyRealtor</a>
+              Powered by <a href="https://www.busyrealtor.com" style="color:#9ca3af;text-decoration:none;font-weight:600;">BusyRealtor</a>
             </p>
           </td>
         </tr>

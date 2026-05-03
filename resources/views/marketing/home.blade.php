@@ -10,7 +10,7 @@
     {
       "@@type": "SoftwareApplication",
       "name": "BusyRealtor",
-      "url": "https://busyrealtor.com",
+      "url": "https://www.busyrealtor.com",
       "applicationCategory": "BusinessApplication",
       "operatingSystem": "Windows, macOS, iOS, Android, Web",
       "description": "Real estate website builder for agents and brokers. Launch a beautiful website with AI chatbot, property listings, interactive map, and appointment booking.",
@@ -21,7 +21,7 @@
           "price": "{{ number_format($settings->starter_price ?? 29, 2) }}",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock",
-          "url": "https://busyrealtor.com/register",
+          "url": "https://www.busyrealtor.com/register",
           "description": "Up to 10 active listings, public website, contact forms, admin dashboard, custom branding."
         },
         {
@@ -30,7 +30,7 @@
           "price": "{{ number_format($settings->pro_price ?? 59, 2) }}",
           "priceCurrency": "USD",
           "availability": "https://schema.org/InStock",
-          "url": "https://busyrealtor.com/register",
+          "url": "https://www.busyrealtor.com/register",
           "description": "Unlimited listings, AI chatbot, appointment scheduling, Google Maps & Analytics, staff management."
         }
       ]
@@ -38,7 +38,7 @@
     {
       "@@type": "Organization",
       "name": "BusyRealtor",
-      "url": "https://busyrealtor.com",
+      "url": "https://www.busyrealtor.com",
       "description": "SaaS platform providing real estate websites for agents and brokers."
     }
   ]
