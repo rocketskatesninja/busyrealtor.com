@@ -986,8 +986,58 @@ $tabs = array_merge(...array_values($groups));
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>SMTP Configuration</h2>
-                        @php $smtp = $integrations->get('smtp'); $smtpConfig = $smtp?->config ?? []; @endphp
+                        <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>SMTP Configuration</h2>
+                        @php
+                            $smtp           = $integrations->get('smtp');
+                            $smtpConfig     = $smtp?->config ?? [];
+                            $hasOwnSmtp     = !empty($smtpConfig['smtp_host']);
+                            $isOnTrial      = $tenant->isOnTrial();
+                            // Lazy daily-rollover for the displayed counter:
+                            // if the stored "today" isn't today, the column
+                            // is stale and effectively zero.
+                            $usedToday      = optional($tenant->piggyback_emails_today_date)->toDateString() === now()->toDateString()
+                                                ? (int) $tenant->piggyback_emails_today
+                                                : 0;
+                            $usedTrial      = (int) $tenant->piggyback_emails_total;
+                            $dailyCap       = \App\Models\Tenant::PIGGYBACK_DAILY_CAP;
+                            $trialCap       = \App\Models\Tenant::PIGGYBACK_TRIAL_CAP;
+                        @endphp
+
+                        {{-- Trial-piggyback notice. Three states:
+                              · on trial + no own SMTP → friendly blue banner with usage
+                              · trial ended + no own SMTP → amber warning, sending blocked
+                              · own SMTP configured → no notice (settings speak for themselves)
+                            Branding nudge: even though piggyback works fine, encourage tenants
+                            who care about their brand to add their own SMTP from day 1 so the
+                            From: line matches their domain. --}}
+                        @if(!$hasOwnSmtp && $isOnTrial)
+                            <div class="mb-5 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900
+                                        dark:border-blue-700/50 dark:bg-blue-900/30 dark:text-blue-100">
+                                <p class="font-semibold mb-1">You're on a trial — no SMTP setup needed yet.</p>
+                                <p class="mb-2">
+                                    Lead emails and notifications go through BusyRealtor's mail server
+                                    until your trial ends on
+                                    <strong>{{ $tenant->trial_ends_at->format('M j, Y') }}</strong>.
+                                    Add your own SMTP below at any time to use your own branded
+                                    From: address — many agents do this on day one so leads see
+                                    their domain instead of ours.
+                                </p>
+                                <p class="text-xs text-blue-700 dark:text-blue-300">
+                                    Trial usage: <strong>{{ $usedToday }}</strong>/{{ $dailyCap }} today,
+                                    <strong>{{ $usedTrial }}</strong>/{{ $trialCap }} this trial.
+                                </p>
+                            </div>
+                        @elseif(!$hasOwnSmtp && !$isOnTrial)
+                            <div class="mb-5 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900
+                                        dark:border-amber-700/50 dark:bg-amber-900/30 dark:text-amber-100">
+                                <p class="font-semibold mb-1">Your trial has ended — outbound mail is paused.</p>
+                                <p>
+                                    Configure your SMTP credentials below to resume sending lead
+                                    emails, notifications, and password resets.
+                                </p>
+                            </div>
+                        @endif
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="md:col-span-2 flex gap-3"><div class="flex-[2]"><label class="block text-xs font-medium text-gray-600 mb-1">SMTP Host</label><input type="text" name="smtp_host" value="{{ $smtpConfig['smtp_host'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Port</label><input type="number" name="smtp_port" value="{{ $smtpConfig['smtp_port'] ?? 587 }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Encryption</label><select name="smtp_encryption" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"><option value="tls" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === 'tls')>TLS / STARTTLS (port 587)</option><option value="ssl" @selected(($smtpConfig['smtp_encryption'] ?? '') === 'ssl')>SSL (port 465)</option><option value="" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === '')>None (port 25)</option></select></div></div>
                             <div><label class="block text-xs font-medium text-gray-600 mb-1">Username</label><input type="text" name="smtp_username" value="{{ $smtpConfig['smtp_username'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>

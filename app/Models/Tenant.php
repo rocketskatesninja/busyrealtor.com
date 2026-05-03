@@ -11,6 +11,16 @@ class Tenant extends Model
 {
     use Billable;
 
+    // ─── Piggyback caps ────────────────────────────────────────────────
+    // While a tenant is on trial AND has not configured their own SMTP
+    // integration, outbound mail goes through the PLATFORM SMTP (your
+    // Mailgun/SES). Caps below limit the blast-radius of any single
+    // abusive trial signup so they can't torch shared sender reputation.
+    // A real estate agent typically sends well under 10/day — these
+    // numbers should never bother a legitimate user.
+    public const PIGGYBACK_DAILY_CAP = 50;
+    public const PIGGYBACK_TRIAL_CAP = 1000;
+
     protected $fillable = [
         'slug',
         'name',
@@ -27,6 +37,9 @@ class Tenant extends Model
         'stripe_cancel_at',
         'trial_reminders_sent',
         'payment_failed_at',
+        'piggyback_emails_today',
+        'piggyback_emails_today_date',
+        'piggyback_emails_total',
     ];
 
     protected $hidden = [
@@ -34,11 +47,12 @@ class Tenant extends Model
     ];
 
     protected $casts = [
-        'trial_ends_at'        => 'datetime',
-        'payment_failed_at'    => 'datetime',
-        'stripe_cancel_at'     => 'datetime',
-        'is_active'            => 'boolean',
-        'trial_reminders_sent' => 'array',
+        'trial_ends_at'                => 'datetime',
+        'payment_failed_at'            => 'datetime',
+        'stripe_cancel_at'             => 'datetime',
+        'is_active'                    => 'boolean',
+        'trial_reminders_sent'         => 'array',
+        'piggyback_emails_today_date'  => 'date',
     ];
 
     protected static function boot(): void
@@ -157,6 +171,67 @@ class Tenant extends Model
     public function isOnTrial(): bool
     {
         return $this->trial_ends_at !== null && $this->trial_ends_at->isFuture();
+    }
+
+    /**
+     * Does this tenant have an active SMTP integration of their own?
+     * If yes, TenantMailer routes mail through it and piggyback caps
+     * don't apply.
+     */
+    public function hasOwnSmtp(): bool
+    {
+        return Integration::where('tenant_id', $this->id)
+            ->where('integration_type', 'smtp')
+            ->where('is_active', true)
+            ->exists();
+    }
+
+    /**
+     * Decide whether this tenant may send another email through the
+     * platform-SMTP piggyback path right now. Returns
+     * [bool $allowed, ?string $reason] — caller should log/show $reason
+     * when blocked. Order matters:
+     *   1) Trial expired → blocked (must configure own SMTP).
+     *   2) Daily cap hit → blocked until next calendar day.
+     *   3) Trial-total cap hit → blocked for rest of trial.
+     */
+    public function canPiggybackEmail(): array
+    {
+        if (! $this->isOnTrial()) {
+            return [false, 'Trial ended — configure an SMTP integration to keep sending mail.'];
+        }
+
+        // Lazy daily-rollover: if the stored "today" no longer matches
+        // the current date, the daily counter is stale (effectively 0).
+        $today        = now()->toDateString();
+        $countedToday = optional($this->piggyback_emails_today_date)->toDateString() === $today
+            ? (int) $this->piggyback_emails_today
+            : 0;
+
+        if ($countedToday >= self::PIGGYBACK_DAILY_CAP) {
+            return [false, 'Daily mail cap (' . self::PIGGYBACK_DAILY_CAP . ') reached on platform SMTP. Configure your own SMTP integration to lift this limit.'];
+        }
+
+        if ((int) $this->piggyback_emails_total >= self::PIGGYBACK_TRIAL_CAP) {
+            return [false, 'Trial mail cap (' . self::PIGGYBACK_TRIAL_CAP . ') reached on platform SMTP. Configure your own SMTP integration to keep sending.'];
+        }
+
+        return [true, null];
+    }
+
+    /**
+     * Record one successful piggyback send. Called by TenantMailer
+     * AFTER Mail::html() succeeds — failed sends shouldn't burn quota.
+     */
+    public function recordPiggybackEmail(): void
+    {
+        $today   = now()->toDateString();
+        $sameDay = optional($this->piggyback_emails_today_date)->toDateString() === $today;
+
+        $this->piggyback_emails_today      = $sameDay ? ((int) $this->piggyback_emails_today + 1) : 1;
+        $this->piggyback_emails_today_date = $today;
+        $this->piggyback_emails_total      = (int) $this->piggyback_emails_total + 1;
+        $this->save();
     }
 
     public function isActive(): bool

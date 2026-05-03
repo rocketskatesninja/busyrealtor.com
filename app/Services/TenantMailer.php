@@ -48,14 +48,24 @@ class TenantMailer
                 ]);
                 Mail::forgetMailers();
             }
-        } else {
-            // Tenant emails use the tenant's own SMTP integration
+        }
+
+        // Track whether this send is going through the platform-SMTP
+        // piggyback path so we can increment trial caps on success.
+        $usingPiggyback = false;
+
+        if ($template !== 'platform') {
+            // Tenant emails: prefer the tenant's own SMTP integration.
+            // If no integration is configured, fall back to the platform
+            // SMTP (still loaded by AppServiceProvider) — but ONLY while
+            // the tenant is on trial AND under the daily/trial caps.
             $smtp = Integration::where('tenant_id', $tenantId)
                         ->where('integration_type', 'smtp')
                         ->where('is_active', true)
                         ->first();
 
             if ($smtp && !empty($smtp->config['smtp_host'])) {
+                // Tenant configured their own SMTP — use it, no caps.
                 $cfg  = $smtp->config;
                 $port = (int) ($cfg['smtp_port'] ?? 587);
                 $enc  = $cfg['smtp_encryption'] ?? ($port === 465 ? 'ssl' : 'tls');
@@ -72,11 +82,29 @@ class TenantMailer
                     'mail.from.name'             => $cfg['smtp_from_name'] ?? config('mail.from.name'),
                 ]);
                 Mail::forgetMailers();
+            } else {
+                // No own SMTP — gate the piggyback path.
+                $tenantForGate = Tenant::find($tenantId);
+                if (! $tenantForGate) {
+                    Log::error('TenantMailer: tenant not found', ['tenant_id' => $tenantId]);
+                    return false;
+                }
+                [$canSend, $reason] = $tenantForGate->canPiggybackEmail();
+                if (! $canSend) {
+                    Log::warning('TenantMailer: piggyback blocked', [
+                        'tenant_id' => $tenantId,
+                        'to'        => $to,
+                        'subject'   => $subject,
+                        'reason'    => $reason,
+                    ]);
+                    return false;
+                }
+                $usingPiggyback = true;
             }
         }
 
         try {
-            Log::info('TenantMailer sending', ['to' => $to, 'subject' => $subject, 'tenant_id' => $tenantId, 'template' => $template]);
+            Log::info('TenantMailer sending', ['to' => $to, 'subject' => $subject, 'tenant_id' => $tenantId, 'template' => $template, 'piggyback' => $usingPiggyback]);
 
             $allowed  = ['tenant', 'platform'];
             if (!in_array($template, $allowed)) {
@@ -91,6 +119,11 @@ class TenantMailer
                 if ($replyTo) $m->replyTo($replyTo);
             });
             Log::info('TenantMailer sent OK', ['to' => $to]);
+
+            // Only count piggyback sends — own-SMTP sends don't burn quota.
+            if ($usingPiggyback && $tenant) {
+                $tenant->recordPiggybackEmail();
+            }
             return true;
         } catch (\Throwable $e) {
             Log::error('TenantMailer send failed', [

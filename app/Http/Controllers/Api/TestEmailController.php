@@ -22,14 +22,15 @@ class TestEmailController extends Controller
             );
         }
 
+        // Don't pre-block when the tenant has no SMTP integration —
+        // TenantMailer's gate will fall through to platform SMTP if the
+        // tenant is on trial AND under the piggyback caps. The blocking
+        // logic lives in one place (Tenant::canPiggybackEmail).
         $smtp = Integration::where('tenant_id', $tenant->id)
                     ->where('integration_type', 'smtp')
                     ->where('is_active', true)
                     ->first();
-
-        if (!$smtp || empty($smtp->config['smtp_host'])) {
-            return response()->json(['success' => false, 'message' => 'No SMTP configured. Enter your SMTP credentials above.'], 422);
-        }
+        $usingOwn = $smtp && !empty($smtp->config['smtp_host']);
 
         $sent = TenantMailer::send(
             $tenant->id,
@@ -38,8 +39,24 @@ class TestEmailController extends Controller
             'This is a test email from ' . $tenant->name . '. Your SMTP settings are working correctly!'
         );
 
-        return $sent
-            ? response()->json(['success' => true,  'message' => 'Test email sent successfully!'])
-            : response()->json(['success' => false, 'message' => 'Send failed. Check your SMTP credentials.'], 500);
+        if ($sent) {
+            return response()->json([
+                'success' => true,
+                'message' => $usingOwn
+                    ? 'Test email sent successfully via your SMTP!'
+                    : "Test email sent via BusyRealtor's SMTP (trial fallback). Configure your own SMTP before trial ends.",
+            ]);
+        }
+
+        // TenantMailer returned false. Two failure modes:
+        //   - own SMTP configured but creds wrong / server rejected
+        //   - no own SMTP and the gate said no (trial ended or caps hit)
+        // Either way, the real reason was already logged by TenantMailer.
+        return response()->json([
+            'success' => false,
+            'message' => $usingOwn
+                ? 'Send failed. Check your SMTP credentials and try again.'
+                : 'Send failed. Either your trial ended, daily/trial caps were hit, or the platform SMTP rejected the message — check storage/logs/laravel.log for the exact reason.',
+        ], 500);
     }
 }
