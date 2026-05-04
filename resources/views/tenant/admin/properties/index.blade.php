@@ -84,15 +84,26 @@
         <div class="md:hidden divide-y divide-gray-100">
             @foreach($properties as $property)
             @php
-                $statusClass = match($property->listing_status) {
-                    'active'     => 'bg-green-100 text-green-700',
-                    'pending'    => 'bg-yellow-100 text-yellow-700',
-                    'sold'       => 'bg-gray-100 text-gray-600',
-
-                    'off-market' => 'bg-orange-100 text-orange-700',
-                    'withdrawn'  => 'bg-red-100 text-red-600',
-                    default      => 'bg-gray-100 text-gray-600',
-                };
+                // Show a "Featured" badge (blue) when the property is both
+                // marked is_featured AND has an active listing_status — that's
+                // the only combination that actually appears on the public
+                // homepage. Featured+Pending/Sold/etc. shows the lifecycle
+                // status instead, since the featured flag is dormant until
+                // the listing returns to active.
+                $showFeatured = $property->is_featured && $property->listing_status === 'active';
+                $statusClass  = $showFeatured
+                    ? 'bg-blue-100 text-blue-700'
+                    : match($property->listing_status) {
+                        'active'     => 'bg-green-100 text-green-700',
+                        'pending'    => 'bg-yellow-100 text-yellow-700',
+                        'sold'       => 'bg-gray-100 text-gray-600',
+                        'off-market' => 'bg-orange-100 text-orange-700',
+                        'withdrawn'  => 'bg-red-100 text-red-600',
+                        default      => 'bg-gray-100 text-gray-600',
+                    };
+                $statusLabel  = $showFeatured
+                    ? 'Featured'
+                    : str_replace('-', ' ', ucwords($property->listing_status, '-'));
             @endphp
             <div class="p-4">
                 {{-- Top row: image + title + actions --}}
@@ -125,7 +136,7 @@
                 <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between gap-2">
                     <div class="flex items-center flex-wrap gap-2">
                         <span class="font-semibold text-gray-900 text-sm">${{ number_format($property->price) }}</span>
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $statusClass }}">{{ str_replace('-', ' ', ucwords($property->listing_status, '-')) }}</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ $statusClass }}">{{ $statusLabel }}</span>
                         <span class="text-xs text-gray-500 capitalize">{{ str_replace('-', ' ', $property->property_type) }}</span>
                     </div>
                     <p class="text-xs text-gray-400 whitespace-nowrap">{{ number_format($property->view_count) }} views · {{ $property->created_at->format('M j, Y') }}</p>
@@ -150,6 +161,25 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @foreach($properties as $property)
+                    @php
+                        // Same featured-vs-status logic as the mobile cards above —
+                        // is_featured + active = blue "Featured" badge; otherwise
+                        // show the regular lifecycle status.
+                        $showFeatured = $property->is_featured && $property->listing_status === 'active';
+                        $statusClass  = $showFeatured
+                            ? 'bg-blue-100 text-blue-700'
+                            : match($property->listing_status) {
+                                'active'     => 'bg-green-100 text-green-700',
+                                'pending'    => 'bg-yellow-100 text-yellow-700',
+                                'sold'       => 'bg-gray-100 text-gray-600',
+                                'off-market' => 'bg-orange-100 text-orange-700',
+                                'withdrawn'  => 'bg-red-100 text-red-600',
+                                default      => 'bg-gray-100 text-gray-600',
+                            };
+                        $statusLabel  = $showFeatured
+                            ? 'Featured'
+                            : str_replace('-', ' ', ucwords($property->listing_status, '-'));
+                    @endphp
                     <tr class="hover:bg-gray-50 transition-colors">
                         <td class="px-5 py-4">
                             <div class="flex items-center gap-3">
@@ -167,8 +197,8 @@
                         <td class="px-5 py-4 font-semibold text-gray-800">${{ number_format($property->price) }}</td>
                         <td class="px-5 py-4 text-sm text-gray-600 capitalize">{{ str_replace('-', ' ', $property->property_type) }}</td>
                         <td class="px-5 py-4">
-                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ match($property->listing_status) { 'active' => 'bg-green-100 text-green-700', 'pending' => 'bg-yellow-100 text-yellow-700', 'sold' => 'bg-gray-100 text-gray-600', 'off-market' => 'bg-orange-100 text-orange-700', 'withdrawn' => 'bg-red-100 text-red-600', default => 'bg-gray-100 text-gray-600' } }}">
-                                {{ str_replace('-', ' ', ucwords($property->listing_status, '-')) }}
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $statusClass }}">
+                                {{ $statusLabel }}
                             </span>
                         </td>
                         <td class="px-5 py-4 text-sm text-gray-600">{{ number_format($property->view_count) }}</td>
