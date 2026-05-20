@@ -25,7 +25,7 @@ class SuperAdminController extends Controller
         $newThisMonth  = Tenant::whereMonth('created_at', now()->month)
                                 ->whereYear('created_at', now()->year)->count();
         $activeSubs    = Tenant::where('stripe_subscription_status', 'active')->count();
-        $sys           = \App\Models\SystemSetting::get();
+        $sys           = \App\Models\SystemSetting::current();
         $mrr           = ($starterCount * $sys->starter_price) + ($proCount * $sys->pro_price);
 
         $stats = [
@@ -171,7 +171,7 @@ class SuperAdminController extends Controller
             // starter <-> pro: do the real Stripe swap so the customer is
             // billed at the new prorated rate AND the local plan column
             // stays in sync (Cashier's swap() updates both).
-            $sys = SystemSetting::get();
+            $sys = SystemSetting::current();
             if (!$sys->hasStripe()) {
                 return back()->withErrors(['plan' => 'Stripe is not configured — cannot swap subscription plans.'])->withInput();
             }

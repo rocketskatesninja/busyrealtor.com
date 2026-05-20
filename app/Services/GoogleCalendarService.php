@@ -23,7 +23,7 @@ class GoogleCalendarService
 
     private function getClient(): GoogleClient
     {
-        $sys = SystemSetting::get();
+        $sys = SystemSetting::current();
 
         $client = new GoogleClient();
         $client->setClientId($sys->google_client_id);

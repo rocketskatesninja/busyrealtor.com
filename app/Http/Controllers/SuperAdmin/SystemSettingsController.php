@@ -112,6 +112,7 @@ class SystemSettingsController extends Controller
         }
 
         $settings->update($data);
+        SystemSetting::forgetCurrent();
         logActivity('updated', 'Updated system settings');
 
         return redirect()->route('super.settings')->with('success', 'Settings saved.');

@@ -44,7 +44,7 @@ class HandleStripeWebhook
         $status  = $obj['status'] ?? null;
         $priceId = $obj['items']['data'][0]['price']['id'] ?? null;
 
-        $sys  = \App\Models\SystemSetting::get();
+        $sys  = \App\Models\SystemSetting::current();
         $plan = match ($priceId) {
             $sys->stripe_starter_price_id => 'starter',
             $sys->stripe_pro_price_id     => 'pro',

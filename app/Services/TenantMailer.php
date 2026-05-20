@@ -30,7 +30,7 @@ class TenantMailer
     ): bool {
         if ($template === 'platform') {
             // Platform emails (billing, trial warnings) use system-level SMTP
-            $sys = SystemSetting::first();
+            $sys = SystemSetting::current();
             if ($sys && !empty($sys->smtp_host)) {
                 $port   = (int) ($sys->smtp_port ?? 587);
                 $enc    = $sys->smtp_encryption ?? ($port === 465 ? 'ssl' : 'tls');

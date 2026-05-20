@@ -20,7 +20,7 @@ class GoogleCalendarController extends Controller
                 ->with('error', 'Google Calendar integration is a Pro plan feature.');
         }
 
-        $sys = SystemSetting::get();
+        $sys = SystemSetting::current();
         if (!$sys->hasGoogle()) {
             return redirect()->route('tenant.admin.settings', $account)
                 ->with('error', 'Google OAuth is not configured. Contact support.');
@@ -55,7 +55,7 @@ class GoogleCalendarController extends Controller
         }
 
         try {
-            $sys = SystemSetting::get();
+            $sys = SystemSetting::current();
 
             $client = new GoogleClient();
             $client->setClientId($sys->google_client_id);
@@ -118,7 +118,7 @@ class GoogleCalendarController extends Controller
         if ($integration) {
             // Try to revoke the token
             try {
-                $sys = SystemSetting::get();
+                $sys = SystemSetting::current();
                 $client = new GoogleClient();
                 $client->setClientId($sys->google_client_id);
                 $client->setClientSecret($sys->google_client_secret);

@@ -17,7 +17,7 @@ class CheckSiteLocked
             return $next($request);
         }
 
-        $settings = SystemSetting::get();
+        $settings = SystemSetting::current();
 
         if ($settings->site_locked) {
             return response()->view('tenant.locked', [

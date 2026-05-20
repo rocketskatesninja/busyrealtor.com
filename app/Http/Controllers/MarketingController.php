@@ -17,19 +17,19 @@ class MarketingController extends Controller
             }
         }
 
-        $settings = \App\Models\SystemSetting::get();
+        $settings = \App\Models\SystemSetting::current();
         return view('marketing.home', compact('settings'));
     }
 
     public function privacy()
     {
-        $settings = \App\Models\SystemSetting::get();
+        $settings = \App\Models\SystemSetting::current();
         return view('marketing.privacy', compact('settings'));
     }
 
     public function terms()
     {
-        $settings = \App\Models\SystemSetting::get();
+        $settings = \App\Models\SystemSetting::current();
         return view('marketing.terms', compact('settings'));
     }
 

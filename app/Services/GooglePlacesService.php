@@ -13,7 +13,7 @@ class GooglePlacesService
 
     public function __construct()
     {
-        $sys = SystemSetting::get();
+        $sys = SystemSetting::current();
         $this->apiKey = $sys->google_places_key ?? $sys->google_maps_key ?? '';
     }
 

@@ -31,7 +31,7 @@ class SystemSetting extends Model
         'smtp_encryption',
         'mail_from_address',
         'mail_from_name',
-        'google_maps_key', 'google_places_key',
+        'google_maps_key',
         'google_places_key',
         'social_facebook', 'social_instagram', 'social_x', 'social_linkedin', 'social_youtube',
     ];
@@ -61,6 +61,30 @@ class SystemSetting extends Model
             'starter_price'         => 29.00,
             'pro_price'             => 59.00,
         ]);
+    }
+
+    /**
+     * Request-scoped cached singleton. Same row as get() but the lookup
+     * only happens once per HTTP request — subsequent callers in the
+     * same request reuse the in-memory model. Tests / long-lived workers
+     * can call forgetCurrent() to clear it.
+     *
+     * Prefer current() over get() everywhere except in code paths that
+     * need a guaranteed fresh read (e.g. immediately after an update).
+     */
+    public static function current(): self
+    {
+        if (! app()->bound('system_setting')) {
+            app()->instance('system_setting', static::get());
+        }
+        return app('system_setting');
+    }
+
+    public static function forgetCurrent(): void
+    {
+        if (app()->bound('system_setting')) {
+            app()->forgetInstance('system_setting');
+        }
     }
 
     public function hasStripe(): bool

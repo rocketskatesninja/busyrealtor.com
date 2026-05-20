@@ -31,7 +31,7 @@ class TestMailController extends Controller
     {
         $request->validate(['to' => 'required|email']);
 
-        $sys = SystemSetting::first();
+        $sys = SystemSetting::current();
         if (! $sys || ! $sys->hasMail()) {
             return response()->json([
                 'success' => false,

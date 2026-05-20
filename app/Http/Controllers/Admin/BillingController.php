@@ -35,7 +35,7 @@ class BillingController extends Controller
      */
     private function stripeClient(): StripeClient
     {
-        return new StripeClient(SystemSetting::get()->stripe_secret);
+        return new StripeClient(SystemSetting::current()->stripe_secret);
     }
 
     /*
@@ -69,7 +69,7 @@ class BillingController extends Controller
     public function show($account)
     {
         $tenant   = app('tenant');
-        $sys      = SystemSetting::get();
+        $sys      = SystemSetting::current();
         $invoices = [];
 
         if ($tenant->stripe_id && $sys->hasStripe()) {
@@ -100,7 +100,7 @@ class BillingController extends Controller
         $this->authorizeForTenant();
 
         $tenant = app('tenant');
-        $sys    = SystemSetting::get();
+        $sys    = SystemSetting::current();
 
 
         if (!$sys->hasStripe()) {
@@ -162,7 +162,7 @@ class BillingController extends Controller
     {
         $sessionId = $request->query('session_id');
 
-        if ($sessionId && SystemSetting::get()->hasStripe()) {
+        if ($sessionId && SystemSetting::current()->hasStripe()) {
             try {
                 $session = $this->stripeClient()->checkout->sessions->retrieve($sessionId);
                 if ($session->payment_status !== 'paid' && $session->status !== 'complete') {

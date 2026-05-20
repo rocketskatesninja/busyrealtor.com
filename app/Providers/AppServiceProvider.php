@@ -39,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Inject Stripe keys from DB into Cashier config at runtime
         try {
-            $sys = SystemSetting::get();
+            $sys = SystemSetting::current();
             if ($sys->hasStripe()) {
                 config([
                     'cashier.key'            => $sys->stripe_key,

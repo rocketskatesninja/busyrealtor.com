@@ -11,7 +11,7 @@ class CheckRegistrationsEnabled
 {
     public function handle(Request $request, Closure $next): Response
     {
-        $settings = SystemSetting::get();
+        $settings = SystemSetting::current();
 
         if (! $settings->registrations_enabled) {
             if ($request->expectsJson()) {

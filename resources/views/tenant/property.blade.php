@@ -19,10 +19,7 @@
 @section('og_image', $property->images->first() ? asset('storage/' . $property->images->first()->image_path) : '')
 
 @section('head')
-@php
-$mapsKey = \App\Models\SystemSetting::get()->google_maps_key;
-@endphp
-@if($mapsKey && $property->latitude && $property->longitude)
+@if(($mapsKey ?? null) && $property->latitude && $property->longitude)
 <script>
 var DARK_MAP_STYLES = [
     { elementType: 'geometry', stylers: [{ color: '#242f3e' }] },

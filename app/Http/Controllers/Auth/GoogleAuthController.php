@@ -17,7 +17,7 @@ class GoogleAuthController extends Controller
 {
     private function configureGoogle(): void
     {
-        $s = SystemSetting::get();
+        $s = SystemSetting::current();
         config([
             'services.google.client_id'     => $s->google_client_id,
             'services.google.client_secret' => $s->google_client_secret,

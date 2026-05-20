@@ -90,7 +90,8 @@ class TenantPageController extends Controller
         // property across every tenant on the platform.
         $properties = Property::where('tenant_id', $tenant->id)
             ->whereNotNull('latitude')->whereNotNull('longitude')->get();
-        return view('tenant.map', compact('tenant', 'settings', 'properties'));
+        $mapsKey = \App\Models\SystemSetting::current()->google_maps_key;
+        return view('tenant.map', compact('tenant', 'settings', 'properties', 'mapsKey', 'account'));
     }
 
     public function property($account, $id)
@@ -122,7 +123,7 @@ class TenantPageController extends Controller
 
         // Nearby Places — lazy-fetch and cache
         $nearbyPlaces = null;
-        $mapsKey = \App\Models\SystemSetting::get()->google_maps_key;
+        $mapsKey = \App\Models\SystemSetting::current()->google_maps_key;
         if ($mapsKey && $property->latitude && $property->longitude) {
             if (!$property->hasNearbyPlacesCache()) {
                 try {
@@ -143,7 +144,7 @@ class TenantPageController extends Controller
             $nearbyPlaces = $property->nearby_places_cache;
         }
 
-        return view('tenant.property', compact('tenant', 'settings', 'property', 'related', 'nearbyPlaces'));
+        return view('tenant.property', compact('tenant', 'settings', 'property', 'related', 'nearbyPlaces', 'mapsKey'));
     }
 
     public function contact($account)

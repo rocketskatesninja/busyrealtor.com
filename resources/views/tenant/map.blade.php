@@ -16,11 +16,7 @@
 @section('title', 'Map — ' . ($settings->site_title ?? 'BusyRealtor'))
 
 @section('head')
-@php
-$account = $tenant->slug;
-$mapsKey = \App\Models\SystemSetting::get()->google_maps_key;
-@endphp
-@if($mapsKey)
+@if($mapsKey ?? null)
 <script>
 var _allMarkers = [];
 var _map = null;
