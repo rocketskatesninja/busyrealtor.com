@@ -9,6 +9,7 @@ use App\Models\Property;
 use App\Models\StaffMember;
 use App\Services\GoogleCalendarService;
 use App\Services\TenantMailer;
+use App\Support\MailBody;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -330,33 +331,33 @@ class AppointmentController extends Controller
     {
         $isVisitor = $opts['visitor'] ?? false;
 
-        $body  = "{$headline}\n";
-        $body .= str_repeat('─', 40) . "\n";
+        $body = MailBody::make($headline);
 
         if (!$isVisitor) {
-            $body .= "Client: {$appt->visitor_name}\n";
-            if ($appt->visitor_email) $body .= "Email: {$appt->visitor_email}\n";
-            if ($appt->visitor_phone) $body .= "Phone: {$appt->visitor_phone}\n";
+            $body->row('Client', $appt->visitor_name)
+                 ->row('Email',  $appt->visitor_email)
+                 ->row('Phone',  $appt->visitor_phone);
         }
 
-        $body .= "Type: {$fmt['type']}\n";
-        $body .= "Date: {$fmt['date']} at {$fmt['time']}\n";
-        if ($fmt['property']) $body .= "Property: {$fmt['property']}\n";
+        $body->row('Type', $fmt['type'])
+             ->row('Date', "{$fmt['date']} at {$fmt['time']}")
+             ->row('Property', $fmt['property'] ?: null);
 
         if (!empty($opts['include_status'])) {
-            $body .= "Status: " . ucfirst($appt->status) . "\n";
+            $body->row('Status', ucfirst($appt->status));
         }
 
         if (!empty($opts['admin_link'])) {
-            if ($appt->notes) $body .= "Notes: {$appt->notes}\n";
-            $body .= "\nView in admin: {$opts['admin_link']}";
+            $body->row('Notes', $appt->notes)
+                 ->blank()
+                 ->line("View in admin: {$opts['admin_link']}");
         }
 
         if (!empty($opts['footer'])) {
-            $body .= "\n{$opts['footer']}";
+            $body->blank()->line($opts['footer']);
         }
 
-        return $body;
+        return $body->toString();
     }
 
     /**

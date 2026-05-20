@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Models\Tenant;
 use App\Services\TenantMailer;
+use App\Support\MailBody;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Events\WebhookReceived;
@@ -106,12 +107,13 @@ class HandleStripeWebhook
         $date     = date('F j, Y', $obj['created'] ?? time());
 
         $subject = "Payment received — {$amount}";
-        $body  = "We've received your payment. Thank you!\n";
-        $body .= str_repeat('─', 40) . "\n";
-        $body .= "Date: {$date}\n";
-        $body .= "Amount: {$amount}\n";
-        $body .= "Plan: {$planName}\n";
-        $body .= "\nYou can view your full billing history from your account dashboard.";
+        $body = MailBody::make("We've received your payment. Thank you!")
+            ->row('Date',   $date)
+            ->row('Amount', $amount)
+            ->row('Plan',   $planName)
+            ->blank()
+            ->line('You can view your full billing history from your account dashboard.')
+            ->toString();
 
         TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
 
@@ -130,11 +132,14 @@ class HandleStripeWebhook
         $billingUrl = url("/{$tenant->slug}/admin/billing");
 
         $subject = 'Action required: Payment failed';
-        $body  = "We were unable to process your payment.\n";
-        $body .= str_repeat('─', 40) . "\n";
-        $body .= "Amount Due: {$amount}\n";
-        $body .= "\nPlease update your payment method to keep your account active:\n{$billingUrl}\n";
-        $body .= "\nWe'll retry automatically, but you can update your card now to avoid any interruption.";
+        $body = MailBody::make('We were unable to process your payment.')
+            ->row('Amount Due', $amount)
+            ->blank()
+            ->line('Please update your payment method to keep your account active:')
+            ->line($billingUrl)
+            ->blank()
+            ->line("We'll retry automatically, but you can update your card now to avoid any interruption.")
+            ->toString();
 
         TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
 

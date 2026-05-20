@@ -8,6 +8,7 @@ use App\Models\LegalPage;
 use App\Models\Appointment;
 use App\Models\StaffMember;
 use App\Models\PropertyView;
+use App\Http\Requests\GalleryFilterRequest;
 use Illuminate\Http\Request;
 
 class TenantPageController extends Controller
@@ -41,37 +42,44 @@ class TenantPageController extends Controller
         return view('tenant.home', compact('tenant', 'settings', 'featured', 'staff'));
     }
 
-    public function gallery($account, Request $request)
+    public function gallery($account, GalleryFilterRequest $request)
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
+        $filters  = $request->validated();
 
         // Tenant-scoped — without this filter, the public gallery would
         // mix in properties from every other realtor on the platform.
         $query = Property::with('images')->where('tenant_id', $tenant->id);
-        if ($request->search)        $query->where(function($q) use ($request) { $q->where('title','like',"%{$request->search}%")->orWhere('address_street','like',"%{$request->search}%")->orWhere('address_city','like',"%{$request->search}%"); });
-        if ($request->type)          $query->where('property_type', $request->type);
-        if ($request->status)        $query->where('listing_status', $request->status);
-        if ($request->price_min)     $query->where('price', '>=', $request->price_min);
-        if ($request->price_max)     $query->where('price', '<=', $request->price_max);
-        if ($request->beds)          $query->where('bedrooms', '>=', $request->beds);
-        if ($request->baths)         $query->where('bathrooms', '>=', $request->baths);
-        if ($request->sqft_min)      $query->where('square_feet', '>=', $request->sqft_min);
-        if ($request->sqft_max)      $query->where('square_feet', '<=', $request->sqft_max);
-        if ($request->year_min)      $query->where('year_built', '>=', $request->year_min);
-        if ($request->year_max)      $query->where('year_built', '<=', $request->year_max);
-        if ($request->garage_spaces) $query->where('garage', '>=', $request->garage_spaces);
-        if ($request->hoa === 'yes') $query->where('hoa_fee', '>', 0);
-        if ($request->hoa === 'no')  $query->where(function($q) { $q->whereNull('hoa_fee')->orWhere('hoa_fee', 0); });
-        if ($request->hoa_max)       $query->where('hoa_fee', '<=', $request->hoa_max);
-        if ($request->features) {
-            foreach ((array) $request->features as $feature) {
+
+        if ($search = $request->searchLike()) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title',          'like', "%{$search}%")
+                  ->orWhere('address_street', 'like', "%{$search}%")
+                  ->orWhere('address_city',   'like', "%{$search}%");
+            });
+        }
+        if (!empty($filters['type']))          $query->where('property_type',  $filters['type']);
+        if (!empty($filters['status']))        $query->where('listing_status', $filters['status']);
+        if (!empty($filters['price_min']))     $query->where('price',          '>=', $filters['price_min']);
+        if (!empty($filters['price_max']))     $query->where('price',          '<=', $filters['price_max']);
+        if (!empty($filters['beds']))          $query->where('bedrooms',       '>=', $filters['beds']);
+        if (!empty($filters['baths']))         $query->where('bathrooms',      '>=', $filters['baths']);
+        if (!empty($filters['sqft_min']))      $query->where('square_feet',    '>=', $filters['sqft_min']);
+        if (!empty($filters['sqft_max']))      $query->where('square_feet',    '<=', $filters['sqft_max']);
+        if (!empty($filters['year_min']))      $query->where('year_built',     '>=', $filters['year_min']);
+        if (!empty($filters['year_max']))      $query->where('year_built',     '<=', $filters['year_max']);
+        if (!empty($filters['garage_spaces'])) $query->where('garage',         '>=', $filters['garage_spaces']);
+        if (($filters['hoa'] ?? null) === 'yes') $query->where('hoa_fee', '>', 0);
+        if (($filters['hoa'] ?? null) === 'no')  $query->where(function ($q) { $q->whereNull('hoa_fee')->orWhere('hoa_fee', 0); });
+        if (!empty($filters['hoa_max']))         $query->where('hoa_fee', '<=', $filters['hoa_max']);
+        if (!empty($filters['features'])) {
+            foreach ($filters['features'] as $feature) {
                 $query->whereJsonContains('amenities', $feature);
             }
         }
 
-        $sort = $request->sort ?? 'newest';
-        match($sort) {
+        match ($filters['sort'] ?? 'newest') {
             'price_asc'  => $query->orderBy('price', 'asc'),
             'price_desc' => $query->orderBy('price', 'desc'),
             'oldest'     => $query->orderBy('created_at', 'asc'),

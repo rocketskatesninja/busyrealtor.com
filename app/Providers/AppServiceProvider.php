@@ -22,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
         // Tell Cashier that Tenant is the billable model, not User
         Cashier::useCustomerModel(Tenant::class);
 
+        // Wire up model observers
+        Tenant::observe(\App\Observers\TenantObserver::class);
+
         // Password rules used by the `Password::defaults()` validation
         // rule. Set here in one place so the registration, reset, and
         // change-password flows all enforce the same policy.
@@ -49,13 +52,17 @@ class AppServiceProvider extends ServiceProvider
             }
 
             if ($sys->hasMail()) {
+                $port   = (int) $sys->smtp_port;
+                $enc    = $sys->smtp_encryption ?: ($port === 465 ? 'ssl' : 'tls');
+                $scheme = $enc === 'ssl' ? 'smtps' : 'smtp';
+
                 config([
                     'mail.default'                    => 'smtp',
+                    'mail.mailers.smtp.scheme'        => $scheme,
                     'mail.mailers.smtp.host'          => $sys->smtp_host,
-                    'mail.mailers.smtp.port'          => (int) $sys->smtp_port,
+                    'mail.mailers.smtp.port'          => $port,
                     'mail.mailers.smtp.username'      => $sys->smtp_username,
                     'mail.mailers.smtp.password'      => $sys->smtp_password,
-                    'mail.mailers.smtp.encryption'    => $sys->smtp_encryption ?: null,
                     'mail.from.address'               => $sys->mail_from_address ?: config('mail.from.address'),
                     'mail.from.name'                  => $sys->mail_from_name ?: config('mail.from.name'),
                 ]);

@@ -7,6 +7,7 @@ use App\Models\Message;
 use App\Models\Property;
 use App\Models\SiteSettings;
 use App\Services\TenantMailer;
+use App\Support\MailBody;
 use Illuminate\Http\Request;
 
 class ContactController extends Controller
@@ -65,11 +66,10 @@ class ContactController extends Controller
             $ownerEmail = $tenant->ownerEmail();
             $subject    = 'New Contact Message from ' . $request->name;
 
-            $body  = "New contact form submission\n";
-            $body .= str_repeat('─', 40) . "\n";
-            $body .= "Name: {$request->name}\n";
-            $body .= "Email: {$request->email}\n";
-            if ($request->phone) $body .= "Phone: {$request->phone}\n";
+            $body = MailBody::make('New contact form submission')
+                ->row('Name',  $request->name)
+                ->row('Email', $request->email)
+                ->row('Phone', $request->phone);
 
             // Look up property for label and staff notification
             $property  = null;
@@ -78,17 +78,18 @@ class ContactController extends Controller
                 $property = Property::with('staffMember')->find($request->property_id);
                 if ($property) $propLabel = "{$property->title} — {$property->address_street}, {$property->address_city}";
             }
-            if ($propLabel) $body .= "Property: {$propLabel}\n";
+            $body->row('Property', $propLabel);
+            $body->blank()->line($request->message);
 
-            $body .= "\n{$request->message}";
+            $bodyStr = $body->toString();
 
-            TenantMailer::send($tenant->id, $ownerEmail, $subject, $body);
+            TenantMailer::send($tenant->id, $ownerEmail, $subject, $bodyStr);
 
             // Pro: also notify the assigned staff member
             if ($tenant->isPro() && $property && $property->staffMember && $property->staffMember->email) {
                 $staffEmail = $property->staffMember->email;
                 if ($staffEmail !== $ownerEmail) {
-                    TenantMailer::send($tenant->id, $staffEmail, $subject, $body);
+                    TenantMailer::send($tenant->id, $staffEmail, $subject, $bodyStr);
                 }
             }
         }

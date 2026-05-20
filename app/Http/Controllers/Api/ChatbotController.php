@@ -9,6 +9,7 @@ use App\Models\Integration;
 use App\Models\SiteSettings;
 use App\Models\Property;
 use App\Services\TenantMailer;
+use App\Support\MailBody;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -311,26 +312,30 @@ class ChatbotController extends Controller
 
             // Notify owner
             $ownerEmail = $tenant->ownerEmail();
+            $body = null;
             if ($ownerEmail) {
                 $typeLabel = ucwords(str_replace('_', ' ', $appt->appointment_type));
-                $body  = "New appointment request via chatbot\n";
-                $body .= str_repeat('─', 40) . "\n";
-                $body .= "Name:  {$appt->visitor_name}\n";
-                $body .= "Email: {$appt->visitor_email}\n";
-                if ($appt->visitor_phone) $body .= "Phone: {$appt->visitor_phone}\n";
-                $body .= "Type:  {$typeLabel}\n";
-                $timeLabel = isset($input['appointment_time']) ? $input['appointment_time'] : '10:00';
-                $body .= "Date:  {$date->format('l, F j, Y')} at {$timeLabel}\n";
-                if ($property) $body .= "Property: {$property->title} — {$property->address_street}, {$property->address_city}\n";
-                if ($appt->notes) $body .= "Notes: {$appt->notes}\n";
-                $body .= "\nView in admin: " . route('tenant.admin.appointments.index', $tenant->slug);
+                $timeLabel = $input['appointment_time'] ?? '10:00';
 
-                TenantMailer::send($tenant->id, $ownerEmail, "New {$typeLabel} Request — {$appt->visitor_name}", $body);
+                $body = MailBody::make('New appointment request via chatbot')
+                    ->row('Name',  $appt->visitor_name)
+                    ->row('Email', $appt->visitor_email)
+                    ->row('Phone', $appt->visitor_phone)
+                    ->row('Type',  $typeLabel)
+                    ->row('Date',  "{$date->format('l, F j, Y')} at {$timeLabel}");
+                if ($property) {
+                    $body->row('Property', "{$property->title} — {$property->address_street}, {$property->address_city}");
+                }
+                $body->row('Notes', $appt->notes)
+                    ->blank()
+                    ->line('View in admin: ' . route('tenant.admin.appointments.index', $tenant->slug));
+
+                TenantMailer::send($tenant->id, $ownerEmail, "New {$typeLabel} Request — {$appt->visitor_name}", $body->toString());
             }
 
             // Pro: also notify the assigned staff member
-            if ($staffEmail && $staffEmail !== $ownerEmail) {
-                $bodyStaff = "New appointment request for your listing: {$property->title}\n\n" . $body;
+            if ($staffEmail && $staffEmail !== $ownerEmail && $body !== null) {
+                $bodyStaff = "New appointment request for your listing: {$property->title}\n\n" . $body->toString();
                 TenantMailer::send($tenant->id, $staffEmail, "New {$typeLabel} Request — {$appt->visitor_name}", $bodyStaff);
             }
 

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Tenant;
 use App\Services\TenantMailer;
+use App\Support\MailBody;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Laravel\Cashier\Subscription;
@@ -46,12 +47,15 @@ class ProcessDunning extends Command
                 ]);
 
                 $subject = 'Your BusyRealtor account has been suspended';
-                $body  = "Your account has been suspended due to an unresolved payment failure.\n";
-                $body .= str_repeat('─', 40) . "\n";
-                $body .= "Status: Suspended\n";
-                $body .= "Reason: Payment failure\n";
-                $body .= "\nTo reactivate your account, please update your payment method:\n{$billingUrl}\n";
-                $body .= "\nYour data is safe and your account can be reactivated at any time.";
+                $body = MailBody::make('Your account has been suspended due to an unresolved payment failure.')
+                    ->row('Status', 'Suspended')
+                    ->row('Reason', 'Payment failure')
+                    ->blank()
+                    ->line('To reactivate your account, please update your payment method:')
+                    ->line($billingUrl)
+                    ->blank()
+                    ->line('Your data is safe and your account can be reactivated at any time.')
+                    ->toString();
 
                 TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
                 Log::warning('Account suspended — payment unresolved', ['tenant_id' => $tenant->id, 'days_failed' => $daysFailed]);
@@ -64,11 +68,13 @@ class ProcessDunning extends Command
                     $daysLeft = self::SUSPEND_DAY - $daysFailed;
 
                     $subject = 'Reminder: Payment issue — account suspends soon';
-                    $body  = "We still haven't been able to process your payment.\n";
-                    $body .= str_repeat('─', 40) . "\n";
-                    $body .= "Status: Past due\n";
-                    $body .= "Suspends in: {$daysLeft} " . ($daysLeft === 1 ? 'day' : 'days') . "\n";
-                    $body .= "\nPlease update your payment method now:\n{$billingUrl}";
+                    $body = MailBody::make("We still haven't been able to process your payment.")
+                        ->row('Status',      'Past due')
+                        ->row('Suspends in', $daysLeft . ' ' . ($daysLeft === 1 ? 'day' : 'days'))
+                        ->blank()
+                        ->line('Please update your payment method now:')
+                        ->line($billingUrl)
+                        ->toString();
 
                     TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
 

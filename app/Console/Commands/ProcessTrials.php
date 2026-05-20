@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Tenant;
 use App\Services\TenantMailer;
+use App\Support\MailBody;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -33,11 +34,13 @@ class ProcessTrials extends Command
 
             $billingUrl = url("/{$tenant->slug}/admin/billing");
             $subject    = 'Your BusyRealtor trial has ended';
-            $body  = "Your 14-day free trial has ended and your account has been deactivated.\n";
-            $body .= str_repeat('─', 40) . "\n";
-            $body .= "Status: Deactivated\n";
-            $body .= "Reason: Trial expired\n";
-            $body .= "\nSubscribe to a plan to reactivate your account and keep your listings live:\n{$billingUrl}";
+            $body = MailBody::make('Your 14-day free trial has ended and your account has been deactivated.')
+                ->row('Status', 'Deactivated')
+                ->row('Reason', 'Trial expired')
+                ->blank()
+                ->line('Subscribe to a plan to reactivate your account and keep your listings live:')
+                ->line($billingUrl)
+                ->toString();
 
             TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
         }
@@ -65,11 +68,13 @@ class ProcessTrials extends Command
                     ? 'Your BusyRealtor trial ends tomorrow'
                     : "Your BusyRealtor trial ends in {$days} days";
 
-                $body  = "Your free trial ends in {$days} " . ($days === 1 ? 'day' : 'days') . ".\n";
-                $body .= str_repeat('─', 40) . "\n";
-                $body .= "Plan: Trial\n";
-                $body .= "Expires: " . $tenant->trial_ends_at->format('l, F j, Y') . "\n";
-                $body .= "\nSubscribe now to keep your listings live and avoid any interruption:\n{$billingUrl}";
+                $body = MailBody::make("Your free trial ends in {$days} " . ($days === 1 ? 'day' : 'days') . '.')
+                    ->row('Plan',    'Trial')
+                    ->row('Expires', $tenant->trial_ends_at->format('l, F j, Y'))
+                    ->blank()
+                    ->line('Subscribe now to keep your listings live and avoid any interruption:')
+                    ->line($billingUrl)
+                    ->toString();
 
                 $ok = TenantMailer::send($tenant->id, $tenant->billingEmail(), $subject, $body, 'platform');
 
