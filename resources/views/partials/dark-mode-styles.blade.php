@@ -79,6 +79,21 @@
 .dark .hover\:bg-blue-100:hover  { background-color: rgba(59,130,246,0.25) !important; }
 .dark .hover\:bg-green-100:hover { background-color: rgba(16,185,129,0.25) !important; }
 .dark .hover\:bg-red-100:hover   { background-color: rgba(239,68,68,0.25)  !important; }
+.dark .hover\:bg-red-50:hover    { background-color: rgba(239,68,68,0.18)  !important; }
+.dark .hover\:bg-blue-50:hover   { background-color: rgba(59,130,246,0.18) !important; }
+.dark .hover\:bg-green-50:hover  { background-color: rgba(16,185,129,0.18) !important; }
+
+/* Outline-button text/borders so destructive (red) and intent (blue/green)
+   buttons stay legible in dark mode. */
+.dark .text-red-600    { color: #fca5a5 !important; }
+.dark .text-red-500    { color: #fca5a5 !important; }
+.dark .text-blue-600   { color: #93c5fd !important; }
+.dark .text-green-600  { color: #6ee7b7 !important; }
+.dark .border-red-300  { border-color: rgba(239,68,68,0.45)  !important; }
+.dark .border-blue-300 { border-color: rgba(59,130,246,0.45) !important; }
+.dark .border-green-300{ border-color: rgba(16,185,129,0.45) !important; }
+.dark .hover\:text-red-700:hover  { color: #fecaca !important; }
+.dark .hover\:text-blue-700:hover { color: #bfdbfe !important; }
 
 /* Shadows become softer */
 .dark .shadow-sm { box-shadow: 0 1px 2px rgba(0,0,0,0.5)  !important; }
