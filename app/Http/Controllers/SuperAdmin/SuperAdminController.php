@@ -147,13 +147,25 @@ class SuperAdminController extends Controller
                         $fail('Trial-to-paid upgrades must be initiated by the tenant via the billing page (Stripe Checkout). Super-admin cannot create a Stripe subscription on their behalf.');
                     }
                 },
-                // Forbid starter/pro -> trial. Downgrading a paying tenant
-                // to trial would leave them with an active Stripe sub but a
-                // trial UI — confusing and billing-broken. Use the cancel
-                // flow instead (sub->cancel() in the existing billing path).
-                function ($attr, $value, $fail) use ($oldPlan) {
-                    if (in_array($oldPlan, ['starter', 'pro'], true) && $value === 'trial') {
-                        $fail('Downgrading a paid tenant to trial requires cancelling their Stripe subscription. Use the cancel/refund flow instead.');
+                // Forbid starter/pro -> trial WHEN the Stripe subscription
+                // is still active. Downgrading a paying tenant to trial
+                // while their sub is live would leave them billed against
+                // a trial UI — billing-broken. But once the sub is
+                // cancelled (status null / canceled / incomplete_expired
+                // and no subscription_id on file), super-admin should be
+                // able to put them back on trial — otherwise there's no
+                // path back from a cancelled paid account.
+                function ($attr, $value, $fail) use ($oldPlan, $tenant) {
+                    if (! in_array($oldPlan, ['starter', 'pro'], true) || $value !== 'trial') {
+                        return;
+                    }
+                    $subStillLive = in_array(
+                        $tenant->stripe_subscription_status,
+                        ['active', 'trialing', 'past_due', 'unpaid'],
+                        true,
+                    );
+                    if ($subStillLive) {
+                        $fail('Downgrading a paid tenant to trial requires cancelling their Stripe subscription first. Use the cancel/refund flow, then retry.');
                     }
                 },
             ],
