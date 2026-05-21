@@ -53,19 +53,32 @@
     {{-- Edit Form --}}
     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
         <h3 class="font-semibold text-gray-800 mb-5">Edit Tenant</h3>
+        @php
+            // Computed up here so the Alpine x-data init below can read it.
+            // The trial-downgrade guard only fires when Stripe still thinks
+            // the subscription is live — once cancelled, super-admin needs
+            // a way to put the tenant back on trial.
+            $subStillLive = in_array(
+                $tenant->stripe_subscription_status,
+                ['active', 'trialing', 'past_due', 'unpaid'],
+                true,
+            );
+        @endphp
         <form method="POST" action="{{ route('super.tenants.update', $tenant->slug) }}" class="space-y-4"
               x-data="{
                 origPlan: '{{ $tenant->plan }}',
                 plan: '{{ $tenant->plan }}',
+                subStillLive: {{ $subStillLive ? 'true' : 'false' }},
                 trialDate: '{{ old('trial_ends_at', $tenant->trial_ends_at?->format('Y-m-d')) }}',
                 showConfirm: false,
                 confirmed: false,
                 /* trial -> starter/pro must go through Stripe Checkout (no
-                 * existing sub to swap). starter/pro -> trial would orphan
-                 * the active Stripe sub. Both are blocked server-side too. */
+                 * existing sub to swap). starter/pro -> trial is blocked
+                 * ONLY while the Stripe sub is still live — once cancelled,
+                 * super-admin should be able to put them back on trial. */
                 isForbidden(target) {
                     if (this.origPlan === 'trial' && (target === 'starter' || target === 'pro')) return true;
-                    if ((this.origPlan === 'starter' || this.origPlan === 'pro') && target === 'trial') return true;
+                    if ((this.origPlan === 'starter' || this.origPlan === 'pro') && target === 'trial' && this.subStillLive) return true;
                     return false;
                 },
                 /* True only for starter<->pro swaps, the case where we will
@@ -134,7 +147,7 @@
                         <option value="trial"
                                 {{ $tenant->plan === 'trial' ? 'selected' : '' }}
                                 :disabled="isForbidden('trial')"
-                                :title="isForbidden('trial') ? 'Cannot downgrade paid tenant to trial — use cancel flow' : ''">
+                                :title="isForbidden('trial') ? 'Cannot downgrade tenant to trial while their Stripe subscription is still active — cancel it first' : ''">
                             Trial
                         </option>
                         <option value="starter"
