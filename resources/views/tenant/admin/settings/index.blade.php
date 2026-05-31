@@ -1699,6 +1699,10 @@ async function doRestore() {
     const fd = new FormData();
     fd.append('backup', file);
     fd.append('_token', _csrf);
+    // Lock the settings save button — the form on screen still shows the
+    // pre-restore values; saving it would overwrite the restored data.
+    const saveBtn = document.getElementById('settings-save-btn');
+    if (saveBtn) saveBtn.disabled = true;
     try {
         dclog('Uploading to server...');
         const r = await fetch(_reUrl, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: fd });
@@ -1713,12 +1717,15 @@ async function doRestore() {
         if (d.legal_pages)  dclog('Legal pages restored: ' + d.legal_pages, 'success');
         if (d.settings)     dclog('Site settings restored.', 'success');
         if (d.files)        dclog('Image files restored: ' + d.files, 'success');
-        dclog('Restore complete.', 'success');
+        dclog('Restore complete — reloading page to show restored values...', 'success');
         fileInput.value = '';
         const fn = document.getElementById('restore-filename');
         if (fn) fn.textContent = 'No file chosen';
+        setTimeout(() => location.reload(), 1500);
+        return; // keep the spinner visible until reload
     } catch (e) {
         dclog('Restore failed: ' + e.message, 'error');
+        if (saveBtn) saveBtn.disabled = false; // restore aborted — saving is safe again
     }
     btn.disabled  = false;
     btn.innerHTML = orig;

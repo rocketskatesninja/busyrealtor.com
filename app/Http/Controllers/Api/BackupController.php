@@ -53,6 +53,7 @@ class BackupController extends Controller
         }
 
         $zip->close();
+        logActivity('backup', "Created backup: {$filename}");
         return response()->download($tmpPath, $filename)->deleteFileAfterSend(true);
     }
 }

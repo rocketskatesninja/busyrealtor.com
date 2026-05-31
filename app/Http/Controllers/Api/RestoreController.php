@@ -179,6 +179,11 @@ class RestoreController extends Controller
         }
 
         $zip->close();
+        logActivity('restore', sprintf(
+            'Restored from backup: properties=%d images=%d staff=%d appointments=%d messages=%d legal_pages=%d settings=%s files=%d',
+            $r['properties'], $r['images'], $r['staff'], $r['appointments'],
+            $r['messages'], $r['legal_pages'], $r['settings'] ? 'yes' : 'no', $r['files']
+        ));
         return response()->json(['success' => true, ...$r]);
     }
 }
