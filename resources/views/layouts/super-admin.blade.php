@@ -83,7 +83,7 @@
         @yield('styles')
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen" x-data="{ open: false }">
+<body class="bg-gray-900 text-white min-h-screen" data-theme="force-dark" x-data="{ open: false }">
 
 {{-- Mobile top bar --}}
 <div class="md:hidden bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
