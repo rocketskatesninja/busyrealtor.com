@@ -1,10 +1,20 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Super Admin') — BusyRealtor</title>
+    {{-- Apply saved theme before render to prevent flash --}}
+    <script>
+        (function () {
+            var saved = localStorage.getItem('theme');
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (saved === 'dark' || (!saved && prefersDark)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         [x-cloak] { display: none !important; }
@@ -83,7 +93,7 @@
         @yield('styles')
     </style>
 </head>
-<body class="bg-gray-900 text-white min-h-screen" x-data="{ open: false }">
+<body class="bg-gray-50 text-gray-900 min-h-screen" x-data="{ open: false }">
 
 {{-- Mobile top bar --}}
 <div class="md:hidden bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
@@ -242,7 +252,7 @@
 
     @include('partials.flash')
 
-    <main class="flex-1 p-4 md:p-6 bg-gray-900 overflow-x-auto">
+    <main class="flex-1 p-4 md:p-6 bg-gray-50 overflow-x-auto">
         @yield('content')
     </main>
 </div>

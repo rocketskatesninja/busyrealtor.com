@@ -7,10 +7,16 @@ use App\Models\Property;
 use App\Models\Message;
 use App\Models\Appointment;
 use App\Models\SiteSettings;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
+    /** Cache key prefix — must stay in sync with InvalidatesDashboardCache trait. */
+    private const CACHE_KEY_PREFIX = 'dashboard:';
+    private const CACHE_KEY_SUFFIX = ':v1';
+    private const CACHE_TTL_SECONDS = 300; // 5 minutes
+
     public function index($account)
     {
         $tenant   = app('tenant');
@@ -22,14 +28,75 @@ class DashboardController extends Controller
             return redirect()->route('tenant.admin.setup', ['account' => $account]);
         }
 
-        $dashConfig = $settings->dashboard_config ?? [];
-        $show = fn($key) => $dashConfig[$key] ?? true;
+        // Pull the heavy query payload from cache. Property/Message/
+        // Appointment/PropertyView writes flush this key via the
+        // InvalidatesDashboardCache trait, so the dashboard refreshes
+        // immediately on real data changes; the 5-minute TTL is just a
+        // safety net.
+        $data = Cache::remember(
+            self::CACHE_KEY_PREFIX . $tid . self::CACHE_KEY_SUFFIX,
+            self::CACHE_TTL_SECONDS,
+            fn () => $this->gatherDashboardData($tid)
+        );
 
-        // ── Stats ──────────────────────────────────────────────────────────
-        // Every single query in this method must be scoped to the current
-        // tenant. Without that, every realtor's dashboard would aggregate
-        // ALL tenants' properties / messages / appointments — a major
-        // cross-tenant data leak.
+        // Settings-driven (cheap) data lives outside the cache so the
+        // user's tab toggle / widget reorder takes effect instantly.
+        $dashConfig = $settings->dashboard_config ?? [];
+        $show       = fn ($key) => $dashConfig[$key] ?? true;
+
+        $defaultChartOrder = ['type_chart', 'status_chart', 'views_chart', 'views_30days', 'messages_7days',
+                              'price_distribution', 'listings_over_time', 'revenue_trend', 'appt_status', 'message_sources'];
+        $chartOrder = $dashConfig['_chart_order'] ?? $defaultChartOrder;
+        $chartOrder = array_values(array_filter($chartOrder, fn ($k) => $show($k)));
+
+        $defaultTableOrder = ['top_properties', 'recent_messages', 'starred_messages',
+                              'upcoming_appts', 'recent_properties', 'needs_attention'];
+        $tableOrder = $dashConfig['_table_order'] ?? $defaultTableOrder;
+        $tableOrder = array_values(array_filter($tableOrder, fn ($k) => $show($k)));
+
+        // Chart.js label/data arrays — derived from the cached collections.
+        $typeLabels   = $data['propertiesByType']->keys()->map(fn ($k) => ucfirst(str_replace('-', ' ', $k)))->values()->all();
+        $typeData     = $data['propertiesByType']->values()->all();
+        $statusLabels = $data['propertiesByStatus']->keys()->map(fn ($k) => ucfirst($k))->values()->all();
+        $statusData   = $data['propertiesByStatus']->values()->all();
+        $viewLabels   = $data['viewsByProperty']->map(fn ($p) => \Illuminate\Support\Str::limit($p->title ?: $p->address_street, 20))->all();
+        $viewData     = $data['viewsByProperty']->pluck('view_count')->all();
+        $v30Labels    = $data['views30days']->pluck('label')->all();
+        $v30Data      = $data['views30days']->pluck('count')->all();
+        $msg7Labels   = $data['messages7days']->pluck('label')->all();
+        $msg7Data     = $data['messages7days']->pluck('count')->all();
+        $priceLabels  = $data['priceDistribution']->keys()->all();
+        $priceData    = $data['priceDistribution']->values()->all();
+        $ltLabels     = $data['listingsOverTime']->pluck('label')->all();
+        $ltData       = $data['listingsOverTime']->pluck('count')->all();
+        $revLabels    = $data['revenueTrend']->pluck('label')->all();
+        $revData      = $data['revenueTrend']->pluck('revenue')->all();
+        $apptLabels   = $data['apptByStatus']->keys()->map(fn ($k) => ucfirst($k))->values()->all();
+        $apptData     = $data['apptByStatus']->values()->all();
+        $srcLabels    = $data['messageSources']->keys()->map(fn ($k) => ucfirst($k))->values()->all();
+        $srcData      = $data['messageSources']->values()->all();
+
+        return view('tenant.admin.dashboard', array_merge(
+            $data,
+            compact(
+                'tenant', 'settings', 'show', 'dashConfig',
+                'chartOrder', 'tableOrder',
+                'typeLabels', 'typeData', 'statusLabels', 'statusData',
+                'viewLabels', 'viewData', 'v30Labels', 'v30Data',
+                'msg7Labels', 'msg7Data', 'priceLabels', 'priceData',
+                'ltLabels', 'ltData', 'revLabels', 'revData',
+                'apptLabels', 'apptData', 'srcLabels', 'srcData'
+            )
+        ));
+    }
+
+    /**
+     * Gather every query the dashboard needs for a tenant. Every query
+     * MUST stay scoped to $tid — without that, every realtor's dashboard
+     * would aggregate ALL tenants' data (cross-tenant leak).
+     */
+    private function gatherDashboardData(int $tid): array
+    {
         $activeProps   = Property::where('tenant_id', $tid)->where('listing_status', 'active');
         $totalMessages = Message::where('tenant_id', $tid)->count();
         $readMessages  = Message::where('tenant_id', $tid)->where('is_read', true)->count();
@@ -50,7 +117,6 @@ class DashboardController extends Controller
             'views_month'      => DB::table('property_views')->where('tenant_id', $tid)->where('viewed_at', '>=', now()->subDays(30))->count(),
         ];
 
-        // ── Existing charts ────────────────────────────────────────────────
         $viewsByProperty = Property::where('tenant_id', $tid)
             ->where('view_count', '>', 0)
             ->orderBy('view_count', 'desc')->limit(10)
@@ -65,9 +131,7 @@ class DashboardController extends Controller
             ->selectRaw('listing_status, count(*) as count')
             ->groupBy('listing_status')->pluck('count', 'listing_status');
 
-        // ── New charts ─────────────────────────────────────────────────────
-
-        // Daily views — last 30 days (already tenant-scoped)
+        // Daily views — last 30 days
         $rawViews = DB::table('property_views')
             ->where('tenant_id', $tid)
             ->where('viewed_at', '>=', now()->subDays(29)->startOfDay())
@@ -104,12 +168,12 @@ class DashboardController extends Controller
             'Over $1M'    => (int) $pdRaw->over_1m,
         ]);
 
-        // Listings added per month — last 12 months (single GROUP BY query)
+        // Listings added per month — last 12 months
         $rawListings = Property::where('tenant_id', $tid)
             ->selectRaw("DATE_FORMAT(created_at, '%Y-%m') as ym, COUNT(*) as count")
             ->where('created_at', '>=', now()->subMonths(11)->startOfMonth())
             ->groupBy('ym')->pluck('count', 'ym');
-        $listingsOverTime = collect(range(11, 0))->map(fn($m) => [
+        $listingsOverTime = collect(range(11, 0))->map(fn ($m) => [
             'label' => now()->subMonths($m)->format('M y'),
             'count' => (int) ($rawListings[now()->subMonths($m)->format('Y-m')] ?? 0),
         ]);
@@ -120,22 +184,19 @@ class DashboardController extends Controller
             ->where('updated_at', '>=', now()->subMonths(11)->startOfMonth())
             ->selectRaw("DATE_FORMAT(updated_at, '%Y-%m') as ym, SUM(price) as revenue")
             ->groupBy('ym')->pluck('revenue', 'ym');
-        $revenueTrend = collect(range(11, 0))->map(fn($m) => [
+        $revenueTrend = collect(range(11, 0))->map(fn ($m) => [
             'label'   => now()->subMonths($m)->format('M y'),
             'revenue' => (int) ($rawRevenue[now()->subMonths($m)->format('Y-m')] ?? 0),
         ]);
 
-        // Appointment status breakdown
         $apptByStatus = Appointment::where('tenant_id', $tid)
             ->selectRaw('status, count(*) as count')
             ->groupBy('status')->pluck('count', 'status');
 
-        // Message sources
         $messageSources = Message::where('tenant_id', $tid)
             ->selectRaw('COALESCE(source, "direct") as source, count(*) as count')
             ->groupBy('source')->pluck('count', 'source');
 
-        // ── Tables — these were the worst leak: actual PII rows ─────────────
         $recentMessages   = Message::where('tenant_id', $tid)->latest()->limit(5)->get();
         $starredMessages  = Message::where('tenant_id', $tid)->where('is_starred', true)->latest()->limit(5)->get();
         $upcomingAppts    = Appointment::where('tenant_id', $tid)->where('status', 'confirmed')
@@ -144,7 +205,6 @@ class DashboardController extends Controller
         $topProperties    = Property::where('tenant_id', $tid)->with('images')->orderBy('view_count', 'desc')->limit(5)->get();
         $recentProperties = Property::where('tenant_id', $tid)->with('images')->latest()->limit(5)->get();
 
-        // Needs attention: low views, no photos, listing age > 30 days with low views
         $needsAttention = Property::where('tenant_id', $tid)
             ->with('images')
             ->where('listing_status', 'active')
@@ -168,52 +228,13 @@ class DashboardController extends Controller
                 return $p;
             });
 
-        // ── Chart & table ordering ─────────────────────────────────────────
-        $defaultChartOrder = ['type_chart', 'status_chart', 'views_chart', 'views_30days', 'messages_7days',
-                              'price_distribution', 'listings_over_time', 'revenue_trend', 'appt_status', 'message_sources'];
-        $chartOrder = $dashConfig['_chart_order'] ?? $defaultChartOrder;
-        $chartOrder = array_values(array_filter($chartOrder, fn($k) => $show($k)));
-
-        $defaultTableOrder = ['top_properties', 'recent_messages', 'starred_messages',
-                              'upcoming_appts', 'recent_properties', 'needs_attention'];
-        $tableOrder = $dashConfig['_table_order'] ?? $defaultTableOrder;
-        $tableOrder = array_values(array_filter($tableOrder, fn($k) => $show($k)));
-
-        // ── Chart label/data arrays for Chart.js ───────────────────────────
-        $typeLabels   = $propertiesByType->keys()->map(fn($k) => ucfirst(str_replace('-', ' ', $k)))->values()->all();
-        $typeData     = $propertiesByType->values()->all();
-        $statusLabels = $propertiesByStatus->keys()->map(fn($k) => ucfirst($k))->values()->all();
-        $statusData   = $propertiesByStatus->values()->all();
-        $viewLabels   = $viewsByProperty->map(fn($p) => \Illuminate\Support\Str::limit($p->title ?: $p->address_street, 20))->all();
-        $viewData     = $viewsByProperty->pluck('view_count')->all();
-        $v30Labels    = $views30days->pluck('label')->all();
-        $v30Data      = $views30days->pluck('count')->all();
-        $msg7Labels   = $messages7days->pluck('label')->all();
-        $msg7Data     = $messages7days->pluck('count')->all();
-        $priceLabels  = $priceDistribution->keys()->all();
-        $priceData    = $priceDistribution->values()->all();
-        $ltLabels     = $listingsOverTime->pluck('label')->all();
-        $ltData       = $listingsOverTime->pluck('count')->all();
-        $revLabels    = $revenueTrend->pluck('label')->all();
-        $revData      = $revenueTrend->pluck('revenue')->all();
-        $apptLabels   = $apptByStatus->keys()->map(fn($k) => ucfirst($k))->values()->all();
-        $apptData     = $apptByStatus->values()->all();
-        $srcLabels    = $messageSources->keys()->map(fn($k) => ucfirst($k))->values()->all();
-        $srcData      = $messageSources->values()->all();
-
-        return view('tenant.admin.dashboard', compact(
-            'tenant', 'settings', 'stats', 'show', 'dashConfig',
+        return compact(
+            'stats',
             'viewsByProperty', 'propertiesByType', 'propertiesByStatus',
             'views30days', 'messages7days', 'priceDistribution',
             'listingsOverTime', 'revenueTrend', 'apptByStatus', 'messageSources',
             'recentMessages', 'starredMessages', 'upcomingAppts',
-            'topProperties', 'recentProperties', 'needsAttention',
-            'chartOrder', 'tableOrder',
-            'typeLabels', 'typeData', 'statusLabels', 'statusData',
-            'viewLabels', 'viewData', 'v30Labels', 'v30Data',
-            'msg7Labels', 'msg7Data', 'priceLabels', 'priceData',
-            'ltLabels', 'ltData', 'revLabels', 'revData',
-            'apptLabels', 'apptData', 'srcLabels', 'srcData'
-        ));
+            'topProperties', 'recentProperties', 'needsAttention'
+        );
     }
 }

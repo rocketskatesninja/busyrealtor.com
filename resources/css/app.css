@@ -10,3 +10,15 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+/*
+ * Tailwind v4 changed the default border color from gray-200 to
+ * currentColor — so any `border-t`, `border-b`, etc without an explicit
+ * color picks up the parent text color (often near-black on cards).
+ * Restore the v3 default so unclassed dividers stay a subtle gray.
+ */
+@layer base {
+    *, ::after, ::before, ::backdrop, ::file-selector-button {
+        border-color: var(--color-gray-200, currentColor);
+    }
+}

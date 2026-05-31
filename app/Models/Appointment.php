@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Models\Traits\BelongsToTenant;
+use App\Models\Traits\InvalidatesDashboardCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Appointment extends Model
 {
     use BelongsToTenant;
+    use InvalidatesDashboardCache;
 
     /**
      * No updated_at column — only created_at (set via useCurrent in migration).

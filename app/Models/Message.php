@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use App\Models\Traits\BelongsToTenant;
+use App\Models\Traits\InvalidatesDashboardCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Message extends Model
 {
     use BelongsToTenant;
+    use InvalidatesDashboardCache;
 
     protected $fillable = [
         'tenant_id',
