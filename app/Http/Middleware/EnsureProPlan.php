@@ -15,11 +15,10 @@ class EnsureProPlan
      * - Browser requests redirect to the tenant's billing page with a flash
      *   `error` describing the feature.
      *
-     * The route may set the feature label via the `pro_feature` defaults:
-     *   Route::get(...)->defaults('pro_feature', 'Staff management');
-     * Falls back to a generic message when omitted.
+     * Pass the feature label as a middleware parameter:
+     *   Route::middleware('plan.pro:Staff management')->group(...)
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, string $feature = 'This feature'): Response
     {
         $tenant = app()->bound('tenant') ? app('tenant') : null;
 
@@ -27,7 +26,6 @@ class EnsureProPlan
             return $next($request);
         }
 
-        $feature = $request->route()?->defaults['pro_feature'] ?? 'This feature';
         $message = "{$feature} is a Pro plan feature. Upgrade to access it.";
 
         if ($request->expectsJson()) {

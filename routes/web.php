@@ -193,7 +193,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::delete('/api/property-images/{id}', [PropertyImagesController::class, 'destroy'])->name('api.property-images.destroy');
 
         // Staff — Pro plan only
-        Route::middleware('plan.pro')->defaults('pro_feature', 'Staff management')->group(function () {
+        Route::middleware('plan.pro:Staff management')->group(function () {
             Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
             Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
             Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
@@ -207,7 +207,7 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::post('/messages/bulk', [MessageController::class, 'bulk'])->name('messages.bulk');
 
         // Appointments (admin) — Pro plan only
-        Route::middleware('plan.pro')->defaults('pro_feature', 'Appointment management')->group(function () {
+        Route::middleware('plan.pro:Appointment management')->group(function () {
             Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
             Route::post('/appointments/{id}/action', [AppointmentController::class, 'action'])->name('appointments.action');
             Route::post('/appointments/bulk', [AppointmentController::class, 'bulk'])->name('appointments.bulk');
@@ -215,13 +215,13 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         });
 
         // Google Calendar OAuth — Pro plan only
-        Route::middleware('plan.pro')->defaults('pro_feature', 'Google Calendar sync')->group(function () {
+        Route::middleware('plan.pro:Google Calendar sync')->group(function () {
             Route::get('/google-calendar/connect', [GoogleCalendarController::class, 'redirect'])->name('google-calendar.connect');
             Route::post('/google-calendar/disconnect', [GoogleCalendarController::class, 'disconnect'])->name('google-calendar.disconnect');
         });
 
         // AI Assistant — Pro plan only
-        Route::middleware('plan.pro')->defaults('pro_feature', 'The AI assistant')->group(function () {
+        Route::middleware('plan.pro:The AI assistant')->group(function () {
             Route::get('/assistant', [AdminChatController::class, 'index'])->name('assistant');
             Route::post('/api/assistant', [AdminChatController::class, 'chat'])->middleware('throttle:30,1')->name('api.assistant');
         });
