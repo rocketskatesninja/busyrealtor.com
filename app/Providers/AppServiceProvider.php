@@ -116,10 +116,7 @@ class AppServiceProvider extends ServiceProvider
             $tenant = null;
             try { $tenant = app('tenant'); } catch (\Exception $e) {}
             if (!$tenant) return;
-            $ga = \App\Models\Integration::where('tenant_id', $tenant->id)
-                ->where('integration_type', 'google_analytics')
-                ->where('is_active', true)
-                ->first();
+            $ga = $tenant->getIntegration('google_analytics', true);
             $view->with('ga', $ga);
         });
 

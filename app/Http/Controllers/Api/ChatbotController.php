@@ -18,33 +18,16 @@ use Illuminate\Support\Str;
 
 class ChatbotController extends Controller
 {
-    public function chat($account, Request $request)
+    public function chat($account, \App\Http\Requests\PublicChatbotMessageRequest $request)
     {
-        $request->validate([
-            'message'    => 'required|string|max:2000',
-            'session_id' => 'nullable|string',
-        ]);
-
         $tenant = app('tenant');
         if (!$tenant->isPro()) {
             return response()->json(['reply' => 'The AI chatbot is available on the Pro plan. Please upgrade your account.']);
         }
 
         $settings = SiteSettings::where('tenant_id', $tenant->id)->first();
-        $aiInteg  = Integration::where('tenant_id', $tenant->id)
-                        ->where('integration_type', 'ai_provider')
-                        ->where('is_active', true)
-                        ->first();
-
-        // Resolve key and model from new dual-key config, falling back to legacy api_key column
-        $aiConfig  = $aiInteg?->config ?? [];
-        $preferred = $aiConfig['preferred'] ?? ($aiInteg?->provider ?? 'anthropic');
-        $key       = $preferred === 'openai'
-            ? ($aiConfig['openai_key']    ?? $aiInteg?->api_key ?? null)
-            : ($aiConfig['anthropic_key'] ?? $aiInteg?->api_key ?? null);
-        $model     = $preferred === 'openai'
-            ? ($aiConfig['openai_model']    ?? $aiConfig['model'] ?? 'gpt-4o-mini')
-            : ($aiConfig['anthropic_model'] ?? $aiConfig['model'] ?? 'claude-haiku-4-5-20251001');
+        ['integration' => $aiInteg, 'preferred' => $preferred, 'key' => $key, 'model' => $model]
+            = \App\Services\AiProviderService::resolve($tenant, activeOnly: true);
 
         if (!$aiInteg || !$key) {
             return response()->json(['reply' => 'Chatbot is not configured yet.']);
@@ -77,7 +60,7 @@ class ChatbotController extends Controller
         }
 
         // IP flood guard: max 60 chatbot messages per IP per hour (catches session-id rotation)
-        $ipKey = 'chatbot_ip_' . $tenant->id . '_' . md5($request->ip());
+        $ipKey = 'chatbot_ip_' . $tenant->id . '_' . hash('sha256', $request->ip());
         $ipCount = (int) cache($ipKey, 0);
         if ($ipCount >= 60) {
             return response()->json([

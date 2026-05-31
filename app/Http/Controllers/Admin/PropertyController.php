@@ -17,7 +17,7 @@ class PropertyController extends Controller
     public function index($account, Request $request)
     {
         $tenant = app('tenant');
-        $query  = Property::with('images');
+        $query  = Property::where('tenant_id', $tenant->id)->with('images');
 
         if ($request->search)  $query->where(function($q) use ($request) { $q->where('title','like',"%{$request->search}%")->orWhere('address_street','like',"%{$request->search}%"); });
         if ($request->type)    $query->where('property_type', $request->type);
@@ -39,7 +39,7 @@ class PropertyController extends Controller
     {
         $tenant        = app('tenant');
         $propertyLimit = $tenant->propertyLimit();
-        $propertyCount = $propertyLimit !== null ? Property::count() : null;
+        $propertyCount = $propertyLimit !== null ? Property::where('tenant_id', $tenant->id)->count() : null;
         $staffMembers  = StaffMember::where('tenant_id', $tenant->id)->orderBy('name')->get();
         return view('tenant.admin.properties.form', compact('tenant', 'propertyLimit', 'propertyCount', 'staffMembers'));
     }
@@ -48,7 +48,7 @@ class PropertyController extends Controller
     {
         $tenant = app('tenant');
         $limit  = $tenant->propertyLimit();
-        if ($limit !== null && Property::count() >= $limit) {
+        if ($limit !== null && Property::where('tenant_id', $tenant->id)->count() >= $limit) {
             return back()->with('error', "Your Starter plan allows up to {$limit} active listings. Upgrade to Pro for unlimited listings.");
         }
         $data = $this->validateAndPrepare($request);
@@ -169,7 +169,9 @@ class PropertyController extends Controller
         Storage::disk('public')->makeDirectory($dir);
 
         foreach ($request->file('images') as $i => $file) {
-            $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+            // Content is re-encoded as JPEG below; hardcoding the extension
+            // avoids trusting the client-supplied filename.
+            $filename = uniqid() . '.jpg';
             $path     = $dir . '/' . $filename;
             $img      = Image::read($file)->scale(width: 1200);
             Storage::disk('public')->put($path, $img->toJpeg(85));

@@ -192,31 +192,39 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::post('/api/property-images/{id}/reorder', [PropertyImagesController::class, 'reorder'])->name('api.property-images.reorder');
         Route::delete('/api/property-images/{id}', [PropertyImagesController::class, 'destroy'])->name('api.property-images.destroy');
 
-        // Staff
-        Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
-        Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
-        Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
-        Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
-        Route::post('/api/staff-order', [StaffOrderController::class, 'save'])->name('api.staff-order');
+        // Staff — Pro plan only
+        Route::middleware('plan.pro')->defaults('pro_feature', 'Staff management')->group(function () {
+            Route::get('/staff', [StaffController::class, 'index'])->name('staff.index');
+            Route::post('/staff', [StaffController::class, 'store'])->name('staff.store');
+            Route::put('/staff/{id}', [StaffController::class, 'update'])->name('staff.update');
+            Route::delete('/staff/{id}', [StaffController::class, 'destroy'])->name('staff.destroy');
+            Route::post('/api/staff-order', [StaffOrderController::class, 'save'])->name('api.staff-order');
+        });
 
         // Messages
         Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
         Route::post('/messages/action', [MessageController::class, 'action'])->name('messages.action');
         Route::post('/messages/bulk', [MessageController::class, 'bulk'])->name('messages.bulk');
 
-        // Appointments
-        Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
-        Route::post('/appointments/{id}/action', [AppointmentController::class, 'action'])->name('appointments.action');
-        Route::post('/appointments/bulk', [AppointmentController::class, 'bulk'])->name('appointments.bulk');
-        Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+        // Appointments (admin) — Pro plan only
+        Route::middleware('plan.pro')->defaults('pro_feature', 'Appointment management')->group(function () {
+            Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+            Route::post('/appointments/{id}/action', [AppointmentController::class, 'action'])->name('appointments.action');
+            Route::post('/appointments/bulk', [AppointmentController::class, 'bulk'])->name('appointments.bulk');
+            Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+        });
 
-        // Google Calendar OAuth
-        Route::get('/google-calendar/connect', [GoogleCalendarController::class, 'redirect'])->name('google-calendar.connect');
-        Route::post('/google-calendar/disconnect', [GoogleCalendarController::class, 'disconnect'])->name('google-calendar.disconnect');
+        // Google Calendar OAuth — Pro plan only
+        Route::middleware('plan.pro')->defaults('pro_feature', 'Google Calendar sync')->group(function () {
+            Route::get('/google-calendar/connect', [GoogleCalendarController::class, 'redirect'])->name('google-calendar.connect');
+            Route::post('/google-calendar/disconnect', [GoogleCalendarController::class, 'disconnect'])->name('google-calendar.disconnect');
+        });
 
-        // AI Assistant (Pro only — enforced in controller)
-        Route::get('/assistant', [AdminChatController::class, 'index'])->name('assistant');
-        Route::post('/api/assistant', [AdminChatController::class, 'chat'])->middleware('throttle:30,1')->name('api.assistant');
+        // AI Assistant — Pro plan only
+        Route::middleware('plan.pro')->defaults('pro_feature', 'The AI assistant')->group(function () {
+            Route::get('/assistant', [AdminChatController::class, 'index'])->name('assistant');
+            Route::post('/api/assistant', [AdminChatController::class, 'chat'])->middleware('throttle:30,1')->name('api.assistant');
+        });
 
         // Settings
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings');

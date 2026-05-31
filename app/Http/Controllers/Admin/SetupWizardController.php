@@ -73,7 +73,7 @@ class SetupWizardController extends Controller
             case 4: // Integrations
                 // AI Provider
                 if ($request->filled('ai_anthropic_key') || $request->filled('ai_openai_key')) {
-                    $aiRecord      = Integration::where('tenant_id', $tenant->id)->where('integration_type', 'ai_provider')->first();
+                    $aiRecord      = $tenant->getIntegration('ai_provider');
                     $existingConfig = $aiRecord?->config ?? [];
                     $aiConfig = [
                         'anthropic_key'   => $request->filled('ai_anthropic_key') ? $request->ai_anthropic_key : ($existingConfig['anthropic_key'] ?? null),
@@ -96,7 +96,7 @@ class SetupWizardController extends Controller
                 }
                 // Facebook
                 if ($request->filled('fb_access_token') || $request->filled('fb_page_id')) {
-                    $existingFb = Integration::where('tenant_id', $tenant->id)->where('integration_type', 'facebook')->first();
+                    $existingFb = $tenant->getIntegration('facebook');
                     $existingFbConfig = $existingFb?->config ?? [];
                     $fbData = [
                         'config'    => [
@@ -116,7 +116,7 @@ class SetupWizardController extends Controller
                 }
                 // Twitter/X
                 if ($request->filled('tw_api_key') || $request->filled('tw_api_secret')) {
-                    $existingTw = Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first();
+                    $existingTw = $tenant->getIntegration('twitter');
                     $existingTwConfig = $existingTw?->config ?? [];
                     $twData = [
                         'config' => [

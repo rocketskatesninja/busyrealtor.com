@@ -15,11 +15,6 @@ class GoogleCalendarController extends Controller
     {
         $tenant = app('tenant');
 
-        if (!$tenant->isPro()) {
-            return redirect()->route('tenant.admin.billing', $account)
-                ->with('error', 'Google Calendar integration is a Pro plan feature.');
-        }
-
         $sys = SystemSetting::current();
         if (!$sys->hasGoogle()) {
             return redirect()->route('tenant.admin.settings', $account)
@@ -111,9 +106,7 @@ class GoogleCalendarController extends Controller
     {
         $tenant = app('tenant');
 
-        $integration = Integration::where('tenant_id', $tenant->id)
-            ->where('integration_type', 'google_calendar')
-            ->first();
+        $integration = $tenant->getIntegration('google_calendar');
 
         if ($integration) {
             // Try to revoke the token

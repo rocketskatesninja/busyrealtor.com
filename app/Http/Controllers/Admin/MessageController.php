@@ -11,7 +11,7 @@ class MessageController extends Controller
     public function index($account, Request $request)
     {
         $tenant = app('tenant');
-        $query  = Message::query();
+        $query  = Message::where('tenant_id', $tenant->id);
 
         if ($request->type)    $query->where('source', $request->type);
         if ($request->status)  $query->where('status', $request->status);

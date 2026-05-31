@@ -30,7 +30,7 @@ class PostPropertyToSocial implements ShouldQueue
     public function handle(): void
     {
         $property = $this->property->loadMissing('images', 'tenant');
-        $tenantId = $property->tenant_id;
+        $tenant   = $property->tenant;
 
         // Dedup: skip if we posted about this property in the last 10 minutes
         if ($property->last_social_posted_at && $property->last_social_posted_at->gt(now()->subMinutes(10))) {
@@ -42,10 +42,7 @@ class PostPropertyToSocial implements ShouldQueue
 
         // Facebook
         try {
-            $fb = Integration::where('tenant_id', $tenantId)
-                ->where('integration_type', 'facebook')
-                ->where('is_active', true)
-                ->first();
+            $fb = $tenant?->getIntegration('facebook', true);
             if ($fb && $this->shouldPost($fb, $this->event)) {
                 $this->postToFacebook($fb, $property);
                 $posted = true;
@@ -56,10 +53,7 @@ class PostPropertyToSocial implements ShouldQueue
 
         // Twitter / X
         try {
-            $tw = Integration::where('tenant_id', $tenantId)
-                ->where('integration_type', 'twitter')
-                ->where('is_active', true)
-                ->first();
+            $tw = $tenant?->getIntegration('twitter', true);
             if ($tw && $this->shouldPost($tw, $this->event)) {
                 $this->postToTwitter($tw, $property);
                 $posted = true;

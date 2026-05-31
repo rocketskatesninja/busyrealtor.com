@@ -120,7 +120,18 @@ class RestoreController extends Controller
         }); // end DB::transaction
 
         // ── Binary files ───────────────────────────────────────────────
-        $storageBase = storage_path('app/public');
+        // Hardened extraction: validate every entry path BEFORE creating
+        // directories or writing data. Any of the following disqualifies an
+        // entry without side effects: directory traversal segments, absolute
+        // paths, backslashes, NUL bytes, or a destination that already exists
+        // as a symlink (which file_put_contents would follow off the storage
+        // tree).
+        $storageBase = realpath(storage_path('app/public'));
+        if ($storageBase === false) {
+            $zip->close();
+            return response()->json(['success' => false, 'message' => 'Storage path unavailable.'], 500);
+        }
+
         for ($i = 0; $i < $zip->numFiles; $i++) {
             $name = $zip->getNameIndex($i);
             if (!str_starts_with($name, 'files/') || str_ends_with($name, '/')) continue;
@@ -134,14 +145,34 @@ class RestoreController extends Controller
                 );
             }
 
+            // Reject obviously dangerous entries: absolute paths, backslashes,
+            // NUL bytes, any '..' segment.
+            if ($destRelative === ''
+                || $destRelative[0] === '/'
+                || str_contains($destRelative, "\\")
+                || str_contains($destRelative, "\0")
+                || preg_match('#(^|/)\.\.(/|$)#', $destRelative)
+            ) {
+                continue;
+            }
+
             $destPath = "{$storageBase}/{$destRelative}";
 
-            // Guard against path traversal in crafted ZIPs
-            if (str_contains($destRelative, '..')) continue;
-            $realBase = realpath($storageBase);
-            @mkdir(dirname($destPath), 0775, true);
-            $realDest = realpath(dirname($destPath));
-            if (!$realDest || !str_starts_with($realDest . '/', $realBase . '/')) continue;
+            // Skip if the target path (or any ancestor) is a pre-existing
+            // symlink — writing would follow it outside the storage tree.
+            $check = $destPath;
+            $bad = false;
+            while ($check !== $storageBase && $check !== dirname($check)) {
+                if (is_link($check)) { $bad = true; break; }
+                $check = dirname($check);
+            }
+            if ($bad) continue;
+
+            // Belt-and-suspenders: ensure the parent directory, once created,
+            // still resolves inside the storage tree.
+            if (!@mkdir(dirname($destPath), 0775, true) && !is_dir(dirname($destPath))) continue;
+            $realParent = realpath(dirname($destPath));
+            if ($realParent === false || !str_starts_with($realParent . '/', $storageBase . '/')) continue;
 
             file_put_contents($destPath, $zip->getFromIndex($i));
             $r['files']++;

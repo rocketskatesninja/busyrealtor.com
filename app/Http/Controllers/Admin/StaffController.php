@@ -13,11 +13,7 @@ class StaffController extends Controller
     public function index($account)
     {
         $tenant = app('tenant');
-        if (!$tenant->isPro()) {
-            return redirect()->route('tenant.admin.billing', $account)
-                ->with('error', 'Staff management is a Pro plan feature. Upgrade to access it.');
-        }
-        $staff = StaffMember::orderBy('sort_order')->get();
+        $staff = StaffMember::where('tenant_id', $tenant->id)->orderBy('sort_order')->get();
         return view('tenant.admin.staff.index', compact('tenant', 'staff'));
     }
 
@@ -37,7 +33,7 @@ class StaffController extends Controller
         $data['tenant_id']            = $tenant->id;
         $data['display_on_homepage']  = $request->boolean('display_on_homepage');
         $data['accepts_appointments'] = $request->boolean('accepts_appointments');
-        $data['sort_order']           = StaffMember::max('sort_order') + 1;
+        $data['sort_order']           = StaffMember::where('tenant_id', $tenant->id)->max('sort_order') + 1;
 
         if ($request->hasFile('profile_image')) {
             $data['photo_url'] = $this->uploadPhoto($request->file('profile_image'), $tenant->id);

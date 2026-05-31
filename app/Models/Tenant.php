@@ -116,6 +116,17 @@ class Tenant extends Model
         return $this->hasMany(Integration::class);
     }
 
+    /**
+     * Fetch a single Integration of the given type for this tenant.
+     * Pass $activeOnly=true to require is_active=1.
+     */
+    public function getIntegration(string $type, bool $activeOnly = false): ?Integration
+    {
+        $q = Integration::where('tenant_id', $this->id)->where('integration_type', $type);
+        if ($activeOnly) $q->where('is_active', true);
+        return $q->first();
+    }
+
     public function legalPages(): HasMany
     {
         return $this->hasMany(LegalPage::class);
@@ -138,10 +149,7 @@ class Tenant extends Model
      */
     public function hasOwnSmtp(): bool
     {
-        return Integration::where('tenant_id', $this->id)
-            ->where('integration_type', 'smtp')
-            ->where('is_active', true)
-            ->exists();
+        return $this->getIntegration('smtp', true) !== null;
     }
 
     /**

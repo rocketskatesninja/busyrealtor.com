@@ -19,11 +19,7 @@ class AppointmentController extends Controller
     public function index($account, Request $request)
     {
         $tenant = app('tenant');
-        if (!$tenant->isPro()) {
-            return redirect()->route('tenant.admin.billing', $account)
-                ->with('error', 'Appointment management is a Pro plan feature. Upgrade to access it.');
-        }
-        $query  = Appointment::with('property');
+        $query  = Appointment::where('tenant_id', $tenant->id)->with('property');
 
         if ($request->status)     $query->where('status', $request->status);
         if ($request->date_from)  $query->where('appointment_date', '>=', $request->date_from);
@@ -44,21 +40,12 @@ class AppointmentController extends Controller
         return view('tenant.admin.appointments.index', compact('tenant', 'appointments'));
     }
 
-    public function storePublic($account, Request $request)
+    public function storePublic($account, \App\Http\Requests\StorePublicAppointmentRequest $request)
     {
         $tenant = app('tenant');
         if (!$tenant->isPro()) {
             return response()->json(['success' => false, 'message' => 'Appointment booking is not available for this agency.'], 403);
         }
-        $request->validate([
-            'visitor_name'   => 'required|string|max:255',
-            'visitor_email'  => 'required|email',
-            'visitor_phone'  => 'nullable|string|max:30',
-            'appointment_date' => 'required|date',
-            'appointment_type' => 'nullable|string',
-            'message'        => 'nullable|string|max:2000',
-            'property_id'    => 'nullable|integer',
-        ]);
 
         // Rate limit: max 3 appointment requests per email per 24 hours
         $recentAppts = Appointment::where('tenant_id', $tenant->id)
@@ -395,10 +382,7 @@ class AppointmentController extends Controller
         if (!$send && !($status === 'cancelled' && $appt->google_calendar_event_id)) return;
 
         try {
-            $gcalIntegration = Integration::where('tenant_id', $tenant->id)
-                ->where('integration_type', 'google_calendar')
-                ->where('is_active', true)
-                ->first();
+            $gcalIntegration = $tenant->getIntegration('google_calendar', true);
 
             if (!$gcalIntegration || !$tenant->isPro()) return;
 

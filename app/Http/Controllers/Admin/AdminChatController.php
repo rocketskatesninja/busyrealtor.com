@@ -22,11 +22,6 @@ class AdminChatController extends Controller
     {
         $tenant = app('tenant');
 
-        if (!$tenant->isPro()) {
-            return redirect()->route('tenant.admin.billing', $account)
-                ->with('error', 'The AI Assistant is available on the Pro plan.');
-        }
-
         $sessionKey = 'ai_chat_' . $tenant->id;
 
         // "New chat" clears the stored session and redirects
@@ -67,18 +62,9 @@ class AdminChatController extends Controller
         return view('tenant.admin.assistant', compact('tenant', 'account', 'sessionId', 'chatLogs', 'providerLabel', 'modelLabel'));
     }
 
-    public function chat($account, Request $request)
+    public function chat($account, \App\Http\Requests\AdminChatMessageRequest $request)
     {
-        $request->validate([
-            'message'    => 'required|string|max:4000',
-            'session_id' => 'required|string|max:100',
-        ]);
-
         $tenant = app('tenant');
-
-        if (!$tenant->isPro()) {
-            return response()->json(['error' => 'Pro plan required.'], 403);
-        }
 
         $sessionId = $request->session_id;
 
@@ -537,7 +523,7 @@ class AdminChatController extends Controller
 
         // Default reply-to = SMTP from address
         if (!$replyTo) {
-            $smtp    = Integration::where('tenant_id', $tenant->id)->where('integration_type', 'smtp')->where('is_active', true)->first();
+            $smtp    = $tenant->getIntegration('smtp', true);
             $replyTo = $smtp?->config['smtp_from_email'] ?? null;
         }
 
@@ -562,20 +548,7 @@ class AdminChatController extends Controller
 
     private function resolveAiConfig($tenant): array
     {
-        $integration = Integration::where('tenant_id', $tenant->id)
-            ->where('integration_type', 'ai_provider')
-            ->first();
-
-        $cfg       = $integration?->config ?? [];
-        $preferred = $cfg['preferred'] ?? 'anthropic';
-        $key       = $preferred === 'openai'
-            ? ($cfg['openai_key'] ?? null)
-            : ($cfg['anthropic_key'] ?? null);
-        $model     = $preferred === 'openai'
-            ? ($cfg['openai_model'] ?? 'gpt-4o-mini')
-            : ($cfg['anthropic_model'] ?? 'claude-haiku-4-5-20251001');
-
-        return compact('preferred', 'key', 'model', 'integration');
+        return \App\Services\AiProviderService::resolve($tenant);
     }
 
     private function buildMotd($tenant): string

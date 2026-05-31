@@ -198,7 +198,7 @@ class SettingsController extends Controller
             );
         }
         // AI provider — always update config so preferred/model changes persist even without new keys
-        $aiRecord      = Integration::where('tenant_id', $tenant->id)->where('integration_type', 'ai_provider')->first();
+        $aiRecord      = $tenant->getIntegration('ai_provider');
         $existingConfig = $aiRecord?->config ?? [];
         $aiConfig = [
             'anthropic_key'   => $request->filled('ai_anthropic_key') ? $request->ai_anthropic_key : ($existingConfig['anthropic_key'] ?? null),
@@ -234,7 +234,7 @@ class SettingsController extends Controller
             $fbData
         );
 
-        $twitter  = Integration::where('tenant_id', $tenant->id)->where('integration_type', 'twitter')->first();
+        $twitter  = $tenant->getIntegration('twitter');
         $twConfig = $twitter?->config ?? [];
         $twData   = [
             'config'    => [

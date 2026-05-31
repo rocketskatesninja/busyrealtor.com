@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'super.admin'          => EnsureSuperAdmin::class,
             'tenant.active'        => EnsureTenantActive::class,
             'tenant.admin'         => EnsureTenantAdmin::class,
+            'plan.pro'             => \App\Http\Middleware\EnsureProPlan::class,
             'impersonate'          => HandleImpersonation::class,
             'registrations.enabled'=> \App\Http\Middleware\CheckRegistrationsEnabled::class,
             'site.lock'            => \App\Http\Middleware\CheckSiteLocked::class,

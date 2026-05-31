@@ -16,18 +16,8 @@ class GenerateDescriptionController extends Controller
             return response()->json(['error' => 'AI description generation is a Pro plan feature. Please upgrade.'], 403);
         }
 
-        $aiInteg = Integration::where('tenant_id', $tenant->id)
-            ->where('integration_type', 'ai_provider')
-            ->first();
-
-        $config    = $aiInteg?->config ?? [];
-        $preferred = $config['preferred'] ?? 'anthropic';
-        $key       = $preferred === 'openai'
-            ? ($config['openai_key'] ?? null)
-            : ($config['anthropic_key'] ?? null);
-        $model     = $preferred === 'openai'
-            ? ($config['openai_model'] ?? 'gpt-4o-mini')
-            : ($config['anthropic_model'] ?? 'claude-haiku-4-5-20251001');
+        ['preferred' => $preferred, 'key' => $key, 'model' => $model]
+            = \App\Services\AiProviderService::resolve($tenant);
 
         if (!$key) {
             return response()->json(['error' => 'AI not configured. Please add API keys in Settings → Chatbot & AI.'], 400);

@@ -30,7 +30,10 @@ class FeedbackController extends Controller
         if ($request->hasFile('screenshots')) {
             $dir = 'feedback/' . $tenant->id;
             foreach ($request->file('screenshots') as $file) {
-                $name   = uniqid() . '.' . $file->getClientOriginalExtension();
+                // Derive extension from the validated MIME type, not the
+                // client-supplied filename.
+                $ext    = $file->extension() ?: 'bin';
+                $name   = uniqid() . '.' . $ext;
                 $paths[] = Storage::disk('local')->putFileAs($dir, $file, $name);
             }
         }

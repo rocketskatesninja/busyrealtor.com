@@ -26,10 +26,7 @@ class TestEmailController extends Controller
         // TenantMailer's gate will fall through to platform SMTP if the
         // tenant is on trial AND under the piggyback caps. The blocking
         // logic lives in one place (Tenant::canPiggybackEmail).
-        $smtp = Integration::where('tenant_id', $tenant->id)
-                    ->where('integration_type', 'smtp')
-                    ->where('is_active', true)
-                    ->first();
+        $smtp = $tenant->getIntegration('smtp', true);
         $usingOwn = $smtp && !empty($smtp->config['smtp_host']);
 
         $sent = TenantMailer::send(
