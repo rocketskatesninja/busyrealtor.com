@@ -16,7 +16,11 @@
     {{-- Add Form --}}
     <div>
         <div id="add-staff-panel" style="display:none" class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mb-8">
-            <h3 class="font-semibold text-gray-800 mb-4">Add Staff Member</h3>
+            <h3 class="font-semibold text-gray-800 mb-1">Add Staff Member</h3>
+            <p class="text-xs text-gray-500 mb-4 flex items-start gap-1.5">
+                <svg class="w-4 h-4 mt-px text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span>Assigning a staff member to a property routes that property's appointment requests to them by email.</span>
+            </p>
             <form method="POST" enctype="multipart/form-data" action="{{ route('tenant.admin.staff.store', $account) }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @csrf
                 <div>
