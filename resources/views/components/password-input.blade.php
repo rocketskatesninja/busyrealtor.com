@@ -25,7 +25,7 @@
 --}}
 
 <div class="relative">
-    <input type="password" name="{{ $name }}" class="{{ $class }}" {{ $attributes }}>
+    <input type="password" name="{{ $name }}" class="{{ $class }}" {{ $attributes->merge(['autocomplete' => 'off']) }}>
     <button type="button" onclick="togglePasswordField(this)" aria-label="Show password"
             class="absolute inset-y-0 right-0 flex items-center px-3 text-[#9ca3af] hover:text-gray-600">
         {{-- Eye — shown when the password is hidden, click to reveal --}}
