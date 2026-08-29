@@ -115,6 +115,12 @@ php artisan migrate
 
 See `.env.example` for the full list of configuration options.
 
+> **⚠️ Change the seeded passwords immediately.** The database seeder creates a
+> super-admin and a demo-tenant admin with a fixed default password (`secret`).
+> That's fine for a local sandbox, but since it's a fixed value in this public
+> repo's source, anyone can read it — rotate both passwords before the site is
+> reachable from the internet.
+
 ---
 
 <p align="center"><sub>© 2026 BusyRealtor · A Punchlist Labs product</sub></p>

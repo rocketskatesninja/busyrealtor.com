@@ -316,6 +316,9 @@ info "Seeding database (super admin + demo tenant)..."
 php artisan db:seed --force
 
 success "Database migrated and seeded."
+warn "Seeded accounts use a well-known default password ('secret') — anyone who reads this"
+warn "public repo knows it. Change both account passwords before this instance is reachable"
+warn "from the internet (see the credentials + checklist at the end of this script)."
 
 # =============================================================================
 # 6. STORAGE & PERMISSIONS
@@ -605,11 +608,15 @@ echo -e "  Name           : ${DB_NAME}"
 echo -e "  User           : ${DB_USER}"
 echo -e "  Password       : ${DB_PASS}"
 echo ""
+echo -e "  ${RED}${BOLD}⚠ CHANGE THE SEEDED PASSWORDS NOW${NC}${RED} — 'secret' is a fixed default in this"
+echo -e "  public repo's seeder, not a per-install secret. Anyone can read it on GitHub.${NC}"
+echo -e "  ${BOLD}Do this before the site is reachable from the internet.${NC}"
+echo ""
 echo -e "  ${BOLD}Post-install checklist:${NC}"
 echo -e "  [ ] Set Stripe keys in Super Admin → Settings"
 echo -e "  [ ] Set Google Maps API key in Tenant → Settings → Integrations"
 echo -e "  [ ] Configure SMTP mail in .env or Tenant → Settings → Messages"
-echo -e "  [ ] Change default account passwords"
+echo -e "  [ ] ${BOLD}Change default account passwords${NC} (see warning above)"
 if [[ "$RUN_SSL" == "false" ]]; then
 echo -e "  [ ] Run SSL: sudo certbot --${WEB_SERVER} -d ${DOMAIN} -d www.${DOMAIN}"
 fi
