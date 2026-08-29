@@ -94,33 +94,6 @@ Laravel · Blade · Alpine.js · Tailwind CSS · MySQL/MariaDB · Laravel Cashie
 (Stripe) · Laravel Socialite · Google Maps & Calendar APIs · Anthropic & OpenAI
 (BYOK)
 
-## Self-hosting
-
-The repo ships a one-command installer for a fresh Debian 13 / Ubuntu 22.04+
-box (Apache or Nginx):
-
-```bash
-sudo bash install.sh --domain=example.com --repo=https://github.com/yourorg/busyrealtor.com.git
-```
-
-Or set it up by hand: copy `.env.example` to `.env`, fill in your database,
-mail, Stripe, and (optionally) AI provider credentials, then run the usual
-Laravel setup —
-
-```bash
-composer install && npm install && npm run build
-php artisan key:generate
-php artisan migrate
-```
-
-See `.env.example` for the full list of configuration options.
-
-> **⚠️ Change the seeded passwords immediately.** The database seeder creates a
-> super-admin and a demo-tenant admin with a fixed default password (`secret`).
-> That's fine for a local sandbox, but since it's a fixed value in this public
-> repo's source, anyone can read it — rotate both passwords before the site is
-> reachable from the internet.
-
 ## License
 
 **All rights reserved.** This repository is public for demonstration and
