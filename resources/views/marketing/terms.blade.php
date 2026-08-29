@@ -301,7 +301,7 @@
                         </h2>
                         <div class="text-sm leading-relaxed text-gray-700 dark:text-gray-300 space-y-3">
                             <p>These Terms are governed by and construed in accordance with the laws of the United States and the State in which Punchlist Labs is registered, without regard to conflict of law principles.</p>
-                            <p>Before filing any formal dispute, you agree to first contact us at <a href="mailto:contact@punchlistify.com" class="text-blue-600 hover:underline">contact@punchlistify.com</a> and attempt to resolve the issue informally. We will make good-faith efforts to resolve disputes within 30 days.</p>
+                            <p>Before filing any formal dispute, you agree to first contact us at <a href="mailto:contact@busyrealtor.com" class="text-blue-600 hover:underline">contact@busyrealtor.com</a> and attempt to resolve the issue informally. We will make good-faith efforts to resolve disputes within 30 days.</p>
                             <p>Any dispute that cannot be resolved informally will be submitted to binding individual arbitration under the rules of a mutually agreed arbitration provider. <strong>Class action lawsuits and class-wide arbitration are not permitted under these Terms.</strong></p>
                         </div>
                     </section>
@@ -329,7 +329,7 @@
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-5 mt-3">
                                 <p class="font-semibold text-gray-900 dark:text-white mb-1">Punchlist Labs</p>
                                 <p class="text-gray-600 dark:text-gray-400">Legal Inquiries</p>
-                                <a href="mailto:contact@punchlistify.com" class="text-blue-600 hover:underline mt-1 inline-block">contact@punchlistify.com</a>
+                                <a href="mailto:contact@busyrealtor.com" class="text-blue-600 hover:underline mt-1 inline-block">contact@busyrealtor.com</a>
                             </div>
                         </div>
                     </section>

@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
     {
         // Super admin user (no tenant_id)
         $superAdmin = User::firstOrCreate(
-            ['email' => 'contact@punchlistify.com'],
+            ['email' => 'contact@busyrealtor.com'],
             [
                 'first_name' => 'Super',
                 'last_name' => 'Admin',
@@ -405,7 +405,7 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        $this->command->info('✓ Super admin: contact@punchlistify.com / secret');
+        $this->command->info('✓ Super admin: contact@busyrealtor.com / secret');
         $this->command->info('✓ Demo tenant: demo-realty (admin@demorealty.com / secret)');
         $this->command->info('✓ 3 staff members, 8 properties, settings, and legal pages created');
     }

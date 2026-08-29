@@ -275,7 +275,7 @@
                                 </div>
                                 @endforeach
                             </div>
-                            <p class="mt-3">To exercise any of these rights, email us at <a href="mailto:contact@punchlistify.com" class="text-blue-600 hover:underline">contact@punchlistify.com</a>. We will respond within 30 days. We may need to verify your identity before acting on a request.</p>
+                            <p class="mt-3">To exercise any of these rights, email us at <a href="mailto:contact@busyrealtor.com" class="text-blue-600 hover:underline">contact@busyrealtor.com</a>. We will respond within 30 days. We may need to verify your identity before acting on a request.</p>
                         </div>
                     </section>
 
@@ -315,7 +315,7 @@
                             Children's Privacy
                         </h2>
                         <div class="text-sm leading-relaxed text-gray-700 dark:text-gray-300">
-                            <p>The Service is intended for business use by real estate professionals and is not directed at children under 13 years of age. We do not knowingly collect personal information from children. If we learn that we have inadvertently collected personal information from a child under 13, we will delete that information promptly. If you believe a child has provided us with personal information, please contact us at <a href="mailto:contact@punchlistify.com" class="text-blue-600 hover:underline">contact@punchlistify.com</a>.</p>
+                            <p>The Service is intended for business use by real estate professionals and is not directed at children under 13 years of age. We do not knowingly collect personal information from children. If we learn that we have inadvertently collected personal information from a child under 13, we will delete that information promptly. If you believe a child has provided us with personal information, please contact us at <a href="mailto:contact@busyrealtor.com" class="text-blue-600 hover:underline">contact@busyrealtor.com</a>.</p>
                         </div>
                     </section>
 
@@ -347,7 +347,7 @@
                             <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-5 mt-3">
                                 <p class="font-semibold text-gray-900 dark:text-white mb-1">Punchlist Labs</p>
                                 <p class="text-gray-600 dark:text-gray-400">Privacy Inquiries</p>
-                                <a href="mailto:contact@punchlistify.com" class="text-blue-600 hover:underline mt-1 inline-block">contact@punchlistify.com</a>
+                                <a href="mailto:contact@busyrealtor.com" class="text-blue-600 hover:underline mt-1 inline-block">contact@busyrealtor.com</a>
                             </div>
                             <p>We aim to respond to all privacy-related inquiries within 5 business days.</p>
                         </div>
