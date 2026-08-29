@@ -121,6 +121,13 @@ See `.env.example` for the full list of configuration options.
 > repo's source, anyone can read it — rotate both passwords before the site is
 > reachable from the internet.
 
+## License
+
+**All rights reserved.** This repository is public for demonstration and
+reference purposes only — it is not open source. You may not copy, reuse,
+redeploy, or redistribute this code, in whole or in part, without prior
+written permission. See [LICENSE](LICENSE) for the full terms.
+
 ---
 
-<p align="center"><sub>© 2026 BusyRealtor · A Punchlist Labs product</sub></p>
+<p align="center"><sub>© 2026 Punchlist Labs. All rights reserved.</sub></p>
