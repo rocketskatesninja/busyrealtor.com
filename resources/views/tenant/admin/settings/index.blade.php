@@ -25,7 +25,7 @@ $groups = [
     ],
     'INTEGRATIONS' => [
         'connected'     => ['label' => 'Connected', 'icon' => 'M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z'],
-        'chatbot'       => ['label' => 'Chatbot',        'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
+        'chatbot'       => ['label' => 'AI',             'icon' => 'M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z'],
     ],
     'TOOLS' => [
         'dashboard'     => ['label' => 'Dashboard',      'icon' => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'],
@@ -1075,47 +1075,138 @@ $tabs = array_merge(...array_values($groups));
                     </div>
                 </div>
                 @else
+                @php $ai = $integrations->get('ai_provider'); $aiConfig = $ai?->config ?? []; @endphp
+                @php $hasProvider = $tenant->hasAiProvider(); @endphp
                 <div class="space-y-6">
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    {{-- Header laid out like the integration panels on the Connected tab:
-                         icon, name and description, then Enable and the switch on the right. --}}
+
+                {{--
+                    Provider first, chatbot second.
+
+                    The chatbot cannot run without a provider, so the prerequisite is the
+                    first thing on the page. It used to be the other way round: you switched
+                    the chatbot on, saved, were told by a warning banner that it would not
+                    work, and then scrolled down to fix it. The dependency is now expressed
+                    by the order of the page and by the switch below being unavailable,
+                    which removes the need for the banner entirely.
+                --}}
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100" x-data="{ provider: '{{ $aiConfig['preferred'] ?? 'anthropic' }}' }">
                     <div class="flex items-center gap-3 mb-5">
-                        <svg class="w-5 h-5 panel-icon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        <svg class="w-5 h-5 panel-icon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         <div class="min-w-0">
-                            <h2 class="text-lg font-bold text-gray-900">AI Chatbot</h2>
-                            <p class="text-xs text-gray-500">Answers visitor questions and books viewings on your public site</p>
+                            <h2 class="text-lg font-bold text-gray-900 dark:text-white">AI Provider</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Powers the chatbot, the admin AI assistant and listing description generation. Switch off to keep your keys but stop all AI use.</p>
                         </div>
                         <div class="ml-auto flex items-center gap-2 shrink-0">
-                            <span class="text-sm text-gray-600">Enable</span>
-                            <input type="hidden" name="chatbot_enabled" value="0">
+                            <span class="text-sm text-gray-600 dark:text-gray-400">Active</span>
+                            <input type="hidden" name="ai_enabled" value="0">
                             <label class="relative inline-flex items-center cursor-pointer">
-                                <input type="checkbox" name="chatbot_enabled" value="1" class="sr-only peer" {{ $settings->chatbot_enabled ? 'checked' : '' }}>
-                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[var(--primary)] peer-focus:ring-2 peer-focus:ring-[var(--primary)]/60 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+                                {{-- Checked before an integration exists, so saving a first key switches it on as it always has. --}}
+                                <input type="checkbox" name="ai_enabled" value="1" class="sr-only peer" {{ ($ai?->is_active ?? true) ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[var(--primary)] peer-focus:ring-2 peer-focus:ring-[var(--primary)]/60 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5 peer-disabled:opacity-40 peer-disabled:cursor-not-allowed"></div>
                             </label>
                         </div>
                     </div>
-                    <div class="space-y-4">
-                        {{--
-                            The widget is gated on more than this switch: it also needs the
-                            Pro plan and a working provider key. Without saying so, ticking
-                            the box and seeing nothing appear looks like a bug rather than a
-                            missing step.
-                        --}}
-                        @php
-                            $aiKey = \App\Services\AiProviderService::resolve($tenant, activeOnly: true)['key'] ?? null;
-                        @endphp
-                        @if($settings->chatbot_enabled && (blank($aiKey) || ! $tenant->isPro()))
-                        <div class="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800">
-                            <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5 19h14a2 2 0 001.84-2.75L13.74 4a2 2 0 00-3.48 0L3.16 16.25A2 2 0 005 19z"/></svg>
-                            <span>
-                                @if(! $tenant->isPro())
-                                    The chatbot is a Pro feature, so the widget stays hidden on your public site until you upgrade.
-                                @else
-                                    Add an AI provider key in <strong>AI Provider</strong> below to activate this. Until then the widget stays hidden rather than telling your visitors it is not set up.
-                                @endif
-                            </span>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Provider</label>
+                            <select name="ai_preferred" x-model="provider" class="w-full sm:w-72 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                <option value="anthropic">Anthropic (Claude)</option>
+                                <option value="openai">OpenAI (ChatGPT / GPT-4)</option>
+                            </select>
                         </div>
+
+                        {{--
+                            Only the chosen provider's fields, matching what the setup wizard
+                            already does. x-show rather than x-if on purpose: the other
+                            provider's inputs must stay in the DOM so its stored key is
+                            resubmitted rather than wiped.
+                        --}}
+                        <div x-show="provider === 'anthropic'">
+                            <div class="border border-gray-100 rounded-xl p-4 space-y-3">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded text-white text-xs font-bold" style="background:#d97706">A</span>
+                                    <span class="text-sm font-semibold text-gray-800">Anthropic</span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">API Key <span class="text-gray-400 font-normal">(leave blank to keep existing)</span></label>
+                                    <x-password-input name="ai_anthropic_key" placeholder="sk-ant-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Model</label>
+                                    <select name="ai_anthropic_model" class="w-full sm:w-96 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                        <option value="claude-haiku-4-5-20251001" @selected(($aiConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001') === 'claude-haiku-4-5-20251001')>Claude Haiku 4.5 — fastest, most affordable ✓</option>
+                                        <option value="claude-sonnet-4-6" @selected(($aiConfig['anthropic_model'] ?? '') === 'claude-sonnet-4-6')>Claude Sonnet 4.6 — balanced</option>
+                                        <option value="claude-opus-4-6" @selected(($aiConfig['anthropic_model'] ?? '') === 'claude-opus-4-6')>Claude Opus 4.6 — most capable</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div x-show="provider === 'openai'">
+                            <div class="border border-gray-100 rounded-xl p-4 space-y-3">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded text-white text-xs font-bold" style="background:#10a37f">G</span>
+                                    <span class="text-sm font-semibold text-gray-800">OpenAI</span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">API Key <span class="text-gray-400 font-normal">(leave blank to keep existing)</span></label>
+                                    <x-password-input name="ai_openai_key" placeholder="sk-proj-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-gray-600 mb-1">Model</label>
+                                    <select name="ai_openai_model" class="w-full sm:w-96 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                        <option value="gpt-4o-mini" @selected(($aiConfig['openai_model'] ?? 'gpt-4o-mini') === 'gpt-4o-mini')>GPT-4o Mini — fastest, most affordable ✓</option>
+                                        <option value="gpt-4o" @selected(($aiConfig['openai_model'] ?? '') === 'gpt-4o')>GPT-4o — most capable</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- So a key hidden by the selector above is not invisible. --}}
+                        @if(filled($aiConfig['anthropic_key'] ?? null) || filled($aiConfig['openai_key'] ?? null))
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Saved:
+                            @if(filled($aiConfig['anthropic_key'] ?? null))<span class="font-medium">Anthropic key</span>@endif
+                            @if(filled($aiConfig['anthropic_key'] ?? null) && filled($aiConfig['openai_key'] ?? null)) &middot; @endif
+                            @if(filled($aiConfig['openai_key'] ?? null))<span class="font-medium">OpenAI key</span>@endif
+                        </p>
                         @endif
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-5">
+                        <svg class="w-5 h-5 panel-icon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        <div class="min-w-0">
+                            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Chatbot</h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
+                                @if($hasProvider)
+                                    Answers visitor questions and books viewings on your public site
+                                @else
+                                    Add an AI provider above to switch this on
+                                @endif
+                            </p>
+                        </div>
+                        <div class="ml-auto flex items-center gap-2 shrink-0">
+                            {{-- Dimmed with opacity, not a lighter grey: the admin layout's global
+                                 `.dark .text-gray-400` rule is !important and would flatten a
+                                 colour swap back to the enabled colour in dark mode. --}}
+                            <span class="text-sm text-gray-600 dark:text-gray-400 {{ $hasProvider ? '' : 'opacity-50' }}">Show on my site</span>
+                            {{--
+                                A disabled checkbox submits nothing, and chatbot_enabled is read
+                                with boolean(), so the companion carries the stored value rather
+                                than 0. Losing a provider key must not quietly clear the choice.
+                            --}}
+                            <input type="hidden" name="chatbot_enabled" value="{{ ! $hasProvider && $settings->chatbot_enabled ? 1 : 0 }}">
+                            <label class="relative inline-flex items-center {{ $hasProvider ? 'cursor-pointer' : 'cursor-not-allowed' }}"
+                                   @if(! $hasProvider) title="Add an AI provider above to switch this on" @endif>
+                                <input type="checkbox" name="chatbot_enabled" value="1" class="sr-only peer" @disabled(! $hasProvider) {{ $settings->chatbot_enabled ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[var(--primary)] peer-focus:ring-2 peer-focus:ring-[var(--primary)]/60 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5 peer-disabled:opacity-40 peer-disabled:cursor-not-allowed"></div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Personality</label>
                             <p class="text-xs text-gray-500 mb-1">How the assistant speaks to visitors.</p>
@@ -1129,58 +1220,6 @@ $tabs = array_merge(...array_values($groups));
                             <label class="block text-sm font-medium text-gray-700 mb-1">Realtor Bio</label>
                             <p class="text-xs text-gray-500 mb-1">Provided as context to the AI so it can answer questions about you.</p>
                             <textarea name="chatbot_bio" rows="4" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none resize-none" placeholder="Describe yourself, your expertise, and your market area...">{{ $settings->chatbot_bio }}</textarea>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>AI Provider</h2>
-                    <p class="text-sm text-gray-500 mb-5">Used by the AI Assistant. Configure one or both providers and choose which one is active.</p>
-                    @php $ai = $integrations->get('ai_provider'); $aiConfig = $ai?->config ?? []; @endphp
-                    <div class="space-y-5">
-                        {{-- Preferred provider --}}
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Active Provider</label>
-                            <select name="ai_preferred" class="w-full sm:w-56 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                <option value="anthropic" @selected(($aiConfig['preferred'] ?? 'anthropic') === 'anthropic')>Anthropic (Claude)</option>
-                                <option value="openai" @selected(($aiConfig['preferred'] ?? '') === 'openai')>OpenAI (ChatGPT / GPT-4)</option>
-                            </select>
-                        </div>
-                        {{-- Anthropic --}}
-                        <div class="border border-gray-100 rounded-xl p-4 space-y-3">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="inline-flex items-center justify-center w-6 h-6 rounded text-white text-xs font-bold" style="background:#d97706">A</span>
-                                <span class="text-sm font-semibold text-gray-800">Anthropic</span>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">API Key <span class="text-gray-400 font-normal">(leave blank to keep existing)</span></label>
-                                <x-password-input name="ai_anthropic_key" placeholder="sk-ant-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Model</label>
-                                <select name="ai_anthropic_model" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                    <option value="claude-haiku-4-5-20251001" @selected(($aiConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001') === 'claude-haiku-4-5-20251001')>Claude Haiku 4.5 — fastest, most affordable ✓</option>
-                                    <option value="claude-sonnet-4-6" @selected(($aiConfig['anthropic_model'] ?? '') === 'claude-sonnet-4-6')>Claude Sonnet 4.6 — balanced</option>
-                                    <option value="claude-opus-4-6" @selected(($aiConfig['anthropic_model'] ?? '') === 'claude-opus-4-6')>Claude Opus 4.6 — most capable</option>
-                                </select>
-                            </div>
-                        </div>
-                        {{-- OpenAI --}}
-                        <div class="border border-gray-100 rounded-xl p-4 space-y-3">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="inline-flex items-center justify-center w-6 h-6 rounded text-white text-xs font-bold" style="background:#10a37f">G</span>
-                                <span class="text-sm font-semibold text-gray-800">OpenAI</span>
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">API Key <span class="text-gray-400 font-normal">(leave blank to keep existing)</span></label>
-                                <x-password-input name="ai_openai_key" placeholder="sk-proj-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-gray-600 mb-1">Model</label>
-                                <select name="ai_openai_model" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                                    <option value="gpt-4o-mini" @selected(($aiConfig['openai_model'] ?? 'gpt-4o-mini') === 'gpt-4o-mini')>GPT-4o Mini — fastest, most affordable ✓</option>
-                                    <option value="gpt-4o" @selected(($aiConfig['openai_model'] ?? '') === 'gpt-4o')>GPT-4o — most capable</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
                 </div>

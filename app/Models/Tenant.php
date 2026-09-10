@@ -256,7 +256,21 @@ class Tenant extends Model
             return false;
         }
 
-        // Resolved once per request — the public layout asks in three places.
+        return $this->hasAiProvider();
+    }
+
+    /**
+     * Is there an AI provider this tenant can actually use?
+     *
+     * One definition, because three places ask: the public layout gating the chat widget,
+     * the settings screen deciding whether the chatbot switch is operable, and
+     * chatbotReady() above. A key that exists on a switched-off integration does not count
+     * — activeOnly is what the chatbot path has always required.
+     *
+     * Resolved once per request; the public layout asks in three places.
+     */
+    public function hasAiProvider(): bool
+    {
         return once(fn () => filled(AiProviderService::resolve($this, activeOnly: true)['key']));
     }
 
