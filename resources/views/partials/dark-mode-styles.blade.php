@@ -107,3 +107,11 @@
 /* Nav (shared by tenant + admin headers) */
 .dark header.bg-white     { background-color: #1e293b !important; }
 .dark nav a.text-gray-700 { color: #cbd5e1 !important; }
+
+/* Toggle switches.
+   `.dark .bg-gray-200` above is !important, so it repaints a switched-on
+   toggle track back to grey and the knob position becomes the only clue that
+   it is on. These restore each toggle its own checked colour — the primary
+   for most, black for the X integration — at a specificity that wins. */
+.dark input.peer:checked + .peer-checked\:bg-\[var\(--primary\)\] { background-color: var(--primary) !important; }
+.dark input.peer:checked + .peer-checked\:bg-black                { background-color: #000 !important; }
