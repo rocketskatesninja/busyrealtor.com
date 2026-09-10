@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -202,12 +203,36 @@ class Tenant extends Model
 
     public function isActive(): bool
     {
-        return $this->is_active && ($this->plan !== 'trial' || $this->isOnTrial());
+        return $this->is_active && ($this->plan !== 'trial' || $this->withinTrialGrace());
     }
 
     public function isPro(): bool
     {
-        return $this->plan === 'pro' || ($this->plan === 'trial' && $this->isOnTrial());
+        return $this->plan === 'pro' || ($this->plan === 'trial' && $this->withinTrialGrace());
+    }
+
+    /**
+     * Still inside the trial, or the short grace window after it.
+     *
+     * Grace covers the whole account rather than half of it. Keeping the site up while
+     * quietly switching Pro features off would read as the product breaking, which is a
+     * worse message than the one grace exists to soften.
+     */
+    public function withinTrialGrace(): bool
+    {
+        return $this->trialGraceEndsAt()?->isFuture() ?? false;
+    }
+
+    /** When the account is genuinely shut off — the end of the trial plus grace. */
+    public function trialGraceEndsAt(): ?CarbonInterface
+    {
+        return $this->trial_ends_at?->copy()->addDays((int) config('billing.trial_grace_days'));
+    }
+
+    /** Where a tenant is sent to start or fix a subscription. */
+    public function billingUrl(): string
+    {
+        return url("/{$this->slug}/admin/billing");
     }
 
     public function propertyLimit(): ?int
