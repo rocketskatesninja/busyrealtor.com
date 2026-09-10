@@ -30,6 +30,70 @@ class SiteSettings extends Model
         'title_color_solid'    => '#3B82F6',
     ];
 
+    /**
+     * What a brand-new site says before anyone has written anything.
+     *
+     * These existed in three places that disagreed: the seeder wrote one set for the demo
+     * tenant, the landing page carried a different set as inline fallbacks, and a real
+     * signup got none at all — RegisterController wrote a title and an email and left every
+     * one of these columns null. So the page a new agent saw was whichever copy happened to
+     * apply, and the first save in the editor replaced it with whatever the editor held.
+     *
+     * Two rules for the content itself. Nothing here states a fact about the agent that
+     * could be false — no sales figures, no years in business, no invented client. And the
+     * two sections that can only be filled in with real claims, stats and testimonials, are
+     * shipped switched off, so an untouched site never publishes a number nobody earned.
+     */
+    public const LANDING_DEFAULTS = [
+        // Icons must be keys the landing page can actually draw; see $iconPaths there.
+        'features_items' => [
+            ['icon' => 'home', 'title' => 'Local Knowledge', 'description' => 'We work in these neighbourhoods every day and know what homes here are really worth.'],
+            ['icon' => 'chat', 'title' => 'Straight Answers', 'description' => 'Call or message and get a real reply from the person handling your sale.'],
+            ['icon' => 'dollar', 'title' => 'Clear Pricing', 'description' => 'Fees explained in writing before you commit to anything.'],
+            ['icon' => 'shield', 'title' => 'Licensed and Insured', 'description' => 'Fully licensed, and accountable for every step of the transaction.'],
+        ],
+
+        /*
+         | Deliberately blank values. A number here is a claim about the agent, and a
+         | default that reads "500+ Homes Sold" is a lie on the first day of business.
+         | The dashes say plainly that this needs filling in, and the section ships
+         | disabled so nothing is published until it is.
+         */
+        'stats_items' => [
+            ['value' => '—', 'label' => 'Homes Sold'],
+            ['value' => '—', 'label' => 'Years Experience'],
+            ['value' => '—', 'label' => 'Avg. Days on Market'],
+            ['value' => '—', 'label' => 'Areas Served'],
+        ],
+
+        'services_items' => [
+            ['icon' => 'home', 'title' => 'Buying', 'description' => 'Help finding the right home, and someone in your corner when it comes time to make an offer.'],
+            ['icon' => 'dollar', 'title' => 'Selling', 'description' => 'Pricing, photography and marketing to get your property in front of the right buyers.'],
+            ['icon' => 'key', 'title' => 'Renting and Management', 'description' => 'Tenant placement and day-to-day management for rental property owners.'],
+        ],
+
+        /*
+         | Obviously placeholder, on purpose. A default testimonial that reads like a real
+         | person with a real five-star review is a fabricated endorsement the moment a site
+         | goes live unedited. These cannot be mistaken for anything but sample text, and
+         | the section ships disabled as well.
+         */
+        'testimonials_items' => [
+            ['name' => 'Client Name', 'rating' => 5, 'text' => 'Sample review — replace this with something a real client has said about working with you.'],
+            ['name' => 'Client Name', 'rating' => 5, 'text' => 'Sample review — a sentence or two about how the sale went is more convincing than anything longer.'],
+            ['name' => 'Client Name', 'rating' => 5, 'text' => 'Sample review — delete any you do not need, or switch this section off until you have some.'],
+        ],
+
+        // Answers are true for essentially any agent, and carry no promise about timing,
+        // territory or fees that a particular market might make wrong.
+        'faq_items' => [
+            ['question' => 'How do I arrange a viewing?', 'answer' => 'Get in touch through any of the contact details on this page and we will find a time that suits you, including evenings and weekends.'],
+            ['question' => 'What areas do you cover?', 'answer' => 'Ask us about the area you have in mind — if it is not one we work in ourselves, we can usually point you to someone who does.'],
+            ['question' => 'What does it cost to work with you?', 'answer' => 'Fees depend on the property and the service you need. We will set them out in writing before you agree to anything.'],
+            ['question' => 'I am buying for the first time. Where do I start?', 'answer' => 'Start with a conversation. We will walk you through what happens, in what order, and what you will need at each stage.'],
+        ],
+    ];
+
     protected $fillable = [
         'tenant_id',
         'setup_completed',
@@ -191,5 +255,23 @@ class SiteSettings extends Model
         $value = $this->{$field} ?? null;
 
         return filled($value) ? $value : (self::TITLE_DEFAULTS[$field] ?? '#3B82F6');
+    }
+
+    /**
+     * The items for one landing-page section, or the shipped defaults.
+     *
+     * An empty array falls back the same as null. The way to have no section is to switch
+     * it off in the homepage layout, not to leave it enabled with nothing in it — that
+     * renders an empty band on the page and looks broken rather than deliberate.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function landingItems(string $field): array
+    {
+        $value = $this->{$field} ?? null;
+
+        return is_array($value) && $value !== []
+            ? $value
+            : (self::LANDING_DEFAULTS[$field] ?? []);
     }
 }

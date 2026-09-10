@@ -56,7 +56,11 @@ class RegisterController extends Controller
             'is_active'      => true,
         ]);
 
-        SiteSettings::create([
+        // Written at signup rather than left to the landing page's fallback: the moment the
+        // settings editor saves anything, an unset column becomes whatever the editor held,
+        // and the fallback is gone. Starting from the real defaults means a new site has
+        // something to edit rather than something to discover is missing.
+        SiteSettings::create(SiteSettings::LANDING_DEFAULTS + [
             'tenant_id'          => $tenant->id,
             'site_title'         => $request->business_name,
             'contact_email'      => $request->email,

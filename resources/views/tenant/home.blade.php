@@ -118,7 +118,7 @@ $sections = $settings->homepage_sections ?? [
     ['key' => 'hero', 'enabled' => true, 'order' => 0],
     ['key' => 'features', 'enabled' => true, 'order' => 1],
     ['key' => 'listings', 'enabled' => true, 'order' => 2],
-    ['key' => 'stats', 'enabled' => true, 'order' => 3],
+    ['key' => 'stats', 'enabled' => false, 'order' => 3],
     ['key' => 'services', 'enabled' => false, 'order' => 4],
     ['key' => 'team', 'enabled' => true, 'order' => 5],
     ['key' => 'agent', 'enabled' => true, 'order' => 6],
@@ -129,35 +129,16 @@ $sections = $settings->homepage_sections ?? [
 usort($sections, fn($a,$b) => ($a['order']??0) <=> ($b['order']??0));
 
 $primaryColor = $settings->primary_color ?? '#3B82F6';
-$featuresItems = $settings->features_items ?? [
-    ['icon' => 'search', 'title' => 'Smart Search', 'description' => 'Advanced filters to find exactly what you need.'],
-    ['icon' => 'home', 'title' => 'Quality Listings', 'description' => 'Verified properties with detailed photos and info.'],
-    ['icon' => 'chat', 'title' => '24/7 Support', 'description' => 'Our AI assistant is always here to help.'],
-    ['icon' => 'shield', 'title' => 'Trusted Service', 'description' => 'Licensed professionals dedicated to you.'],
-];
-$statsItems = $settings->stats_items ?? [
-    ['value' => '500+', 'label' => 'Properties Sold'],
-    ['value' => '15+', 'label' => 'Years Experience'],
-    ['value' => '98%', 'label' => 'Client Satisfaction'],
-    ['value' => '24/7', 'label' => 'Support Available'],
-];
-$testimonialsItems = $settings->testimonials_items ?? [
-    ['name' => 'Sarah Johnson', 'text' => 'Working with this team made buying our home a breeze. Professional, knowledgeable, and always available.', 'rating' => 5],
-    ['name' => 'Michael Chen', 'text' => 'Sold our house in two weeks! Excellent marketing strategy and got above asking price.', 'rating' => 5],
-    ['name' => 'Emily Rodriguez', 'text' => 'From first meeting to closing day, everything was handled smoothly. Great communication throughout.', 'rating' => 5],
-];
-$faqItems = $settings->faq_items ?? [
-    ['question' => 'How do I schedule a property viewing?', 'answer' => 'Click "Schedule Viewing" on any property listing, or contact us directly. We offer flexible viewing times including evenings and weekends.'],
-    ['question' => 'What areas do you serve?', 'answer' => 'We serve the entire metropolitan area and surrounding communities. Contact us to discuss your specific location needs.'],
-    ['question' => 'How long does the buying process take?', 'answer' => 'Typically 30-45 days from offer acceptance to closing. We guide you through every step.'],
-    ['question' => 'Do you help first-time home buyers?', 'answer' => 'Absolutely! We specialize in first-time buyers and will explain everything clearly, help you understand financing, and ensure confidence every step of the way.'],
-];
-$servicesItems = $settings->services_items ?? [
-    ['icon' => 'home', 'title' => 'Buying a Home', 'description' => 'We help you find your perfect home with personalized search and expert guidance.'],
-    ['icon' => 'dollar', 'title' => 'Selling Your Property', 'description' => 'Get the best price with our marketing expertise and network.'],
-    ['icon' => 'shield', 'title' => 'Property Management', 'description' => 'Professional management services for your rental properties.'],
-];
+$featuresItems     = $settings->landingItems('features_items');
+$statsItems        = $settings->landingItems('stats_items');
+$testimonialsItems = $settings->landingItems('testimonials_items');
+$faqItems          = $settings->landingItems('faq_items');
+$servicesItems     = $settings->landingItems('services_items');
 $iconPaths = [
+    'key'    => 'M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z',
+    'map'    => 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z M15 11a3 3 0 11-6 0 3 3 0 016 0z',
+    'chart'  => 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+    'building' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4',
     'search' => 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
     'home'   => 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6',
     'chat'   => 'M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z',
