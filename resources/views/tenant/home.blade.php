@@ -317,7 +317,7 @@ $iconPaths = [
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 reveal">Why Choose Us</h2>
             <p class="text-gray-500 max-w-2xl mx-auto">Everything you need to find, buy, or sell your perfect property.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div class="grid-fit gap-8" style="--fit-max: 18rem">
             @foreach($featuresItems as $item)
             <div class="text-center group reveal" style="transition-delay: {{ $loop->index * 0.1 }}s">
                 <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-transform group-hover:scale-110" style="background-color: rgba(var(--primary-rgb), 0.1)">
@@ -342,7 +342,7 @@ $iconPaths = [
             <p class="text-gray-500">Handpicked properties just for you</p>
         </div>
         @if($featured->count())
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid-fit gap-8" style="--fit-max: 24.5rem">
             @foreach($featured as $property)
             <a href="{{ route('tenant.property', [$account, $property->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-xl transition-shadow group reveal" style="transition-delay: {{ $loop->index * 0.1 }}s">
                 <div class="relative h-52 bg-gray-200 overflow-hidden"
@@ -401,7 +401,7 @@ $iconPaths = [
 @elseif($key === 'stats')
 <section class="py-16" style="background-color: var(--primary)">
     <div class="max-w-7xl mx-auto px-4">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-white text-center">
+        <div class="grid-fit gap-8 text-white text-center" style="--fit-max: 16rem; --fit-min: 8rem">
             @foreach($statsItems as $stat)
             <div x-data="{ count: 0, target: '{{ $stat['value'] ?? '0' }}' }" x-intersect="count = target" class="reveal" style="transition-delay: {{ $loop->index * 0.1 }}s">
                 <div class="text-4xl md:text-5xl font-bold mb-2 count-up" x-text="target">{{ $stat['value'] }}</div>
@@ -420,7 +420,7 @@ $iconPaths = [
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 reveal">Our Services</h2>
             <p class="text-gray-500 max-w-2xl mx-auto">Comprehensive real estate services tailored to your needs.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid-fit gap-8" style="--fit-max: 24.5rem">
             @foreach($servicesItems as $item)
             <div class="bg-white rounded-2xl p-8 shadow border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center group reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-all group-hover:scale-110" style="background-color: rgba(var(--primary-rgb), 0.1)">
@@ -445,7 +445,7 @@ $iconPaths = [
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 reveal">Meet Our Team</h2>
             <p class="text-gray-500 max-w-2xl mx-auto">Experienced professionals dedicated to your real estate success.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div class="grid-fit gap-8" style="--fit-max: 24.5rem">
             @foreach($staff as $member)
             <div class="group bg-white rounded-2xl p-6 text-center shadow border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gray-100">
@@ -577,7 +577,7 @@ $iconPaths = [
             <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4 reveal">What Our Clients Say</h2>
             <p class="text-gray-500 max-w-2xl mx-auto">Real experiences from real people we've helped find their homes.</p>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="grid-fit gap-8" style="--fit-max: 24.5rem">
             @foreach($testimonialsItems as $t)
             <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200 hover:shadow-lg hover:-translate-y-1 hover:border-[var(--primary)]/30 transition-all duration-300 reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="flex mb-4">

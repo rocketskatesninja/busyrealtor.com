@@ -22,3 +22,29 @@
         border-color: var(--color-gray-200, currentColor);
     }
 }
+
+/*
+ * Section grids that stay centred when they are not full.
+ *
+ * `grid-cols-3` always creates three 1fr columns, so a section with two items
+ * fills columns one and two and leaves the third empty — the items are not
+ * left-aligned so much as sitting in the first available slots, which reads as
+ * the same thing. Most of these sections ship with two items by default, so
+ * the landing page looked lopsided out of the box.
+ *
+ * auto-fit creates a track per item instead of a fixed count, and because the
+ * tracks have a maximum width rather than 1fr they do not stretch to swallow
+ * the leftover space — which leaves something for justify-content to centre.
+ * A full row looks exactly as it did before; a short row is now centred, and
+ * an odd item wrapping onto its own line is centred too.
+ *
+ * --fit-max is the width one card gets when the row is full, so each section
+ * sets it to match the column count it used to have.
+ */
+@layer components {
+    .grid-fit {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--fit-min, 16rem)), var(--fit-max, 24.5rem)));
+        justify-content: center;
+    }
+}
