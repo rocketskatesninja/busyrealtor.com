@@ -6,6 +6,7 @@ use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use App\Services\AiProviderService;
 use Laravel\Cashier\Billable;
 
 class Tenant extends Model
@@ -227,6 +228,36 @@ class Tenant extends Model
     public function trialGraceEndsAt(): ?CarbonInterface
     {
         return $this->trial_ends_at?->copy()->addDays((int) config('billing.trial_grace_days'));
+    }
+
+    /**
+     * Should the chat widget appear on the public site at all?
+     *
+     * Gated where it renders rather than where it is switched on, because configuration
+     * drifts after the fact: a key gets deleted, an integration is switched inactive, a Pro
+     * trial lapses. Validating the checkbox would stop one way in and none of those.
+     *
+     * The checkbox alone used to be enough to render the widget, so a visitor could open
+     * the bubble on an agent's site, ask a question, and be told "Chatbot is not configured
+     * yet" — or, worse, "available on the Pro plan, please upgrade", which announces the
+     * agent's billing status to their own prospective buyers. Both messages are for the
+     * agent; neither belongs in front of their customers.
+     *
+     * The enabled check comes first so the common case costs nothing: a tenant who has not
+     * switched it on never reaches the integration lookup.
+     */
+    public function chatbotReady(): bool
+    {
+        if (! ($this->settings()?->chatbot_enabled ?? false)) {
+            return false;
+        }
+
+        if (! $this->isPro()) {
+            return false;
+        }
+
+        // Resolved once per request — the public layout asks in three places.
+        return once(fn () => filled(AiProviderService::resolve($this, activeOnly: true)['key']));
     }
 
     /** Where a tenant is sent to start or fix a subscription. */

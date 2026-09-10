@@ -166,7 +166,9 @@ class TenantPageController extends Controller
     {
         $tenant   = app('tenant');
         $settings = $this->getSettings();
-        if (!($settings->chatbot_enabled ?? false)) {
+        // Same gate as the widget: this page is reachable by URL whether or not anything
+        // links to it, so the checkbox alone is not enough to open it.
+        if (! $tenant->chatbotReady()) {
             return redirect()->route('tenant.contact', $account);
         }
         return view('tenant.chat', compact('tenant', 'settings'));

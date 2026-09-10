@@ -1082,15 +1082,49 @@ $tabs = array_merge(...array_values($groups));
                 @else
                 <div class="space-y-6">
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>AI Chatbot</h2>
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-4">
-                            <label class="flex items-center gap-3 cursor-pointer shrink-0">
-                                <input type="checkbox" name="chatbot_enabled" value="1" class="rounded" {{ $settings->chatbot_enabled ? 'checked' : '' }}>
-                                <span class="text-sm text-gray-700">Enable chatbot widget on public site</span>
+                    {{-- Header laid out like the integration panels on the Connected tab:
+                         icon, name and description, then Enable and the switch on the right. --}}
+                    <div class="flex items-center gap-3 mb-5">
+                        <svg class="w-5 h-5 panel-icon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        <div class="min-w-0">
+                            <h2 class="text-lg font-bold text-gray-900">AI Chatbot</h2>
+                            <p class="text-xs text-gray-500">Answers visitor questions and books viewings on your public site</p>
+                        </div>
+                        <div class="ml-auto flex items-center gap-2 shrink-0">
+                            <span class="text-sm text-gray-600">Enable</span>
+                            <input type="hidden" name="chatbot_enabled" value="0">
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" name="chatbot_enabled" value="1" class="sr-only peer" {{ $settings->chatbot_enabled ? 'checked' : '' }}>
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[var(--primary)] peer-focus:ring-2 peer-focus:ring-[var(--primary)]/60 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
                             </label>
-                            <span class="text-sm text-gray-600 shrink-0 ml-auto">Personality</span>
-                            <select name="chatbot_personality" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                        </div>
+                    </div>
+                    <div class="space-y-4">
+                        {{--
+                            The widget is gated on more than this switch: it also needs the
+                            Pro plan and a working provider key. Without saying so, ticking
+                            the box and seeing nothing appear looks like a bug rather than a
+                            missing step.
+                        --}}
+                        @php
+                            $aiKey = \App\Services\AiProviderService::resolve($tenant, activeOnly: true)['key'] ?? null;
+                        @endphp
+                        @if($settings->chatbot_enabled && (blank($aiKey) || ! $tenant->isPro()))
+                        <div class="flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-3.5 py-2.5 text-sm text-amber-800">
+                            <svg class="w-4 h-4 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5 19h14a2 2 0 001.84-2.75L13.74 4a2 2 0 00-3.48 0L3.16 16.25A2 2 0 005 19z"/></svg>
+                            <span>
+                                @if(! $tenant->isPro())
+                                    The chatbot is a Pro feature, so the widget stays hidden on your public site until you upgrade.
+                                @else
+                                    Add an AI provider key in <strong>AI Provider</strong> below to activate this. Until then the widget stays hidden rather than telling your visitors it is not set up.
+                                @endif
+                            </span>
+                        </div>
+                        @endif
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Personality</label>
+                            <p class="text-xs text-gray-500 mb-1">How the assistant speaks to visitors.</p>
+                            <select name="chatbot_personality" class="w-full sm:w-56 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                 @foreach(['friendly'=>'Friendly','professional'=>'Professional','concise'=>'Concise'] as $v=>$l)
                                 <option value="{{ $v }}" {{ ($settings->chatbot_personality ?? 'professional') === $v ? 'selected' : '' }}>{{ $l }}</option>
                                 @endforeach
