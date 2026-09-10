@@ -56,11 +56,6 @@ $tabs = array_merge(...array_values($groups));
     {{-- Save button row --}}
     <div class="flex justify-between items-center mb-2">
         <div>
-            <a x-show="activeTab === 'data'" style="display:none" href="{{ route('tenant.admin.setup', $account) }}"
-               class="inline-flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-[var(--primary)] dark:hover:text-[var(--primary)] transition">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                Re-run Setup Wizard
-            </a>
         </div>
         <button id="settings-save-btn" form="settings-form" type="submit"
                 class="btn-primary inline-flex items-center gap-2 px-8 py-2.5 rounded-xl font-semibold text-sm transition
@@ -1405,6 +1400,27 @@ $tabs = array_merge(...array_values($groups));
                 <div x-show="activeTab === 'data'" x-cloak>
                 {{-- DATA TAB --}}
                 <div class="space-y-6">
+
+                    {{--
+                        This was a 12px grey link beside the Save button, which is next to
+                        invisible and reads as page furniture rather than an action. It is a
+                        card like everything else on this tab now.
+                    --}}
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style="background:var(--primary)">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            </div>
+                            <div class="min-w-0">
+                                <h2 class="text-lg font-bold text-gray-900">Setup Wizard</h2>
+                                <p class="text-xs text-gray-500">Walk through branding, contact details and your hero section again. Nothing is cleared — each step starts from what you have now.</p>
+                            </div>
+                            <a href="{{ route('tenant.admin.setup', $account) }}"
+                               class="ml-auto shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border border-gray-200 text-gray-700 hover:border-[var(--primary)] hover:text-[var(--primary)] transition">
+                                Re-run
+                            </a>
+                        </div>
+                    </div>
 
                     {{-- Google Analytics --}}
                     @php $ga = $integrations->get('google_analytics'); @endphp
