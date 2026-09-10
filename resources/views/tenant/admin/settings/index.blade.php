@@ -302,7 +302,7 @@ $tabs = array_merge(...array_values($groups));
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            @php $colorType = $settings->title_color_type ?? 'gradient'; @endphp
+                            @php $colorType = $settings->titleColor('title_color_type'); @endphp
                             <label class="block text-sm font-medium text-gray-700 mb-1">Title Color</label>
                             <div class="flex items-end gap-3">
                                 {{-- Dropdown: stays at half the row width (3/6) --}}
@@ -318,14 +318,14 @@ $tabs = array_merge(...array_values($groups));
                                     @foreach(['title_gradient_start'=>'Start','title_gradient_via'=>'Mid','title_gradient_end'=>'End'] as $f=>$l)
                                     <div class="flex-1">
                                         <label class="block text-xs font-medium text-gray-600 mb-1 text-center">{{ $l }}</label>
-                                        <input type="color" name="{{ $f }}" value="{{ $settings->$f ?? '#3B82F6' }}" class="w-full h-10 border-0 rounded cursor-pointer">
+                                        <input type="color" name="{{ $f }}" value="{{ $settings->titleColor($f) }}" class="w-full h-10 border-0 rounded cursor-pointer">
                                     </div>
                                     @endforeach
                                 </div>
                                 {{-- Solid picker: full remaining width --}}
                                 <div id="solid-color-field" style="{{ $colorType === 'solid' ? 'display:flex' : 'display:none' }}" class="flex-1 flex-col gap-1">
                                     <label class="block text-xs font-medium text-gray-600 mb-1">Color</label>
-                                    <input type="color" name="title_color_solid" value="{{ $settings->title_color_solid ?? '#3B82F6' }}" class="w-full h-10 border-0 rounded cursor-pointer">
+                                    <input type="color" name="title_color_solid" value="{{ $settings->titleColor('title_color_solid') }}" class="w-full h-10 border-0 rounded cursor-pointer">
                                 </div>
                             </div>
                         </div>
@@ -337,11 +337,11 @@ $tabs = array_merge(...array_values($groups));
                                     @php
                                         $prevFont     = $settings->title_font ?? 'Poppins';
                                         $prevWeight   = $settings->site_title_font_weight ?? '800';
-                                        $prevGradS    = $settings->title_gradient_start ?? '#3B82F6';
-                                        $prevGradV    = $settings->title_gradient_via   ?? '#8B5CF6';
-                                        $prevGradE    = $settings->title_gradient_end   ?? '#1E40AF';
-                                        $prevSolid    = $settings->title_color_solid    ?? '#3B82F6';
-                                        $prevColorType = $settings->title_color_type    ?? 'gradient';
+                                        $prevGradS     = $settings->titleColor('title_gradient_start');
+                                        $prevGradV     = $settings->titleColor('title_gradient_via');
+                                        $prevGradE     = $settings->titleColor('title_gradient_end');
+                                        $prevSolid     = $settings->titleColor('title_color_solid');
+                                        $prevColorType = $settings->titleColor('title_color_type');
                                         $prevSize     = match($settings->site_title_font_size ?? '3xl') { 'xl' => '1.25rem', '2xl' => '1.5rem', '4xl' => '2.25rem', default => '1.875rem' };
                                         $prevTracking = match($settings->site_title_letter_spacing ?? 'normal') { 'tight' => '-0.05em', 'wide' => '0.05em', default => 'normal' };
                                         $prevStyle    = "font-family: '{$prevFont}', sans-serif; font-size: {$prevSize}; font-weight: {$prevWeight}; letter-spacing: {$prevTracking};";
@@ -351,10 +351,21 @@ $tabs = array_merge(...array_values($groups));
                                             $prevStyle .= " color: {$prevSolid};";
                                         }
                                     @endphp
-                                    <div id="title_preview_light" class="font-extrabold truncate" style="{{ $prevStyle }}">{{ $settings->site_title ?? 'Your Site Title' }}</div>
+                                    {{--
+                                        inline-block, not a plain block. With
+                                        background-clip:text the gradient is painted across
+                                        the element's box and then clipped to the glyphs, so
+                                        a full-width block spreads it across the whole panel
+                                        and short text only reveals the leftmost slice — the
+                                        end colour lands past the last letter and never
+                                        shows. The live site gets this right by accident, by
+                                        rendering the title in a <span>. max-w-full keeps
+                                        truncate working on a long title.
+                                    --}}
+                                    <div id="title_preview_light" class="font-extrabold truncate inline-block max-w-full" style="{{ $prevStyle }}">{{ $settings->site_title ?? 'Your Site Title' }}</div>
                                 </div>
                                 <div class="flex-1 p-4 bg-gray-900 rounded-lg overflow-hidden">
-                                    <div id="title_preview_dark" class="font-extrabold truncate" style="{{ $prevStyle }}">{{ $settings->site_title ?? 'Your Site Title' }}</div>
+                                    <div id="title_preview_dark" class="font-extrabold truncate inline-block max-w-full" style="{{ $prevStyle }}">{{ $settings->site_title ?? 'Your Site Title' }}</div>
                                 </div>
                             </div>
                         </div>
@@ -1553,6 +1564,9 @@ $tabs = array_merge(...array_values($groups));
 
 @section('scripts')
 // ── Title Preview ─────────────────────────────────────────────────────────────
+// Same defaults the pickers and the server-rendered preview use, so the title cannot
+// change appearance the first time someone touches a control.
+const TITLE_DEFAULTS  = @json(\App\Models\SiteSettings::TITLE_DEFAULTS);
 const _fontSizeMap    = { 'xl': '1.25rem', '2xl': '1.5rem', '3xl': '1.875rem', '4xl': '2.25rem' };
 const _trackingMap    = { 'tight': '-0.05em', 'wide': '0.05em', 'normal': 'normal' };
 function updateTitlePreview() {
@@ -1563,7 +1577,7 @@ function updateTitlePreview() {
     const size      = document.querySelector('select[name="site_title_font_size"]')?.value     || '3xl';
     const weight    = document.querySelector('select[name="site_title_font_weight"]')?.value   || '800';
     const tracking  = document.querySelector('select[name="site_title_letter_spacing"]')?.value || 'normal';
-    const colorType = document.querySelector('select[name="title_color_type"]')?.value         || 'gradient';
+    const colorType = document.querySelector('select[name="title_color_type"]')?.value         || TITLE_DEFAULTS.title_color_type;
     previews.forEach(el => {
         el.textContent           = titleText;
         el.style.fontFamily      = `'${font}', sans-serif`;
@@ -1571,16 +1585,16 @@ function updateTitlePreview() {
         el.style.fontWeight      = weight;
         el.style.letterSpacing   = _trackingMap[tracking] || 'normal';
         if (colorType === 'gradient') {
-            const start = document.querySelector('input[name="title_gradient_start"]')?.value || '#3B82F6';
-            const via   = document.querySelector('input[name="title_gradient_via"]')?.value   || '#8B5CF6';
-            const end   = document.querySelector('input[name="title_gradient_end"]')?.value   || '#1E40AF';
+            const start = document.querySelector('input[name="title_gradient_start"]')?.value || TITLE_DEFAULTS.title_gradient_start;
+            const via   = document.querySelector('input[name="title_gradient_via"]')?.value   || TITLE_DEFAULTS.title_gradient_via;
+            const end   = document.querySelector('input[name="title_gradient_end"]')?.value   || TITLE_DEFAULTS.title_gradient_end;
             el.style.background           = `linear-gradient(to right, ${start}, ${via}, ${end})`;
             el.style.webkitBackgroundClip = 'text';
             el.style.webkitTextFillColor  = 'transparent';
             el.style.backgroundClip       = 'text';
             el.style.color                = 'transparent';
         } else {
-            const solid = document.querySelector('input[name="title_color_solid"]')?.value || '#3B82F6';
+            const solid = document.querySelector('input[name="title_color_solid"]')?.value || TITLE_DEFAULTS.title_color_solid;
             el.style.background           = 'none';
             el.style.webkitBackgroundClip = 'unset';
             el.style.webkitTextFillColor  = 'unset';

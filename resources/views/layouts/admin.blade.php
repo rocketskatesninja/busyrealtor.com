@@ -35,11 +35,11 @@
         $r = hexdec(substr(ltrim($primaryColor,'#'), 0, 2));
         $g = hexdec(substr(ltrim($primaryColor,'#'), 2, 2));
         $b = hexdec(substr(ltrim($primaryColor,'#'), 4, 2));
-        $titleColorType = $settings->title_color_type ?? 'gradient';
-        $gradStart = $settings->title_gradient_start ?? '#3B82F6';
-        $gradVia = $settings->title_gradient_via ?? '#8B5CF6';
-        $gradEnd = $settings->title_gradient_end ?? '#1E40AF';
-        $solidColor = $settings->title_color_solid ?? '#3B82F6';
+        $titleColorType = $settings->titleColor('title_color_type');
+        $gradStart = $settings->titleColor('title_gradient_start');
+        $gradVia = $settings->titleColor('title_gradient_via');
+        $gradEnd = $settings->titleColor('title_gradient_end');
+        $solidColor = $settings->titleColor('title_color_solid');
         $titleSize = match($settings->site_title_font_size ?? '3xl') { 'xl' => '1.25rem', '2xl' => '1.5rem', '4xl' => '2.25rem', default => '1.875rem' };
         $titleWeight = $settings->site_title_font_weight ?? '800';
         $titleStyle = "font-family: '{$titleFont}', sans-serif; font-size: {$titleSize}; font-weight: {$titleWeight};";

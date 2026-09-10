@@ -12,6 +12,24 @@ class SiteSettings extends Model
 
     protected $table = 'site_settings';
 
+    /**
+     * Defaults for the site title's colour.
+     *
+     * Held here because five copies of them had drifted apart: the tenant layout, the admin
+     * layout and the settings preview all defaulted to the blue-purple gradient, while the
+     * three colour pickers on the settings screen defaulted to the same flat blue for all
+     * three stops. So a tenant who had never touched the settings saw a gradient in the
+     * preview, three identical swatches beneath it, and — because a colour input always
+     * submits a value — saved a "gradient" with no gradient in it.
+     */
+    public const TITLE_DEFAULTS = [
+        'title_color_type'     => 'gradient',
+        'title_gradient_start' => '#3B82F6',
+        'title_gradient_via'   => '#8B5CF6',
+        'title_gradient_end'   => '#1E40AF',
+        'title_color_solid'    => '#3B82F6',
+    ];
+
     protected $fillable = [
         'tenant_id',
         'setup_completed',
@@ -162,4 +180,16 @@ class SiteSettings extends Model
         return str_replace('PCOLOR', $color, $presets[$preset]);
     }
 
+    /**
+     * One title colour setting, or its default.
+     *
+     * Treats an empty string like an absent value: a blank column is what a colour input
+     * renders as black, which is never what anyone chose.
+     */
+    public function titleColor(string $field): string
+    {
+        $value = $this->{$field} ?? null;
+
+        return filled($value) ? $value : (self::TITLE_DEFAULTS[$field] ?? '#3B82F6');
+    }
 }
