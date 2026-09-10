@@ -209,7 +209,12 @@ class SettingsController extends Controller
         ];
         Integration::updateOrCreate(
             ['tenant_id' => $tenant->id, 'integration_type' => 'ai_provider'],
-            ['config' => $aiConfig, 'provider' => $aiConfig['preferred'], 'is_active' => true]
+            [
+                'config' => $aiConfig,
+                'provider' => $aiConfig['preferred'],
+                // Reads the Enable switch like every other integration on this screen.
+                'is_active' => $request->boolean('ai_enabled', true),
+            ]
         );
         if ($request->filled('ga_measurement_id')) {
             Integration::updateOrCreate(

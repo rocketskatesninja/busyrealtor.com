@@ -206,4 +206,68 @@ class SetupWizardTest extends TestCase
 
         $this->assertTrue((bool) $this->settings()->setup_completed);
     }
+
+    // ── the AI provider switch ──────────────────────────────────────────────
+
+    /*
+     | is_active was hardcoded true in both this wizard and the full settings editor, so a
+     | key could be stored but never left unused — and unlike Facebook and X, there was no
+     | switch at all. Pausing AI spend meant deleting the key.
+     */
+    public function test_an_ai_key_can_be_stored_without_switching_the_provider_on(): void
+    {
+        $this->step(['step' => 4, 'ai_openai_key' => 'sk-test', 'ai_preferred' => 'openai', 'ai_enabled' => 0]);
+
+        $integration = $this->tenant->getIntegration('ai_provider');
+
+        $this->assertNotNull($integration);
+        $this->assertFalse((bool) $integration->is_active);
+        $this->assertSame('sk-test', $integration->config['openai_key']);
+    }
+
+    public function test_a_key_with_no_switch_sent_still_turns_the_provider_on(): void
+    {
+        $this->step(['step' => 4, 'ai_openai_key' => 'sk-test', 'ai_preferred' => 'openai']);
+
+        $this->assertTrue((bool) $this->tenant->getIntegration('ai_provider')->is_active);
+    }
+
+    /** The block used to run only on a filled key, so the switch was one-way. */
+    public function test_an_existing_ai_provider_can_be_switched_off_without_resending_the_key(): void
+    {
+        Integration::create([
+            'tenant_id' => $this->tenant->id,
+            'integration_type' => 'ai_provider',
+            'provider' => 'openai',
+            'config' => ['preferred' => 'openai', 'openai_key' => 'sk-stored'],
+            'is_active' => true,
+        ]);
+
+        $this->step(['step' => 4, 'ai_enabled' => 0]);
+
+        $integration = $this->tenant->getIntegration('ai_provider');
+
+        $this->assertFalse((bool) $integration->is_active);
+        $this->assertSame('sk-stored', $integration->config['openai_key'], 'the stored key must survive');
+    }
+
+    /** A switched-off provider is what the chatbot gate reads, so the widget hides. */
+    public function test_switching_the_provider_off_hides_the_chatbot(): void
+    {
+        SiteSettings::where('tenant_id', $this->tenant->id)->update(['chatbot_enabled' => true]);
+
+        Integration::create([
+            'tenant_id' => $this->tenant->id,
+            'integration_type' => 'ai_provider',
+            'provider' => 'openai',
+            'config' => ['preferred' => 'openai', 'openai_key' => 'sk-stored'],
+            'is_active' => true,
+        ]);
+
+        $this->assertTrue($this->tenant->fresh()->chatbotReady());
+
+        $this->step(['step' => 4, 'ai_enabled' => 0]);
+
+        $this->assertFalse($this->tenant->fresh()->chatbotReady());
+    }
 }

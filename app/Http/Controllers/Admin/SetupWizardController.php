@@ -58,6 +58,7 @@ class SetupWizardController extends Controller
                 'hero_image' => ['nullable', 'image', 'mimes:jpeg,jpg,png,gif,webp', 'max:10240'],
             ],
             '4' => [
+                'ai_enabled' => ['nullable', 'boolean'],
                 'ai_preferred' => ['nullable', 'in:anthropic,openai'],
                 'ai_anthropic_key' => ['nullable', 'string', 'max:255'],
                 'ai_anthropic_model' => ['nullable', 'string', 'max:100'],
@@ -152,8 +153,12 @@ class SetupWizardController extends Controller
 
             case '4': // Integrations
                 // AI Provider
-                if ($request->filled('ai_anthropic_key') || $request->filled('ai_openai_key')) {
-                    $aiRecord      = $tenant->getIntegration('ai_provider');
+                // Runs when a key arrives OR when one is already stored, so the Enable
+                // checkbox can switch an existing provider off — the same one-way fault the
+                // Facebook and X blocks had.
+                $aiRecord = $tenant->getIntegration('ai_provider');
+
+                if ($request->filled('ai_anthropic_key') || $request->filled('ai_openai_key') || $aiRecord) {
                     $existingConfig = $aiRecord?->config ?? [];
                     $aiConfig = [
                         'anthropic_key'   => $request->filled('ai_anthropic_key') ? $request->ai_anthropic_key : ($existingConfig['anthropic_key'] ?? null),
@@ -164,7 +169,13 @@ class SetupWizardController extends Controller
                     ];
                     Integration::updateOrCreate(
                         ['tenant_id' => $tenant->id, 'integration_type' => 'ai_provider'],
-                        ['config' => $aiConfig, 'provider' => $aiConfig['preferred'], 'is_active' => true]
+                        [
+                            'config' => $aiConfig,
+                            'provider' => $aiConfig['preferred'],
+                            // Was hardcoded true, so a key could be stored but never left
+                            // unused. Absent means on, matching what the form defaults to.
+                            'is_active' => $request->boolean('ai_enabled', true),
+                        ]
                     );
                 }
                 // Google Analytics

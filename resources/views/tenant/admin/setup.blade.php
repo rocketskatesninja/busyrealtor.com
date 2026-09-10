@@ -268,6 +268,12 @@ $heroPresets = [
                     <svg class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div x-show="open" x-collapse class="px-4 pb-4 space-y-3">
+                    {{-- Matches the Enable checkbox the Facebook and X cards carry. Without
+                         it, entering a key always switched the provider on with no way to
+                         store one you did not want used yet. --}}
+                    <label class="inline-flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+                        <input type="checkbox" x-model="data.ai_enabled" class="rounded border-gray-300 text-[var(--primary)] focus:ring-[var(--primary)]"> Use this provider
+                    </label>
                     <div>
                         <label class="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Preferred Provider</label>
                         <select x-model="data.ai_preferred" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
@@ -636,6 +642,7 @@ function setupWizard() {
             hero_gradient_end: @json($settings->hero_gradient_end ?? '#7c3aed'),
             // Step 4 — integrations
             ai_preferred: @json($aiConfig['preferred'] ?? 'anthropic'),
+            ai_enabled: @json((bool)($aiInteg->is_active ?? true)),
             ai_anthropic_key: '',
             ai_anthropic_model: @json($aiConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001'),
             ai_openai_key: '',
@@ -725,6 +732,7 @@ function setupWizard() {
                     } else if (this.step === 4) {
                         Object.assign(payload, {
                             ai_preferred: this.data.ai_preferred,
+                            ai_enabled: this.data.ai_enabled ? 1 : 0,
                             ai_anthropic_key: this.data.ai_anthropic_key,
                             ai_anthropic_model: this.data.ai_anthropic_model,
                             ai_openai_key: this.data.ai_openai_key,
