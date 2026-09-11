@@ -79,66 +79,68 @@ class SettingsController extends Controller
         }
 
         // ── All site_settings columns ─────────────────────────────────────
-        $homepageSections = $request->homepage_sections
-            ? json_decode($request->homepage_sections, true) : [];
-        foreach ($homepageSections as $i => $s) { $homepageSections[$i]['order'] = $i; }
-
-        $data = [
+        //
+        // only() rather than reading $request->field one by one: that wrote null for
+        // every field a post left out, which nulls NOT NULL columns and 500s — the
+        // same fault the setup wizard had. The real form posts all of these, so this
+        // changes nothing for the UI; it stops a partial post from wiping the row.
+        $data = $request->only([
             // general
-            'site_title'       => $request->site_title,
-            'tagline'          => $request->tagline,
-            'contact_email'    => $request->contact_email,
-            'contact_phone'    => $request->contact_phone,
-            'contact_address'  => $request->contact_address,
-            'social_facebook'  => $request->social_facebook,
-            'social_instagram' => $request->social_instagram,
-            'social_twitter'   => $request->social_twitter,
-            'social_linkedin'  => $request->social_linkedin,
-            'social_youtube'   => $request->social_youtube,
+            'site_title', 'tagline', 'contact_email', 'contact_phone', 'contact_address',
+            'social_facebook', 'social_instagram', 'social_twitter', 'social_linkedin', 'social_youtube',
             // profile (public)
-            'owner_name'     => $request->owner_name,
-            'owner_bio'      => $request->owner_bio,
-            'license_number' => $request->license_number,
-            'brokerage_name' => $request->brokerage_name,
+            'owner_name', 'owner_bio', 'license_number', 'brokerage_name',
             // appearance
-            'header_mode'               => $request->header_mode,
-            'header_display_mode'       => $request->header_display_mode,
-            'primary_color'             => $request->primary_color,
-            'dark_mode_enabled'         => $request->boolean('dark_mode_enabled'),
-            'title_font'                => $request->title_font ?? $settings->title_font ?? 'Poppins',
-            'site_title_font_size'      => $request->site_title_font_size,
-            'site_title_font_weight'    => $request->site_title_font_weight,
-            'site_title_letter_spacing' => $request->site_title_letter_spacing,
-            'title_color_type'          => $request->title_color_type,
-            'title_color_solid'         => $request->title_color_solid,
-            'title_gradient_start'      => $request->title_gradient_start,
-            'title_gradient_via'        => $request->title_gradient_via,
-            'title_gradient_end'        => $request->title_gradient_end,
-            'favicon_preset'            => $request->favicon_preset,
-            // dashboard
-            'dashboard_config' => $request->dashboard_config ?? [],
-            // notifications
-            'notify_on_contact'     => $request->boolean('notify_on_contact'),
-            'notify_on_appointment' => $request->boolean('notify_on_appointment'),
-            'gcal_sync_appointments' => $request->boolean('gcal_sync_appointments'),
-            // chatbot
-            'chatbot_enabled'     => $request->boolean('chatbot_enabled'),
-            'chatbot_personality' => $request->chatbot_personality ?? $settings->chatbot_personality ?? 'professional',
-            'chatbot_bio' => $request->chatbot_bio ?? $settings->chatbot_bio,
+            'header_mode', 'header_display_mode', 'primary_color',
+            'site_title_font_size', 'site_title_font_weight', 'site_title_letter_spacing',
+            'title_color_type', 'title_color_solid',
+            'title_gradient_start', 'title_gradient_via', 'title_gradient_end',
+            'favicon_preset',
             // homepage
-            'homepage_sections'    => $homepageSections,
-            'features_items'       => !empty($request->features_items)     ? (json_decode($request->features_items, true)     ?? $settings->features_items     ?? []) : ($settings->features_items     ?? []),
-            'services_items'       => !empty($request->services_items)     ? (json_decode($request->services_items, true)     ?? $settings->services_items     ?? []) : ($settings->services_items     ?? []),
-            'testimonials_items'   => !empty($request->testimonials_items) ? (json_decode($request->testimonials_items, true) ?? $settings->testimonials_items ?? []) : ($settings->testimonials_items ?? []),
-            'stats_items'          => !empty($request->stats_items)        ? (json_decode($request->stats_items, true)        ?? $settings->stats_items        ?? []) : ($settings->stats_items        ?? []),
-            'faq_items'            => !empty($request->faq_items)          ? (json_decode($request->faq_items, true)          ?? $settings->faq_items          ?? []) : ($settings->faq_items          ?? []),
-            'hero_title'           => $request->hero_title,
-            'hero_subtitle'        => $request->hero_subtitle,
-            'hero_background_type' => $request->hero_background_type,
-            'hero_preset'          => $request->hero_preset,
-            'hero_gradient_start'  => $request->hero_gradient_start,
-            'hero_gradient_end'    => $request->hero_gradient_end,
-            'hero_effects'         => [
+            'hero_title', 'hero_subtitle', 'hero_background_type', 'hero_preset',
+            'hero_gradient_start', 'hero_gradient_end',
+            // seo
+            'site_description', 'google_site_verification',
+        ]);
+
+        $data['title_font']          = $request->title_font ?? $settings->title_font ?? 'Poppins';
+        $data['chatbot_personality'] = $request->chatbot_personality ?? $settings->chatbot_personality ?? 'professional';
+        $data['chatbot_bio']         = $request->chatbot_bio ?? $settings->chatbot_bio;
+
+        // Checkboxes: absent means unchecked, so these can only be read when the form
+        // that carries them was actually submitted. Every one has a hidden companion,
+        // so a real post always presents the key.
+        foreach ([
+            'dark_mode_enabled', 'notify_on_contact', 'notify_on_appointment',
+            'gcal_sync_appointments', 'chatbot_enabled', 'search_engine_visibility',
+        ] as $flag) {
+            if ($request->has($flag)) {
+                $data[$flag] = $request->boolean($flag);
+            }
+        }
+
+        if ($request->has('homepage_sections')) {
+            $sections = json_decode($request->homepage_sections, true) ?? [];
+            foreach ($sections as $i => $s) { $sections[$i]['order'] = $i; }
+            $data['homepage_sections'] = $sections;
+        }
+
+        if ($request->has('dashboard_config')) {
+            $data['dashboard_config'] = $request->dashboard_config ?? [];
+        }
+
+        // Each list is posted as a JSON string; an empty one means "unchanged", which
+        // is why these keep the stored value rather than clearing it.
+        foreach (['features_items', 'services_items', 'testimonials_items', 'stats_items', 'faq_items'] as $list) {
+            $data[$list] = !empty($request->$list)
+                ? (json_decode($request->$list, true) ?? $settings->$list ?? [])
+                : ($settings->$list ?? []);
+        }
+
+        // All-or-nothing: built from checkboxes, so writing it from a post that did not
+        // carry them would switch every effect off.
+        if ($request->has('hero_fx_entrance')) {
+            $data['hero_effects'] = [
                 'entrance_animation' => $request->boolean('hero_fx_entrance'),
                 'dot_grid'           => $request->boolean('hero_fx_dot_grid'),
                 'dark_overlay'       => $request->boolean('hero_fx_dark_overlay'),
@@ -148,12 +150,8 @@ class SettingsController extends Controller
                 'parallax'           => $request->boolean('hero_fx_parallax'),
                 'ken_burns'          => $request->boolean('hero_fx_ken_burns'),
                 'particles'          => $request->boolean('hero_fx_particles'),
-            ],
-            // seo
-            'site_description'         => $request->site_description,
-            'google_site_verification' => $request->google_site_verification,
-            'search_engine_visibility' => $request->boolean('search_engine_visibility'),
-        ];
+            ];
+        }
 
         // File uploads
         if ($request->hasFile('owner_photo')) {

@@ -968,15 +968,20 @@ $tabs = array_merge(...array_values($groups));
                         <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>Email Notifications</h2>
                         <div class="space-y-3">
                             <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="hidden" name="notify_on_contact" value="0">
                                 <input type="checkbox" name="notify_on_contact" value="1" class="rounded" {{ $settings->notify_on_contact ? 'checked' : '' }}>
                                 <span class="text-sm text-gray-700">Notify me on new contact messages</span>
                             </label>
                             <label class="flex items-center gap-3 cursor-pointer">
+                                <input type="hidden" name="notify_on_appointment" value="0">
                                 <input type="checkbox" name="notify_on_appointment" value="1" class="rounded" {{ $settings->notify_on_appointment ? 'checked' : '' }}>
                                 <span class="text-sm text-gray-700">Notify me on new appointment requests</span>
                             </label>
                             @php $gcalConnected = ($integrations->get('google_calendar')?->is_active ?? false); $gcalDisabled = !$gcalConnected || !$tenant->isPro(); @endphp
                             <label class="flex items-center gap-3 {{ !$gcalDisabled ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed' }}">
+                                {{-- Disabled when Calendar is not connected, and a disabled checkbox submits
+                                     nothing, so the companion carries the stored value rather than 0. --}}
+                                <input type="hidden" name="gcal_sync_appointments" value="{{ $gcalDisabled && $settings->gcal_sync_appointments ? 1 : 0 }}">
                                 <input type="checkbox" name="gcal_sync_appointments" value="1" class="rounded" {{ $settings->gcal_sync_appointments ? 'checked' : '' }} {{ $gcalDisabled ? 'disabled' : '' }}>
                                 <span class="text-sm text-gray-700">Add confirmed appointments to Google Calendar</span>
                                 @if(!$tenant->isPro())
