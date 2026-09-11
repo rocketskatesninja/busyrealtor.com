@@ -37,6 +37,48 @@
         </div>
     </form>
 
+    {{-- Password --}}
+    <form method="POST" action="{{ route('super.settings.password') }}" class="mb-6">
+        @csrf
+        @method('PUT')
+        <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-700">
+                <h2 class="text-base font-semibold text-white flex items-center gap-2">
+                    <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
+                    Password
+                </h2>
+                <p class="text-gray-400 text-sm mt-1">Changing this signs out your other sessions.</p>
+            </div>
+            <div class="px-6 py-5 space-y-4">
+                @php $pwField = 'w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500'; @endphp
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-1">Current Password</label>
+                    <x-password-input name="current_password" autocomplete="current-password" :class="$pwField" />
+                    @error('current_password') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">New Password</label>
+                        <x-password-input name="new_password" autocomplete="new-password" :class="$pwField" />
+                        @error('new_password') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-1">Confirm New Password</label>
+                        <x-password-input name="new_password_confirmation" autocomplete="new-password" :class="$pwField" />
+                    </div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="submit"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        Change Password
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+
     <form method="POST" action="{{ route('super.settings.update') }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')

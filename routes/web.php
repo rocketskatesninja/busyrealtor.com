@@ -128,6 +128,8 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin', 'no.cache'])->n
     Route::get('/settings', [SystemSettingsController::class, 'index'])->name('settings');
     Route::put('/settings', [SystemSettingsController::class, 'update'])->name('settings.update');
     Route::put('/settings/email', [SystemSettingsController::class, 'updateEmail'])->name('settings.email');
+    // Throttled: current_password makes this an online guess of the existing one.
+    Route::put('/settings/password', [SystemSettingsController::class, 'updatePassword'])->middleware('throttle:6,1')->name('settings.password');
     // Send a test email through the saved platform SMTP — surfaces the
     // raw SMTP error so the operator can diagnose without trawling logs.
     Route::post('/api/test-mail', [SuperTestMailController::class, 'send'])->middleware('throttle:10,1')->name('api.test-mail');

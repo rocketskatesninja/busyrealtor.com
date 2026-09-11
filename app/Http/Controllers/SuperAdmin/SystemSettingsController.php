@@ -5,7 +5,9 @@ namespace App\Http\Controllers\SuperAdmin;
 use App\Http\Controllers\Controller;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rules\Password;
 
 class SystemSettingsController extends Controller
 {
@@ -128,5 +130,36 @@ class SystemSettingsController extends Controller
         logActivity('updated', 'Updated super admin email to ' . $request->email);
 
         return redirect()->route('super.settings')->with('success', 'Email updated.');
+    }
+
+    /**
+     * Change the super admin's own password.
+     *
+     * Its own route and form, the way updateEmail() already is, because update()
+     * above posts every platform setting at once and this has nothing to do with
+     * platform configuration.
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            // Proves the person at the keyboard knows the existing password, so an
+            // unattended tab or a stolen session is not enough to take the account
+            // over. Same guard the tenant settings screen uses.
+            'current_password' => ['required', 'current_password'],
+            'new_password'     => ['required', 'confirmed', Password::defaults()],
+        ], [
+            'current_password.required'         => 'Enter your current password to change it.',
+            'current_password.current_password' => 'Your current password is incorrect.',
+        ]);
+
+        $user = $request->user();
+        $user->update(['password' => Hash::make($request->new_password)]);
+
+        // A password change has to end the sessions of whoever else holds one.
+        $user->endOtherSessions();
+
+        logActivity('updated', 'Changed super admin password');
+
+        return redirect()->route('super.settings')->with('success', 'Password updated.');
     }
 }
