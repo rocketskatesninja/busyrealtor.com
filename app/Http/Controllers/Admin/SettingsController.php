@@ -74,6 +74,8 @@ class SettingsController extends Controller
                 'current_password.current_password' => 'Your current password is incorrect.',
             ]);
             Auth::user()->update(['password' => Hash::make($request->new_password)]);
+            // A password change has to end the sessions of whoever else holds one.
+            Auth::user()->endOtherSessions();
         }
 
         // ── All site_settings columns ─────────────────────────────────────

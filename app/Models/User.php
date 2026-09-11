@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Services\TenantMailer;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Carbon;
 
@@ -80,5 +81,28 @@ class User extends Authenticatable implements MustVerifyEmail
         }
 
         parent::sendEmailVerificationNotification();
+    }
+
+    /**
+     * End this user's sessions everywhere except the one making the request.
+     *
+     * Changing a password is how you evict someone who already holds a session,
+     * so it has to actually end theirs. It lives here rather than in the two
+     * controllers that change passwords, because the day those two disagree is a
+     * security hole rather than an inconsistency.
+     *
+     * Only the database driver keeps rows addressable by user; under any other
+     * driver this is a no-op and the caller is no worse off than before.
+     */
+    public function endOtherSessions(): void
+    {
+        if (config('session.driver') !== 'database') {
+            return;
+        }
+
+        DB::table(config('session.table', 'sessions'))
+            ->where('user_id', $this->getKey())
+            ->where('id', '!=', session()->getId())
+            ->delete();
     }
 }
