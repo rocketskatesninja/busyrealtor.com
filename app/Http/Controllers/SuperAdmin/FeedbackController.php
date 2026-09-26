@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Feedback;
+use App\Support\Prefetch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -40,7 +41,7 @@ class FeedbackController extends Controller
         $selectedItem = null;
         if ($id = $request->input('id')) {
             $selectedItem = Feedback::withoutGlobalScopes()->with(['tenant', 'user'])->find($id);
-            if ($selectedItem && $selectedItem->status === 'new') {
+            if ($selectedItem && $selectedItem->status === 'new' && ! Prefetch::detected($request)) {
                 $selectedItem->update(['status' => 'reviewed']);
                 logActivity('updated', "Reviewed feedback: {$selectedItem->subject}", $selectedItem);
             }

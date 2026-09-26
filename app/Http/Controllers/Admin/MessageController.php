@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Message;
+use App\Support\Prefetch;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -32,7 +33,7 @@ class MessageController extends Controller
         $message     = null;
         if ($request->view) {
             $message = Message::where('tenant_id', $tenant->id)->findOrFail($request->view);
-            if (!$message->is_read) $message->update(['is_read' => true]);
+            if (!$message->is_read && !Prefetch::detected($request)) $message->update(['is_read' => true]);
         }
         $unreadCount = Message::where('tenant_id', $tenant->id)->where('is_read', false)->count();
 
