@@ -17,11 +17,17 @@ class EnsureTenantAdmin
             return $next($request);
         }
 
-        if (session()->has('super_admin_id')) {
+        $tenant = app()->bound('tenant') ? app('tenant') : null;
+
+        // An impersonation session is a bypass only for the tenant it names. Without the
+        // tenant check a session left holding super_admin_id — one whose impersonating_
+        // tenant_id had gone, so HandleImpersonation had nothing to pin it to — was an
+        // admin session for every tenant on the platform.
+        if (session()->has('super_admin_id')
+            && $tenant
+            && (int) session('impersonating_tenant_id') === (int) $tenant->id) {
             return $next($request);
         }
-
-        $tenant = app()->bound('tenant') ? app('tenant') : null;
 
         if (!$tenant || !$user || (int) $user->tenant_id !== (int) $tenant->id) {
             abort(403, 'Access denied.');

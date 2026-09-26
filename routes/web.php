@@ -161,15 +161,18 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         Route::get('/sitemap.xml', [TenantPageController::class, 'sitemap'])->name('sitemap');
         Route::get('/llms.txt', [TenantPageController::class, 'llms'])->name('llms');
         Route::get('/favicon.svg', [TenantPageController::class, 'favicon'])->name('favicon');
+
+        // Public APIs — inside site.lock with the pages they belong to. Outside it, a locked
+        // platform still accepted contact submissions and bookings, served the listings JSON
+        // and ran chatbot turns against the tenant's own AI key, so the lock hid the site
+        // while the site kept working.
+        Route::post('/api/contact', [ContactController::class, 'submit'])->middleware('throttle:10,1')->name('api.contact');
+        Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->middleware('throttle:5,1')->name('api.chatbot');
+        Route::get('/api/properties', [PropertyApiController::class, 'index'])->middleware('throttle:60,1')->name('api.properties');
+
+        // Appointment booking (public, no auth)
+        Route::post('/appointments', [AppointmentController::class, 'storePublic'])->middleware('throttle:10,1')->name('appointments.store');
     });
-
-    // Public APIs
-    Route::post('/api/contact', [ContactController::class, 'submit'])->middleware('throttle:10,1')->name('api.contact');
-    Route::post('/api/chatbot', [ChatbotController::class, 'chat'])->middleware('throttle:5,1')->name('api.chatbot');
-    Route::get('/api/properties', [PropertyApiController::class, 'index'])->middleware('throttle:60,1')->name('api.properties');
-
-    // Appointment booking (public, no auth)
-    Route::post('/appointments', [AppointmentController::class, 'storePublic'])->middleware('throttle:10,1')->name('appointments.store');
 
     // Admin routes
     Route::prefix('admin')->middleware(['auth', 'verified', 'tenant.active', 'tenant.admin', 'no.cache'])->name('admin.')->group(function () {
