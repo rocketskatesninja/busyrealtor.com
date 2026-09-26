@@ -1,3 +1,9 @@
+@extends('layouts.tenant')
+@section('title', 'Map — ' . ($settings->site_title ?? 'BusyRealtor'))
+
+@section('head')
+{{-- Moved inside @section('head'): sitting above @extends, this was echoed
+     before the layout's doctype, which put the whole page in quirks mode. --}}
 <style>
 /* Soften Google Maps default UI controls in dark mode (avoids glaring white) */
 .dark .gm-style .gm-bundled-control,
@@ -12,10 +18,6 @@
     filter: invert(0.82) hue-rotate(180deg);
 }
 </style>
-@extends('layouts.tenant')
-@section('title', 'Map — ' . ($settings->site_title ?? 'BusyRealtor'))
-
-@section('head')
 @if($mapsKey ?? null)
 <script>
 var _allMarkers = [];

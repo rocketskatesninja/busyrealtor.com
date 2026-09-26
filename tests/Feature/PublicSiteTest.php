@@ -117,6 +117,33 @@ class PublicSiteTest extends TestCase
         $this->get("/{$mine->slug}/property/{$foreign->id}")->assertNotFound();
     }
 
+    /**
+     * Every page must begin with the doctype.
+     *
+     * property.blade.php and map.blade.php each opened with a <style> block placed *above*
+     * @extends. Blade compiles @extends into a footer append, so the child's stray output was
+     * echoed first and the response began with "<style>". Any token before the doctype puts
+     * the document in quirks mode, which changes box sizing, line-height and percentage
+     * heights — on the two most layout-sensitive public pages.
+     */
+    public function test_public_pages_begin_with_the_doctype_and_not_stray_markup(): void
+    {
+        $tenant = $this->makeTenant();
+        $property = $this->makeProperty($tenant);
+
+        $paths = ['', '/gallery', '/contact', '/map', "/property/{$property->id}"];
+
+        foreach ($paths as $path) {
+            $body = ltrim($this->get("/{$tenant->slug}{$path}")->assertOk()->getContent());
+
+            $this->assertStringStartsWith(
+                '<!DOCTYPE html>',
+                substr($body, 0, 15),
+                "/{$tenant->slug}{$path} does not start with the doctype"
+            );
+        }
+    }
+
     public function test_an_unknown_tenant_slug_is_a_404(): void
     {
         $this->get('/no-such-agency')->assertNotFound();

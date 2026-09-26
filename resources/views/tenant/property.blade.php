@@ -1,3 +1,12 @@
+@extends('layouts.tenant')
+@section('hide_header')@endsection
+@section('title', $property->title . ' — ' . ($settings->site_title ?? 'BusyRealtor'))
+@section('meta_description', Str::limit(strip_tags($property->description ?? $settings->site_description ?? ''), 155))
+@section('og_image', $property->images->first() ? asset('storage/' . $property->images->first()->image_path) : '')
+
+@section('head')
+{{-- Moved inside @section('head'): sitting above @extends, this was echoed
+     before the layout's doctype, which put the whole page in quirks mode. --}}
 <style>
 /* Soften Google Maps default UI controls in dark mode (avoids glaring white) */
 .dark .gm-style .gm-bundled-control,
@@ -12,13 +21,6 @@
     filter: invert(0.82) hue-rotate(180deg);
 }
 </style>
-@extends('layouts.tenant')
-@section('hide_header')@endsection
-@section('title', $property->title . ' — ' . ($settings->site_title ?? 'BusyRealtor'))
-@section('meta_description', Str::limit(strip_tags($property->description ?? $settings->site_description ?? ''), 155))
-@section('og_image', $property->images->first() ? asset('storage/' . $property->images->first()->image_path) : '')
-
-@section('head')
 @if(($mapsKey ?? null) && $property->latitude && $property->longitude)
 <script>
 var DARK_MAP_STYLES = [
