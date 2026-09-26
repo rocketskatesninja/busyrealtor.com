@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\SiteSettings;
 use App\Models\Integration;
 use App\Models\Property;
 use App\Models\PropertyImage;
+use App\Models\SiteSettings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
@@ -15,8 +15,8 @@ class SetupWizardController extends Controller
 {
     public function show($account)
     {
-        $tenant      = app('tenant');
-        $settings    = SiteSettings::firstOrCreate(['tenant_id' => $tenant->id]);
+        $tenant = app('tenant');
+        $settings = SiteSettings::firstOrCreate(['tenant_id' => $tenant->id]);
         $integrations = Integration::where('tenant_id', $tenant->id)->get()->keyBy('integration_type');
 
         return view('tenant.admin.setup', compact('tenant', 'settings', 'integrations'));
@@ -92,7 +92,7 @@ class SetupWizardController extends Controller
 
     public function save($account, Request $request)
     {
-        $tenant   = app('tenant');
+        $tenant = app('tenant');
         $settings = SiteSettings::firstOrCreate(['tenant_id' => $tenant->id]);
 
         // Cast once. This switch used to mix integer cases with a 'complete' string case,
@@ -140,12 +140,14 @@ class SetupWizardController extends Controller
                 ]);
 
                 if ($request->hasFile('hero_image')) {
-                    if ($settings->hero_image) Storage::disk('public')->delete($settings->hero_image);
-                    $dir      = "tenants/{$tenant->id}";
-                    $filename = 'hero-bg-' . time() . '.jpg';
+                    if ($settings->hero_image) {
+                        Storage::disk('public')->delete($settings->hero_image);
+                    }
+                    $dir = "tenants/{$tenant->id}";
+                    $filename = 'hero-bg-'.time().'.jpg';
                     Storage::disk('public')->makeDirectory($dir);
-                    Storage::disk('public')->put($dir . '/' . $filename, Image::read($request->file('hero_image'))->scale(width: 1920)->toJpeg(85));
-                    $data['hero_image'] = $dir . '/' . $filename;
+                    Storage::disk('public')->put($dir.'/'.$filename, Image::read($request->file('hero_image'))->scale(width: 1920)->toJpeg(85));
+                    $data['hero_image'] = $dir.'/'.$filename;
                 }
 
                 $settings->update($data);
@@ -161,11 +163,11 @@ class SetupWizardController extends Controller
                 if ($request->filled('ai_anthropic_key') || $request->filled('ai_openai_key') || $aiRecord) {
                     $existingConfig = $aiRecord?->config ?? [];
                     $aiConfig = [
-                        'anthropic_key'   => $request->filled('ai_anthropic_key') ? $request->ai_anthropic_key : ($existingConfig['anthropic_key'] ?? null),
+                        'anthropic_key' => $request->filled('ai_anthropic_key') ? $request->ai_anthropic_key : ($existingConfig['anthropic_key'] ?? null),
                         'anthropic_model' => $request->ai_anthropic_model ?? $existingConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001',
-                        'openai_key'      => $request->filled('ai_openai_key') ? $request->ai_openai_key : ($existingConfig['openai_key'] ?? null),
-                        'openai_model'    => $request->ai_openai_model ?? $existingConfig['openai_model'] ?? 'gpt-4o-mini',
-                        'preferred'       => $request->ai_preferred ?? $existingConfig['preferred'] ?? 'anthropic',
+                        'openai_key' => $request->filled('ai_openai_key') ? $request->ai_openai_key : ($existingConfig['openai_key'] ?? null),
+                        'openai_model' => $request->ai_openai_model ?? $existingConfig['openai_model'] ?? 'gpt-4o-mini',
+                        'preferred' => $request->ai_preferred ?? $existingConfig['preferred'] ?? 'anthropic',
                     ];
                     Integration::updateOrCreate(
                         ['tenant_id' => $tenant->id, 'integration_type' => 'ai_provider'],
@@ -194,10 +196,14 @@ class SetupWizardController extends Controller
                 if ($request->filled('fb_access_token') || $request->filled('fb_page_id') || $existingFb) {
                     $existingFbConfig = $existingFb?->config ?? [];
                     $fbData = [
-                        'config'    => [
-                            'page_id'             => $request->fb_page_id ?: ($existingFbConfig['page_id'] ?? null),
-                            'post_on_new_listing' => true,
-                            'post_on_sold'        => true,
+                        'config' => [
+                            'page_id' => $request->fb_page_id ?: ($existingFbConfig['page_id'] ?? null),
+                            // Keeps whatever the tenant last chose in Settings. Hardcoding
+                            // true here turned auto-posting back on for anyone who had
+                            // switched it off and then re-entered the wizard — including
+                            // via /admin/setup/skip, which runs the same finish().
+                            'post_on_new_listing' => $existingFbConfig['post_on_new_listing'] ?? true,
+                            'post_on_sold' => $existingFbConfig['post_on_sold'] ?? true,
                         ],
                         'is_active' => $request->boolean('fb_enabled'),
                     ];
@@ -216,11 +222,11 @@ class SetupWizardController extends Controller
                     $existingTwConfig = $existingTw?->config ?? [];
                     $twData = [
                         'config' => [
-                            'api_secret'          => $request->tw_api_secret          ?: ($existingTwConfig['api_secret'] ?? null),
-                            'access_token'        => $request->tw_access_token        ?: ($existingTwConfig['access_token'] ?? null),
+                            'api_secret' => $request->tw_api_secret ?: ($existingTwConfig['api_secret'] ?? null),
+                            'access_token' => $request->tw_access_token ?: ($existingTwConfig['access_token'] ?? null),
                             'access_token_secret' => $request->tw_access_token_secret ?: ($existingTwConfig['access_token_secret'] ?? null),
-                            'post_on_new_listing' => true,
-                            'post_on_sold'        => true,
+                            'post_on_new_listing' => $existingTwConfig['post_on_new_listing'] ?? true,
+                            'post_on_sold' => $existingTwConfig['post_on_sold'] ?? true,
                         ],
                         'is_active' => $request->boolean('tw_enabled'),
                     ];
@@ -236,36 +242,37 @@ class SetupWizardController extends Controller
 
             case '5': // Add First Property
                 $property = Property::create([
-                    'tenant_id'      => $tenant->id,
-                    'title'          => $request->title,
-                    'property_type'  => $request->property_type,
-                    'price'          => $request->price,
+                    'tenant_id' => $tenant->id,
+                    'title' => $request->title,
+                    'property_type' => $request->property_type,
+                    'price' => $request->price,
                     'address_street' => $request->address,
-                    'address_city'   => $request->city,
-                    'address_state'  => $request->state,
-                    'address_zip'    => $request->zip,
-                    'bedrooms'       => $request->bedrooms,
-                    'bathrooms'      => $request->bathrooms,
-                    'square_feet'    => $request->sqft,
+                    'address_city' => $request->city,
+                    'address_state' => $request->state,
+                    'address_zip' => $request->zip,
+                    'bedrooms' => $request->bedrooms,
+                    'bathrooms' => $request->bathrooms,
+                    'square_feet' => $request->sqft,
                     'listing_status' => 'active',
-                    'is_featured'    => true,
+                    'is_featured' => true,
                 ]);
                 if ($request->hasFile('images')) {
                     $dir = "tenants/{$tenant->id}/properties";
                     Storage::disk('public')->makeDirectory($dir);
                     foreach ($request->file('images') as $file) {
-                        $filename = uniqid() . '.jpg';
-                        $path     = $dir . '/' . $filename;
+                        $filename = uniqid().'.jpg';
+                        $path = $dir.'/'.$filename;
                         Storage::disk('public')->put($path, Image::read($file)->scale(width: 1200)->toJpeg(85));
                         PropertyImage::create([
                             'property_id' => $property->id,
-                            'tenant_id'   => $tenant->id,
-                            'image_url'   => $path,
-                            'sort_order'  => 0,
-                            'is_primary'  => true,
+                            'tenant_id' => $tenant->id,
+                            'image_url' => $path,
+                            'sort_order' => 0,
+                            'is_primary' => true,
                         ]);
                     }
                 }
+
                 return response()->json(['success' => true, 'property_id' => $property->id]);
 
             case 'complete':

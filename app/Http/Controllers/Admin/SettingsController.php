@@ -3,13 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\SiteSettings;
-use App\Models\LegalPage;
 use App\Models\Integration;
+use App\Models\LegalPage;
+use App\Models\SiteSettings;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
 use Intervention\Image\Laravel\Facades\Image;
 
@@ -18,15 +18,16 @@ class SettingsController extends Controller
     private function getSettings()
     {
         $tenant = app('tenant');
+
         return SiteSettings::firstOrCreate(['tenant_id' => $tenant->id]);
     }
 
     public function show($account, Request $request)
     {
-        $tenant   = app('tenant');
+        $tenant = app('tenant');
         $settings = $this->getSettings();
-        $tab      = $request->tab ?? 'general';
-        $legal    = LegalPage::where('tenant_id', $tenant->id)->get()->keyBy('page_type');
+        $tab = $request->tab ?? 'general';
+        $legal = LegalPage::where('tenant_id', $tenant->id)->get()->keyBy('page_type');
         $integrations = Integration::where('tenant_id', $tenant->id)->get()->keyBy('integration_type');
 
         return view('tenant.admin.settings.index', compact('tenant', 'settings', 'tab', 'legal', 'integrations'));
@@ -34,12 +35,12 @@ class SettingsController extends Controller
 
     public function update($account, Request $request)
     {
-        $tenant   = app('tenant');
+        $tenant = app('tenant');
         $settings = $this->getSettings();
-        $tab      = $request->input('tab', 'general');
+        $tab = $request->input('tab', 'general');
 
         // ── Auth user (profile tab) ───────────────────────────────────────
-        $request->validate(['first_name' => 'required|string|max:255', 'last_name' => 'required|string|max:255', 'email' => 'required|email|unique:users,email,' . Auth::id()]);
+        $request->validate(['first_name' => 'required|string|max:255', 'last_name' => 'required|string|max:255', 'email' => 'required|email|unique:users,email,'.Auth::id()]);
         $emailChanged = $request->email !== Auth::user()->email;
         Auth::user()->update([
             'first_name' => $request->first_name,
@@ -53,6 +54,7 @@ class SettingsController extends Controller
                 Auth::user()->sendEmailVerificationNotification();
             } catch (\Exception $e) {
                 \Log::warning('Email verification send failed', ['user_id' => Auth::id(), 'error' => $e->getMessage()]);
+
                 return redirect()->route('tenant.admin.settings', ['account' => $account, 'tab' => 'profile'])
                     ->with('error', 'Email updated but verification email could not be sent. Please configure SMTP settings or contact support.');
             }
@@ -68,9 +70,9 @@ class SettingsController extends Controller
             // and compares against the authenticated user's password.
             $request->validate([
                 'current_password' => ['required', 'current_password'],
-                'new_password'     => ['required', 'confirmed', Password::defaults()],
+                'new_password' => ['required', 'confirmed', Password::defaults()],
             ], [
-                'current_password.required'         => 'Enter your current password to change it.',
+                'current_password.required' => 'Enter your current password to change it.',
                 'current_password.current_password' => 'Your current password is incorrect.',
             ]);
             Auth::user()->update(['password' => Hash::make($request->new_password)]);
@@ -103,9 +105,9 @@ class SettingsController extends Controller
             'site_description', 'google_site_verification',
         ]);
 
-        $data['title_font']          = $request->title_font ?? $settings->title_font ?? 'Poppins';
+        $data['title_font'] = $request->title_font ?? $settings->title_font ?? 'Poppins';
         $data['chatbot_personality'] = $request->chatbot_personality ?? $settings->chatbot_personality ?? 'professional';
-        $data['chatbot_bio']         = $request->chatbot_bio ?? $settings->chatbot_bio;
+        $data['chatbot_bio'] = $request->chatbot_bio ?? $settings->chatbot_bio;
 
         // Checkboxes: absent means unchecked, so these can only be read when the form
         // that carries them was actually submitted. Every one has a hidden companion,
@@ -121,7 +123,9 @@ class SettingsController extends Controller
 
         if ($request->has('homepage_sections')) {
             $sections = json_decode($request->homepage_sections, true) ?? [];
-            foreach ($sections as $i => $s) { $sections[$i]['order'] = $i; }
+            foreach ($sections as $i => $s) {
+                $sections[$i]['order'] = $i;
+            }
             $data['homepage_sections'] = $sections;
         }
 
@@ -132,7 +136,7 @@ class SettingsController extends Controller
         // Each list is posted as a JSON string; an empty one means "unchanged", which
         // is why these keep the stored value rather than clearing it.
         foreach (['features_items', 'services_items', 'testimonials_items', 'stats_items', 'faq_items'] as $list) {
-            $data[$list] = !empty($request->$list)
+            $data[$list] = ! empty($request->$list)
                 ? (json_decode($request->$list, true) ?? $settings->$list ?? [])
                 : ($settings->$list ?? []);
         }
@@ -142,40 +146,46 @@ class SettingsController extends Controller
         if ($request->has('hero_fx_entrance')) {
             $data['hero_effects'] = [
                 'entrance_animation' => $request->boolean('hero_fx_entrance'),
-                'dot_grid'           => $request->boolean('hero_fx_dot_grid'),
-                'dark_overlay'       => $request->boolean('hero_fx_dark_overlay'),
-                'overlay_opacity'    => (int) ($request->hero_fx_overlay_opacity ?? 45),
-                'cta_glow'           => $request->boolean('hero_fx_cta_glow'),
-                'scroll_cue'         => $request->boolean('hero_fx_scroll_cue'),
-                'parallax'           => $request->boolean('hero_fx_parallax'),
-                'ken_burns'          => $request->boolean('hero_fx_ken_burns'),
-                'particles'          => $request->boolean('hero_fx_particles'),
+                'dot_grid' => $request->boolean('hero_fx_dot_grid'),
+                'dark_overlay' => $request->boolean('hero_fx_dark_overlay'),
+                'overlay_opacity' => (int) ($request->hero_fx_overlay_opacity ?? 45),
+                'cta_glow' => $request->boolean('hero_fx_cta_glow'),
+                'scroll_cue' => $request->boolean('hero_fx_scroll_cue'),
+                'parallax' => $request->boolean('hero_fx_parallax'),
+                'ken_burns' => $request->boolean('hero_fx_ken_burns'),
+                'particles' => $request->boolean('hero_fx_particles'),
             ];
         }
 
         // File uploads
         if ($request->hasFile('owner_photo')) {
-            if ($settings->owner_photo) Storage::disk('public')->delete($settings->owner_photo);
+            if ($settings->owner_photo) {
+                Storage::disk('public')->delete($settings->owner_photo);
+            }
             $dir = "tenants/{$tenant->id}";
             Storage::disk('public')->makeDirectory($dir);
-            Storage::disk('public')->put($dir . '/owner.jpg', Image::read($request->file('owner_photo'))->scale(width: 400)->toJpeg(85));
-            $data['owner_photo'] = $dir . '/owner.jpg';
+            Storage::disk('public')->put($dir.'/owner.jpg', Image::read($request->file('owner_photo'))->scale(width: 400)->toJpeg(85));
+            $data['owner_photo'] = $dir.'/owner.jpg';
         }
         if ($request->hasFile('hero_image')) {
-            if ($settings->hero_image) Storage::disk('public')->delete($settings->hero_image);
-            $dir      = "tenants/{$tenant->id}";
-            $filename = 'hero-bg-' . time() . '.jpg';
+            if ($settings->hero_image) {
+                Storage::disk('public')->delete($settings->hero_image);
+            }
+            $dir = "tenants/{$tenant->id}";
+            $filename = 'hero-bg-'.time().'.jpg';
             Storage::disk('public')->makeDirectory($dir);
-            Storage::disk('public')->put($dir . '/' . $filename, Image::read($request->file('hero_image'))->scale(width: 1920)->toJpeg(85));
-            $data['hero_image'] = $dir . '/' . $filename;
+            Storage::disk('public')->put($dir.'/'.$filename, Image::read($request->file('hero_image'))->scale(width: 1920)->toJpeg(85));
+            $data['hero_image'] = $dir.'/'.$filename;
         }
         if ($request->hasFile('map_office_image')) {
-            if ($settings->map_office_image) Storage::disk('public')->delete($settings->map_office_image);
-            $dir      = "tenants/{$tenant->id}";
-            $filename = 'office-' . time() . '.jpg';
+            if ($settings->map_office_image) {
+                Storage::disk('public')->delete($settings->map_office_image);
+            }
+            $dir = "tenants/{$tenant->id}";
+            $filename = 'office-'.time().'.jpg';
             Storage::disk('public')->makeDirectory($dir);
-            Storage::disk('public')->put($dir . '/' . $filename, Image::read($request->file('map_office_image'))->scale(width: 800)->toJpeg(85));
-            $data['map_office_image'] = $dir . '/' . $filename;
+            Storage::disk('public')->put($dir.'/'.$filename, Image::read($request->file('map_office_image'))->scale(width: 800)->toJpeg(85));
+            $data['map_office_image'] = $dir.'/'.$filename;
         }
 
         $settings->update($data);
@@ -185,7 +195,7 @@ class SettingsController extends Controller
             if ($request->filled($type)) {
                 LegalPage::updateOrCreate(
                     ['tenant_id' => $tenant->id, 'page_type' => $type],
-                    ['content'   => $request->$type]
+                    ['content' => $request->$type]
                 );
             }
         }
@@ -194,18 +204,18 @@ class SettingsController extends Controller
         if ($request->filled('smtp_host')) {
             Integration::updateOrCreate(
                 ['tenant_id' => $tenant->id, 'integration_type' => 'smtp'],
-                ['config' => $request->only('smtp_host','smtp_port','smtp_encryption','smtp_username','smtp_password','smtp_from_email','smtp_from_name'), 'is_active' => true]
+                ['config' => $request->only('smtp_host', 'smtp_port', 'smtp_encryption', 'smtp_username', 'smtp_password', 'smtp_from_email', 'smtp_from_name'), 'is_active' => true]
             );
         }
         // AI provider — always update config so preferred/model changes persist even without new keys
-        $aiRecord      = $tenant->getIntegration('ai_provider');
+        $aiRecord = $tenant->getIntegration('ai_provider');
         $existingConfig = $aiRecord?->config ?? [];
         $aiConfig = [
-            'anthropic_key'   => $request->filled('ai_anthropic_key') ? $request->ai_anthropic_key : ($existingConfig['anthropic_key'] ?? null),
+            'anthropic_key' => $request->filled('ai_anthropic_key') ? $request->ai_anthropic_key : ($existingConfig['anthropic_key'] ?? null),
             'anthropic_model' => $request->ai_anthropic_model ?? $existingConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001',
-            'openai_key'      => $request->filled('ai_openai_key') ? $request->ai_openai_key : ($existingConfig['openai_key'] ?? null),
-            'openai_model'    => $request->ai_openai_model ?? $existingConfig['openai_model'] ?? 'gpt-4o-mini',
-            'preferred'       => $request->ai_preferred ?? $existingConfig['preferred'] ?? 'anthropic',
+            'openai_key' => $request->filled('ai_openai_key') ? $request->ai_openai_key : ($existingConfig['openai_key'] ?? null),
+            'openai_model' => $request->ai_openai_model ?? $existingConfig['openai_model'] ?? 'gpt-4o-mini',
+            'preferred' => $request->ai_preferred ?? $existingConfig['preferred'] ?? 'anthropic',
         ];
         Integration::updateOrCreate(
             ['tenant_id' => $tenant->id, 'integration_type' => 'ai_provider'],
@@ -223,43 +233,61 @@ class SettingsController extends Controller
             );
         }
 
-        $fbData = [
-            'config'    => [
-                'page_id'             => $request->fb_page_id,
-                'post_on_new_listing' => $request->boolean('fb_post_new_listing'),
-                'post_on_sold'        => $request->boolean('fb_post_sold'),
-            ],
-            'is_active' => $request->boolean('fb_enabled'),
-        ];
-        if ($request->filled('fb_access_token')) {
-            $fbData['api_key'] = $request->fb_access_token;
+        /*
+         | Only written when the integrations form was actually part of this submission.
+         |
+         | This screen is tabbed and each tab posts on its own, so a save from Appearance
+         | carried no fb_* fields at all — and boolean('fb_enabled') on an absent field is
+         | false. Saving an unrelated tab therefore switched Facebook off and nulled its
+         | page id, silently. The enable toggle has a hidden companion input, so the key is
+         | present whenever that form was submitted and absent when it was not, which makes
+         | it an exact signal rather than a guess. (Unticking Enable still disables, because
+         | the hidden input posts 0.)
+         */
+        if ($request->has('fb_enabled')) {
+            $fbData = [
+                'config' => [
+                    'page_id' => $request->fb_page_id,
+                    'post_on_new_listing' => $request->boolean('fb_post_new_listing'),
+                    'post_on_sold' => $request->boolean('fb_post_sold'),
+                ],
+                'is_active' => $request->boolean('fb_enabled'),
+            ];
+            if ($request->filled('fb_access_token')) {
+                $fbData['api_key'] = $request->fb_access_token;
+            }
+            Integration::updateOrCreate(
+                ['tenant_id' => $tenant->id, 'integration_type' => 'facebook'],
+                $fbData
+            );
         }
-        Integration::updateOrCreate(
-            ['tenant_id' => $tenant->id, 'integration_type' => 'facebook'],
-            $fbData
-        );
 
-        $twitter  = $tenant->getIntegration('twitter');
-        $twConfig = $twitter?->config ?? [];
-        $twData   = [
-            'config'    => [
-                'api_secret'          => $request->tw_api_secret          ?: ($twConfig['api_secret']          ?? null),
-                'access_token'        => $request->tw_access_token        ?: ($twConfig['access_token']        ?? null),
-                'access_token_secret' => $request->tw_access_token_secret ?: ($twConfig['access_token_secret'] ?? null),
-                'post_on_new_listing' => $request->boolean('tw_post_new_listing'),
-                'post_on_sold'        => $request->boolean('tw_post_sold'),
-            ],
-            'is_active' => $request->boolean('tw_enabled'),
-        ];
-        if ($request->filled('tw_api_key')) {
-            $twData['api_key'] = $request->tw_api_key;
+        // Same guard as Facebook above: tw_enabled has a hidden companion input, so its
+        // presence means this submission included the integrations form.
+        if ($request->has('tw_enabled')) {
+            $twitter = $tenant->getIntegration('twitter');
+            $twConfig = $twitter?->config ?? [];
+            $twData = [
+                'config' => [
+                    'api_secret' => $request->tw_api_secret ?: ($twConfig['api_secret'] ?? null),
+                    'access_token' => $request->tw_access_token ?: ($twConfig['access_token'] ?? null),
+                    'access_token_secret' => $request->tw_access_token_secret ?: ($twConfig['access_token_secret'] ?? null),
+                    'post_on_new_listing' => $request->boolean('tw_post_new_listing'),
+                    'post_on_sold' => $request->boolean('tw_post_sold'),
+                ],
+                'is_active' => $request->boolean('tw_enabled'),
+            ];
+            if ($request->filled('tw_api_key')) {
+                $twData['api_key'] = $request->tw_api_key;
+            }
+            Integration::updateOrCreate(
+                ['tenant_id' => $tenant->id, 'integration_type' => 'twitter'],
+                $twData
+            );
         }
-        Integration::updateOrCreate(
-            ['tenant_id' => $tenant->id, 'integration_type' => 'twitter'],
-            $twData
-        );
 
         logActivity('updated', "Updated tenant settings (tab: {$tab})");
+
         return redirect()->route('tenant.admin.settings', ['account' => $account, 'tab' => $tab])->with('success', 'Settings saved.');
     }
 }
