@@ -4,7 +4,7 @@
 @section('content')
 @php
 $account = $tenant->slug;
-$siteSettings = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
+$siteSettings = $tenant->settings();
 $gcalConnected = \App\Models\Integration::where('tenant_id', $tenant->id)
     ->where('integration_type', 'google_calendar')->where('is_active', true)->exists();
 $properties = \App\Models\Property::where('tenant_id', $tenant->id)->where('listing_status', 'active')->orderBy('title')->get();

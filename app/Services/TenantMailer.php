@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Integration;
-use App\Models\SiteSettings;
 use App\Models\SystemSetting;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\Config;
@@ -119,8 +118,8 @@ class TenantMailer
             if (!in_array($template, $allowed)) {
                 throw new \InvalidArgumentException("Invalid email template: {$template}");
             }
-            $settings = SiteSettings::where('tenant_id', $tenantId)->first();
             $tenant   = Tenant::find($tenantId);
+            $settings = $tenant?->settings();
             $html     = view("emails.{$template}", compact('subject', 'body', 'settings', 'tenant', 'agent'))->render();
 
             Mail::html($html, function ($m) use ($to, $toName, $subject, $replyTo) {

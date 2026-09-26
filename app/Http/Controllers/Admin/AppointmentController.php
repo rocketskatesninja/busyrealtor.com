@@ -281,7 +281,7 @@ class AppointmentController extends Controller
      */
     private static function resolveAgent(Appointment $appt, $tenant): ?array
     {
-        $settings = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
+        $settings = $tenant->settings();
 
         if ($appt->staff_member_id) {
             // Defense in depth — even though $appt is already tenant-scoped

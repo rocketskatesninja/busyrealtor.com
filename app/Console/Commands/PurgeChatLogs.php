@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Models\ChatLog;
-use App\Models\SiteSettings;
 use App\Models\Tenant;
 use Illuminate\Console\Command;
 
@@ -18,7 +17,7 @@ class PurgeChatLogs extends Command
         $total = 0;
 
         foreach ($tenants as $tenant) {
-            $settings = SiteSettings::where('tenant_id', $tenant->id)->first();
+            $settings = $tenant->settings();
             $hours = (int) ($settings->chatbot_expiration ?? 24);
             if ($hours < 1) $hours = 24;
 

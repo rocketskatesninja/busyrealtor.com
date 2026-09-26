@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\Message;
 use App\Models\Appointment;
-use App\Models\SiteSettings;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -21,7 +20,7 @@ class DashboardController extends Controller
     {
         $tenant   = app('tenant');
         $tid      = $tenant->id;
-        $settings = SiteSettings::where('tenant_id', $tid)->first();
+        $settings = $tenant->settings();
 
         // Redirect to setup wizard if not completed
         if ($settings && !$settings->setup_completed) {

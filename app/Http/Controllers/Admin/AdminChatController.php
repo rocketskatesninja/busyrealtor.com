@@ -7,7 +7,6 @@ use App\Models\Appointment;
 use App\Models\ChatLog;
 use App\Models\Message;
 use App\Models\Property;
-use App\Models\SiteSettings;
 use App\Models\StaffMember;
 use App\Models\User;
 use App\Services\TenantMailer;
@@ -643,7 +642,7 @@ class AdminChatController extends Controller
             $tenant->billingEmail(),
         ];
 
-        $settings = SiteSettings::where('tenant_id', $tenant->id)->first();
+        $settings = $tenant->settings();
         if ($settings) {
             $emails[] = $settings->contact_email;
             $emails[] = $settings->notification_email;

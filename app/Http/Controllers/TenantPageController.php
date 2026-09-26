@@ -17,7 +17,7 @@ class TenantPageController extends Controller
     private function getSettings()
     {
         $tenant = app('tenant');
-        return SiteSettings::where('tenant_id', $tenant->id)->first()
+        return $tenant->settings()
             ?? new SiteSettings(['tenant_id' => $tenant->id]);
     }
 
@@ -193,7 +193,7 @@ class TenantPageController extends Controller
     public function favicon($account, \Illuminate\Http\Request $request)
     {
         $tenant   = \App\Models\Tenant::where('slug', $account)->firstOrFail();
-        $settings = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
+        $settings = $tenant->settings();
 
         $preset = $settings->favicon_preset ?? null;
 
@@ -229,7 +229,7 @@ class TenantPageController extends Controller
     public function llms($account)
     {
         $tenant     = app('tenant');
-        $settings   = SiteSettings::where('tenant_id', $tenant->id)->first();
+        $settings   = $tenant->settings();
         $baseUrl    = url('/' . $account);
 
         $agencyName = $settings?->site_title    ?: '[Your Agency Name] — Real Estate';

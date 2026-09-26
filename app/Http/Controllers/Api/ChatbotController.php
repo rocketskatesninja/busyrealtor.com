@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\ChatLog;
 use App\Models\Property;
-use App\Models\SiteSettings;
 use App\Services\TenantMailer;
 use App\Support\MailBody;
 use Carbon\Carbon;
@@ -24,7 +23,7 @@ class ChatbotController extends Controller
             return response()->json(['reply' => 'The AI chatbot is available on the Pro plan. Please upgrade your account.']);
         }
 
-        $settings = SiteSettings::where('tenant_id', $tenant->id)->first();
+        $settings = $tenant->settings();
         ['integration' => $aiInteg, 'preferred' => $preferred, 'key' => $key, 'model' => $model]
             = \App\Services\AiProviderService::resolve($tenant, activeOnly: true);
 

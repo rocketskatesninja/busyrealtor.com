@@ -30,7 +30,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @php
-        $settings = $settings ?? \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
+        $settings = $settings ?? $tenant->settings();
         $titleFont = $settings->title_font ?? 'Poppins';
         $primaryColor = $settings->primary_color ?? '#3B82F6';
         $r = hexdec(substr(ltrim($primaryColor,'#'), 0, 2));

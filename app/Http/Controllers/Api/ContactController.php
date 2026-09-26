@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Message;
 use App\Models\Property;
-use App\Models\SiteSettings;
 use App\Services\TenantMailer;
 use App\Support\MailBody;
 use Illuminate\Http\Request;
@@ -65,7 +64,7 @@ class ContactController extends Controller
             'is_read'      => false,
         ]);
 
-        $settings = SiteSettings::where('tenant_id', $tenant->id)->first();
+        $settings = $tenant->settings();
         $notifyEnabled = !$settings || $settings->notify_on_contact !== false;
 
         if ($notifyEnabled) {

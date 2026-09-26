@@ -32,7 +32,7 @@ class BackupController extends Controller
         $zip->addFromString('data/appointments.json', \App\Models\Appointment::where('tenant_id', $tenant->id)->get()->toJson());
         $zip->addFromString('data/legal_pages.json',  \App\Models\LegalPage::where('tenant_id', $tenant->id)->get()->toJson());
 
-        $settings = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
+        $settings = $tenant->settings();
         if ($settings) {
             $zip->addFromString('data/settings.json', $settings->toJson());
         }

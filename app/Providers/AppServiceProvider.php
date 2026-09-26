@@ -127,7 +127,7 @@ class AppServiceProvider extends ServiceProvider
             if ($tenant) {
                 $unreadMessages      = \App\Models\Message::where('tenant_id', $tenant->id)->where('is_read', false)->count();
                 $pendingAppointments = \App\Models\Appointment::where('tenant_id', $tenant->id)->where('status', 'pending')->count();
-                $settings            = \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
+                $settings            = $tenant->settings();
             } else {
                 $unreadMessages = $pendingAppointments = 0;
                 $settings = null;
