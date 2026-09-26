@@ -103,10 +103,10 @@
         .dark footer          { background-color: #020617 !important; color: #9ca3af !important; }
         .dark footer h4       { color: #f1f5f9 !important; }
         .dark footer .text-gray-900 { color: #f1f5f9 !important; }
-        .dark footer .text-gray-500 { color: #6b7280 !important; }
+        .dark footer .text-gray-500 { color: #64748b !important; }
         .dark footer .social-icon        { background-color: #1f2937 !important; }
         .dark footer .social-icon:hover  { background-color: #374151 !important; }
-        .dark footer .text-gray-600      { color: #9ca3af !important; }
+        .dark footer .text-gray-600      { color: #94a3b8 !important; }
         .dark footer .border-gray-200    { border-color: #1f2937 !important; }
 
         /* Nav */

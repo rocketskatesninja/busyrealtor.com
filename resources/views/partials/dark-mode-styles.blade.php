@@ -68,13 +68,13 @@
 .dark .bg-green-100  { background-color: rgba(16,185,129,0.15) !important; }
 .dark .bg-yellow-50  { background-color: rgba(234,179,8,0.1)   !important; }
 .dark .bg-yellow-100 { background-color: rgba(234,179,8,0.15)  !important; }
-.dark .bg-blue-50    { background-color: rgba(59,130,246,0.1)  !important; }
+.dark .bg-blue-50    { background-color: rgba(59,130,246,0.12) !important; }
 .dark .bg-blue-100   { background-color: rgba(59,130,246,0.15) !important; }
 .dark .bg-red-50     { background-color: rgba(239,68,68,0.1)   !important; }
 .dark .bg-red-100    { background-color: rgba(239,68,68,0.15)  !important; }
-.dark .bg-purple-50  { background-color: rgba(168,85,247,0.1)  !important; }
+.dark .bg-purple-50  { background-color: rgba(168,85,247,0.12) !important; }
 .dark .bg-purple-100 { background-color: rgba(168,85,247,0.15) !important; }
-.dark .bg-indigo-50  { background-color: rgba(99,102,241,0.1)  !important; }
+.dark .bg-indigo-50  { background-color: rgba(99,102,241,0.12) !important; }
 .dark .bg-indigo-100 { background-color: rgba(99,102,241,0.15) !important; }
 .dark .hover\:bg-blue-100:hover  { background-color: rgba(59,130,246,0.25) !important; }
 .dark .hover\:bg-green-100:hover { background-color: rgba(16,185,129,0.25) !important; }
