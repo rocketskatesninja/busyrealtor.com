@@ -344,15 +344,21 @@ class SuperAdminController extends Controller
         $bodyTemplate = $request->body;
 
         /*
-         | One transient SMTP failure used to abort the loop, so every recipient after it got
-         | nothing AND the MailCampaign row below was never written — leaving no record that a
-         | partial blast had gone out, and making a retry double-send the first half. Failures
-         | are counted and logged per recipient now, and the campaign is always recorded.
+         | One job per recipient, queued.
          |
-         | Still synchronous, which is the real fix (a job per recipient) and is left for the
-         | queue work rather than smuggled in here.
+         | This used to send inline. The super admin's request was held open for one SMTP
+         | round trip per recipient, so a blast to a few hundred people either exceeded the
+         | request timeout or left the page apparently hung for minutes with no way to tell
+         | a slow SMTP server from a broken one. Whatever the timeout killed was simply lost.
+         |
+         | An earlier fix wrapped each send in a try/catch, because one transient failure
+         | aborted the loop and everyone after it got nothing while the MailCampaign row was
+         | never written — so a retry double-sent the first half. The queue supersedes that:
+         | a recipient whose delivery fails is retried on its own and ends up in failed_jobs
+         | if it keeps failing, without touching anyone else's. The try/catch that remains is
+         | only for a failure to *enqueue*, which means the queue backend itself is unwell.
          */
-        $sent = 0;
+        $queued = 0;
         $failed = [];
 
         foreach ($users as $user) {
@@ -363,22 +369,30 @@ class SuperAdminController extends Controller
             );
 
             try {
-                Mail::to($user->email)->send(new CampaignMail($subject, $personalizedBody, $user));
-                $sent++;
+                Mail::to($user->email)->queue(new CampaignMail($subject, $personalizedBody, $user));
+                $queued++;
             } catch (\Throwable $e) {
                 $failed[] = $user->email;
-                \Log::warning('Campaign send failed', ['email' => $user->email, 'error' => $e->getMessage()]);
+                \Log::warning('Campaign could not be queued', ['email' => $user->email, 'error' => $e->getMessage()]);
             }
         }
 
+        // recipient_count is what was queued, and sent_at is when it was handed to the queue
+        // rather than when the last message left. Delivery outcomes live in failed_jobs.
         MailCampaign::create([
             'subject'         => $subject,
             'body'            => $bodyTemplate,
-            'recipient_count' => $users->count(),
+            'recipient_count' => $queued,
             'sent_at'         => now(),
         ]);
-        logActivity('created', "Sent campaign email \"{$subject}\" to {$users->count()} recipients");
+        logActivity('created', "Queued campaign email \"{$subject}\" for {$queued} recipients");
 
-        return back()->with('success', "Email sent to {$users->count()} recipients.");
+        $message = "Email queued for {$queued} recipients — delivery continues in the background.";
+
+        if ($failed !== []) {
+            $message .= ' '.count($failed).' could not be queued; check the logs.';
+        }
+
+        return back()->with('success', $message);
     }
 }

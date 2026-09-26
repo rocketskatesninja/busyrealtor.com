@@ -154,12 +154,27 @@ class SettingsController extends Controller
             'map_office_image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:8192',
         ]);
         $emailChanged = $request->email !== Auth::user()->email;
-        Auth::user()->update([
+
+        $profile = [
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
-            'unsubscribed_at' => $request->has('platform_emails') ? null : (Auth::user()->unsubscribed_at ?? now()),
-        ]);
+        ];
+
+        // The platform-email subscription is only touched when the field that carries it was
+        // actually submitted. It used to be derived from has() alone, so *any* post to this
+        // action that did not include the checkbox silently unsubscribed the admin from
+        // platform mail — the same shape as the integrations wipe fixed in ac90404, and found
+        // the same way: by posting a subset of the form and watching a column change. The
+        // checkbox now has a hidden companion, so a real post always presents the key and the
+        // value decides.
+        if ($request->has('platform_emails')) {
+            $profile['unsubscribed_at'] = $request->boolean('platform_emails')
+                ? null
+                : (Auth::user()->unsubscribed_at ?? now());
+        }
+
+        Auth::user()->update($profile);
         if ($emailChanged) {
             Auth::user()->update(['email_verified_at' => null]);
             try {

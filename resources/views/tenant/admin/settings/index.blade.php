@@ -995,6 +995,9 @@ $tabs = array_merge(...array_values($groups));
                                 @endif
                             </label>
                             <label class="flex items-center gap-3 cursor-pointer">
+                                {{-- Hidden companion so the key is present whether or not the box is
+                                     ticked, matching notify_on_contact and the other flags here. --}}
+                                <input type="hidden" name="platform_emails" value="0">
                                 <input type="checkbox" name="platform_emails" value="1" class="rounded" {{ !auth()->user()->unsubscribed_at ? 'checked' : '' }}>
                                 <span class="text-sm text-gray-700">Receive platform updates and announcements from BusyRealtor</span>
                             </label>

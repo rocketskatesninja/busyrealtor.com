@@ -39,6 +39,55 @@ class SettingsValidationTest extends TestCase
         return SiteSettings::where('tenant_id', $tenantId)->firstOrFail();
     }
 
+    /**
+     * The platform-email subscription used to be derived from has('platform_emails') alone,
+     * so any post to this action that did not carry the checkbox silently unsubscribed the
+     * admin. Found by posting a subset of the form during the validation work and noticing a
+     * column change nobody asked for — the same shape as the integrations wipe in ac90404.
+     */
+    public function test_a_post_without_the_subscription_field_leaves_it_alone(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+        $this->assertNull($admin->unsubscribed_at);
+
+        $this->actingAs($admin)
+            ->post("/{$tenant->slug}/admin/settings", $this->profileFields($admin->email) + [
+                'site_title' => 'Coastal Realty',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertNull($admin->fresh()->unsubscribed_at, 'a settings save unsubscribed the admin');
+    }
+
+    public function test_unticking_the_box_unsubscribes_and_ticking_it_resubscribes(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+
+        // The hidden companion posts 0 when the box is not ticked.
+        $this->actingAs($admin)->post("/{$tenant->slug}/admin/settings",
+            $this->profileFields($admin->email) + ['platform_emails' => '0']);
+        $this->assertNotNull($admin->fresh()->unsubscribed_at, 'unticking the box did not unsubscribe');
+
+        $this->actingAs($admin)->post("/{$tenant->slug}/admin/settings",
+            $this->profileFields($admin->email) + ['platform_emails' => '1']);
+        $this->assertNull($admin->fresh()->unsubscribed_at, 'ticking the box did not resubscribe');
+    }
+
+    /** An already-unsubscribed admin keeps their original opt-out date, not a fresh one. */
+    public function test_an_unsubscribed_admin_keeps_the_date_they_opted_out(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant, ['unsubscribed_at' => now()->subMonths(3)]);
+        $originally = $admin->unsubscribed_at;
+
+        $this->actingAs($admin)->post("/{$tenant->slug}/admin/settings",
+            $this->profileFields($admin->email) + ['platform_emails' => '0']);
+
+        $this->assertEquals($originally, $admin->fresh()->unsubscribed_at);
+    }
+
     public function test_a_valid_settings_post_still_saves(): void
     {
         $tenant = $this->makeTenant();
