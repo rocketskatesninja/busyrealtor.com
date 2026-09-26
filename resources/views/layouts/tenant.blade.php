@@ -249,7 +249,7 @@
                     <span id="site-title-text" style="{{ $titleStyle }}">{{ $settings->site_title ?: 'Your Agency Name Here' }}</span>
                 @endif
             </a>
-            <nav id="tenant-nav" class="hidden md:flex items-center space-x-6 transition-all duration-300" style="opacity:0;pointer-events:none">
+            <nav id="tenant-nav" class="hidden md:flex items-center space-x-6 transition-all duration-300" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))">
                 <a href="{{ $galleryUrl }}" class="nav-link font-medium transition-colors hover-primary" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
                 <a href="{{ $mapUrl }}" class="nav-link font-medium transition-colors hover-primary" @if($isMap) style="color: var(--primary);" @endif>Map</a>
                 <a href="{{ route('login') }}" class="nav-link font-medium transition-colors hover-primary" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
@@ -258,7 +258,7 @@
                     <svg id="theme-icon-sun" class="w-5 h-5" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </button>
             </nav>
-            <button onclick="tenantNavToggle()" id="tenant-hamburger" class="hamburger-btn md:hidden p-2 rounded transition-all duration-300" style="opacity:0;pointer-events:none">
+            <button onclick="tenantNavToggle()" id="tenant-hamburger" class="hamburger-btn md:hidden p-2 rounded transition-all duration-300" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))">
                 <x-icon name="bars" class="w-6 h-6" />
             </button>
         </div>
@@ -1023,11 +1023,21 @@ document.addEventListener('click', function(e) {
     function update() {
         var s = window.scrollY > 50;
         h.classList.toggle('is-scrolled', s);
-        var vis = s ? 'opacity:1;pointer-events:auto' : 'opacity:0;pointer-events:none';
-        if (nav)  nav.style.cssText  = vis;
-        if (ham)  ham.style.cssText  = vis;
-        if (logo) logo.style.filter  = s ? '' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
-        // Close mobile menu when scrolling back to top
+
+        // The nav, the hamburger and the logo stay visible at every scroll position; only
+        // their treatment changes. Over the hero they are white (see the .nav-link rules in
+        // the stylesheet above) and get a drop-shadow so they read against a photograph;
+        // once the header has its solid background they are dark and need neither.
+        //
+        // They used to be set to opacity:0;pointer-events:none until you scrolled, which
+        // meant the links simply were not there on the page people land on. The white-text
+        // rules for the un-scrolled header were written but never reachable.
+        var shadow = s ? '' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
+        if (nav)  nav.style.filter  = shadow;
+        if (ham)  ham.style.filter  = shadow;
+        if (logo) logo.style.filter = shadow;
+
+        // Close the mobile menu when scrolling back to the top.
         if (!s) tenantNavClose();
     }
     window.addEventListener('scroll', update, { passive: true });
