@@ -17,8 +17,12 @@ class FeedbackController extends Controller
         if ($search = $request->input('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('subject', 'like', "%{$search}%")
-                  ->orWhere('message', 'like', "%{$search}%")
-                  ->orWhereHas('user', fn ($u) => $u->where('name', 'like', "%{$search}%"));
+                    ->orWhere('message', 'like', "%{$search}%")
+                  // users.name was dropped in split_user_name_fields; `name` survives only as
+                  // an accessor, which SQL cannot see — searching it threw 42S22 on every query.
+                    ->orWhereHas('user', fn ($u) => $u
+                        ->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('last_name', 'like', "%{$search}%"));
             });
         }
 
@@ -27,7 +31,7 @@ class FeedbackController extends Controller
         }
 
         $query->orderByRaw("FIELD(status, 'new', 'reviewed')")
-              ->orderByDesc('created_at');
+            ->orderByDesc('created_at');
 
         $feedback = $query->paginate(25);
         $newCount = Feedback::withoutGlobalScopes()->where('status', 'new')->count();
@@ -58,12 +62,12 @@ class FeedbackController extends Controller
         $screenshots = $item->screenshots();
         $path = $screenshots[$index] ?? null;
 
-        abort_if(!$path, 404);
+        abort_if(! $path, 404);
 
         $mime = Storage::disk('local')->mimeType($path);
 
         return response()->streamDownload(
-            fn () => print(Storage::disk('local')->get($path)),
+            fn () => print (Storage::disk('local')->get($path)),
             basename($path),
             ['Content-Type' => $mime, 'Content-Disposition' => 'inline']
         );
