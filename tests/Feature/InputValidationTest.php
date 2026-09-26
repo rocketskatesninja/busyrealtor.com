@@ -111,6 +111,73 @@ class InputValidationTest extends TestCase
         $this->assertSame('replied', $message->fresh()->status);
     }
 
+    /**
+     * Every action the message list actually fires, exactly as the view fires it.
+     *
+     * The view's msgAction() always posts `{ action, id, status: value }` with status null for
+     * star/read/delete. Adding an `in:` rule without `nullable` rejected that present-but-null
+     * value — and since the fetch ignores the response and reloads, the buttons would have
+     * silently stopped working. This is the test that catches over-restriction, which is the
+     * real risk when adding an allow-list to a live path.
+     */
+    public function test_every_message_action_the_view_fires_still_works(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+
+        $make = fn () => Message::withoutGlobalScopes()->create([
+            'tenant_id' => $tenant->id, 'sender_name' => 'Cora', 'sender_email' => 'cora@example.test',
+            'message' => 'Hello', 'status' => 'new', 'is_read' => false, 'is_starred' => false,
+        ]);
+
+        // star — posted with status: null, exactly as the view does
+        $message = $make();
+        $this->actingAs($admin)
+            ->postJson("/{$tenant->slug}/admin/messages/action", ['action' => 'star', 'id' => $message->id, 'status' => null])
+            ->assertSuccessful();
+        $this->assertTrue((bool) $message->fresh()->is_starred);
+
+        // read
+        $message = $make();
+        $this->actingAs($admin)
+            ->postJson("/{$tenant->slug}/admin/messages/action", ['action' => 'read', 'id' => $message->id, 'status' => null])
+            ->assertSuccessful();
+        $this->assertTrue((bool) $message->fresh()->is_read);
+
+        // status, the one arm that carries a value
+        $message = $make();
+        $this->actingAs($admin)
+            ->postJson("/{$tenant->slug}/admin/messages/action", ['action' => 'status', 'id' => $message->id, 'status' => 'replied'])
+            ->assertSuccessful();
+        $this->assertSame('replied', $message->fresh()->status);
+
+        // delete
+        $message = $make();
+        $this->actingAs($admin)
+            ->postJson("/{$tenant->slug}/admin/messages/action", ['action' => 'delete', 'id' => $message->id, 'status' => null])
+            ->assertSuccessful();
+        $this->assertNull(Message::withoutGlobalScopes()->find($message->id));
+    }
+
+    /** The one action the appointments bulk form actually submits. */
+    public function test_the_appointments_bulk_delete_the_view_submits_still_works(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+
+        $ids = collect(range(1, 3))->map(fn () => Appointment::withoutGlobalScopes()->create([
+            'tenant_id' => $tenant->id, 'visitor_name' => 'Vic', 'visitor_email' => 'vic@example.test',
+            'appointment_date' => now()->addDay()->toDateString(), 'appointment_time' => '10:00:00',
+            'appointment_type' => 'showing', 'status' => 'cancelled',
+        ])->id)->all();
+
+        $this->actingAs($admin)
+            ->post("/{$tenant->slug}/admin/appointments/bulk", ['action' => 'delete', 'ids' => $ids])
+            ->assertSessionHasNoErrors();
+
+        $this->assertSame(0, Appointment::withoutGlobalScopes()->count());
+    }
+
     public function test_a_settings_upload_that_is_not_an_image_is_refused_rather_than_throwing(): void
     {
         $tenant = $this->makeTenant();

@@ -43,10 +43,18 @@ class MessageController extends Controller
     {
         $tenant = app('tenant');
 
-        // The match below allow-lists the action; the 'status' arm did not check its value.
+        /*
+         | The match below allow-lists the action; the 'status' arm did not check its value.
+         |
+         | `nullable` is load-bearing: the view's msgAction() always posts
+         | `{ action, id, status: value }` with status null for star/read/delete, so without it
+         | the `in:` rule rejects a null that is present — and because that fetch ignores the
+         | response and reloads, the buttons would simply have stopped working with nothing
+         | shown to the user.
+         */
         $request->validate([
             'action' => 'required|in:star,read,unread,status,delete',
-            'status' => 'required_if:action,status|in:new,read,replied,archived,spam',
+            'status' => 'nullable|required_if:action,status|in:new,read,replied,archived,spam',
         ]);
 
         $msg = Message::where('tenant_id', $tenant->id)->findOrFail($request->id);
