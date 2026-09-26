@@ -26,6 +26,10 @@
         <env name="DB_CONNECTION" value="mysql"/>
         <env name="DB_DATABASE" value="busyrealtor_test"/>
         <env name="MAIL_MAILER" value="array"/>
+        <!-- The suite deliberately triggers failed logins, honeypot trips and swallowed
+             exceptions. Without this they are written into storage/logs/laravel.log, the
+             same file used to diagnose the running site. -->
+        <env name="LOG_CHANNEL" value="null"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
