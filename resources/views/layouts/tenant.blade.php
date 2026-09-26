@@ -61,9 +61,10 @@
             }
         })();
     </script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- preconnect before @vite: the hint has to be read before the requests it warms --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @php
         $titleFont = $settings->title_font ?? 'Poppins';
         $primaryColor = $settings->primary_color ?? '#3B82F6';
@@ -71,7 +72,7 @@
         $g = hexdec(substr(ltrim($primaryColor,'#'), 2, 2));
         $b = hexdec(substr(ltrim($primaryColor,'#'), 4, 2));
     @endphp
-    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($titleFont) }}:wght@400;600;700;800&display=block" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($titleFont) }}:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         [x-cloak] { display: none !important; }
         .footer-link:hover { color: var(--primary) !important; }

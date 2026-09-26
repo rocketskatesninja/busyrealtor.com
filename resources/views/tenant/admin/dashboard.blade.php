@@ -26,6 +26,9 @@
 
 @section('head')
 <script src="{{ asset('js/chart.min.js') }}"></script>
+@endsection
+
+@section('foot')
 <script src="{{ asset('js/Sortable.min.js') }}"></script>
 @endsection
 

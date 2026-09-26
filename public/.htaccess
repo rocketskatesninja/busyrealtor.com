@@ -18,11 +18,19 @@
     # image is written under a new name, so a URL is stable in practice, but it is not a
     # hash of the contents the way Vite's is. Thirty days rather than a year, and no
     # immutable, so a surprise still corrects itself within the month.
+    # /js/* is hand-vendored library code (chart.min.js, Sortable.min.js) with no hash in
+    # the filename. It does revalidate to a 304 today off ETag, so the cost is a blocking
+    # round trip per file per page rather than the 254 KB — but on the dashboard that is two
+    # of them before a chart can draw. A week is enough to remove that without risking a
+    # stale copy for long if one is ever replaced in place. These become hashed Vite assets
+    # when they move to npm imports, and this rule goes away with them.
     SetEnvIf Request_URI "^/build/assets/" BR_ASSET_IMMUTABLE
     SetEnvIf Request_URI "^/storage/" BR_ASSET_UPLOAD
+    SetEnvIf Request_URI "^/js/" BR_ASSET_UNHASHED
 
     Header set Cache-Control "public, max-age=31536000, immutable" env=BR_ASSET_IMMUTABLE
     Header set Cache-Control "public, max-age=2592000" env=BR_ASSET_UPLOAD
+    Header set Cache-Control "public, max-age=604800" env=BR_ASSET_UNHASHED
 </IfModule>
 </IfModule>
 

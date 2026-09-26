@@ -1,6 +1,10 @@
 @extends('layouts.admin')
 @section('title', 'Submit Feedback')
 @section('page-subtitle', 'Report a bug, suggest a feature, or share your thoughts')
+@section('foot')
+<script src="{{ asset('js/Sortable.min.js') }}"></script>
+@endsection
+
 @section('content')
 @php $account = app('tenant')->slug; @endphp
 <div class="max-w-2xl mx-auto px-4">

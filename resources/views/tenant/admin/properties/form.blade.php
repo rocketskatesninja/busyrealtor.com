@@ -1,6 +1,10 @@
 @extends('layouts.admin')
 @section('title', isset($property) ? 'Edit Property' : 'Add Property')
 @section('page-subtitle', isset($property) ? 'Update listing details' : 'Create a new listing')
+@section('foot')
+<script src="{{ asset('js/Sortable.min.js') }}"></script>
+@endsection
+
 @section('content')
 @php $account = $tenant->slug; $isEdit = isset($property); @endphp
 <div class="max-w-5xl mx-auto px-4">

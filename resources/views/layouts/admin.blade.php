@@ -25,9 +25,10 @@
             }
         })();
     </script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {{-- preconnect before @vite: the hint has to be read before the requests it warms --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @php
         $settings = $settings ?? \App\Models\SiteSettings::where('tenant_id', $tenant->id)->first();
         $titleFont = $settings->title_font ?? 'Poppins';
@@ -339,7 +340,10 @@
     @yield('content')
 </main>
 
-<script src="{{ asset('js/Sortable.min.js') }}"></script>
+{{-- Bottom-of-body slot for the few views that need an external script. Sortable (45 KB)
+     used to load here on every admin page, and twice on the dashboard, which also loaded its
+     own copy. Only four screens drag anything. --}}
+@yield('foot')
 <script>
 @yield('scripts')
 </script>

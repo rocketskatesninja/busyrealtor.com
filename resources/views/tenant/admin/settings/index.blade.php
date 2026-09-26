@@ -8,6 +8,10 @@
 </style>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Nunito:wght@700&family=DM+Sans:wght@700&family=Urbanist:wght@700&family=Outfit:wght@700&family=Lato:wght@700&family=Open+Sans:wght@700&family=Roboto:wght@700&family=Oswald:wght@700&family=Playfair+Display:wght@700&family=Merriweather:wght@700&family=Lora:wght@700&family=Cormorant+Garamond:wght@700&family=EB+Garamond:wght@700&family=Libre+Baskerville:wght@700&family=Cinzel:wght@700&family=Bebas+Neue&family=Anton&family=Abril+Fatface&family=Righteous&display=swap" rel="stylesheet">
 @endsection
+@section('foot')
+<script src="{{ asset('js/Sortable.min.js') }}"></script>
+@endsection
+
 @section('content')
 @php
 $account = $tenant->slug;
