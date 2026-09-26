@@ -420,7 +420,7 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
-                        <x-password-input name="smtp_password"
+                        <x-password-input name="smtp_password" :autofill="false"
                                :value="$settings->smtp_password ? '••••••••••••' : ''"
                                placeholder="••••••••"
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500" />

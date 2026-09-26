@@ -210,6 +210,51 @@ class SettingsValidationTest extends TestCase
         $this->assertTrue(\Illuminate\Support\Facades\Hash::check('Kp4-harbour-lantern-2027', $admin->fresh()->password));
     }
 
+    /**
+     * The settings page keeps the account email and a set of password-type fields in one
+     * <form>: SMTP password, AI keys, social tokens. A password manager reads "email input,
+     * then password input, same form" as a login form, fills the saved site password into the
+     * first password box it finds, and then offers to save it back on the next navigation —
+     * and the tab switcher navigates, via history.replaceState.
+     *
+     * The consequence is worse than the prompt: the account password can land in the SMTP
+     * password box, and the next save writes it into the tenant's mail integration.
+     *
+     * Those fields are rendered readonly (released on focus) so there is nothing to fill.
+     * autocomplete="off" is not enough — browsers ignore it in login-shaped forms.
+     */
+    public function test_no_password_field_on_the_settings_page_can_be_autofilled(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+
+        $html = $this->actingAs($admin)->get("/{$tenant->slug}/admin/settings")->assertOk()->content();
+        $live = preg_replace('/<template\b.*?<\/template>/s', '', $html);
+
+        preg_match_all('/<input\b([^>]*type="password"[^>]*)>/', $live, $matches);
+
+        $this->assertNotEmpty($matches[1], 'no password inputs found — has the page changed shape?');
+
+        foreach ($matches[1] as $attributes) {
+            preg_match('/name="([^"]+)"/', $attributes, $name);
+            $this->assertStringContainsString('data-no-autofill', $attributes,
+                "{$name[1]} is a fillable password field sharing a form with the account email");
+        }
+    }
+
+    /** The account's own password fields are a real credential form and keep normal behaviour. */
+    public function test_the_real_credential_fields_are_left_fillable(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+
+        $html = $this->actingAs($admin)->get("/{$tenant->slug}/admin/settings")->assertOk()->content();
+
+        preg_match('/<input\b([^>]*name="current_password"[^>]*)>/', $html, $m);
+        $this->assertNotEmpty($m, 'the change-password field is gone entirely');
+        $this->assertStringNotContainsString('data-no-autofill', $m[1]);
+    }
+
     public function test_a_valid_settings_post_still_saves(): void
     {
         $tenant = $this->makeTenant();

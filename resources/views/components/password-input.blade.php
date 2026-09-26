@@ -1,6 +1,21 @@
 @props([
     'name',
     'class' => 'w-full border border-gray-300 rounded-lg px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition',
+
+    /*
+     | Whether the browser may treat this as a credential to fill.
+     |
+     | Pass :autofill="false" for a field that is type=password but is not this user's
+     | password — an SMTP password, an API key, an access token. Those share a page and a
+     | <form> with the account's email field, and a password manager reads "email input,
+     | then password input, same form" as a login form: it fills the saved site password
+     | into the first password box it finds and then offers to save it back. autocomplete="off"
+     | does not stop that, because browsers deliberately ignore it in login-shaped forms.
+     |
+     | readonly does stop it, and is dropped the moment the field is focused, so the field
+     | is still perfectly editable by hand.
+     */
+    'autofill' => true,
 ])
 
 {{--
@@ -25,7 +40,9 @@
 --}}
 
 <div class="relative">
-    <input type="password" name="{{ $name }}" class="{{ $class }}" {{ $attributes->merge(['autocomplete' => 'off']) }}>
+    <input type="password" name="{{ $name }}" class="{{ $class }}"
+           @unless($autofill) readonly data-no-autofill @endunless
+           {{ $attributes->merge(['autocomplete' => 'off']) }}>
     <button type="button" onclick="togglePasswordField(this)" aria-label="Show password"
             class="absolute inset-y-0 right-0 flex items-center px-3 text-[#9ca3af] hover:text-gray-600">
         {{-- Eye — shown when the password is hidden, click to reveal --}}
@@ -44,6 +61,15 @@
      even if multiple instances of the component appear. --}}
 @once
 <script>
+// A field marked data-no-autofill is rendered readonly so the browser will not put a saved
+// password in it. Focusing it releases that, so typing works normally. Delegated rather than an
+// inline onfocus, so this needs no 'unsafe-inline' once the CSP tightens.
+document.addEventListener('focusin', function (e) {
+    if (e.target.matches && e.target.matches('input[data-no-autofill][readonly]')) {
+        e.target.removeAttribute('readonly');
+    }
+});
+
 function togglePasswordField(btn) {
     const input   = btn.parentElement.querySelector('input');
     const eyeOn   = btn.querySelector('.eye-on');

@@ -1073,7 +1073,7 @@ $tabs = array_merge(...array_values($groups));
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="md:col-span-2 flex gap-3"><div class="flex-[2]"><label for="f-smtp_host" class="block text-xs font-medium text-gray-600 mb-1">SMTP Host</label><input type="text" id="f-smtp_host" name="smtp_host" value="{{ $smtpConfig['smtp_host'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label for="f-smtp_port" class="block text-xs font-medium text-gray-600 mb-1">Port</label><input type="number" id="f-smtp_port" name="smtp_port" value="{{ $smtpConfig['smtp_port'] ?? 587 }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label for="f-smtp_encryption" class="block text-xs font-medium text-gray-600 mb-1">Encryption</label><select id="f-smtp_encryption" name="smtp_encryption" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"><option value="tls" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === 'tls')>TLS / STARTTLS (port 587)</option><option value="ssl" @selected(($smtpConfig['smtp_encryption'] ?? '') === 'ssl')>SSL (port 465)</option><option value="" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === '')>None (port 25)</option></select></div></div>
                             <div><label for="f-smtp_username" class="block text-xs font-medium text-gray-600 mb-1">Username</label><input type="text" id="f-smtp_username" name="smtp_username" value="{{ $smtpConfig['smtp_username'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
-                            <div><label class="block text-xs font-medium text-gray-600 mb-1">Password</label><x-password-input name="smtp_password" :value="$smtpConfig['smtp_password'] ?? ''" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" /></div>
+                            <div><label class="block text-xs font-medium text-gray-600 mb-1">Password</label><x-password-input name="smtp_password" :autofill="false" :value="$smtpConfig['smtp_password'] ?? ''" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" /></div>
                             <div><label for="f-smtp_from_email" class="block text-xs font-medium text-gray-600 mb-1">From Email</label><input type="email" id="f-smtp_from_email" name="smtp_from_email" value="{{ $smtpConfig['smtp_from_email'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
                             <div><label for="f-smtp_from_name" class="block text-xs font-medium text-gray-600 mb-1">From Name</label><input type="text" id="f-smtp_from_name" name="smtp_from_name" value="{{ $smtpConfig['smtp_from_name'] ?? $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
                         </div>
@@ -1156,7 +1156,7 @@ $tabs = array_merge(...array_values($groups));
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-600 mb-1">API Key <span class="text-gray-400 font-normal">(leave blank to keep existing)</span></label>
-                                    <x-password-input name="ai_anthropic_key" placeholder="sk-ant-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
+                                    <x-password-input name="ai_anthropic_key" :autofill="false" placeholder="sk-ant-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
                                 </div>
                                 <div>
                                     <label for="f-ai_anthropic_model" class="block text-xs font-medium text-gray-600 mb-1">Model</label>
@@ -1176,7 +1176,7 @@ $tabs = array_merge(...array_values($groups));
                                 </div>
                                 <div>
                                     <label class="block text-xs font-medium text-gray-600 mb-1">API Key <span class="text-gray-400 font-normal">(leave blank to keep existing)</span></label>
-                                    <x-password-input name="ai_openai_key" placeholder="sk-proj-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
+                                    <x-password-input name="ai_openai_key" :autofill="false" placeholder="sk-proj-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
                                 </div>
                                 <div>
                                     <label for="f-ai_openai_model" class="block text-xs font-medium text-gray-600 mb-1">Model</label>
@@ -1296,7 +1296,7 @@ $tabs = array_merge(...array_values($groups));
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Page Access Token</label>
-                                    <x-password-input name="fb_access_token" placeholder="{{ $fb ? '••••••••••••••••' : 'Paste your Page Access Token' }}"
+                                    <x-password-input name="fb_access_token" :autofill="false" placeholder="{{ $fb ? '••••••••••••••••' : 'Paste your Page Access Token' }}"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
                                     <p class="text-xs text-gray-400 mt-1">Leave blank to keep existing token. Get a long-lived token from the Facebook Developer Console.</p>
                                 </div>
@@ -1357,22 +1357,22 @@ $tabs = array_merge(...array_values($groups));
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">API Key (Consumer Key)</label>
-                                    <x-password-input name="tw_api_key" placeholder="{{ $tw ? '••••••••••••••••' : 'API Key' }}"
+                                    <x-password-input name="tw_api_key" :autofill="false" placeholder="{{ $tw ? '••••••••••••••••' : 'API Key' }}"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">API Secret (Consumer Secret)</label>
-                                    <x-password-input name="tw_api_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'API Secret' }}"
+                                    <x-password-input name="tw_api_secret" :autofill="false" placeholder="{{ $tw ? '••••••••••••••••' : 'API Secret' }}"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Access Token</label>
-                                    <x-password-input name="tw_access_token" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token' }}"
+                                    <x-password-input name="tw_access_token" :autofill="false" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token' }}"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 mb-1">Access Token Secret</label>
-                                    <x-password-input name="tw_access_token_secret" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token Secret' }}"
+                                    <x-password-input name="tw_access_token_secret" :autofill="false" placeholder="{{ $tw ? '••••••••••••••••' : 'Access Token Secret' }}"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
                                 </div>
                             </div>
