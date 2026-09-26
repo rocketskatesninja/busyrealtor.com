@@ -7,6 +7,7 @@ use App\Models\SiteSettings;
 use App\Models\LegalPage;
 use App\Models\Appointment;
 use App\Models\StaffMember;
+use App\Jobs\FetchNearbyPlaces;
 use App\Models\PropertyView;
 use App\Http\Requests\GalleryFilterRequest;
 use Illuminate\Http\Request;
@@ -129,25 +130,17 @@ class TenantPageController extends Controller
             ->where('listing_status', 'active')
             ->limit(3)->get();
 
-        // Nearby Places — lazy-fetch and cache
+        // Nearby Places — served from cache, refreshed on the queue.
+        //
+        // This used to fetch inline on a cache miss: three sequential Google requests at a
+        // 10 second timeout each, inside the render of a public page whose actual content
+        // was already loaded. A visitor could wait half a minute, and during a Google
+        // outage every visitor waited the full thirty seconds.
         $nearbyPlaces = null;
         $mapsKey = \App\Models\SystemSetting::current()->google_maps_key;
         if ($mapsKey && $property->latitude && $property->longitude) {
             if (!$property->hasNearbyPlacesCache()) {
-                try {
-                    $data = (new \App\Services\GooglePlacesService())->fetchNearbyPlaces($property);
-                    if ($data) {
-                        $property->update([
-                            'nearby_places_cache'     => $data,
-                            'nearby_places_fetched_at' => now(),
-                        ]);
-                    }
-                } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::error('Nearby places fetch failed', [
-                        'property_id' => $property->id,
-                        'error'       => $e->getMessage(),
-                    ]);
-                }
+                FetchNearbyPlaces::dispatch($property->id);
             }
             $nearbyPlaces = $property->nearby_places_cache;
         }

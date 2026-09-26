@@ -26,6 +26,16 @@ class GoogleCalendarService
         $sys = SystemSetting::current();
 
         $client = new GoogleClient();
+
+        // The Google client builds its own Guzzle client if we do not hand it one, and that
+        // default has no timeout — a Google endpoint that accepts the connection and then
+        // stops responding would hang the admin request behind it for as long as PHP allows.
+        // Every other outbound call in this codebase sets one.
+        $client->setHttpClient(new \GuzzleHttp\Client([
+            'timeout' => 10,
+            'connect_timeout' => 5,
+        ]));
+
         $client->setClientId($sys->google_client_id);
         $client->setClientSecret($sys->google_client_secret);
         $client->setAccessType('offline');
