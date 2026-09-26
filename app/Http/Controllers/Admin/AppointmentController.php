@@ -12,6 +12,7 @@ use App\Services\TenantMailer;
 use App\Support\MailBody;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
 
 class AppointmentController extends Controller
@@ -60,9 +61,11 @@ class AppointmentController extends Controller
         }
 
         // Resolve assigned staff member from property
+        $property      = null;
         $staffMemberId = null;
         $staffEmail    = null;
         if ($request->property_id) {
+            // Tenant-scoped by the global scope, so this returns null for another tenant's id.
             $property = Property::with('staffMember')->find($request->property_id);
             if ($property && $property->staff_member_id) {
                 $staffMemberId = $property->staff_member_id;
@@ -74,7 +77,8 @@ class AppointmentController extends Controller
 
         $appt = Appointment::create([
             'tenant_id'            => $tenant->id,
-            'property_id'          => $request->property_id,
+            // The id that survived the scoped lookup, not the one that was posted.
+            'property_id'          => $property?->id,
             'staff_member_id'      => $staffMemberId,
             'visitor_name'         => $request->visitor_name,
             'visitor_email'        => $request->visitor_email,
@@ -110,13 +114,21 @@ class AppointmentController extends Controller
 
         $request->validate([
             'visitor_name'     => 'required|string|max:255',
-            'visitor_email'    => 'nullable|email|max:255',
+            // Required because the column is NOT NULL. As `nullable` an admin who left the
+            // email blank got a 500 from the insert instead of a message on the field. The
+            // public booking form has always required it.
+            'visitor_email'    => 'required|email|max:255',
             'visitor_phone'    => 'nullable|string|max:30',
             'appointment_date' => 'required|date',
             'appointment_time' => 'nullable|date_format:H:i',
             'appointment_type' => 'required|string',
-            'property_id'      => 'nullable|integer|exists:properties,id',
-            'staff_member_id'  => 'nullable|integer|exists:staff_members,id',
+            // Scoped to this tenant. A bare `exists:` rule queries the table directly and
+            // so ignores the BelongsToTenant global scope — tenant A could post tenant B's
+            // property or staff id and have it stored on A's appointment. Nothing leaked
+            // (every read re-scopes), but the row pointed somewhere it should not and the
+            // staff notification then silently never fired.
+            'property_id'      => ['nullable', 'integer', Rule::exists('properties', 'id')->where('tenant_id', $tenant->id)],
+            'staff_member_id'  => ['nullable', 'integer', Rule::exists('staff_members', 'id')->where('tenant_id', $tenant->id)],
             'notes'            => 'nullable|string|max:2000',
             'status'           => 'required|in:pending,confirmed',
         ]);

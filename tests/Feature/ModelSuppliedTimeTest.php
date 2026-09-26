@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Http\Controllers\Admin\AdminChatController;
 use App\Http\Controllers\Api\ChatbotController;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use ReflectionMethod;
 use Tests\Support\MakesTenants;
 use Tests\TestCase;
@@ -26,7 +27,7 @@ class ModelSuppliedTimeTest extends TestCase
     use MakesTenants;
     use RefreshDatabase;
 
-    /** @dataProvider times */
+    #[DataProvider('times')]
     public function test_the_chatbot_only_accepts_a_real_24_hour_time(string $input, ?string $expected): void
     {
         $method = new ReflectionMethod(ChatbotController::class, 'normaliseTime');
@@ -38,15 +39,15 @@ class ModelSuppliedTimeTest extends TestCase
     public static function times(): array
     {
         return [
-            'hh:mm' => ['14:00', '14:00:00'],
-            'leading zero' => ['09:05', '09:05:00'],
-            'already has seconds' => ['14:00:00', '14:00:00'],
-            'spoken form' => ['2pm', null],
-            'hour out of range' => ['25:00', null],
-            'minute out of range' => ['14:70', null],
-            'single digits' => ['9:5', null],
-            'empty' => ['', null],
-            'prose' => ['sometime after lunch', null],
+            'hh:mm'                => ['14:00', '14:00:00'],
+            'leading zero'         => ['09:05', '09:05:00'],
+            'already has seconds'  => ['14:00:00', '14:00:00'],
+            'spoken form'          => ['2pm', null],
+            'hour out of range'    => ['25:00', null],
+            'minute out of range'  => ['14:70', null],
+            'single digits'        => ['9:5', null],
+            'empty'                => ['', null],
+            'prose'                => ['sometime after lunch', null],
         ];
     }
 
@@ -58,8 +59,8 @@ class ModelSuppliedTimeTest extends TestCase
         $method->setAccessible(true);
 
         $result = $method->invoke(app(AdminChatController::class), [
-            'visitor_name' => 'Vic Visitor',
-            'visitor_email' => 'vic@example.test',
+            'visitor_name'     => 'Vic Visitor',
+            'visitor_email'    => 'vic@example.test',
             'appointment_type' => 'showing',
             'appointment_date' => now()->addWeek()->toDateString(),
             'appointment_time' => '2pm',
@@ -79,8 +80,8 @@ class ModelSuppliedTimeTest extends TestCase
         $method->setAccessible(true);
 
         $result = $method->invoke(app(AdminChatController::class), [
-            'visitor_name' => 'Vic Visitor',
-            'visitor_email' => 'vic@example.test',
+            'visitor_name'     => 'Vic Visitor',
+            'visitor_email'    => 'vic@example.test',
             'appointment_type' => 'showing',
             'appointment_date' => now()->addWeek()->toDateString(),
             'appointment_time' => '14:30',

@@ -47,9 +47,15 @@ class ContactController extends Controller
         }
         cache([$ipKey => $ipCount + 1], now()->addHour());
 
+        // Resolved through the tenant-scoped model rather than trusted from the form, so a
+        // stale or tampered id is dropped instead of stored against this tenant's message.
+        $property = $request->property_id
+            ? \App\Models\Property::find((int) $request->property_id)
+            : null;
+
         Message::create([
             'tenant_id'    => $tenant->id,
-            'property_id'  => $request->property_id,
+            'property_id'  => $property?->id,
             'source'       => 'contact_form',
             'sender_name'  => $request->name,
             'sender_email' => $request->email,
