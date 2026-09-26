@@ -104,24 +104,24 @@ $tabs = array_merge(...array_values($groups));
                     <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>General Settings</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Site Title</label>
-                            <input type="text" name="site_title" value="{{ $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Your Agency Name Here">
+                            <label for="f-site_title" class="block text-sm font-medium text-gray-700 mb-1">Site Title</label>
+                            <input type="text" id="f-site_title" name="site_title" value="{{ $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Your Agency Name Here">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
-                            <input type="text" name="tagline" value="{{ $settings->tagline }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Your trusted local real estate experts">
+                            <label for="f-tagline" class="block text-sm font-medium text-gray-700 mb-1">Tagline</label>
+                            <input type="text" id="f-tagline" name="tagline" value="{{ $settings->tagline }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Your trusted local real estate experts">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
-                            <input type="email" name="contact_email" value="{{ $settings->contact_email }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <label for="f-contact_email" class="block text-sm font-medium text-gray-700 mb-1">Contact Email</label>
+                            <input type="email" id="f-contact_email" name="contact_email" value="{{ $settings->contact_email }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
-                            <input type="text" name="contact_phone" value="{{ $settings->contact_phone }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <label for="f-contact_phone" class="block text-sm font-medium text-gray-700 mb-1">Contact Phone</label>
+                            <input type="text" id="f-contact_phone" name="contact_phone" value="{{ $settings->contact_phone }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Business Address</label>
-                            <input type="text" name="contact_address" value="{{ $settings->contact_address }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <label for="f-contact_address" class="block text-sm font-medium text-gray-700 mb-1">Business Address</label>
+                            <input type="text" id="f-contact_address" name="contact_address" value="{{ $settings->contact_address }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                     </div>
 
@@ -134,16 +134,16 @@ $tabs = array_merge(...array_values($groups));
                     <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>Profile</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-                            <input type="text" name="first_name" value="{{ auth()->user()->first_name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <label for="f-first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+                            <input type="text" id="f-first_name" name="first_name" value="{{ auth()->user()->first_name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-                            <input type="text" name="last_name" value="{{ auth()->user()->last_name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <label for="f-last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+                            <input type="text" id="f-last_name" name="last_name" value="{{ auth()->user()->last_name }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
-                            <input type="email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" id="email-input" oninput="document.getElementById('email-warning').style.display = this.value !== this.defaultValue ? 'flex' : 'none'">
+                            <label for="f-email" class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
+                            <input type="email" id="f-email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" id="email-input" oninput="document.getElementById('email-warning').style.display = this.value !== this.defaultValue ? 'flex' : 'none'">
                             <div id="email-warning" style="display:none;" class="mt-2 flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
                                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
                                 <span>Changing your email will require re-verification. A verification link will be sent to the new address.</span>
@@ -185,8 +185,8 @@ $tabs = array_merge(...array_values($groups));
                         <p class="text-sm text-gray-500 mb-4">This public profile powers the Agent Spotlight section on your homepage and appears on property listings.</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Agent Name</label>
-                                <input type="text" name="owner_name" value="{{ $settings->owner_name ?? auth()->user()->name }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Your display name">
+                                <label for="f-owner_name" class="block text-sm font-medium text-gray-700 mb-1">Agent Name</label>
+                                <input type="text" id="f-owner_name" name="owner_name" value="{{ $settings->owner_name ?? auth()->user()->name }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Your display name">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
@@ -198,16 +198,16 @@ $tabs = array_merge(...array_values($groups));
                                 </div>
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-                                <textarea name="owner_bio" rows="4" maxlength="1000" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Share your expertise, years of experience, and the market areas you serve...">{{ $settings->owner_bio }}</textarea>
+                                <label for="f-owner_bio" class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                                <textarea id="f-owner_bio" name="owner_bio" rows="4" maxlength="1000" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Share your expertise, years of experience, and the market areas you serve...">{{ $settings->owner_bio }}</textarea>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">License Number</label>
-                                <input type="text" name="license_number" value="{{ $settings->license_number }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="e.g. DRE #01234567">
+                                <label for="f-license_number" class="block text-sm font-medium text-gray-700 mb-1">License Number</label>
+                                <input type="text" id="f-license_number" name="license_number" value="{{ $settings->license_number }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="e.g. DRE #01234567">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Brokerage Name</label>
-                                <input type="text" name="brokerage_name" value="{{ $settings->brokerage_name }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="e.g. Keller Williams Realty">
+                                <label for="f-brokerage_name" class="block text-sm font-medium text-gray-700 mb-1">Brokerage Name</label>
+                                <input type="text" id="f-brokerage_name" name="brokerage_name" value="{{ $settings->brokerage_name }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="e.g. Keller Williams Realty">
                             </div>
                         </div>
                     </div>
@@ -220,22 +220,22 @@ $tabs = array_merge(...array_values($groups));
                     <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>Appearance</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
+                            <label for="f-primary_color" class="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
                             <div class="flex gap-2 items-center">
-                                <input type="color" name="primary_color" value="{{ $settings->primary_color ?? '#3B82F6' }}" class="w-12 h-10 border-0 rounded cursor-pointer">
+                                <input type="color" id="f-primary_color" name="primary_color" value="{{ $settings->primary_color ?? '#3B82F6' }}" class="w-12 h-10 border-0 rounded cursor-pointer">
                                 <input type="text" id="primary_color_hex" value="{{ $settings->primary_color ?? '#3B82F6' }}" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono" oninput="document.querySelector('[name=primary_color]').value=this.value">
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Header Mode</label>
-                            <select name="header_mode" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
+                            <label for="f-header_mode" class="block text-sm font-medium text-gray-700 mb-1">Header Mode</label>
+                            <select id="f-header_mode" name="header_mode" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
                                 <option value="hero" {{ ($settings->header_mode ?? 'hero') === 'hero' ? 'selected' : '' }}>Hero (Transparent → Solid on scroll)</option>
                                 <option value="default" {{ ($settings->header_mode ?? '') === 'default' ? 'selected' : '' }}>Default (Always Solid)</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Header Display</label>
-                            <select name="header_display_mode" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
+                            <label for="f-header_display_mode" class="block text-sm font-medium text-gray-700 mb-1">Header Display</label>
+                            <select id="f-header_display_mode" name="header_display_mode" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
                                 <option value="favicon_text" {{ ($settings->header_display_mode ?? 'favicon_text') === 'favicon_text' ? 'selected' : '' }}>Icon + Title</option>
                                 <option value="text_only" {{ ($settings->header_display_mode ?? '') === 'text_only' ? 'selected' : '' }}>Title Only</option>
                                 <option value="favicon_only" {{ ($settings->header_display_mode ?? '') === 'favicon_only' ? 'selected' : '' }}>Icon Only</option>
@@ -276,8 +276,8 @@ $tabs = array_merge(...array_values($groups));
                             </div>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Title Size</label>
-                            <select name="site_title_font_size" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
+                            <label for="f-site_title_font_size" class="block text-sm font-medium text-gray-700 mb-1">Title Size</label>
+                            <select id="f-site_title_font_size" name="site_title_font_size" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
                                 <option value="xl"  {{ ($settings->site_title_font_size ?? '3xl') === 'xl'  ? 'selected' : '' }}>Small</option>
                                 <option value="2xl" {{ ($settings->site_title_font_size ?? '3xl') === '2xl' ? 'selected' : '' }}>Medium</option>
                                 <option value="3xl" {{ ($settings->site_title_font_size ?? '3xl') === '3xl' ? 'selected' : '' }}>Large</option>
@@ -285,16 +285,16 @@ $tabs = array_merge(...array_values($groups));
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Title Weight</label>
-                            <select name="site_title_font_weight" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
+                            <label for="f-site_title_font_weight" class="block text-sm font-medium text-gray-700 mb-1">Title Weight</label>
+                            <select id="f-site_title_font_weight" name="site_title_font_weight" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
                                 <option value="600" {{ ($settings->site_title_font_weight ?? '700') === '600' ? 'selected' : '' }}>Semi-Bold</option>
                                 <option value="700" {{ ($settings->site_title_font_weight ?? '700') === '700' ? 'selected' : '' }}>Bold</option>
                                 <option value="800" {{ ($settings->site_title_font_weight ?? '700') === '800' ? 'selected' : '' }}>Extra Bold</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Letter Spacing</label>
-                            <select name="site_title_letter_spacing" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
+                            <label for="f-site_title_letter_spacing" class="block text-sm font-medium text-gray-700 mb-1">Letter Spacing</label>
+                            <select id="f-site_title_letter_spacing" name="site_title_letter_spacing" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
                                 <option value="tight"  {{ ($settings->site_title_letter_spacing ?? 'normal') === 'tight'  ? 'selected' : '' }}>Tight</option>
                                 <option value="normal" {{ ($settings->site_title_letter_spacing ?? 'normal') === 'normal' ? 'selected' : '' }}>Normal</option>
                                 <option value="wide"   {{ ($settings->site_title_letter_spacing ?? 'normal') === 'wide'   ? 'selected' : '' }}>Wide</option>
@@ -323,8 +323,8 @@ $tabs = array_merge(...array_values($groups));
                                 </div>
                                 {{-- Solid picker: full remaining width --}}
                                 <div id="solid-color-field" style="{{ $colorType === 'solid' ? 'display:flex' : 'display:none' }}" class="flex-1 flex-col gap-1">
-                                    <label class="block text-xs font-medium text-gray-600 mb-1">Color</label>
-                                    <input type="color" name="title_color_solid" value="{{ $settings->titleColor('title_color_solid') }}" class="w-full h-10 border-0 rounded cursor-pointer">
+                                    <label for="f-title_color_solid" class="block text-xs font-medium text-gray-600 mb-1">Color</label>
+                                    <input type="color" id="f-title_color_solid" name="title_color_solid" value="{{ $settings->titleColor('title_color_solid') }}" class="w-full h-10 border-0 rounded cursor-pointer">
                                 </div>
                             </div>
                         </div>
@@ -547,13 +547,13 @@ $tabs = array_merge(...array_values($groups));
                                 {{-- HERO EDITOR --}}
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-data="{ bgType: '' }" x-init="bgType = ($el.querySelector('input[name=hero_background_type]:checked') || {}).value || 'preset'">
                                     <div class="md:col-span-2">
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">Hero Headline</label>
-                                        <input type="text" name="hero_title" value="{{ $settings->hero_title }}"
+                                        <label for="f-hero_title" class="block text-xs font-medium text-gray-600 mb-1">Hero Headline</label>
+                                        <input type="text" id="f-hero_title" name="hero_title" value="{{ $settings->hero_title }}"
                                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Find Your Dream Home">
                                     </div>
                                     <div class="md:col-span-2">
-                                        <label class="block text-xs font-medium text-gray-600 mb-1">Hero Subtitle</label>
-                                        <input type="text" name="hero_subtitle" value="{{ $settings->hero_subtitle }}"
+                                        <label for="f-hero_subtitle" class="block text-xs font-medium text-gray-600 mb-1">Hero Subtitle</label>
+                                        <input type="text" id="f-hero_subtitle" name="hero_subtitle" value="{{ $settings->hero_subtitle }}"
                                                class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" placeholder="Professional real estate services...">
                                     </div>
                                     <div class="md:col-span-2 border-t border-gray-100 pt-4">
@@ -619,12 +619,12 @@ $tabs = array_merge(...array_values($groups));
                                         {{-- Gradient controls --}}
                                         <div x-show="bgType==='gradient'" class="grid grid-cols-2 gap-3">
                                             <div>
-                                                <label class="block text-xs text-gray-600 mb-1">Start Color</label>
-                                                <input type="color" name="hero_gradient_start" value="{{ $settings->hero_gradient_start ?? '#1e3a5f' }}" class="w-full h-10 border-0 rounded cursor-pointer">
+                                                <label for="f-hero_gradient_start" class="block text-xs text-gray-600 mb-1">Start Color</label>
+                                                <input type="color" id="f-hero_gradient_start" name="hero_gradient_start" value="{{ $settings->hero_gradient_start ?? '#1e3a5f' }}" class="w-full h-10 border-0 rounded cursor-pointer">
                                             </div>
                                             <div>
-                                                <label class="block text-xs text-gray-600 mb-1">End Color</label>
-                                                <input type="color" name="hero_gradient_end" value="{{ $settings->hero_gradient_end ?? '#7c3aed' }}" class="w-full h-10 border-0 rounded cursor-pointer">
+                                                <label for="f-hero_gradient_end" class="block text-xs text-gray-600 mb-1">End Color</label>
+                                                <input type="color" id="f-hero_gradient_end" name="hero_gradient_end" value="{{ $settings->hero_gradient_end ?? '#7c3aed' }}" class="w-full h-10 border-0 rounded cursor-pointer">
                                             </div>
                                         </div>
 
@@ -1055,11 +1055,11 @@ $tabs = array_merge(...array_values($groups));
                         @endif
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="md:col-span-2 flex gap-3"><div class="flex-[2]"><label class="block text-xs font-medium text-gray-600 mb-1">SMTP Host</label><input type="text" name="smtp_host" value="{{ $smtpConfig['smtp_host'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Port</label><input type="number" name="smtp_port" value="{{ $smtpConfig['smtp_port'] ?? 587 }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label class="block text-xs font-medium text-gray-600 mb-1">Encryption</label><select name="smtp_encryption" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"><option value="tls" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === 'tls')>TLS / STARTTLS (port 587)</option><option value="ssl" @selected(($smtpConfig['smtp_encryption'] ?? '') === 'ssl')>SSL (port 465)</option><option value="" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === '')>None (port 25)</option></select></div></div>
-                            <div><label class="block text-xs font-medium text-gray-600 mb-1">Username</label><input type="text" name="smtp_username" value="{{ $smtpConfig['smtp_username'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                            <div class="md:col-span-2 flex gap-3"><div class="flex-[2]"><label for="f-smtp_host" class="block text-xs font-medium text-gray-600 mb-1">SMTP Host</label><input type="text" id="f-smtp_host" name="smtp_host" value="{{ $smtpConfig['smtp_host'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label for="f-smtp_port" class="block text-xs font-medium text-gray-600 mb-1">Port</label><input type="number" id="f-smtp_port" name="smtp_port" value="{{ $smtpConfig['smtp_port'] ?? 587 }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div><div class="flex-1"><label for="f-smtp_encryption" class="block text-xs font-medium text-gray-600 mb-1">Encryption</label><select id="f-smtp_encryption" name="smtp_encryption" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"><option value="tls" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === 'tls')>TLS / STARTTLS (port 587)</option><option value="ssl" @selected(($smtpConfig['smtp_encryption'] ?? '') === 'ssl')>SSL (port 465)</option><option value="" @selected(($smtpConfig['smtp_encryption'] ?? 'tls') === '')>None (port 25)</option></select></div></div>
+                            <div><label for="f-smtp_username" class="block text-xs font-medium text-gray-600 mb-1">Username</label><input type="text" id="f-smtp_username" name="smtp_username" value="{{ $smtpConfig['smtp_username'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
                             <div><label class="block text-xs font-medium text-gray-600 mb-1">Password</label><x-password-input name="smtp_password" :value="$smtpConfig['smtp_password'] ?? ''" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" /></div>
-                            <div><label class="block text-xs font-medium text-gray-600 mb-1">From Email</label><input type="email" name="smtp_from_email" value="{{ $smtpConfig['smtp_from_email'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
-                            <div><label class="block text-xs font-medium text-gray-600 mb-1">From Name</label><input type="text" name="smtp_from_name" value="{{ $smtpConfig['smtp_from_name'] ?? $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                            <div><label for="f-smtp_from_email" class="block text-xs font-medium text-gray-600 mb-1">From Email</label><input type="email" id="f-smtp_from_email" name="smtp_from_email" value="{{ $smtpConfig['smtp_from_email'] ?? '' }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                            <div><label for="f-smtp_from_name" class="block text-xs font-medium text-gray-600 mb-1">From Name</label><input type="text" id="f-smtp_from_name" name="smtp_from_name" value="{{ $smtpConfig['smtp_from_name'] ?? $settings->site_title }}" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
                         </div>
                         <div class="mt-4">
                             <button type="button" id="test-email-btn" class="text-sm px-4 py-2 rounded-lg font-medium transition" style="background-color: rgba(var(--primary-rgb),0.1); color: var(--primary)">Send Test Email</button>
@@ -1119,8 +1119,8 @@ $tabs = array_merge(...array_values($groups));
 
                     <div class="space-y-5">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Provider</label>
-                            <select name="ai_preferred" x-model="provider" class="w-full sm:w-72 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                            <label for="f-ai_preferred" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Provider</label>
+                            <select id="f-ai_preferred" name="ai_preferred" x-model="provider" class="w-full sm:w-72 border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                 <option value="anthropic">Anthropic (Claude)</option>
                                 <option value="openai">OpenAI (ChatGPT / GPT-4)</option>
                             </select>
@@ -1143,8 +1143,8 @@ $tabs = array_merge(...array_values($groups));
                                     <x-password-input name="ai_anthropic_key" placeholder="sk-ant-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-600 mb-1">Model</label>
-                                    <select name="ai_anthropic_model" class="w-full sm:w-96 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                    <label for="f-ai_anthropic_model" class="block text-xs font-medium text-gray-600 mb-1">Model</label>
+                                    <select id="f-ai_anthropic_model" name="ai_anthropic_model" class="w-full sm:w-96 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                         <option value="claude-haiku-4-5-20251001" @selected(($aiConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001') === 'claude-haiku-4-5-20251001')>Claude Haiku 4.5 — fastest, most affordable ✓</option>
                                         <option value="claude-sonnet-4-6" @selected(($aiConfig['anthropic_model'] ?? '') === 'claude-sonnet-4-6')>Claude Sonnet 4.6 — balanced</option>
                                         <option value="claude-opus-4-6" @selected(($aiConfig['anthropic_model'] ?? '') === 'claude-opus-4-6')>Claude Opus 4.6 — most capable</option>
@@ -1163,8 +1163,8 @@ $tabs = array_merge(...array_values($groups));
                                     <x-password-input name="ai_openai_key" placeholder="sk-proj-..." class="w-full border border-gray-200 rounded-lg px-3 py-2 pr-10 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-medium text-gray-600 mb-1">Model</label>
-                                    <select name="ai_openai_model" class="w-full sm:w-96 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                                    <label for="f-ai_openai_model" class="block text-xs font-medium text-gray-600 mb-1">Model</label>
+                                    <select id="f-ai_openai_model" name="ai_openai_model" class="w-full sm:w-96 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                                         <option value="gpt-4o-mini" @selected(($aiConfig['openai_model'] ?? 'gpt-4o-mini') === 'gpt-4o-mini')>GPT-4o Mini — fastest, most affordable ✓</option>
                                         <option value="gpt-4o" @selected(($aiConfig['openai_model'] ?? '') === 'gpt-4o')>GPT-4o — most capable</option>
                                     </select>
@@ -1285,8 +1285,8 @@ $tabs = array_merge(...array_values($groups));
                                     <p class="text-xs text-gray-400 mt-1">Leave blank to keep existing token. Get a long-lived token from the Facebook Developer Console.</p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">Facebook Page ID</label>
-                                    <input type="text" name="fb_page_id" value="{{ $fbConfig['page_id'] ?? '' }}"
+                                    <label for="f-fb_page_id" class="block text-sm font-medium text-gray-700 mb-1">Facebook Page ID</label>
+                                    <input type="text" id="f-fb_page_id" name="fb_page_id" value="{{ $fbConfig['page_id'] ?? '' }}"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="e.g. 123456789012345">
                                     <p class="text-xs text-gray-400 mt-1">Found in your Facebook Page &rarr; About &rarr; Page ID.</p>
                                 </div>
@@ -1485,8 +1485,8 @@ $tabs = array_merge(...array_values($groups));
                         </div>
                         <div class="flex items-center gap-4">
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Measurement ID</label>
-                                <input type="text" name="ga_measurement_id" value="{{ $ga?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="G-XXXXXXXXXX">
+                                <label for="f-ga_measurement_id" class="block text-sm font-medium text-gray-700 mb-1">Measurement ID</label>
+                                <input type="text" id="f-ga_measurement_id" name="ga_measurement_id" value="{{ $ga?->api_key }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="G-XXXXXXXXXX">
                             </div>
                             <div class="mt-5">
                                 <label class="flex items-center gap-2 cursor-pointer">
@@ -1628,8 +1628,8 @@ $tabs = array_merge(...array_values($groups));
                     <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><x-icon name="magnifying-glass" class="w-5 h-5 panel-icon" />SEO Settings</h2>
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Site Description</label>
-                            <textarea name="site_description" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none" placeholder="[Your Agency Name] is your local real estate partner for buying, selling, and discovering homes. Browse listings, explore the map, and connect with an agent today.">{{ $settings->site_description }}</textarea>
+                            <label for="f-site_description" class="block text-sm font-medium text-gray-700 mb-1">Site Description</label>
+                            <textarea id="f-site_description" name="site_description" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none" placeholder="[Your Agency Name] is your local real estate partner for buying, selling, and discovering homes. Browse listings, explore the map, and connect with an agent today.">{{ $settings->site_description }}</textarea>
                             <p class="text-xs text-gray-400 mt-1">Used as the meta description for search engines. Recommended: 150-160 characters.</p>
                         </div>
                         <div>
@@ -1637,8 +1637,8 @@ $tabs = array_merge(...array_values($groups));
                             <p class="text-sm text-gray-500">Your selected icon is used as the default share image for social media.</p>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Google Site Verification</label>
-                            <input type="text" name="google_site_verification" value="{{ $settings->google_site_verification }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="abc123...">
+                            <label for="f-google_site_verification" class="block text-sm font-medium text-gray-700 mb-1">Google Site Verification</label>
+                            <input type="text" id="f-google_site_verification" name="google_site_verification" value="{{ $settings->google_site_verification }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono" placeholder="abc123...">
                             <p class="text-xs text-gray-400 mt-1">The content value from the Google Search Console verification meta tag.</p>
                         </div>
                         <div>

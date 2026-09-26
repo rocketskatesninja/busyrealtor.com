@@ -23,8 +23,8 @@
             <div class="px-6 py-5">
                 <div class="flex items-end gap-3">
                     <div class="flex-1">
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
-                        <input type="email" name="email" value="{{ auth()->user()->email }}" required
+                        <label for="f-email" class="block text-sm font-medium text-gray-300 mb-1">Email Address</label>
+                        <input type="email" id="f-email" name="email" value="{{ auth()->user()->email }}" required
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500">
                         @error('email') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
                     </div>
@@ -155,8 +155,8 @@
                 </div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">Maintenance Message</label>
-                    <textarea name="lock_message" rows="3"
+                    <label for="f-lock_message" class="block text-sm font-medium text-gray-300 mb-1">Maintenance Message</label>
+                    <textarea id="f-lock_message" name="lock_message" rows="3"
                               class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
                               placeholder="We are currently performing maintenance. Please check back soon.">{{ old('lock_message', $settings->lock_message) }}</textarea>
                     <p class="text-gray-500 text-xs mt-1">Shown to visitors when the site is locked. Max 500 characters.</p>
@@ -182,16 +182,16 @@
             <div class="px-6 py-5 space-y-4">
                 <div class="grid grid-cols-1 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Client ID</label>
-                        <input type="text" name="google_client_id"
+                        <label for="f-google_client_id" class="block text-sm font-medium text-gray-300 mb-1">Client ID</label>
+                        <input type="text" id="f-google_client_id" name="google_client_id"
                                value="{{ $settings->google_client_id ? '••••••••' . substr($settings->google_client_id, -8) : '' }}"
                                placeholder="123456789-abc...apps.googleusercontent.com"
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500">
                         <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing. Paste full value to update.</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Client Secret</label>
-                        <input type="text" name="google_client_secret"
+                        <label for="f-google_client_secret" class="block text-sm font-medium text-gray-300 mb-1">Client Secret</label>
+                        <input type="text" id="f-google_client_secret" name="google_client_secret"
                                value="{{ $settings->google_client_secret ? '••••••••' . substr($settings->google_client_secret, -6) : '' }}"
                                placeholder="GOCSPX-..."
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500">
@@ -231,16 +231,16 @@
             </div>
             <div class="px-6 py-5 space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">Maps API Key <span class="text-gray-500 font-normal">(browser — HTTP referrer restricted)</span></label>
-                    <input type="text" name="google_maps_key"
+                    <label for="f-google_maps_key" class="block text-sm font-medium text-gray-300 mb-1">Maps API Key <span class="text-gray-500 font-normal">(browser — HTTP referrer restricted)</span></label>
+                    <input type="text" id="f-google_maps_key" name="google_maps_key"
                            value="{{ $settings->google_maps_key ? '••••••••' . substr($settings->google_maps_key, -8) : '' }}"
                            placeholder="AIzaSy..."
                            class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500">
                     <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing. Restrict to HTTP referrers (*.busyrealtor.com/*).</p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-300 mb-1">Places API Key <span class="text-gray-500 font-normal">(server — IP restricted)</span></label>
-                    <input type="text" name="google_places_key"
+                    <label for="f-google_places_key" class="block text-sm font-medium text-gray-300 mb-1">Places API Key <span class="text-gray-500 font-normal">(server — IP restricted)</span></label>
+                    <input type="text" id="f-google_places_key" name="google_places_key"
                            value="{{ $settings->google_places_key ? '••••••••' . substr($settings->google_places_key, -8) : '' }}"
                            placeholder="AIzaSy..."
                            class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500">
@@ -282,24 +282,24 @@
 
                 <div class="grid grid-cols-1 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Publishable Key <span class="text-gray-500 text-xs">(pk_live_... or pk_test_...)</span></label>
-                        <input type="text" name="stripe_key"
+                        <label for="f-stripe_key" class="block text-sm font-medium text-gray-300 mb-1">Publishable Key <span class="text-gray-500 text-xs">(pk_live_... or pk_test_...)</span></label>
+                        <input type="text" id="f-stripe_key" name="stripe_key"
                                value="{{ $settings->stripe_key ? '••••••••' . substr($settings->stripe_key, -6) : '' }}"
                                placeholder="pk_live_..."
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
                         <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing key. Paste full key to update.</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Secret Key <span class="text-gray-500 text-xs">(sk_live_... or sk_test_...)</span></label>
-                        <input type="text" name="stripe_secret"
+                        <label for="f-stripe_secret" class="block text-sm font-medium text-gray-300 mb-1">Secret Key <span class="text-gray-500 text-xs">(sk_live_... or sk_test_...)</span></label>
+                        <input type="text" id="f-stripe_secret" name="stripe_secret"
                                value="{{ $settings->stripe_secret ? '••••••••' . substr($settings->stripe_secret, -6) : '' }}"
                                placeholder="sk_live_..."
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
                         <p class="text-gray-500 text-xs mt-1">Leave blank to keep existing key. Paste full key to update.</p>
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Webhook Secret <span class="text-gray-500 text-xs">(whsec_...)</span></label>
-                        <input type="text" name="stripe_webhook_secret"
+                        <label for="f-stripe_webhook_secret" class="block text-sm font-medium text-gray-300 mb-1">Webhook Secret <span class="text-gray-500 text-xs">(whsec_...)</span></label>
+                        <input type="text" id="f-stripe_webhook_secret" name="stripe_webhook_secret"
                                value="{{ $settings->stripe_webhook_secret ? '••••••••' . substr($settings->stripe_webhook_secret, -6) : '' }}"
                                placeholder="whsec_..."
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
@@ -311,15 +311,15 @@
                     <p class="text-sm font-medium text-gray-300 mb-3">Subscription Price IDs <span class="text-gray-500 text-xs">(from Stripe Dashboard → Products)</span></p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Starter Plan Price ID</label>
-                            <input type="text" name="stripe_starter_price_id"
+                            <label for="f-stripe_starter_price_id" class="block text-xs font-medium text-gray-400 mb-1">Starter Plan Price ID</label>
+                            <input type="text" id="f-stripe_starter_price_id" name="stripe_starter_price_id"
                                    value="{{ $settings->stripe_starter_price_id }}"
                                    placeholder="price_..."
                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Pro Plan Price ID</label>
-                            <input type="text" name="stripe_pro_price_id"
+                            <label for="f-stripe_pro_price_id" class="block text-xs font-medium text-gray-400 mb-1">Pro Plan Price ID</label>
+                            <input type="text" id="f-stripe_pro_price_id" name="stripe_pro_price_id"
                                    value="{{ $settings->stripe_pro_price_id }}"
                                    placeholder="price_..."
                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
@@ -331,14 +331,14 @@
                     <p class="text-sm font-medium text-gray-300 mb-3">Plan Pricing <span class="text-gray-500 text-xs">(displayed on billing page and marketing home)</span></p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Starter Monthly Price ($)</label>
-                            <input type="number" name="starter_price" min="0" step="0.01"
+                            <label for="f-starter_price" class="block text-xs font-medium text-gray-400 mb-1">Starter Monthly Price ($)</label>
+                            <input type="number" id="f-starter_price" name="starter_price" min="0" step="0.01"
                                    value="{{ old('starter_price', $settings->starter_price ?? 29) }}"
                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Pro Monthly Price ($)</label>
-                            <input type="number" name="pro_price" min="0" step="0.01"
+                            <label for="f-pro_price" class="block text-xs font-medium text-gray-400 mb-1">Pro Monthly Price ($)</label>
+                            <input type="number" id="f-pro_price" name="pro_price" min="0" step="0.01"
                                    value="{{ old('pro_price', $settings->pro_price ?? 59) }}"
                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-500">
                         </div>
@@ -385,22 +385,22 @@
 
                 <div class="grid grid-cols-4 gap-4">
                     <div class="col-span-2">
-                        <label class="block text-sm font-medium text-gray-300 mb-1">SMTP Host</label>
-                        <input type="text" name="smtp_host"
+                        <label for="f-smtp_host" class="block text-sm font-medium text-gray-300 mb-1">SMTP Host</label>
+                        <input type="text" id="f-smtp_host" name="smtp_host"
                                value="{{ old('smtp_host', $settings->smtp_host) }}"
                                placeholder="smtp.gmail.com"
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Port</label>
-                        <input type="number" name="smtp_port" min="1" max="65535"
+                        <label for="f-smtp_port" class="block text-sm font-medium text-gray-300 mb-1">Port</label>
+                        <input type="number" id="f-smtp_port" name="smtp_port" min="1" max="65535"
                                value="{{ old('smtp_port', $settings->smtp_port) }}"
                                placeholder="587"
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Encryption</label>
-                        <select name="smtp_encryption"
+                        <label for="f-smtp_encryption" class="block text-sm font-medium text-gray-300 mb-1">Encryption</label>
+                        <select id="f-smtp_encryption" name="smtp_encryption"
                                 class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             <option value="" {{ !$settings->smtp_encryption ? 'selected' : '' }}>None</option>
                             <option value="tls" {{ $settings->smtp_encryption === 'tls' ? 'selected' : '' }}>TLS</option>
@@ -411,8 +411,8 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Username</label>
-                        <input type="text" name="smtp_username"
+                        <label for="f-smtp_username" class="block text-sm font-medium text-gray-300 mb-1">Username</label>
+                        <input type="text" id="f-smtp_username" name="smtp_username"
                                value="{{ $settings->smtp_username ? '••••••••' . substr($settings->smtp_username, -8) : '' }}"
                                placeholder="user@example.com"
                                class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
@@ -432,15 +432,15 @@
                     <p class="text-sm font-medium text-gray-300 mb-3">From Address</p>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Email Address</label>
-                            <input type="email" name="mail_from_address"
+                            <label for="f-mail_from_address" class="block text-xs font-medium text-gray-400 mb-1">Email Address</label>
+                            <input type="email" id="f-mail_from_address" name="mail_from_address"
                                    value="{{ old('mail_from_address', $settings->mail_from_address) }}"
                                    placeholder="noreply@busyrealtor.com"
                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
                         </div>
                         <div>
-                            <label class="block text-xs font-medium text-gray-400 mb-1">Sender Name</label>
-                            <input type="text" name="mail_from_name"
+                            <label for="f-mail_from_name" class="block text-xs font-medium text-gray-400 mb-1">Sender Name</label>
+                            <input type="text" id="f-mail_from_name" name="mail_from_name"
                                    value="{{ old('mail_from_name', $settings->mail_from_name) }}"
                                    placeholder="BusyRealtor"
                                    class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder-gray-500">
@@ -525,24 +525,24 @@
             <div class="px-6 py-5 space-y-4">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Facebook</label>
-                        <input type="url" name="social_facebook" value="{{ old('social_facebook', $settings->social_facebook) }}" placeholder="https://facebook.com/busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
+                        <label for="f-social_facebook" class="block text-sm font-medium text-gray-300 mb-1">Facebook</label>
+                        <input type="url" id="f-social_facebook" name="social_facebook" value="{{ old('social_facebook', $settings->social_facebook) }}" placeholder="https://facebook.com/busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">Instagram</label>
-                        <input type="url" name="social_instagram" value="{{ old('social_instagram', $settings->social_instagram) }}" placeholder="https://instagram.com/busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
+                        <label for="f-social_instagram" class="block text-sm font-medium text-gray-300 mb-1">Instagram</label>
+                        <input type="url" id="f-social_instagram" name="social_instagram" value="{{ old('social_instagram', $settings->social_instagram) }}" placeholder="https://instagram.com/busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">X (Twitter)</label>
-                        <input type="url" name="social_x" value="{{ old('social_x', $settings->social_x) }}" placeholder="https://x.com/busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
+                        <label for="f-social_x" class="block text-sm font-medium text-gray-300 mb-1">X (Twitter)</label>
+                        <input type="url" id="f-social_x" name="social_x" value="{{ old('social_x', $settings->social_x) }}" placeholder="https://x.com/busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">LinkedIn</label>
-                        <input type="url" name="social_linkedin" value="{{ old('social_linkedin', $settings->social_linkedin) }}" placeholder="https://linkedin.com/company/busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
+                        <label for="f-social_linkedin" class="block text-sm font-medium text-gray-300 mb-1">LinkedIn</label>
+                        <input type="url" id="f-social_linkedin" name="social_linkedin" value="{{ old('social_linkedin', $settings->social_linkedin) }}" placeholder="https://linkedin.com/company/busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium text-gray-300 mb-1">YouTube</label>
-                        <input type="url" name="social_youtube" value="{{ old('social_youtube', $settings->social_youtube) }}" placeholder="https://youtube.com/@busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
+                        <label for="f-social_youtube" class="block text-sm font-medium text-gray-300 mb-1">YouTube</label>
+                        <input type="url" id="f-social_youtube" name="social_youtube" value="{{ old('social_youtube', $settings->social_youtube) }}" placeholder="https://youtube.com/@busyrealtor" class="w-full rounded-lg border border-gray-600 bg-gray-700 text-gray-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-transparent placeholder-gray-500">
                     </div>
                 </div>
             </div>

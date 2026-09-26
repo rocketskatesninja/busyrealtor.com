@@ -836,13 +836,13 @@ function updateCookiePrefsLink() {
     </div>
     <div class="p-4">
         <form id="contact-form" class="space-y-3">
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
+            <div><label for="contact-name" class="block text-sm font-medium text-gray-700 mb-1">Your Name *</label>
             <input type="text" id="contact-name" name="name" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-0"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+            <div><label for="contact-email" class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
             <input type="email" id="contact-email" name="email" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+            <div><label for="contact-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
             <input type="tel" id="contact-phone" name="phone" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none"></div>
-            <div><label class="block text-sm font-medium text-gray-700 mb-1">Message *</label>
+            <div><label for="contact-message" class="block text-sm font-medium text-gray-700 mb-1">Message *</label>
             <textarea id="contact-message" name="message" rows="3" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none resize-none"></textarea></div>
             <input type="hidden" id="contact-property-id" name="property_id" value="">
             <p class="text-xs text-gray-400" style="margin-top:-4px">By providing your phone number, you consent to receive calls or texts regarding your inquiry. <a href="" id="widget-privacy-link" class="underline hover:text-gray-800" target="_blank">Privacy Policy</a>. <input type="checkbox" id="widget-consent" name="consent" class="w-3.5 h-3.5 rounded border-gray-400" style="accent-color:var(--primary);vertical-align:-3px"> <label for="widget-consent" class="cursor-pointer underline">I agree</label> <span class="text-red-500">*</span></p>

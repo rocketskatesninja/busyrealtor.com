@@ -24,28 +24,28 @@
             <form method="POST" enctype="multipart/form-data" action="{{ route('tenant.admin.staff.store', $account) }}" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @csrf
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
-                    <input type="text" name="name" value="{{ old('name') }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                    <label for="f-name" class="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                    <input type="text" id="f-name" name="name" value="{{ old('name') }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Title</label>
-                    <input type="text" name="title" value="{{ old('title') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                    <label for="f-title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <input type="text" id="f-title" name="title" value="{{ old('title') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                    <input type="email" name="email" value="{{ old('email') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                    <label for="f-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="f-email" name="email" value="{{ old('email') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-                    <input type="tel" name="phone" value="{{ old('phone') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                    <label for="f-phone" class="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                    <input type="tel" id="f-phone" name="phone" value="{{ old('phone') }}" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
-                    <textarea name="bio" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none">{{ old('bio') }}</textarea>
+                    <label for="f-bio" class="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+                    <textarea id="f-bio" name="bio" rows="3" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none">{{ old('bio') }}</textarea>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
-                    <input type="file" name="profile_image" accept="image/*" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
+                    <label for="f-profile_image" class="block text-sm font-medium text-gray-700 mb-1">Profile Photo</label>
+                    <input type="file" id="f-profile_image" name="profile_image" accept="image/*" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
                 </div>
                 <div class="flex flex-col gap-3 justify-center">
                     <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
@@ -211,13 +211,13 @@
         <form id="edit-form" method="POST" enctype="multipart/form-data" class="space-y-4">
             @csrf @method('PUT')
             <div class="grid grid-cols-2 gap-4">
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Name *</label><input type="text" id="edit-name" name="name" required class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Title</label><input type="text" id="edit-title" name="title" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Email</label><input type="email" id="edit-email" name="email" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
-                <div><label class="block text-xs font-medium text-gray-600 mb-1">Phone</label><input type="tel" id="edit-phone" name="phone" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                <div><label for="edit-name" class="block text-xs font-medium text-gray-600 mb-1">Name *</label><input type="text" id="edit-name" name="name" required class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                <div><label for="edit-title" class="block text-xs font-medium text-gray-600 mb-1">Title</label><input type="text" id="edit-title" name="title" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                <div><label for="edit-email" class="block text-xs font-medium text-gray-600 mb-1">Email</label><input type="email" id="edit-email" name="email" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
+                <div><label for="edit-phone" class="block text-xs font-medium text-gray-600 mb-1">Phone</label><input type="tel" id="edit-phone" name="phone" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"></div>
             </div>
-            <div><label class="block text-xs font-medium text-gray-600 mb-1">Bio</label><textarea id="edit-bio" name="bio" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none resize-none"></textarea></div>
-            <div><label class="block text-xs font-medium text-gray-600 mb-1">New Profile Photo (optional)</label><input type="file" name="profile_image" accept="image/*" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"></div>
+            <div><label for="edit-bio" class="block text-xs font-medium text-gray-600 mb-1">Bio</label><textarea id="edit-bio" name="bio" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none resize-none"></textarea></div>
+            <div><label for="f-profile_image-2" class="block text-xs font-medium text-gray-600 mb-1">New Profile Photo (optional)</label><input type="file" id="f-profile_image-2" name="profile_image" accept="image/*" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"></div>
             <div class="flex gap-4">
                 <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="edit-homepage" name="display_on_homepage" class="rounded"> Homepage</label>
                 <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="edit-appts" name="accepts_appointments" class="rounded"> Appointments</label>

@@ -19,9 +19,9 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
         <div class="overflow-y-auto flex-1 px-5 pb-[18px] scrollbar-hide">
             <form id="gallery-filter" method="GET" action="{{ route('tenant.gallery', $account) }}" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                    <label for="f-search" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
                     <div class="relative">
-                        <input type="text" name="search" value="{{ request('search') }}" placeholder="Address, city, zip..."
+                        <input type="text" id="f-search" name="search" value="{{ request('search') }}" placeholder="Address, city, zip..."
                                class="w-full border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                         <x-icon name="magnifying-glass" class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     </div>
@@ -45,8 +45,8 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
                         <input type="hidden" name="{{ $k }}" value="{{ $v }}">
                     @endif
                 @endforeach
-                <label class="text-sm text-gray-600">Sort:</label>
-                <select name="sort" onchange="this.form.submit()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <label for="f-sort" class="text-sm text-gray-600">Sort:</label>
+                <select id="f-sort" name="sort" onchange="this.form.submit()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
                     <option value="newest" {{ request('sort','newest') === 'newest' ? 'selected' : '' }}>Newest</option>
                     <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
                     <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
@@ -155,9 +155,9 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
             <div class="flex-1 overflow-y-auto p-4">
                 <form id="mobile-gallery-filter" method="GET" action="{{ route('tenant.gallery', $account) }}" class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                        <label for="f-search-2" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
                         <div class="relative">
-                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Address, city, zip..."
+                            <input type="text" id="f-search-2" name="search" value="{{ request('search') }}" placeholder="Address, city, zip..."
                                    class="w-full border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                             <x-icon name="magnifying-glass" class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                         </div>

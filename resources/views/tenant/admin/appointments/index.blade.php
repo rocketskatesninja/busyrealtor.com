@@ -50,20 +50,20 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
             }" >
             @csrf
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Client Name *</label>
-                <input type="text" name="visitor_name" value="{{ old('visitor_name') }}" required class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <label for="f-visitor_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Client Name *</label>
+                <input type="text" id="f-visitor_name" name="visitor_name" value="{{ old('visitor_name') }}" required class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                <input type="email" name="visitor_email" value="{{ old('visitor_email') }}" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <label for="f-visitor_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <input type="email" id="f-visitor_email" name="visitor_email" value="{{ old('visitor_email') }}" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
-                <input type="tel" name="visitor_phone" value="{{ old('visitor_phone') }}" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <label for="f-visitor_phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
+                <input type="tel" id="f-visitor_phone" name="visitor_phone" value="{{ old('visitor_phone') }}" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type *</label>
-                <select name="appointment_type" required class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <label for="f-appointment_type" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Type *</label>
+                <select id="f-appointment_type" name="appointment_type" required class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                     <option value="showing" {{ old('appointment_type', 'showing') === 'showing' ? 'selected' : '' }}>Showing</option>
                     <option value="open_house" {{ old('appointment_type') === 'open_house' ? 'selected' : '' }}>Open House</option>
                     <option value="listing_appointment" {{ old('appointment_type') === 'listing_appointment' ? 'selected' : '' }}>Listing Appointment</option>
@@ -74,16 +74,16 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date *</label>
-                <input type="date" name="appointment_date" value="{{ old('appointment_date', now()->format('Y-m-d')) }}" required class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <label for="f-appointment_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date *</label>
+                <input type="date" id="f-appointment_date" name="appointment_date" value="{{ old('appointment_date', now()->format('Y-m-d')) }}" required class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
-                <input type="time" name="appointment_time" value="{{ old('appointment_time', '10:00') }}" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <label for="f-appointment_time" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Time</label>
+                <input type="time" id="f-appointment_time" name="appointment_time" value="{{ old('appointment_time', '10:00') }}" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
             </div>
             <div class="relative">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property</label>
-                <input type="hidden" name="property_id" :value="propId">
+                <label for="f-property_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Property</label>
+                <input type="hidden" id="f-property_id" name="property_id" :value="propId">
                 <div class="relative">
                     <input type="text" x-model="propSearch" @focus="propOpen = true" @click.away="propOpen = false"
                            @keydown.escape="propOpen = false"
@@ -108,8 +108,8 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign To</label>
-                <select name="staff_member_id" x-ref="staffSelect" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                <label for="f-staff_member_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Assign To</label>
+                <select id="f-staff_member_id" name="staff_member_id" x-ref="staffSelect" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                     <option value="">— Unassigned —</option>
                     @foreach($staffMembers as $staff)
                         <option value="{{ $staff->id }}" {{ old('staff_member_id') == $staff->id ? 'selected' : '' }}>{{ $staff->name }}</option>
@@ -117,16 +117,16 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                 </select>
             </div>
             <div class="md:col-span-2">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
-                <textarea name="notes" rows="2" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none">{{ old('notes') }}</textarea>
+                <label for="f-notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
+                <textarea id="f-notes" name="notes" rows="2" class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] resize-none">{{ old('notes') }}</textarea>
             </div>
             <div class="md:col-span-2 flex flex-wrap items-start gap-6 pt-2 border-t border-gray-100 dark:border-gray-700">
                 {{-- Status --}}
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
+                    <label for="f-status" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
                     <div class="flex gap-3">
                         <label class="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
-                            <input type="radio" name="status" value="confirmed" x-model="apptStatus" class="text-[var(--primary)]"> Confirmed
+                            <input type="radio" id="f-status" name="status" value="confirmed" x-model="apptStatus" class="text-[var(--primary)]"> Confirmed
                         </label>
                         <label class="flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                             <input type="radio" name="status" value="pending" x-model="apptStatus" class="text-[var(--primary)]"> Pending
@@ -136,10 +136,10 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
 
                 {{-- Notifications --}}
                 <div x-show="apptStatus === 'confirmed'" x-collapse x-cloak>
-                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Notify</label>
+                    <label for="f-send_visitor_email" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Notify</label>
                     <div class="grid grid-cols-2 gap-x-5 gap-y-1">
                         <label class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
-                            <input type="checkbox" name="send_visitor_email" value="1" {{ $siteSettings->notify_on_appointment ? 'checked' : '' }} class="rounded text-[var(--primary)] w-3 h-3"> Client
+                            <input type="checkbox" id="f-send_visitor_email" name="send_visitor_email" value="1" {{ $siteSettings->notify_on_appointment ? 'checked' : '' }} class="rounded text-[var(--primary)] w-3 h-3"> Client
                         </label>
                         <label class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 cursor-pointer">
                             <input type="checkbox" name="send_admin_email" value="1" {{ $siteSettings->notify_on_appointment ? 'checked' : '' }} class="rounded text-[var(--primary)] w-3 h-3"> Me

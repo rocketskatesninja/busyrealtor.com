@@ -227,13 +227,13 @@ $iconPaths = [
         <div class="bg-white/95 backdrop-blur-sm rounded-2xl p-4 shadow-2xl max-w-3xl mx-auto {{ $ea ? 'hero-animate hero-d5' : '' }} ring-1 ring-white/10">
             <form action="{{ route('tenant.gallery', $account) }}" method="GET" class="flex flex-col sm:flex-row sm:flex-wrap gap-3 sm:items-end">
                 <div class="flex-1 sm:min-w-40">
-                    <label class="block text-xs font-medium text-gray-600 mb-1">Search</label>
-                    <input type="text" name="search" placeholder="Address, city, zip..." class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                    <label for="f-search" class="block text-xs font-medium text-gray-600 mb-1">Search</label>
+                    <input type="text" id="f-search" name="search" placeholder="Address, city, zip..." class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                 </div>
                 <div class="flex gap-3 sm:contents">
                     <div class="flex-1 sm:w-36 sm:flex-none">
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Type</label>
-                        <select name="type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                        <label for="f-type" class="block text-xs font-medium text-gray-600 mb-1">Type</label>
+                        <select id="f-type" name="type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                             <option value="">All Types</option>
                             <option value="house">House</option>
                             <option value="condo">Condo</option>
@@ -243,8 +243,8 @@ $iconPaths = [
                         </select>
                     </div>
                     <div class="flex-1 sm:w-32 sm:flex-none">
-                        <label class="block text-xs font-medium text-gray-600 mb-1">Max Price</label>
-                        <select name="max_price" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
+                        <label for="f-max_price" class="block text-xs font-medium text-gray-600 mb-1">Max Price</label>
+                        <select id="f-max_price" name="max_price" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                             <option value="">Any Price</option>
                             <option value="250000">$250K</option>
                             <option value="500000">$500K</option>

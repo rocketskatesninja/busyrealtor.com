@@ -23,17 +23,17 @@
             @csrf
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-                    <input type="text" name="subject" x-model="subject" required
+                    <label for="f-subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                    <input type="text" id="f-subject" name="subject" x-model="subject" required
                            placeholder="e.g. Platform Update — March 2026"
                            class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                    <label for="f-body" class="block text-sm font-medium text-gray-700 mb-1">
                         Body
                         <span class="text-gray-400 font-normal ml-2">Available variables: @{{ first_name }}, @{{ last_name }}, @{{ email }}</span>
                     </label>
-                    <textarea name="body" x-model="body" rows="8" required
+                    <textarea id="f-body" name="body" x-model="body" rows="8" required
                               placeholder="Hi @{{first_name}},&#10;&#10;We're excited to share some updates..."
                               class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"></textarea>
                 </div>

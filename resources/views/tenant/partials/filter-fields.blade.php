@@ -1,9 +1,14 @@
-{{-- Shared filter form fields — included in gallery sidebar and map panel --}}
+{{-- Shared filter form fields — included in gallery sidebar and map panel.
+
+     Included up to twice per page (sidebar + mobile drawer), so every id here carries
+     $filterSuffix. Without it the second copy duplicates the first copy's ids and every
+     label's for= resolves to the wrong control — clicking a label in the drawer would focus
+     the field behind it. --}}
 
 {{-- Property Type --}}
 <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
-    <select name="type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <label for="f-type{{ $filterSuffix ?? '' }}" class="block text-sm font-medium text-gray-700 mb-2">Property Type</label>
+    <select id="f-type{{ $filterSuffix ?? '' }}" name="type" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         <option value="">All Types</option>
         @foreach(['house' => 'House', 'condo' => 'Condo', 'townhouse' => 'Townhouse', 'land' => 'Land', 'commercial' => 'Commercial', 'multi_family' => 'Multi-Family'] as $fVal => $fLabel)
             <option value="{{ $fVal }}" {{ request('type') === $fVal ? 'selected' : '' }}>{{ $fLabel }}</option>
@@ -13,9 +18,9 @@
 
 {{-- Price Range --}}
 <div>
-    <label class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
+    <label for="f-price_min{{ $filterSuffix ?? '' }}" class="block text-sm font-medium text-gray-700 mb-2">Price Range</label>
     <div class="grid grid-cols-2 gap-2">
-        <input type="number" name="price_min" value="{{ request('price_min') }}" placeholder="Min $"
+        <input type="number" id="f-price_min{{ $filterSuffix ?? '' }}" name="price_min" value="{{ request('price_min') }}" placeholder="Min $"
                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         <input type="number" name="price_max" value="{{ request('price_max') }}" placeholder="Max $"
                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -25,8 +30,8 @@
 {{-- Beds & Baths --}}
 <div class="grid grid-cols-2 gap-2">
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Min Beds</label>
-        <select name="beds" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <label for="f-beds{{ $filterSuffix ?? '' }}" class="block text-sm font-medium text-gray-700 mb-2">Min Beds</label>
+        <select id="f-beds{{ $filterSuffix ?? '' }}" name="beds" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Any</option>
             @foreach(range(1, 6) as $n)
                 <option value="{{ $n }}" {{ request('beds') == $n ? 'selected' : '' }}>{{ $n }}+</option>
@@ -34,8 +39,8 @@
         </select>
     </div>
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Min Baths</label>
-        <select name="baths" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <label for="f-baths{{ $filterSuffix ?? '' }}" class="block text-sm font-medium text-gray-700 mb-2">Min Baths</label>
+        <select id="f-baths{{ $filterSuffix ?? '' }}" name="baths" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Any</option>
             @foreach(range(1, 5) as $n)
                 <option value="{{ $n }}" {{ request('baths') == $n ? 'selected' : '' }}>{{ $n }}+</option>
@@ -46,9 +51,9 @@
 
 {{-- Square Footage --}}
 <div class="pt-4 border-t">
-    <label class="block text-sm font-medium text-gray-700 mb-2">Square Footage</label>
+    <label for="f-sqft_min{{ $filterSuffix ?? '' }}" class="block text-sm font-medium text-gray-700 mb-2">Square Footage</label>
     <div class="grid grid-cols-2 gap-2">
-        <input type="number" name="sqft_min" value="{{ request('sqft_min') }}" placeholder="Min"
+        <input type="number" id="f-sqft_min{{ $filterSuffix ?? '' }}" name="sqft_min" value="{{ request('sqft_min') }}" placeholder="Min"
                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         <input type="number" name="sqft_max" value="{{ request('sqft_max') }}" placeholder="Max"
                class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -58,8 +63,8 @@
 {{-- Garage & HOA --}}
 <div class="pt-4 border-t grid grid-cols-2 gap-2">
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Garage</label>
-        <select name="garage_spaces" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <label for="f-garage_spaces{{ $filterSuffix ?? '' }}" class="block text-sm font-medium text-gray-700 mb-2">Garage</label>
+        <select id="f-garage_spaces{{ $filterSuffix ?? '' }}" name="garage_spaces" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
             <option value="">Any</option>
             @foreach(range(1, 4) as $n)
                 <option value="{{ $n }}" {{ request('garage_spaces') == $n ? 'selected' : '' }}>{{ $n }}+</option>
@@ -67,8 +72,8 @@
         </select>
     </div>
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">HOA</label>
-        <select name="hoa" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <label for="f-hoa{{ $filterSuffix ?? '' }}" class="block text-sm font-medium text-gray-700 mb-2">HOA</label>
+        <select id="f-hoa{{ $filterSuffix ?? '' }}" name="hoa" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 onchange="var w=document.getElementById('hoaMaxWrap{{ $filterSuffix ?? '' }}');if(w)w.style.display=this.value==='yes'?'block':'none'">
             <option value="">Any</option>
             <option value="yes" {{ request('hoa') === 'yes' ? 'selected' : '' }}>Yes</option>

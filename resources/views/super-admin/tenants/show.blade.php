@@ -114,12 +114,12 @@
             @endphp
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-                    <input type="text" name="name" value="{{ old('name', $tenant->name) }}" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <label for="f-name" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+                    <input type="text" id="f-name" name="name" value="{{ old('name', $tenant->name) }}" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Slug (URL)</label>
-                    <input type="text" name="slug" value="{{ old('slug', $tenant->slug) }}" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
+                    <label for="f-slug" class="block text-sm font-medium text-gray-700 mb-1">Slug (URL)</label>
+                    <input type="text" id="f-slug" name="slug" value="{{ old('slug', $tenant->slug) }}" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono">
                     <p class="text-xs text-gray-400 mt-1">Changing slug will break existing links</p>
                 </div>
                 <div>
@@ -199,8 +199,8 @@
                     </div>
                 </div>
                 <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                    <textarea name="notes" rows="3" placeholder="Internal notes about this tenant..." class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('notes', $tenant->notes) }}</textarea>
+                    <label for="f-notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                    <textarea id="f-notes" name="notes" rows="3" placeholder="Internal notes about this tenant..." class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">{{ old('notes', $tenant->notes) }}</textarea>
                 </div>
             </div>
 
@@ -283,9 +283,9 @@
         {{-- Email Edit Form --}}
         <form method="POST" action="{{ route('super.tenants.owner.update', $tenant->slug) }}" class="mb-4">
             @csrf @method('PUT')
-            <label class="block text-sm font-medium text-gray-700 mb-1">Owner Email</label>
+            <label for="f-email" class="block text-sm font-medium text-gray-700 mb-1">Owner Email</label>
             <div class="flex gap-3">
-                <input type="email" name="email" value="{{ old('email', $owner->email) }}" required
+                <input type="email" id="f-email" name="email" value="{{ old('email', $owner->email) }}" required
                        class="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <button type="submit" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-blue-700 transition whitespace-nowrap">
                     Update Email

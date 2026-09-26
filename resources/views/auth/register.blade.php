@@ -22,30 +22,30 @@
          rejects any submission where this is non-empty. Field name is
          intentionally generic ("website") to look attractive to bots. --}}
     <div aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">
-        <label>Website</label>
-        <input type="text" name="website" tabindex="-1" autocomplete="off" value="">
+        <label for="f-website">Website</label>
+        <input type="text" id="f-website" name="website" tabindex="-1" autocomplete="off" value="">
     </div>
     <div class="grid grid-cols-2 gap-4">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
-            <input type="text" name="first_name" value="{{ old('first_name') }}" required
+            <label for="f-first_name" class="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+            <input type="text" id="f-first_name" name="first_name" value="{{ old('first_name') }}" required
                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
-            <input type="text" name="last_name" value="{{ old('last_name') }}" required
+            <label for="f-last_name" class="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+            <input type="text" id="f-last_name" name="last_name" value="{{ old('last_name') }}" required
                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
     </div>
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
-        <input type="text" name="business_name" value="{{ old('business_name') }}" required
+        <label for="f-business_name" class="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+        <input type="text" id="f-business_name" name="business_name" value="{{ old('business_name') }}" required
                x-on:input="slug = $event.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')"
                class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
     </div>
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input type="email" name="email" value="{{ old('email') }}" required
+        <label for="f-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <input type="email" id="f-email" name="email" value="{{ old('email') }}" required
                class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
     </div>
     <div>

@@ -6,8 +6,8 @@
 <form method="POST" action="{{ route('password.email') }}" class="space-y-4">
     @csrf
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
-        <input type="email" name="email" value="{{ old('email') }}" required autofocus
+        <label for="f-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+        <input type="email" id="f-email" name="email" value="{{ old('email') }}" required autofocus
                class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
     </div>
     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition text-sm">
