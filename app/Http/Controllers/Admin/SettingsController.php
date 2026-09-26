@@ -33,6 +33,106 @@ class SettingsController extends Controller
         return view('tenant.admin.settings.index', compact('tenant', 'settings', 'tab', 'legal', 'integrations'));
     }
 
+    /**
+     * Settings columns this form writes that the database will not accept as NULL.
+     *
+     * Kept as a list rather than inferred from the schema because the failure it prevents is
+     * silent until it is a 500: the only signal is that one of these arrived blank.
+     */
+    private const NOT_NULLABLE = [
+        'primary_color',
+        'header_mode',
+        'header_display_mode',
+        'title_color_type',
+        'title_color_solid',
+        'title_gradient_start',
+        'title_gradient_via',
+        'title_gradient_end',
+        'site_title_font_size',
+        'site_title_font_weight',
+        'site_title_letter_spacing',
+        'hero_background_type',
+    ];
+
+    /**
+     * Shape and length rules for the site_settings values, modelled on
+     * SetupWizardController::rulesFor() — which validated the same columns properly while
+     * this action validated none of them.
+     *
+     * The enum lists come from the columns, not from the form: header_display_mode offers
+     * three options in the UI but the column accepts five, and rows written by earlier
+     * versions hold the other two.
+     */
+    private function settingsRules(): array
+    {
+        // Six hex digits with an optional hash: the only shape the CSS can use, and the only
+        // one that fits varchar(20). Same rule as the wizard.
+        $colour = ['nullable', 'regex:/^#?[0-9A-Fa-f]{6}$/'];
+
+        return [
+            // general
+            'site_title' => ['nullable', 'string', 'max:255'],
+            'tagline' => ['nullable', 'string', 'max:500'],
+            'contact_email' => ['nullable', 'email', 'max:255'],
+            'contact_phone' => ['nullable', 'string', 'max:50'],
+            'contact_address' => ['nullable', 'string', 'max:2000'],
+            'social_facebook' => ['nullable', 'string', 'max:2000'],
+            'social_instagram' => ['nullable', 'string', 'max:2000'],
+            'social_twitter' => ['nullable', 'string', 'max:2000'],
+            'social_linkedin' => ['nullable', 'string', 'max:2000'],
+            'social_youtube' => ['nullable', 'string', 'max:255'],
+
+            // public profile
+            'owner_name' => ['nullable', 'string', 'max:255'],
+            'owner_bio' => ['nullable', 'string', 'max:5000'],
+            'license_number' => ['nullable', 'string', 'max:255'],
+            'brokerage_name' => ['nullable', 'string', 'max:255'],
+
+            // appearance
+            'header_mode' => ['nullable', 'in:hero,default'],
+            'header_display_mode' => ['nullable', 'in:logo_only,text_only,both,favicon_only,favicon_text'],
+            'title_color_type' => ['nullable', 'in:solid,gradient'],
+            'primary_color' => $colour,
+            'title_color_solid' => $colour,
+            'title_gradient_start' => $colour,
+            'title_gradient_via' => $colour,
+            'title_gradient_end' => $colour,
+            // These three are deliberately NOT an allow-list of what the form offers. The
+            // column defaults are a different vocabulary from the current selects —
+            // site_title_letter_spacing defaults to '-0.5px' while the UI offers
+            // tight/normal/wide — so an `in:` rule rejects rows the app created itself, and
+            // saving the form unchanged would fail. Two pre-existing tests caught that.
+            //
+            // What actually needs stopping: overflowing the column, and the fact that
+            // font_weight and letter_spacing are interpolated raw into a <style> block
+            // (font_size goes through a match() with a default, so a stray value there is
+            // inert). The character sets below admit every token and CSS length the app
+            // produces while excluding the ; } ( ) and whitespace a breakout needs.
+            'site_title_font_size' => ['nullable', 'regex:/^[-0-9a-zA-Z.]{1,20}$/'],
+            'site_title_font_weight' => ['nullable', 'regex:/^[0-9a-zA-Z]{1,10}$/'],
+            'site_title_letter_spacing' => ['nullable', 'regex:/^[-0-9a-zA-Z.]{1,20}$/'],
+            'title_font' => ['nullable', 'string', 'max:100'],
+            'favicon_preset' => ['nullable', 'string', 'max:255'],
+
+            // homepage
+            'hero_title' => ['nullable', 'string', 'max:300'],
+            'hero_subtitle' => ['nullable', 'string', 'max:500'],
+            'hero_background_type' => ['nullable', 'in:preset,image,gradient'],
+            'hero_preset' => ['nullable', 'string', 'max:100'],
+            'hero_gradient_start' => $colour,
+            'hero_gradient_end' => $colour,
+            // Cast straight to (int) and then used as a CSS opacity percentage, so it was
+            // unbounded in both directions.
+            'hero_fx_overlay_opacity' => ['nullable', 'integer', 'between:0,100'],
+
+            // chatbot and seo
+            'chatbot_personality' => ['nullable', 'in:professional,friendly,casual'],
+            'chatbot_bio' => ['nullable', 'string', 'max:5000'],
+            'site_description' => ['nullable', 'string', 'max:2000'],
+            'google_site_verification' => ['nullable', 'string', 'max:255'],
+        ];
+    }
+
     public function update($account, Request $request)
     {
         $tenant = app('tenant');
@@ -94,6 +194,17 @@ class SettingsController extends Controller
 
         // ── All site_settings columns ─────────────────────────────────────
         //
+        // Only the three image uploads were validated here. Every other value went from the
+        // request into a typed column unchecked, and MySQL runs in strict mode, so a value
+        // the column cannot hold is a 500 rather than a validation error. Two sharp edges:
+        // the enum columns, where anything outside the list is a truncation error, and the
+        // varchar(20) colour columns, where a long string simply fails to insert.
+        //
+        // Every rule is nullable on purpose. The form posts one tab at a time, so a field
+        // this post did not carry must stay absent rather than be reported as missing.
+        $request->validate($this->settingsRules());
+
+        //
         // only() rather than reading $request->field one by one: that wrote null for
         // every field a post left out, which nulls NOT NULL columns and 500s — the
         // same fault the setup wizard had. The real form posts all of these, so this
@@ -116,6 +227,15 @@ class SettingsController extends Controller
             // seo
             'site_description', 'google_site_verification',
         ]);
+
+        // An empty input arrives as null (ConvertEmptyStringsToNull). For a column the
+        // database will not accept as null that is an insert error, not a validation error,
+        // so a blank keeps whatever is stored.
+        foreach (self::NOT_NULLABLE as $column) {
+            if (array_key_exists($column, $data) && $data[$column] === null) {
+                unset($data[$column]);
+            }
+        }
 
         $data['title_font'] = $request->title_font ?? $settings->title_font ?? 'Poppins';
         $data['chatbot_personality'] = $request->chatbot_personality ?? $settings->chatbot_personality ?? 'professional';
