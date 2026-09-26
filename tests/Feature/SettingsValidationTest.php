@@ -163,6 +163,53 @@ class SettingsValidationTest extends TestCase
         }
     }
 
+    /**
+     * The settings page is one form holding every tab, so the change-password fields used to
+     * sit in the live DOM whatever tab you were on. The browser autofilled the saved password
+     * into current_password on load, and the first tab change then ran history.replaceState
+     * (the page root syncs ?tab= that way), which a password manager reads as a form
+     * submission — so it offered to save a password nobody had typed, once per page load.
+     *
+     * They now live inside a <template x-if>. Template content is not in the document tree,
+     * so there is nothing to autofill and no credential form to submit; Alpine clones it in
+     * when the Profile tab opens.
+     */
+    public function test_the_password_fields_are_not_in_the_live_dom(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+
+        $html = $this->actingAs($admin)->get("/{$tenant->slug}/admin/settings")->assertOk()->content();
+
+        // Strip every <template> block; what is left is what the browser actually has.
+        $live = preg_replace('/<template\b.*?<\/template>/s', '', $html);
+
+        foreach (['current_password', 'new_password', 'new_password_confirmation'] as $field) {
+            $this->assertStringContainsString("name=\"{$field}\"", $html,
+                "{$field} should still be on the page, just inert");
+            $this->assertStringNotContainsString("name=\"{$field}\"", $live,
+                "{$field} is in the live DOM, so the browser can autofill it");
+        }
+    }
+
+    /** Changing a password still works — the fields are cloned in when the tab is open. */
+    public function test_a_password_change_still_goes_through(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant, ['password' => bcrypt('Zq7-vantage-bluff-2026')]);
+
+        $this->actingAs($admin)
+            ->post("/{$tenant->slug}/admin/settings", $this->profileFields($admin->email) + [
+                'tab' => 'profile',
+                'current_password' => 'Zq7-vantage-bluff-2026',
+                'new_password' => 'Kp4-harbour-lantern-2027',
+                'new_password_confirmation' => 'Kp4-harbour-lantern-2027',
+            ])
+            ->assertSessionHasNoErrors();
+
+        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('Kp4-harbour-lantern-2027', $admin->fresh()->password));
+    }
+
     public function test_a_valid_settings_post_still_saves(): void
     {
         $tenant = $this->makeTenant();

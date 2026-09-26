@@ -163,22 +163,38 @@ $tabs = array_merge(...array_values($groups));
                              <x-password-input> component (resources/views/components/
                              password-input.blade.php) so the eye toggle, icons, colors,
                              and hover behavior match the login page exactly. --}}
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                                <x-password-input name="current_password" autocomplete="current-password" />
-                                @error('current_password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                        {{-- Inside a <template x-if>, so these three exist in the document only
+                             while the Profile tab is open.
+
+                             They used to sit in the live DOM on every tab, hidden by the panel's
+                             x-show. The browser autofilled the saved password into
+                             current_password on load, and the first tab change after that ran
+                             history.replaceState (see x-effect on the page root) — which the
+                             password manager reads as a form submission, so it offered to save a
+                             password nobody had typed. Once per page load, on the first tab
+                             change, which is exactly the shape that was reported.
+
+                             Template content is inert: it is not in the document tree, so there
+                             is nothing to autofill and no credential form to submit. Alpine
+                             clones it in when the tab opens. --}}
+                        <template x-if="activeTab === 'profile'">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                                    <x-password-input name="current_password" autocomplete="current-password" />
+                                    @error('current_password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                                    <x-password-input name="new_password" autocomplete="new-password" />
+                                    @error('new_password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                                    <x-password-input name="new_password_confirmation" autocomplete="new-password" />
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                                <x-password-input name="new_password" autocomplete="new-password" />
-                                @error('new_password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                                <x-password-input name="new_password_confirmation" autocomplete="new-password" />
-                            </div>
-                        </div>
+                        </template>
                     </div>
                     <div class="mt-5 border-t pt-5">
                         <h3 class="font-medium text-gray-800 mb-3">Agent Profile</h3>
