@@ -5,6 +5,27 @@
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' js.stripe.com maps.googleapis.com *.googletagmanager.com *.google-analytics.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com; font-src 'self' fonts.gstatic.com data:; img-src 'self' data: https: blob:; frame-src 'self' js.stripe.com maps.google.com https://www.google.com; connect-src 'self' api.stripe.com fonts.googleapis.com fonts.gstatic.com maps.googleapis.com maps.google.com *.googletagmanager.com *.google-analytics.com *.analytics.google.com; worker-src blob:; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com; object-src 'none'; upgrade-insecure-requests;"
 </IfModule>
 
+<IfModule mod_headers.c>
+<IfModule mod_setenvif.c>
+    # Static files are served straight by Apache, so nothing in the app can set these.
+    # Without them every visit revalidates every asset and every tenant photo: two
+    # round trips per file before a byte of image data moves.
+    #
+    # /build/assets/* carries a Vite content hash in the filename, so a given URL's bytes
+    # can never change — a year, immutable, never revalidated.
+    #
+    # /storage/* is tenant uploads. Those filenames are generated per upload and a replaced
+    # image is written under a new name, so a URL is stable in practice, but it is not a
+    # hash of the contents the way Vite's is. Thirty days rather than a year, and no
+    # immutable, so a surprise still corrects itself within the month.
+    SetEnvIf Request_URI "^/build/assets/" BR_ASSET_IMMUTABLE
+    SetEnvIf Request_URI "^/storage/" BR_ASSET_UPLOAD
+
+    Header set Cache-Control "public, max-age=31536000, immutable" env=BR_ASSET_IMMUTABLE
+    Header set Cache-Control "public, max-age=2592000" env=BR_ASSET_UPLOAD
+</IfModule>
+</IfModule>
+
 # HTML is compressed, deliberately.
 #
 # A BREACH mitigation used to sit here: SetEnvIfNoCase Content-Type "text/html" no-gzip.
