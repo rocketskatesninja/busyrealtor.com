@@ -67,7 +67,13 @@ class ActivityLogController extends Controller
             $out = fopen('php://output', 'w');
             fputcsv($out, ['Date', 'User', 'Tenant', 'Action', 'Description', 'IP Address']);
 
-            $query->chunk(500, function ($logs) use ($out) {
+            /*
+             | Paged by id, not by offset. chunk() is offset-based and the query is ordered by
+             | created_at, which is not unique — so rows could shift between pages and be
+             | skipped or repeated. chunkByIdDesc keeps the newest-first order the screen and
+             | the old export both used, while paging on a unique, stable key.
+             */
+            $query->reorder()->chunkByIdDesc(500, function ($logs) use ($out) {
                 foreach ($logs as $log) {
                     fputcsv($out, [
                         $log->created_at->format('Y-m-d H:i:s'),

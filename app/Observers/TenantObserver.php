@@ -5,6 +5,7 @@ namespace App\Observers;
 use App\Models\Tenant;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class TenantObserver
 {
@@ -22,6 +23,7 @@ class TenantObserver
         $this->cleanupStripe($tenant);
         $this->cleanupLocalUsers($tenant);
         $this->cleanupCashierRows($tenant);
+        $this->cleanupUploads($tenant);
     }
 
     private function cleanupStripe(Tenant $tenant): void
@@ -62,6 +64,32 @@ class TenantObserver
      * Cashier's subscriptions table has no FK cascade, so delete child
      * subscription_items first, then the subscriptions themselves.
      */
+    /**
+     * Remove the tenant's uploaded files.
+     *
+     * Every child table cascades and the observer handles the rest, but nothing touched
+     * storage/app/public/tenants/{id} — so each deleted tenant left its photos behind,
+     * unreferenced and invisible, for ever. It has to happen here rather than in a cleanup
+     * script because the files are owned by the web user.
+     */
+    private function cleanupUploads(Tenant $tenant): void
+    {
+        $directory = 'tenants/'.$tenant->id;
+
+        try {
+            if (Storage::disk('public')->exists($directory)) {
+                Storage::disk('public')->deleteDirectory($directory);
+            }
+        } catch (\Throwable $e) {
+            // A tenant must still delete if the disk refuses; the row going is the point.
+            Log::warning('Could not remove tenant uploads on deletion', [
+                'tenant_id' => $tenant->id,
+                'directory' => $directory,
+                'error'     => $e->getMessage(),
+            ]);
+        }
+    }
+
     private function cleanupCashierRows(Tenant $tenant): void
     {
         $subIds = DB::table('subscriptions')

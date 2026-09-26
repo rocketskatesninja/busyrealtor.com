@@ -97,16 +97,22 @@ class GoogleCalendarService
             $time = $appointment->appointment_time ?? '09:00:00';
             $duration = $appointment->duration_minutes ?? 30;
 
-            $startDt = \Carbon\Carbon::parse("{$date} {$time}", 'America/New_York');
+            // The agency's own timezone. This was hardcoded to America/New_York, so every
+            // appointment for a tenant outside Eastern was written to Google at the wrong
+            // hour — and the visitor is sent that invite ('sendUpdates' => 'all' below).
+            // SiteSettings has carried a timezone column all along.
+            $timezone = self::timezoneFor($appointment);
+
+            $startDt = \Carbon\Carbon::parse("{$date} {$time}", $timezone);
             $endDt   = $startDt->copy()->addMinutes($duration);
 
             $start = new EventDateTime();
             $start->setDateTime($startDt->toRfc3339String());
-            $start->setTimeZone('America/New_York');
+            $start->setTimeZone($timezone);
 
             $end = new EventDateTime();
             $end->setDateTime($endDt->toRfc3339String());
-            $end->setTimeZone('America/New_York');
+            $end->setTimeZone($timezone);
 
             $event = new Event();
             $event->setSummary($summary);
@@ -146,5 +152,18 @@ class GoogleCalendarService
                 'error'    => $e->getMessage(),
             ]);
         }
+    }
+
+    /**
+     * The timezone to write an appointment in: the tenant's own, or the app default.
+     *
+     * A separate method so it can be tested without a Google client, and so the fallback
+     * is stated once rather than three times inline.
+     */
+    public static function timezoneFor($appointment): string
+    {
+        $tenantZone = $appointment->tenant?->siteSettings?->timezone;
+
+        return filled($tenantZone) ? $tenantZone : (config('app.timezone') ?: 'UTC');
     }
 }

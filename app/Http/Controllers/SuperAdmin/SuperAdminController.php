@@ -343,14 +343,31 @@ class SuperAdminController extends Controller
         $subject = $request->subject;
         $bodyTemplate = $request->body;
 
-        foreach ($users->chunk(50) as $chunk) {
-            foreach ($chunk as $user) {
-                $personalizedBody = str_replace(
-                    ['{{first_name}}', '{{last_name}}', '{{email}}'],
-                    [$user->first_name, $user->last_name, $user->email],
-                    $bodyTemplate
-                );
+        /*
+         | One transient SMTP failure used to abort the loop, so every recipient after it got
+         | nothing AND the MailCampaign row below was never written — leaving no record that a
+         | partial blast had gone out, and making a retry double-send the first half. Failures
+         | are counted and logged per recipient now, and the campaign is always recorded.
+         |
+         | Still synchronous, which is the real fix (a job per recipient) and is left for the
+         | queue work rather than smuggled in here.
+         */
+        $sent = 0;
+        $failed = [];
+
+        foreach ($users as $user) {
+            $personalizedBody = str_replace(
+                ['{{first_name}}', '{{last_name}}', '{{email}}'],
+                [$user->first_name, $user->last_name, $user->email],
+                $bodyTemplate
+            );
+
+            try {
                 Mail::to($user->email)->send(new CampaignMail($subject, $personalizedBody, $user));
+                $sent++;
+            } catch (\Throwable $e) {
+                $failed[] = $user->email;
+                \Log::warning('Campaign send failed', ['email' => $user->email, 'error' => $e->getMessage()]);
             }
         }
 

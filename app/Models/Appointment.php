@@ -37,6 +37,10 @@ class Appointment extends Model
         'source',
         'visitor_ip',
         'google_calendar_event_id',
+        // Fillable so a restore can put back the original timestamp. RestoreController
+        // deliberately unsets updated_at and keeps created_at, but without this the value
+        // was dropped and the row was stamped with the time of the restore instead.
+        'created_at',
     ];
 
     protected $casts = [
