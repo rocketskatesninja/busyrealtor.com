@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\ChatLog;
-use App\Models\Integration;
-use App\Models\SiteSettings;
 use App\Models\Property;
+use App\Models\SiteSettings;
 use App\Services\TenantMailer;
 use App\Support\MailBody;
 use Carbon\Carbon;
@@ -21,7 +20,7 @@ class ChatbotController extends Controller
     public function chat($account, \App\Http\Requests\PublicChatbotMessageRequest $request)
     {
         $tenant = app('tenant');
-        if (!$tenant->isPro()) {
+        if (! $tenant->isPro()) {
             return response()->json(['reply' => 'The AI chatbot is available on the Pro plan. Please upgrade your account.']);
         }
 
@@ -29,12 +28,12 @@ class ChatbotController extends Controller
         ['integration' => $aiInteg, 'preferred' => $preferred, 'key' => $key, 'model' => $model]
             = \App\Services\AiProviderService::resolve($tenant, activeOnly: true);
 
-        if (!$aiInteg || !$key) {
+        if (! $aiInteg || ! $key) {
             return response()->json(['reply' => 'Chatbot is not configured yet.']);
         }
 
         $sessionId = $request->session_id;
-        if ($sessionId && (!is_string($sessionId) || strlen($sessionId) > 100 || !preg_match('/^[a-zA-Z0-9\-]+$/', $sessionId))) {
+        if ($sessionId && (! is_string($sessionId) || strlen($sessionId) > 100 || ! preg_match('/^[a-zA-Z0-9\-]+$/', $sessionId))) {
             $sessionId = null;
         }
         $sessionId = $sessionId ?? Str::uuid()->toString();
@@ -43,10 +42,15 @@ class ChatbotController extends Controller
         // Limit to last 20 messages to prevent token blowup on long conversations
         $history = ChatLog::where('tenant_id', $tenant->id)
             ->where('session_id', $sessionId)
-            ->orderByDesc('created_at')
+            // Ordered by id, not created_at. The user and assistant rows of one turn are
+            // written in the same request and normally share the same second, so ordering by
+            // timestamp leaves their relative order undefined — and a swapped pair produces a
+            // history that does not alternate, which the provider rejects outright. The admin
+            // assistant already orders by id; this is the same fix.
+            ->orderByDesc('id')
             ->limit(20)
             ->get()
-            ->sortBy('created_at')
+            ->sortBy('id')
             ->values();
 
         // Flood guard: max 30 user messages per session per hour
@@ -60,7 +64,7 @@ class ChatbotController extends Controller
         }
 
         // IP flood guard: max 60 chatbot messages per IP per hour (catches session-id rotation)
-        $ipKey = 'chatbot_ip_' . $tenant->id . '_' . hash('sha256', $request->ip());
+        $ipKey = 'chatbot_ip_'.$tenant->id.'_'.hash('sha256', $request->ip());
         $ipCount = (int) cache($ipKey, 0);
         if ($ipCount >= 60) {
             return response()->json([
@@ -73,14 +77,14 @@ class ChatbotController extends Controller
         // Build system prompt
         $activeProps = Property::where('tenant_id', $tenant->id)
             ->where('listing_status', 'active')->limit(50)->get()
-            ->map(fn($p) => "- [ID:{$p->id}] {$p->title} at {$p->address_street}, {$p->address_city} (\${$p->price})")->implode("\n");
+            ->map(fn ($p) => "- [ID:{$p->id}] {$p->title} at {$p->address_street}, {$p->address_city} (\${$p->price})")->implode("\n");
 
         $propCounts = Property::where('tenant_id', $tenant->id)
-            ->selectRaw("listing_status, count(*) as cnt")
+            ->selectRaw('listing_status, count(*) as cnt')
             ->groupBy('listing_status')
             ->pluck('cnt', 'listing_status');
 
-        $sysPrompt  = "You are a friendly real estate assistant for {$tenant->name}. ";
+        $sysPrompt = "You are a friendly real estate assistant for {$tenant->name}. ";
         if ($settings?->chatbot_bio) {
             $sysPrompt .= "About the realtor: {$settings->chatbot_bio}. ";
         }
@@ -92,27 +96,33 @@ class ChatbotController extends Controller
         }
         $total = $propCounts->sum();
         $sysPrompt .= "Portfolio summary: {$total} total properties";
-        if ($propCounts->get('active'))  $sysPrompt .= ", {$propCounts->get('active')} active";
-        if ($propCounts->get('pending')) $sysPrompt .= ", {$propCounts->get('pending')} pending";
-        if ($propCounts->get('sold'))    $sysPrompt .= ", {$propCounts->get('sold')} sold";
+        if ($propCounts->get('active')) {
+            $sysPrompt .= ", {$propCounts->get('active')} active";
+        }
+        if ($propCounts->get('pending')) {
+            $sysPrompt .= ", {$propCounts->get('pending')} pending";
+        }
+        if ($propCounts->get('sold')) {
+            $sysPrompt .= ", {$propCounts->get('sold')} sold";
+        }
         $sysPrompt .= ".\n";
         $sysPrompt .= "\nAppointment request rules:"
-                    . "\n- Only begin the appointment request process when the visitor CLEARLY asks to schedule, view, or tour a property."
-                    . "\n- Do NOT interpret random words, numbers, or off-topic messages as appointment request answers."
-                    . "\n- Collect: full name, email address, preferred date, preferred time, appointment type (showing, consultation, virtual, or other), and which property."
-                    . "\n- Validate each piece of info: names must look like real names (not numbers), emails must contain @, dates must be recognizable dates."
-                    . "\n- If an answer doesn't look valid, politely ask again."
-                    . "\n- Before calling book_appointment, briefly confirm all details with the visitor (e.g. 'Just to confirm: John Smith, john@email.com, showing on March 20 at 2pm for 123 Main St — shall I submit this request?')."
-                    . "\n- Use the listing IDs from above to match properties by name or address."
-                    . "\nBe concise and warm. If the visitor is just browsing or asking questions, help them without pushing appointment requests. Make clear that appointments require confirmation by the agency.";
+                    ."\n- Only begin the appointment request process when the visitor CLEARLY asks to schedule, view, or tour a property."
+                    ."\n- Do NOT interpret random words, numbers, or off-topic messages as appointment request answers."
+                    ."\n- Collect: full name, email address, preferred date, preferred time, appointment type (showing, consultation, virtual, or other), and which property."
+                    ."\n- Validate each piece of info: names must look like real names (not numbers), emails must contain @, dates must be recognizable dates."
+                    ."\n- If an answer doesn't look valid, politely ask again."
+                    ."\n- Before calling book_appointment, briefly confirm all details with the visitor (e.g. 'Just to confirm: John Smith, john@email.com, showing on March 20 at 2pm for 123 Main St — shall I submit this request?')."
+                    ."\n- Use the listing IDs from above to match properties by name or address."
+                    ."\nBe concise and warm. If the visitor is just browsing or asking questions, help them without pushing appointment requests. Make clear that appointments require confirmation by the agency.";
 
-        $messages = $history->map(fn($log) => [
-            'role'    => $log->role,
+        $messages = $history->map(fn ($log) => [
+            'role' => $log->role,
             'content' => $log->content,
         ])->all();
         $messages[] = ['role' => 'user', 'content' => $request->message];
 
-        $reply  = '';
+        $reply = '';
         $booked = false;
 
         try {
@@ -137,51 +147,54 @@ class ChatbotController extends Controller
     private function callAnthropic(string $key, string $model, string $sys, array $messages, $tenant, $settings, string $lastMessage = ''): array
     {
         $resp = Http::withHeaders([
-            'x-api-key'         => $key,
+            'x-api-key' => $key,
             'anthropic-version' => '2023-06-01',
         ])->post('https://api.anthropic.com/v1/messages', [
-            'model'      => $model,
+            'model' => $model,
             'max_tokens' => 600,
-            'system'     => $sys,
-            'messages'   => $messages,
-            'tools'      => [$this->anthropicTool()],
+            'system' => $sys,
+            'messages' => $messages,
+            'tools' => [$this->anthropicTool()],
         ]);
 
         if ($resp->failed()) {
             Log::error('Chatbot Anthropic error', ['status' => $resp->status(), 'body' => $resp->body()]);
+
             return ['Sorry, I am having trouble right now. Please contact us directly.', false];
         }
 
-        $data    = $resp->json();
+        $data = $resp->json();
         $content = $data['content'] ?? [];
 
         // Check for tool_use block
         $toolBlock = collect($content)->firstWhere('type', 'tool_use');
         if (($data['stop_reason'] ?? '') === 'tool_use' && $toolBlock) {
             $reply = $this->createAppointment($toolBlock['input'] ?? [], $tenant, $settings, $lastMessage);
+
             return [$reply, true];
         }
 
         $textBlock = collect($content)->firstWhere('type', 'text');
+
         return [$textBlock['text'] ?? 'Sorry, I could not respond.', false];
     }
 
     private function anthropicTool(): array
     {
         return [
-            'name'        => 'book_appointment',
+            'name' => 'book_appointment',
             'description' => 'Request a property appointment. Call this as soon as you have the visitor\'s name, email, preferred date, and appointment type.',
             'input_schema' => [
-                'type'       => 'object',
+                'type' => 'object',
                 'properties' => [
-                    'visitor_name'     => ['type' => 'string',  'description' => 'Full name of the visitor'],
-                    'visitor_email'    => ['type' => 'string',  'description' => 'Email address'],
-                    'visitor_phone'    => ['type' => 'string',  'description' => 'Phone number (optional)'],
+                    'visitor_name' => ['type' => 'string',  'description' => 'Full name of the visitor'],
+                    'visitor_email' => ['type' => 'string',  'description' => 'Email address'],
+                    'visitor_phone' => ['type' => 'string',  'description' => 'Phone number (optional)'],
                     'appointment_type' => ['type' => 'string',  'enum' => ['showing', 'consultation', 'virtual', 'other']],
                     'appointment_date' => ['type' => 'string',  'description' => 'Preferred date, YYYY-MM-DD'],
                     'appointment_time' => ['type' => 'string',  'description' => 'Preferred time in HH:MM 24-hour format, e.g. 14:00'],
-                    'property_id'      => ['type' => 'integer', 'description' => 'ID of the property from the listings list (e.g. 3 for [ID:3])'],
-                    'notes'            => ['type' => 'string',  'description' => 'Additional notes'],
+                    'property_id' => ['type' => 'integer', 'description' => 'ID of the property from the listings list (e.g. 3 for [ID:3])'],
+                    'notes' => ['type' => 'string',  'description' => 'Additional notes'],
                 ],
                 'required' => ['visitor_name', 'visitor_email', 'appointment_date', 'appointment_time', 'appointment_type'],
             ],
@@ -193,26 +206,28 @@ class ChatbotController extends Controller
     private function callOpenAI(string $key, string $model, string $sys, array $messages, $tenant, $settings, string $lastMessage = ''): array
     {
         $resp = Http::withToken($key)->post('https://api.openai.com/v1/chat/completions', [
-            'model'       => $model,
-            'max_tokens'  => 600,
-            'messages'    => array_merge([['role' => 'system', 'content' => $sys]], $messages),
-            'tools'       => [$this->openAITool()],
+            'model' => $model,
+            'max_tokens' => 600,
+            'messages' => array_merge([['role' => 'system', 'content' => $sys]], $messages),
+            'tools' => [$this->openAITool()],
             'tool_choice' => 'auto',
         ]);
 
         if ($resp->failed()) {
             Log::error('Chatbot OpenAI error', ['status' => $resp->status(), 'body' => $resp->body()]);
+
             return ['Sorry, I am having trouble right now. Please contact us directly.', false];
         }
 
-        $choice  = $resp->json('choices.0') ?? [];
+        $choice = $resp->json('choices.0') ?? [];
         $message = $choice['message'] ?? [];
 
-        if (($choice['finish_reason'] ?? '') === 'tool_calls' && !empty($message['tool_calls'])) {
+        if (($choice['finish_reason'] ?? '') === 'tool_calls' && ! empty($message['tool_calls'])) {
             $toolCall = collect($message['tool_calls'])->firstWhere('function.name', 'book_appointment');
             if ($toolCall) {
                 $input = json_decode($toolCall['function']['arguments'] ?? '{}', true) ?? [];
                 $reply = $this->createAppointment($input, $tenant, $settings, $lastMessage);
+
                 return [$reply, true];
             }
         }
@@ -223,21 +238,21 @@ class ChatbotController extends Controller
     private function openAITool(): array
     {
         return [
-            'type'     => 'function',
+            'type' => 'function',
             'function' => [
-                'name'        => 'book_appointment',
+                'name' => 'book_appointment',
                 'description' => 'Request a property appointment. Call this as soon as you have the visitor\'s name, email, preferred date, and appointment type.',
-                'parameters'  => [
-                    'type'       => 'object',
+                'parameters' => [
+                    'type' => 'object',
                     'properties' => [
-                        'visitor_name'     => ['type' => 'string'],
-                        'visitor_email'    => ['type' => 'string'],
-                        'visitor_phone'    => ['type' => 'string'],
+                        'visitor_name' => ['type' => 'string'],
+                        'visitor_email' => ['type' => 'string'],
+                        'visitor_phone' => ['type' => 'string'],
                         'appointment_type' => ['type' => 'string', 'enum' => ['showing', 'consultation', 'virtual', 'other']],
                         'appointment_date' => ['type' => 'string', 'description' => 'YYYY-MM-DD'],
                         'appointment_time' => ['type' => 'string', 'description' => 'Preferred time in HH:MM 24-hour format, e.g. 14:00'],
-                        'property_id'      => ['type' => 'integer', 'description' => 'ID of the property from the listings list (e.g. 3 for [ID:3])'],
-                        'notes'            => ['type' => 'string'],
+                        'property_id' => ['type' => 'integer', 'description' => 'ID of the property from the listings list (e.g. 3 for [ID:3])'],
+                        'notes' => ['type' => 'string'],
                     ],
                     'required' => ['visitor_name', 'visitor_email', 'appointment_date', 'appointment_time', 'appointment_type'],
                 ],
@@ -264,12 +279,14 @@ class ChatbotController extends Controller
 
         try {
             $date = Carbon::parse($input['appointment_date'] ?? 'tomorrow');
-            if ($date->isPast()) { $date = now()->addDay(); }
+            if ($date->isPast()) {
+                $date = now()->addDay();
+            }
 
             // Resolve property and assigned staff if property_id provided
-            $property  = null;
+            $property = null;
             $staffEmail = null;
-            if (!empty($input['property_id'])) {
+            if (! empty($input['property_id'])) {
                 $property = Property::with('staffMember')
                     ->where('tenant_id', $tenant->id)
                     ->find((int) $input['property_id']);
@@ -279,18 +296,18 @@ class ChatbotController extends Controller
             }
 
             $appt = Appointment::create([
-                'tenant_id'        => $tenant->id,
-                'property_id'      => $property?->id,
-                'staff_member_id'  => $property?->staff_member_id,
-                'visitor_name'     => $input['visitor_name']     ?? 'Unknown',
-                'visitor_email'    => $input['visitor_email']    ?? null,
-                'visitor_phone'    => $input['visitor_phone']    ?? null,
+                'tenant_id' => $tenant->id,
+                'property_id' => $property?->id,
+                'staff_member_id' => $property?->staff_member_id,
+                'visitor_name' => $input['visitor_name'] ?? 'Unknown',
+                'visitor_email' => $input['visitor_email'] ?? null,
+                'visitor_phone' => $input['visitor_phone'] ?? null,
                 'appointment_type' => $input['appointment_type'] ?? 'showing',
                 'appointment_date' => $date->format('Y-m-d'),
-                'appointment_time' => isset($input['appointment_time']) ? $input['appointment_time'] . ':00' : '10:00:00',
-                'status'           => 'pending',
-                'notes'            => $this->buildNotes($input, $lastMessage),
-                'source'           => 'chatbot',
+                'appointment_time' => isset($input['appointment_time']) ? $input['appointment_time'].':00' : '10:00:00',
+                'status' => 'pending',
+                'notes' => $this->buildNotes($input, $lastMessage),
+                'source' => 'chatbot',
             ]);
 
             // Notify owner
@@ -301,34 +318,36 @@ class ChatbotController extends Controller
                 $timeLabel = $input['appointment_time'] ?? '10:00';
 
                 $body = MailBody::make('New appointment request via chatbot')
-                    ->row('Name',  $appt->visitor_name)
+                    ->row('Name', $appt->visitor_name)
                     ->row('Email', $appt->visitor_email)
                     ->row('Phone', $appt->visitor_phone)
-                    ->row('Type',  $typeLabel)
-                    ->row('Date',  "{$date->format('l, F j, Y')} at {$timeLabel}");
+                    ->row('Type', $typeLabel)
+                    ->row('Date', "{$date->format('l, F j, Y')} at {$timeLabel}");
                 if ($property) {
                     $body->row('Property', "{$property->title} — {$property->address_street}, {$property->address_city}");
                 }
                 $body->row('Notes', $appt->notes)
                     ->blank()
-                    ->line('View in admin: ' . route('tenant.admin.appointments.index', $tenant->slug));
+                    ->line('View in admin: '.route('tenant.admin.appointments.index', $tenant->slug));
 
                 TenantMailer::send($tenant->id, $ownerEmail, "New {$typeLabel} Request — {$appt->visitor_name}", $body->toString());
             }
 
             // Pro: also notify the assigned staff member
             if ($staffEmail && $staffEmail !== $ownerEmail && $body !== null) {
-                $bodyStaff = "New appointment request for your listing: {$property->title}\n\n" . $body->toString();
+                $bodyStaff = "New appointment request for your listing: {$property->title}\n\n".$body->toString();
                 TenantMailer::send($tenant->id, $staffEmail, "New {$typeLabel} Request — {$appt->visitor_name}", $bodyStaff);
             }
 
-            $timeLabel = isset($input['appointment_time']) ? ' at ' . $input['appointment_time'] : '';
+            $timeLabel = isset($input['appointment_time']) ? ' at '.$input['appointment_time'] : '';
+
             return "Your {$appt->appointment_type} has been requested for {$date->format('l, F j')}{$timeLabel}. "
-                 . "{$tenant->name} will reach out to confirm — watch for an email at {$appt->visitor_email}. "
-                 . "Is there anything else I can help with?";
+                 ."{$tenant->name} will reach out to confirm — watch for an email at {$appt->visitor_email}. "
+                 .'Is there anything else I can help with?';
 
         } catch (\Exception $e) {
             Log::error('Chatbot appointment creation failed', ['error' => $e->getMessage(), 'input' => $input]);
+
             return "I wasn't able to submit the request right now. Please call or email us directly to schedule.";
         }
     }
@@ -336,15 +355,16 @@ class ChatbotController extends Controller
     private function buildNotes(array $input, string $lastMessage): string
     {
         $parts = [];
-        if (!empty($input['notes'])) {
+        if (! empty($input['notes'])) {
             $parts[] = $input['notes'];
         }
         if ($lastMessage) {
-            $parts[] = 'Visitor message: "' . $lastMessage . '"';
+            $parts[] = 'Visitor message: "'.$lastMessage.'"';
         }
         if (empty($parts)) {
             $parts[] = 'Requested via chatbot.';
         }
+
         return implode(' | ', $parts);
     }
 }
