@@ -3,13 +3,10 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use App\Models\Tenant;
-use App\Models\SiteSettings;
-use App\Models\LegalPage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rules\Password;
+use App\Services\TenantProvisioner;
 
 class RegisterController extends Controller
 {
@@ -47,36 +44,14 @@ class RegisterController extends Controller
             'terms'         => 'accepted',
         ]);
 
-        $tenant = Tenant::create([
-            'name'           => $request->business_name,
-            'slug'           => $request->slug,
-            'email'          => $request->email,
-            'plan'           => 'trial',
-            'trial_ends_at'  => now()->addDays(14),
-            'is_active'      => true,
-        ]);
-
-        // Written at signup rather than left to the landing page's fallback: the moment the
-        // settings editor saves anything, an unset column becomes whatever the editor held,
-        // and the fallback is gone. Starting from the real defaults means a new site has
-        // something to edit rather than something to discover is missing.
-        SiteSettings::create(SiteSettings::LANDING_DEFAULTS + [
-            'tenant_id'          => $tenant->id,
-            'site_title'         => $request->business_name,
-            'contact_email'      => $request->email,
-            'header_display_mode'=> 'favicon_text',
-        ]);
-
-        LegalPage::create(['tenant_id' => $tenant->id, 'page_type' => 'privacy',  'content' => 'Privacy Policy content here.']);
-        LegalPage::create(['tenant_id' => $tenant->id, 'page_type' => 'terms',    'content' => 'Terms of Service content here.']);
-
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'email'     => $request->email,
-            'password'  => $request->password,
-            'tenant_id' => $tenant->id,
-        ]);
+        [$tenant, $user] = TenantProvisioner::provision(
+            businessName: $request->business_name,
+            slug: $request->slug,
+            email: $request->email,
+            firstName: $request->first_name,
+            lastName: $request->last_name,
+            password: $request->password,
+        );
 
         $user->sendEmailVerificationNotification();
 

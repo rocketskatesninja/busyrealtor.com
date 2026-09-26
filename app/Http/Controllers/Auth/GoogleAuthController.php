@@ -3,15 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\LegalPage;
-use App\Models\SiteSettings;
-use App\Models\Tenant;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 use App\Models\SystemSetting;
 use Laravel\Socialite\Facades\Socialite;
+use App\Services\TenantProvisioner;
 
 class GoogleAuthController extends Controller
 {
@@ -117,35 +114,14 @@ class GoogleAuthController extends Controller
         $lastName  = session('oauth_last_name');
         $email = session('oauth_email') ?? $request->input('email');
 
-        $tenant = Tenant::create([
-            'name'          => $request->business_name,
-            'slug'          => $request->slug,
-            'email'         => $email,
-            'plan'          => 'trial',
-            'trial_ends_at' => now()->addDays(14),
-            'is_active'     => true,
-        ]);
-
-        // Written at signup rather than left to the landing page's fallback: the moment the
-        // settings editor saves anything, an unset column becomes whatever the editor held,
-        // and the fallback is gone. Starting from the real defaults means a new site has
-        // something to edit rather than something to discover is missing.
-        SiteSettings::create(SiteSettings::LANDING_DEFAULTS + [
-            'tenant_id'     => $tenant->id,
-            'site_title'    => $request->business_name,
-            'contact_email' => $email,
-        ]);
-
-        LegalPage::create(['tenant_id' => $tenant->id, 'page_type' => 'privacy', 'content' => 'Privacy Policy content here.']);
-        LegalPage::create(['tenant_id' => $tenant->id, 'page_type' => 'terms',   'content' => 'Terms of Service content here.']);
-
-        $user = User::create([
-            'first_name'        => $firstName,
-            'last_name'         => $lastName,
-            'email'             => $email,
-            'tenant_id'         => $tenant->id,
-            'email_verified_at' => now(),
-        ]);
+        [$tenant, $user] = TenantProvisioner::provision(
+            businessName: $request->business_name,
+            slug: $request->slug,
+            email: $email,
+            firstName: $firstName,
+            lastName: $lastName,
+            emailAlreadyVerified: true,
+        );
 
         session()->forget(['oauth_first_name', 'oauth_last_name', 'oauth_email']);
         Auth::login($user, true);
