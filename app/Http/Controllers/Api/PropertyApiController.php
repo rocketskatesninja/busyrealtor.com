@@ -30,7 +30,7 @@ class PropertyApiController extends Controller
             'bedrooms'   => $p->bedrooms,
             'bathrooms'  => $p->bathrooms,
             'sqft'       => $p->sqft,
-            'image'      => $p->primaryImage ? asset('storage/' . $p->primaryImage->image_path) : null,
+            'image'      => $p->primaryImage ? asset('storage/' . $p->primaryImage->thumb_path) : null,
             'url'        => url(request()->segment(1) . '/property/' . $p->id),
         ]);
 

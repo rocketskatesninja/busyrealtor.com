@@ -3,8 +3,8 @@
 namespace App\Models;
 
 use App\Models\Traits\BelongsToTenant;
+use App\Support\ImageStore;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PropertyImage extends Model
@@ -29,7 +29,7 @@ class PropertyImage extends Model
     {
         parent::boot();
         static::deleting(function (self $image): void {
-            if ($image->image_url) Storage::disk('public')->delete($image->image_url);
+            if ($image->image_url) ImageStore::delete($image->image_url);
         });
     }
 
@@ -41,5 +41,14 @@ class PropertyImage extends Model
     public function getImagePathAttribute(): ?string
     {
         return $this->image_url;
+    }
+
+    /**
+     * The card-sized copy for grids, strips and cards, falling back to the full image when
+     * no derivative was generated — rows predate it and a backfill can be partial.
+     */
+    public function getThumbPathAttribute(): ?string
+    {
+        return ImageStore::thumbnailOrOriginal($this->image_url);
     }
 }

@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Integration;
 use App\Models\LegalPage;
 use App\Models\SiteSettings;
+use App\Support\ImageStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
-use Intervention\Image\Laravel\Facades\Image;
 
 class SettingsController extends Controller
 {
@@ -174,30 +174,19 @@ class SettingsController extends Controller
             if ($settings->owner_photo) {
                 Storage::disk('public')->delete($settings->owner_photo);
             }
-            $dir = "tenants/{$tenant->id}";
-            Storage::disk('public')->makeDirectory($dir);
-            Storage::disk('public')->put($dir.'/owner.jpg', Image::read($request->file('owner_photo'))->scale(width: 400)->toJpeg(85));
-            $data['owner_photo'] = $dir.'/owner.jpg';
+            $data['owner_photo'] = ImageStore::putScaled($request->file('owner_photo'), "tenants/{$tenant->id}", 400, 85, 'owner.jpg');
         }
         if ($request->hasFile('hero_image')) {
             if ($settings->hero_image) {
                 Storage::disk('public')->delete($settings->hero_image);
             }
-            $dir = "tenants/{$tenant->id}";
-            $filename = 'hero-bg-'.time().'.jpg';
-            Storage::disk('public')->makeDirectory($dir);
-            Storage::disk('public')->put($dir.'/'.$filename, Image::read($request->file('hero_image'))->scale(width: 1920)->toJpeg(85));
-            $data['hero_image'] = $dir.'/'.$filename;
+            $data['hero_image'] = ImageStore::putScaled($request->file('hero_image'), "tenants/{$tenant->id}", 1920, 85, 'hero-bg-'.time().'.jpg');
         }
         if ($request->hasFile('map_office_image')) {
             if ($settings->map_office_image) {
                 Storage::disk('public')->delete($settings->map_office_image);
             }
-            $dir = "tenants/{$tenant->id}";
-            $filename = 'office-'.time().'.jpg';
-            Storage::disk('public')->makeDirectory($dir);
-            Storage::disk('public')->put($dir.'/'.$filename, Image::read($request->file('map_office_image'))->scale(width: 800)->toJpeg(85));
-            $data['map_office_image'] = $dir.'/'.$filename;
+            $data['map_office_image'] = ImageStore::putScaled($request->file('map_office_image'), "tenants/{$tenant->id}", 800, 85, 'office-'.time().'.jpg');
         }
 
         $settings->update($data);

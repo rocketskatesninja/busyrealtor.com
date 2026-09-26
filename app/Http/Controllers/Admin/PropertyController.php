@@ -7,10 +7,9 @@ use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\SiteSettings;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
 use App\Jobs\PostPropertyToSocial;
 use App\Models\StaffMember;
+use App\Support\ImageStore;
 
 class PropertyController extends Controller
 {
@@ -168,16 +167,10 @@ class PropertyController extends Controller
         if (!$request->hasFile('images')) return;
 
         $tenant  = app('tenant');
-        $dir     = "tenants/{$tenant->id}/properties";
-        Storage::disk('public')->makeDirectory($dir);
+        $dir = "tenants/{$tenant->id}/properties";
 
         foreach ($request->file('images') as $i => $file) {
-            // Content is re-encoded as JPEG below; hardcoding the extension
-            // avoids trusting the client-supplied filename.
-            $filename = uniqid() . '.jpg';
-            $path     = $dir . '/' . $filename;
-            $img      = Image::read($file)->scale(width: 1200);
-            Storage::disk('public')->put($path, $img->toJpeg(85));
+            $path = ImageStore::putScaledWithThumbnail($file, $dir, 1200);
 
             $existingCount = $property->images()->count();
             $isPrimary     = ($i === 0 && $existingCount === 0);

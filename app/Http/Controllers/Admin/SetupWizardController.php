@@ -7,9 +7,9 @@ use App\Models\Integration;
 use App\Models\Property;
 use App\Models\PropertyImage;
 use App\Models\SiteSettings;
+use App\Support\ImageStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
 
 class SetupWizardController extends Controller
 {
@@ -143,11 +143,7 @@ class SetupWizardController extends Controller
                     if ($settings->hero_image) {
                         Storage::disk('public')->delete($settings->hero_image);
                     }
-                    $dir = "tenants/{$tenant->id}";
-                    $filename = 'hero-bg-'.time().'.jpg';
-                    Storage::disk('public')->makeDirectory($dir);
-                    Storage::disk('public')->put($dir.'/'.$filename, Image::read($request->file('hero_image'))->scale(width: 1920)->toJpeg(85));
-                    $data['hero_image'] = $dir.'/'.$filename;
+                    $data['hero_image'] = ImageStore::putScaled($request->file('hero_image'), "tenants/{$tenant->id}", 1920, 85, 'hero-bg-'.time().'.jpg');
                 }
 
                 $settings->update($data);
@@ -258,11 +254,8 @@ class SetupWizardController extends Controller
                 ]);
                 if ($request->hasFile('images')) {
                     $dir = "tenants/{$tenant->id}/properties";
-                    Storage::disk('public')->makeDirectory($dir);
                     foreach ($request->file('images') as $file) {
-                        $filename = uniqid().'.jpg';
-                        $path = $dir.'/'.$filename;
-                        Storage::disk('public')->put($path, Image::read($file)->scale(width: 1200)->toJpeg(85));
+                        $path = ImageStore::putScaledWithThumbnail($file, $dir, 1200);
                         PropertyImage::create([
                             'property_id' => $property->id,
                             'tenant_id' => $tenant->id,

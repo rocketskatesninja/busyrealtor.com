@@ -4,9 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\StaffMember;
+use App\Support\ImageStore;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
 
 class StaffController extends Controller
 {
@@ -87,10 +87,6 @@ class StaffController extends Controller
 
     private function uploadPhoto($file, int $tenantId): string
     {
-        $dir  = "tenants/{$tenantId}/staff";
-        Storage::disk('public')->makeDirectory($dir);
-        $path = $dir . '/' . uniqid() . '.jpg';
-        Storage::disk('public')->put($path, Image::read($file)->scale(width: 400)->toJpeg(85));
-        return $path;
+        return ImageStore::putScaled($file, "tenants/{$tenantId}/staff", 400);
     }
 }

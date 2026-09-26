@@ -333,7 +333,7 @@ $iconPaths = [
                      @endif>
                     @if($property->images->isNotEmpty())
                         @foreach($property->images as $idx => $img)
-                        <img src="{{ asset('storage/' . $img->image_path) }}"
+                        <img src="{{ asset('storage/' . $img->thumb_path) }}"
                              alt="{{ $property->title }}"
                              @if($property->images->count() > 1)
                              class="absolute inset-0 w-full h-full object-cover" style="transition: opacity 1.5s ease-in-out"
@@ -431,7 +431,7 @@ $iconPaths = [
             <div class="group bg-white rounded-2xl p-6 text-center shadow border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gray-100">
                     @if($member->photo_url)
-                        <img src="{{ asset('storage/' . $member->photo_url) }}" alt="{{ $member->name }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <img src="{{ asset('storage/' . $member->photo_url) }}" alt="{{ $member->name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     @else
                         <div class="w-full h-full flex items-center justify-center" style="background-color: rgba(var(--primary-rgb), 0.1)">
                             <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -473,6 +473,7 @@ $iconPaths = [
                     @if($settings->owner_photo)
                     <img src="{{ asset('storage/' . $settings->owner_photo) }}"
                          alt="{{ $settings->owner_name }}"
+                         loading="lazy"
                          class="w-44 h-44 rounded-full object-cover shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105">
                     @else
                     <div class="w-44 h-44 rounded-full flex items-center justify-center shadow-xl ring-4 ring-white bg-gray-100">
@@ -757,6 +758,7 @@ $iconPaths = [
             <div class="rounded-2xl overflow-hidden shadow border border-gray-200 reveal hover:shadow-xl transition-shadow duration-300" style="height: 420px; transition-delay: 0.15s">
                 <img src="{{ asset('storage/' . $officePhoto) }}"
                      alt="Our office"
+                     loading="lazy"
                      class="w-full h-full object-cover hover:scale-105 transition-transform duration-700">
             </div>
             @endif

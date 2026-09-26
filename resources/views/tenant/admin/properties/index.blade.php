@@ -110,7 +110,7 @@
                 <div class="flex items-start gap-3">
                     <div class="w-20 h-14 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
                         @if($property->primaryImage)
-                            <img src="{{ asset('storage/'.$property->primaryImage->image_path) }}" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/'.$property->primaryImage->thumb_path) }}" loading="lazy" class="w-full h-full object-cover">
                         @endif
                     </div>
                     <div class="flex-1 min-w-0">
@@ -185,7 +185,7 @@
                             <div class="flex items-center gap-3">
                                 <div class="w-14 h-10 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
                                     @if($property->primaryImage)
-                                        <img src="{{ asset('storage/'.$property->primaryImage->image_path) }}" class="w-full h-full object-cover">
+                                        <img src="{{ asset('storage/'.$property->primaryImage->thumb_path) }}" loading="lazy" class="w-full h-full object-cover">
                                     @endif
                                 </div>
                                 <div>

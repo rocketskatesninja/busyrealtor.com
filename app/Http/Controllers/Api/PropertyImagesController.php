@@ -5,9 +5,8 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Property;
 use App\Models\PropertyImage;
+use App\Support\ImageStore;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Laravel\Facades\Image;
 
 class PropertyImagesController extends Controller
 {
@@ -45,12 +44,7 @@ class PropertyImagesController extends Controller
         $request->validate(['image' => 'required|image|max:10240', 'property_id' => 'required|integer']);
         $tenant   = app('tenant');
         $property = $this->ownedProperty((int) $request->property_id);
-        $dir      = "tenants/{$tenant->id}/properties";
-        Storage::disk('public')->makeDirectory($dir);
-        $filename  = uniqid() . '.jpg';
-        $path      = $dir . '/' . $filename;
-        $img       = Image::read($request->file('image'))->scale(width: 1200);
-        Storage::disk('public')->put($path, $img->toJpeg(85));
+        $path = ImageStore::putScaledWithThumbnail($request->file('image'), "tenants/{$tenant->id}/properties", 1200);
         $existingCount = $property->images()->count();
         $isPrimary     = $existingCount === 0;
         $image = PropertyImage::create([
@@ -81,7 +75,7 @@ class PropertyImagesController extends Controller
     public function destroy($account, $id)
     {
         $image = $this->ownedImage((int) $id);
-        Storage::disk('public')->delete($image->image_url);
+        ImageStore::delete($image->image_url);
         $image->delete();
         return response()->json(['success' => true]);
     }

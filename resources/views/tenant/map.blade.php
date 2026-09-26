@@ -88,7 +88,7 @@ function initMap() {
         'price'      => (int)$p->price,
         'price_disp' => '$' . number_format($p->price),
         'address'    => $p->address . ($p->address_line_2 ? ' ' . $p->address_line_2 : ''),
-        'image'      => $p->primaryImage ? asset('storage/'.$p->primaryImage->image_path) : null,
+        'image'      => $p->primaryImage ? asset('storage/'.$p->primaryImage->thumb_path) : null,
         'url'        => route('tenant.property', [$account, $p->id]),
         'type'       => $p->property_type,
         'status'     => $p->listing_status,
@@ -116,7 +116,7 @@ function initMap() {
             var details = [p.beds ? p.beds+'bd' : '', p.baths ? p.baths+'ba' : '', p.sqft ? p.sqft.toLocaleString()+' sqft' : ''].filter(Boolean).join(' · ');
             infoWindow.setContent(
                 '<div style="width:240px;font-family:system-ui,-apple-system,sans-serif;border-radius:8px;overflow:hidden">' +
-                (p.image ? '<img src="'+p.image+'" style="width:100%;height:130px;object-fit:cover;display:block" onerror="this.style.display=\'none\'">' : '') +
+                (p.image ? '<img src="'+p.image+'" loading="lazy" style="width:100%;height:130px;object-fit:cover;display:block" onerror="this.style.display=\'none\'">' : '') +
                 '<div style="padding:12px">' +
                 '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">' +
                 '<span style="font-weight:700;font-size:1rem;color:'+primary+'">'+p.price_disp+'</span>' +

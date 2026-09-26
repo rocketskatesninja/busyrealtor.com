@@ -217,7 +217,7 @@ function initPropertyMap() {
                 }" @mousemove="calcScales($event)" @mouseleave="resetScales()" class="flex justify-center gap-2 pb-2 pt-2 items-end absolute bottom-4 left-0 right-0 z-10">
                     @foreach($images as $i => $img)
                     <button data-thumb @click.stop="current = {{ $i }}" class="flex-shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-transform duration-150 ease-out" :class="current === {{ $i }} ? '' : 'border-transparent'" :style="`transform: scale(${scales[{{ $i }}]}); transform-origin: bottom; ${current === {{ $i }} ? 'border-color: var(--primary)' : ''}`">
-                        <img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover pointer-events-none">
+                        <img src="{{ asset('storage/'.$img->thumb_path) }}" class="w-full h-full object-cover pointer-events-none">
                     </button>
                     @endforeach
                 </div>
@@ -823,7 +823,7 @@ $" . number_format($property->price) : '') . "
             <a href="{{ route('tenant.property', [$account, $rel->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-lg transition-shadow group">
                 <div class="h-40 bg-gray-100 overflow-hidden">
                     @if($rel->primaryImage)
-                        <img src="{{ asset('storage/'.$rel->primaryImage->image_path) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ asset('storage/'.$rel->primaryImage->thumb_path) }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     @else
                         <div class="w-full h-full flex items-center justify-center bg-gray-100"><svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
                     @endif
