@@ -13,6 +13,22 @@ use Illuminate\Support\Facades\Mail;
 class TenantMailer
 {
     /**
+     * The mail config keys a send may override. They are snapshotted on the way in
+     * and restored on the way out, so one tenant's SMTP credentials and from-address
+     * can never carry into the next send in the same process.
+     */
+    private const OVERRIDDEN = [
+        'mail.mailers.smtp.scheme',
+        'mail.mailers.smtp.host',
+        'mail.mailers.smtp.port',
+        'mail.mailers.smtp.username',
+        'mail.mailers.smtp.password',
+        'mail.mailers.smtp.timeout',
+        'mail.from.address',
+        'mail.from.name',
+    ];
+
+    /**
      * Configure the mailer with tenant's SMTP settings and send an HTML email.
      * Returns true on success, false on failure.
      *
@@ -28,37 +44,41 @@ class TenantMailer
         ?string $replyTo = null,
         ?array $agent = null
     ): bool {
-        if ($template === 'platform') {
-            // Platform emails (billing, trial warnings) use system-level SMTP
-            $sys = SystemSetting::current();
-            if ($sys && !empty($sys->smtp_host)) {
-                $port   = (int) ($sys->smtp_port ?? 587);
-                $enc    = $sys->smtp_encryption ?? ($port === 465 ? 'ssl' : 'tls');
-                $scheme = $enc === 'ssl' ? 'smtps' : 'smtp';
-
-                Config::set([
-                    'mail.mailers.smtp.scheme'   => $scheme,
-                    'mail.mailers.smtp.host'     => $sys->smtp_host,
-                    'mail.mailers.smtp.port'     => $port,
-                    'mail.mailers.smtp.username' => $sys->smtp_username ?? null,
-                    'mail.mailers.smtp.password' => $sys->smtp_password ?? null,
-                    'mail.mailers.smtp.timeout'  => 10,
-                    'mail.from.address'          => $sys->smtp_from_email ?? config('mail.from.address'),
-                    'mail.from.name'             => $sys->smtp_from_name ?? config('mail.from.name', 'BusyRealtor'),
-                ]);
-                Mail::forgetMailers();
-            }
+        $restore = [];
+        foreach (self::OVERRIDDEN as $key) {
+            $restore[$key] = config($key);
         }
 
+        try {
+            return self::deliver($tenantId, $to, $subject, $body, $template, $toName, $replyTo, $agent);
+        } finally {
+            Config::set($restore);
+            Mail::forgetMailers();
+        }
+    }
+
+    private static function deliver(
+        int $tenantId,
+        string $to,
+        string $subject,
+        string $body,
+        string $template,
+        ?string $toName,
+        ?string $replyTo,
+        ?array $agent
+    ): bool {
         // Track whether this send is going through the platform-SMTP
         // piggyback path so we can increment trial caps on success.
         $usingPiggyback = false;
 
-        if ($template !== 'platform') {
+        if ($template === 'platform') {
+            // Platform emails (billing, trial warnings) use system-level SMTP
+            self::apply(self::platformMailConfig());
+        } else {
             // Tenant emails: prefer the tenant's own SMTP integration.
             // If no integration is configured, fall back to the platform
-            // SMTP (still loaded by AppServiceProvider) — but ONLY while
-            // the tenant is on trial AND under the daily/trial caps.
+            // SMTP — but ONLY while the tenant is on trial AND under the
+            // daily/trial caps.
             $smtp = Integration::where('tenant_id', $tenantId)
                         ->where('integration_type', 'smtp')
                         ->where('is_active', true)
@@ -66,22 +86,7 @@ class TenantMailer
 
             if ($smtp && !empty($smtp->config['smtp_host'])) {
                 // Tenant configured their own SMTP — use it, no caps.
-                $cfg  = $smtp->config;
-                $port = (int) ($cfg['smtp_port'] ?? 587);
-                $enc  = $cfg['smtp_encryption'] ?? ($port === 465 ? 'ssl' : 'tls');
-                $scheme = $enc === 'ssl' ? 'smtps' : 'smtp';
-
-                Config::set([
-                    'mail.mailers.smtp.scheme'   => $scheme,
-                    'mail.mailers.smtp.host'     => $cfg['smtp_host'],
-                    'mail.mailers.smtp.port'     => $port,
-                    'mail.mailers.smtp.username' => $cfg['smtp_username'] ?? null,
-                    'mail.mailers.smtp.password' => $cfg['smtp_password'] ?? null,
-                    'mail.mailers.smtp.timeout'  => 10,
-                    'mail.from.address'          => $cfg['smtp_from_email'] ?? config('mail.from.address'),
-                    'mail.from.name'             => $cfg['smtp_from_name'] ?? config('mail.from.name'),
-                ]);
-                Mail::forgetMailers();
+                self::apply(self::tenantMailConfig($smtp->config));
             } else {
                 // No own SMTP — gate the piggyback path.
                 $tenantForGate = Tenant::find($tenantId);
@@ -100,6 +105,10 @@ class TenantMailer
                     return false;
                 }
                 $usingPiggyback = true;
+
+                // Set the platform SMTP explicitly rather than inheriting whatever
+                // the last send left behind.
+                self::apply(self::platformMailConfig());
             }
         }
 
@@ -134,5 +143,75 @@ class TenantMailer
             ]);
             return false;
         }
+    }
+
+    /**
+     * The platform's own SMTP, or null when the super admin has not configured one —
+     * in which case the mailer built from .env stands.
+     */
+    private static function platformMailConfig(): ?array
+    {
+        $sys = SystemSetting::current();
+
+        if (! $sys || empty($sys->smtp_host)) {
+            return null;
+        }
+
+        return self::smtpMailConfig(
+            host: $sys->smtp_host,
+            port: (int) ($sys->smtp_port ?? 587),
+            encryption: $sys->smtp_encryption,
+            username: $sys->smtp_username,
+            password: $sys->smtp_password,
+            fromAddress: $sys->mail_from_address,
+            fromName: $sys->mail_from_name ?: 'BusyRealtor',
+        );
+    }
+
+    /** The tenant's own SMTP, from its integration config blob. */
+    private static function tenantMailConfig(array $config): array
+    {
+        return self::smtpMailConfig(
+            host: $config['smtp_host'],
+            port: (int) ($config['smtp_port'] ?? 587),
+            encryption: $config['smtp_encryption'] ?? null,
+            username: $config['smtp_username'] ?? null,
+            password: $config['smtp_password'] ?? null,
+            fromAddress: $config['smtp_from_email'] ?? null,
+            fromName: $config['smtp_from_name'] ?? null,
+        );
+    }
+
+    private static function smtpMailConfig(
+        string $host,
+        int $port,
+        ?string $encryption,
+        ?string $username,
+        ?string $password,
+        ?string $fromAddress,
+        ?string $fromName
+    ): array {
+        $enc = $encryption ?: ($port === 465 ? 'ssl' : 'tls');
+
+        return [
+            'mail.mailers.smtp.scheme'   => $enc === 'ssl' ? 'smtps' : 'smtp',
+            'mail.mailers.smtp.host'     => $host,
+            'mail.mailers.smtp.port'     => $port,
+            'mail.mailers.smtp.username' => $username,
+            'mail.mailers.smtp.password' => $password,
+            'mail.mailers.smtp.timeout'  => 10,
+            'mail.from.address'          => $fromAddress ?: config('mail.from.address'),
+            'mail.from.name'             => $fromName ?: config('mail.from.name'),
+        ];
+    }
+
+    private static function apply(?array $mailConfig): void
+    {
+        if ($mailConfig === null) {
+            return;
+        }
+
+        Config::set($mailConfig);
+        Mail::forgetMailers();
     }
 }
