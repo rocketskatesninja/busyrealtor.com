@@ -40,7 +40,19 @@ class SettingsController extends Controller
         $tab = $request->input('tab', 'general');
 
         // ── Auth user (profile tab) ───────────────────────────────────────
-        $request->validate(['first_name' => 'required|string|max:255', 'last_name' => 'required|string|max:255', 'email' => 'required|email|unique:users,email,'.Auth::id()]);
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email,'.Auth::id(),
+
+            // These three had no rules at all, so anything that was not a decodable image
+            // reached Intervention and threw — an unhandled 500 on a settings save. Every
+            // other upload path in the app validates; this was the gap. Limits match the
+            // widths each one is scaled to.
+            'owner_photo'      => 'nullable|image|mimes:jpeg,jpg,png,webp|max:8192',
+            'hero_image'       => 'nullable|image|mimes:jpeg,jpg,png,webp|max:10240',
+            'map_office_image' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:8192',
+        ]);
         $emailChanged = $request->email !== Auth::user()->email;
         Auth::user()->update([
             'first_name' => $request->first_name,

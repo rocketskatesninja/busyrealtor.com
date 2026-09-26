@@ -304,7 +304,10 @@ class ChatbotController extends Controller
                 'visitor_phone' => $input['visitor_phone'] ?? null,
                 'appointment_type' => $input['appointment_type'] ?? 'showing',
                 'appointment_date' => $date->format('Y-m-d'),
-                'appointment_time' => isset($input['appointment_time']) ? $input['appointment_time'].':00' : '10:00:00',
+                // Comes from the language model, so it is not trusted to be HH:MM. "2pm"
+                // became "2pm:00", the insert threw, and the visitor was told only that
+                // the request could not be submitted.
+                'appointment_time' => self::normaliseTime($input['appointment_time'] ?? null) ?? '10:00:00',
                 'status' => 'pending',
                 'notes' => $this->buildNotes($input, $lastMessage),
                 'source' => 'chatbot',
@@ -366,5 +369,20 @@ class ChatbotController extends Controller
         }
 
         return implode(' | ', $parts);
+    }
+
+    /**
+     * A model-supplied time as a TIME column will accept it, or null.
+     *
+     * Accepts "14:00" and "14:00:00"; rejects everything else rather than letting it reach
+     * the database, where strict mode turns it into a swallowed QueryException.
+     */
+    private static function normaliseTime(?string $value): ?string
+    {
+        if (! is_string($value) || ! preg_match('/^([01]\\d|2[0-3]):([0-5]\\d)(:[0-5]\\d)?$/', trim($value), $m)) {
+            return null;
+        }
+
+        return $m[1].':'.$m[2].':00';
     }
 }

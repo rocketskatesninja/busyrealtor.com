@@ -510,6 +510,12 @@ class AdminChatController extends Controller
             return ['error' => 'Invalid appointment_type. Must be: '.implode(', ', $validTypes)];
         }
 
+        // The date was checked but the time went to the column raw, where an unexpected
+        // format is a swallowed QueryException rather than something the model can correct.
+        if (! preg_match('/^([01]\\d|2[0-3]):[0-5]\\d(:[0-5]\\d)?$/', trim((string) $input['appointment_time']))) {
+            return ['error' => 'Invalid appointment_time. Use HH:MM in 24-hour format, e.g. 14:00.'];
+        }
+
         try {
             $date = Carbon::parse($input['appointment_date'])->toDateString();
         } catch (\Exception $e) {
@@ -537,7 +543,12 @@ class AdminChatController extends Controller
             'appointment_time' => $input['appointment_time'],
             'status' => 'pending',
             'notes' => $input['notes'] ?? null,
-            'source' => 'admin_chat',
+            // 'admin_chat' is not in the source enum ('website','chatbot','phone','other',
+            // 'admin'), so every booking the assistant tried to create failed on a strict-mode
+            // truncation — the whole tool was dead, not just for odd times. 'admin' is the
+            // value that exists and the appointments list already renders it as "manual";
+            // nothing ever displayed the assistant-vs-manual distinction this was reaching for.
+            'source' => 'admin',
         ]);
 
         return [

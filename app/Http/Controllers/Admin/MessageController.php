@@ -42,7 +42,14 @@ class MessageController extends Controller
     public function action($account, Request $request)
     {
         $tenant = app('tenant');
-        $msg    = Message::where('tenant_id', $tenant->id)->findOrFail($request->id);
+
+        // The match below allow-lists the action; the 'status' arm did not check its value.
+        $request->validate([
+            'action' => 'required|in:star,read,unread,status,delete',
+            'status' => 'required_if:action,status|in:new,read,replied,archived,spam',
+        ]);
+
+        $msg = Message::where('tenant_id', $tenant->id)->findOrFail($request->id);
         match ($request->action) {
             'star'   => $msg->update(['is_starred' => !$msg->is_starred]),
             'read'   => $msg->update(['is_read' => true]),
@@ -66,7 +73,14 @@ class MessageController extends Controller
     public function bulk($account, Request $request)
     {
         $tenant = app('tenant');
-        $ids    = array_map('intval', $request->ids ?? []);
+
+        $request->validate([
+            'action' => 'required|in:read,delete',
+            'ids'    => 'required|array',
+            'ids.*'  => 'integer',
+        ]);
+
+        $ids = array_map('intval', $request->ids ?? []);
         if (empty($ids)) return redirect()->back();
 
         match ($request->action) {

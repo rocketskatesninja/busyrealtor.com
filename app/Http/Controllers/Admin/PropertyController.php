@@ -117,7 +117,10 @@ class PropertyController extends Controller
         $request->validate([
             'title'          => 'required|string|max:300',
             'listing_status' => 'required|in:active,pending,sold,off-market,withdrawn',
-            'property_type'  => 'required|string',
+            // Enum in the database. As `required|string` any other value reached MySQL in
+            // strict mode and came back as a 500 instead of a validation error — the
+            // listing_status rule below always had this right.
+            'property_type'  => 'required|in:house,condo,townhouse,land,commercial,multi_family,other',
             'price'          => 'nullable|numeric',
             'images'         => 'nullable|array|max:20',
             'images.*'       => 'image|mimes:jpeg,jpg,png,gif,webp|max:10240',

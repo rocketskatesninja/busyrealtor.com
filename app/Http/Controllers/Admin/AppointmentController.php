@@ -185,7 +185,12 @@ class AppointmentController extends Controller
     public function action($account, Request $request, $id)
     {
         $tenant = app('tenant');
-        $appt   = Appointment::where('tenant_id', $tenant->id)->findOrFail($id);
+
+        // Straight into an enum column before this: an unrecognised status broke the index
+        // filters, the dashboard chart and the assistant's tool enums all at once.
+        $request->validate(['status' => 'required|in:pending,confirmed,completed,cancelled,delete']);
+
+        $appt = Appointment::where('tenant_id', $tenant->id)->findOrFail($id);
 
         if ($request->status === 'delete') {
             logActivity('deleted', "Deleted appointment with {$appt->visitor_name}", $appt);
@@ -239,7 +244,14 @@ class AppointmentController extends Controller
     public function bulk($account, Request $request)
     {
         $tenant = app('tenant');
-        $ids    = array_map('intval', $request->ids ?? []);
+
+        $request->validate([
+            'action' => 'required|in:pending,confirmed,completed,cancelled,delete',
+            'ids'    => 'required|array',
+            'ids.*'  => 'integer',
+        ]);
+
+        $ids = array_map('intval', $request->ids ?? []);
         if (empty($ids)) return redirect()->back();
 
         if ($request->action === 'delete') {
