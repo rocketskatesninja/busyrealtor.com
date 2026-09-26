@@ -90,7 +90,7 @@
                 <div class="p-3 border-t border-gray-100 dark:border-gray-700">{{ $messages->links() }}</div>
                 @else
                 <div class="text-center py-12 text-gray-400">
-                    <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <x-icon name="envelope" class="w-12 h-12 mx-auto mb-3 opacity-50" />
                     <p class="text-sm font-medium">No messages found</p>
                     @if(request()->hasAny(['search','type','status']))
                         <a href="{{ route('tenant.admin.messages.index', $account) }}" class="text-sm text-blue-600 hover:underline mt-1 inline-block">Clear filters</a>
@@ -131,7 +131,7 @@
                             @endforeach
                         </select>
                         <button onclick="if(confirm('Delete this message?')) msgAction('delete', {{ $message->id }})" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50" title="Delete">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <x-icon name="trash" class="w-5 h-5" />
                         </button>
                     </div>
                 </div>
@@ -167,7 +167,7 @@
             @else
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 flex items-center justify-center" style="min-height: 400px">
                 <div class="text-center text-gray-400 dark:text-gray-500">
-                    <svg class="w-16 h-16 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <x-icon name="envelope" class="w-16 h-16 mx-auto mb-4 opacity-30" />
                     <p class="font-medium">Select a message to view</p>
                     <p class="text-sm mt-1">Choose from the list on the left</p>
                 </div>

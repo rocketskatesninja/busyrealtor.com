@@ -76,7 +76,7 @@
                 @if($tenant->stripe_id)
                     <a href="{{ route('tenant.admin.billing.portal', $account) }}"
                        class="btn-primary px-4 py-2 rounded-xl font-semibold text-sm hover:opacity-90 transition-opacity duration-150 inline-flex items-center gap-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        <x-icon name="external-link" class="w-4 h-4" />
                         Billing Portal
                     </a>
                 @endif
@@ -103,7 +103,7 @@
                 <ul class="mt-5 space-y-2.5">
                     @foreach($details['features'] as $f)
                     <li class="flex items-start gap-2.5 text-sm text-gray-600">
-                        <svg class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <x-icon name="check-bold" class="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
                         {{ $f }}
                     </li>
                     @endforeach
@@ -235,9 +235,9 @@
                 <div class="bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-900/50 rounded-xl px-4 py-3 mb-5 text-sm text-amber-800 dark:text-amber-200">
                     <p class="font-semibold mb-1.5">What happens when you cancel</p>
                     <ul class="space-y-1.5">
-                        <li class="flex items-start gap-2"><svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>Your account stays fully active until your billing period ends</li>
-                        <li class="flex items-start gap-2"><svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>You can undo this anytime before the period ends</li>
-                        <li class="flex items-start gap-2"><svg class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>You can reactivate at any time by subscribing again</li>
+                        <li class="flex items-start gap-2"><x-icon name="check" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />Your account stays fully active until your billing period ends</li>
+                        <li class="flex items-start gap-2"><x-icon name="check" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />You can undo this anytime before the period ends</li>
+                        <li class="flex items-start gap-2"><x-icon name="check" class="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />You can reactivate at any time by subscribing again</li>
                     </ul>
                 </div>
                 <div class="flex gap-3">

@@ -23,7 +23,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
                     <div class="relative">
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="Address, city, zip..."
                                class="w-full border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                        <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                        <x-icon name="magnifying-glass" class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                     </div>
                 </div>
                 @include('tenant.partials.filter-fields')
@@ -64,7 +64,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
                         <img src="{{ asset('storage/'.$property->primaryImage->thumb_path) }}" alt="{{ $property->title }}" loading="{{ $loop->index < 4 ? 'eager' : 'lazy' }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     @else
                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            <x-icon name="home" class="w-12 h-12 text-gray-400" />
                         </div>
                     @endif
                     <span class="absolute top-3 left-3 text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
@@ -98,7 +98,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
         <div class="mt-8">{{ $properties->links() }}</div>
         @else
         <div class="text-center py-24 bg-white rounded-2xl shadow border border-gray-200">
-            <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <x-icon name="magnifying-glass" class="w-16 h-16 mx-auto text-gray-300 mb-4" />
             <h3 class="text-xl font-semibold text-gray-700 mb-2">No Properties Found</h3>
             <p class="text-gray-400 mb-6">Try adjusting your filters.</p>
             <a href="{{ route('tenant.gallery', $account) }}" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Clear All Filters</a>
@@ -148,7 +148,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
             <div class="flex-shrink-0 px-4 py-3 flex items-center justify-between border-b">
                 <h2 class="text-lg font-bold text-gray-900">Filter Properties</h2>
                 <button @click="mobileOpen = false" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-icon name="x-mark" class="w-5 h-5" />
                 </button>
             </div>
             {{-- Scrollable content --}}
@@ -159,7 +159,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
                         <div class="relative">
                             <input type="text" name="search" value="{{ request('search') }}" placeholder="Address, city, zip..."
                                    class="w-full border border-gray-200 rounded-lg pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
-                            <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                            <x-icon name="magnifying-glass" class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
                         </div>
                     </div>
                     @include('tenant.partials.filter-fields', ['filterSuffix' => '_mob'])

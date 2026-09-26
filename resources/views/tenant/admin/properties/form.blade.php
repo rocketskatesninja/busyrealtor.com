@@ -28,7 +28,7 @@
             <div class="flex items-center gap-3 flex-shrink-0">
                 <a href="{{ route('tenant.admin.properties.index', $account) }}" class="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Cancel</a>
                 <button type="submit" class="btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <x-icon name="check" class="w-4 h-4" />
                     {{ $isEdit ? 'Save Changes' : 'Create Property' }}
                 </button>
             </div>
@@ -235,13 +235,13 @@
                     <img src="{{ asset('storage/'.$img->thumb_path) }}" loading="lazy" class="w-full h-full object-cover pointer-events-none">
                     <span class="main-badge absolute top-1.5 left-1.5 items-center gap-1 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-md font-semibold shadow"
                           style="display:{{ $loop->first ? 'inline-flex' : 'none' }}">
-                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                        <x-icon name="star-solid" class="w-3 h-3" />
                         Main
                     </span>
                     <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
                         <button type="button" onclick="deleteImage({{ $img->id }}, this)"
                                 class="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors pointer-events-auto" title="Delete photo">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            <x-icon name="x-mark" class="w-3.5 h-3.5" />
                         </button>
                     </div>
                     <div class="absolute bottom-1 right-1 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -388,11 +388,11 @@ function addLocalPreviewCard(file, idx) {
         card.innerHTML =
             '<img src="' + e.target.result + '" class="w-full h-full object-cover pointer-events-none">' +
             '<span class="main-badge absolute top-1.5 left-1.5 items-center gap-1 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-md font-semibold shadow" style="display:none">' +
-            '<svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>' +
+            '<x-icon name="star-solid" class="w-3 h-3" />' +
             'Main</span>' +
             '<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">' +
             '<button type="button" onclick="removeLocalPreview(this)" class="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors pointer-events-auto" title="Remove">' +
-            '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button></div>' +
+            '<x-icon name="x-mark" class="w-3.5 h-3.5" /></button></div>' +
             '<div class="absolute bottom-1 right-1 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">' +
             '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 6a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm8-16a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4z"/></svg></div>';
         grid.appendChild(card);
@@ -471,12 +471,12 @@ function buildGridCard(id, url, deleteUrl, primaryUrl) {
     card.innerHTML = `
         <img src="${url}" class="w-full h-full object-cover pointer-events-none">
         <span class="main-badge absolute top-1.5 left-1.5 items-center gap-1 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-md font-semibold shadow" style="display:none">
-            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+            <x-icon name="star-solid" class="w-3 h-3" />
             Main
         </span>
         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
             <button type="button" onclick="deleteImage(${id}, this)" class="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors pointer-events-auto" title="Delete photo">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                <x-icon name="x-mark" class="w-3.5 h-3.5" />
             </button>
         </div>
         <div class="absolute bottom-1 right-1 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">

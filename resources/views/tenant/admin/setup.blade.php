@@ -206,7 +206,7 @@ $heroPresets = [
                             <div class="text-xs text-center py-0.5 bg-white dark:bg-gray-700 dark:text-gray-300 text-gray-600 truncate px-1">{{ $plabel }}</div>
                         </div>
                         <div class="absolute top-1 right-1 bg-[var(--primary)] rounded-full p-0.5 hidden peer-checked:block pointer-events-none">
-                            <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <x-icon name="check-solid" class="w-3 h-3 text-white" />
                         </div>
                     </label>
                     @endforeach
@@ -552,7 +552,7 @@ $heroPresets = [
             <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
                 <a href="{{ route('tenant.home', $account) }}" target="_blank"
                    class="inline-flex items-center gap-2 text-sm text-[var(--primary)] hover:underline">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    <x-icon name="external-link" class="w-4 h-4" />
                     Preview your public site
                 </a>
             </div>
@@ -571,7 +571,7 @@ $heroPresets = [
                 class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium
                        border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300
                        hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <x-icon name="chevron-left" class="w-4 h-4" />
             Back
         </button>
         <div x-show="step <= 1"></div>

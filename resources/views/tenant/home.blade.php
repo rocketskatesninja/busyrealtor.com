@@ -255,7 +255,7 @@ $iconPaths = [
                     </div>
                 </div>
                 <button type="submit" class="btn-primary w-full sm:w-auto px-6 py-2.5 rounded-lg font-semibold text-sm flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <x-icon name="magnifying-glass" class="w-4 h-4" />
                     Search
                 </button>
             </form>
@@ -264,7 +264,7 @@ $iconPaths = [
         {{-- Social proof row --}}
         <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-7 text-white/65 text-sm {{ $ea ? 'hero-animate hero-d5' : '' }}" style="animation-delay:0.85s">
             <div class="flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <x-icon name="map-pin" class="w-4 h-4 text-amber-400" />
                 <span>Locally Owned &amp; Operated</span>
             </div>
             <div class="hidden sm:block w-px h-4 bg-white/20"></div>
@@ -274,7 +274,7 @@ $iconPaths = [
             </span>
             <div class="hidden sm:block w-px h-4 bg-white/20"></div>
             <span class="flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <x-icon name="bolt" class="w-4 h-4 text-blue-400" />
                 Same-Day Response
             </span>
         </div>
@@ -344,7 +344,7 @@ $iconPaths = [
                         @endforeach
                     @else
                         <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
-                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            <x-icon name="home" class="w-12 h-12 text-gray-400" />
                         </div>
                     @endif
                     <span class="absolute top-3 left-3 text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
@@ -370,7 +370,7 @@ $iconPaths = [
         </div>
         @else
         <div class="text-center py-16 text-gray-400">
-            <svg class="w-16 h-16 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <x-icon name="home" class="w-16 h-16 mx-auto mb-4 opacity-50" />
             <p class="text-lg font-medium">No featured listings yet</p>
             <p class="text-sm mt-1">Check back soon or <a href="{{ route('tenant.gallery', $account) }}" class="hover-primary">browse all properties</a>.</p>
         </div>
@@ -442,7 +442,7 @@ $iconPaths = [
                 @if($member->title) <p class="text-sm font-medium mb-2" style="color: var(--primary)">{{ $member->title }}</p> @endif
                 @if($member->bio) <p class="text-gray-500 text-sm leading-relaxed mb-4">{{ Str::limit($member->bio, 120) }}</p> @endif
                 <a href="{{ route('tenant.gallery', $account) }}" class="inline-flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium border transition hover:opacity-90" style="color: var(--primary); border-color: var(--primary)">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                    <x-icon name="home" class="w-4 h-4" />
                     View Listings
                 </a>
             </div>
@@ -564,7 +564,7 @@ $iconPaths = [
             <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200 hover:shadow-lg hover:-translate-y-1 hover:border-[var(--primary)]/30 transition-all duration-300 reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="flex mb-4">
                     @for($s = 0; $s < ($t['rating'] ?? 5); $s++)
-                    <svg class="w-5 h-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <x-icon name="star-solid" class="w-5 h-5 text-yellow-400" />
                     @endfor
                 </div>
                 <p class="text-gray-600 leading-relaxed mb-6 italic">&ldquo;{{ $t['text'] ?? '' }}&rdquo;</p>
@@ -713,7 +713,7 @@ $iconPaths = [
                 </div>
                 <div x-show="sent" x-cloak class="bg-gray-50 rounded-2xl p-8 border border-gray-100 h-full flex flex-col items-center justify-center text-center">
                     <div class="w-16 h-16 rounded-2xl flex items-center justify-center mb-5" style="background:rgba(16,185,129,.1)">
-                        <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <x-icon name="check" class="w-8 h-8 text-green-500" />
                     </div>
                     <h4 class="text-xl font-semibold text-gray-800 mb-2">Message Sent!</h4>
                     <p class="text-gray-500">We'll get back to you shortly.</p>

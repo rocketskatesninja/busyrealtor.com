@@ -130,7 +130,7 @@
                         <label class="text-sm font-medium text-gray-700">Plan Override</label>
                         @if($liveSub)
                             <span class="inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-emerald-500 text-white font-semibold shadow-sm">
-                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                <x-icon name="check-solid" class="w-3 h-3" />
                                 Stripe: {{ $liveStatus ?: 'unknown' }}
                             </span>
                         @else
@@ -268,12 +268,12 @@
             <div class="ml-auto">
                 @if($owner->email_verified_at)
                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <x-icon name="check" class="w-3.5 h-3.5" />
                         Verified
                     </span>
                 @else
                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <x-icon name="x-mark" class="w-3.5 h-3.5" />
                         Unverified
                     </span>
                 @endif

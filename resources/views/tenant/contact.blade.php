@@ -12,7 +12,7 @@
 
         {{-- Back link --}}
         <a href="{{ route('tenant.home', $account) }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            <x-icon name="chevron-left" class="w-4 h-4" />
             Back
         </a>
 
@@ -20,7 +20,7 @@
             {{-- Header --}}
             <div class="p-6 text-white" style="background-color: var(--primary)">
                 <div class="flex items-center gap-3 mb-1">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    <x-icon name="envelope" class="w-6 h-6" />
                     <h1 class="text-xl font-bold">Contact Us</h1>
                 </div>
                 <p class="text-sm opacity-90">Send us a message and we'll get back to you within 24 hours.</p>

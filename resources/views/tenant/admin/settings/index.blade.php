@@ -65,7 +65,7 @@ $tabs = array_merge(...array_values($groups));
                 class="btn-primary inline-flex items-center gap-2 px-8 py-2.5 rounded-xl font-semibold text-sm transition
                        disabled:opacity-40 disabled:cursor-not-allowed disabled:pointer-events-none"
                 disabled>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+            <x-icon name="check" class="w-4 h-4" />
             Save Settings
         </button>
     </div>
@@ -596,9 +596,7 @@ $tabs = array_merge(...array_values($groups));
                                                     </div>
                                                     {{-- Checkmark: sibling of the peer input, visible when checked --}}
                                                     <div class="absolute top-1 right-1 bg-[var(--primary)] rounded-full p-0.5 hidden peer-checked:block pointer-events-none">
-                                                        <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                                                        </svg>
+                                                        <x-icon name="check-solid" class="w-3 h-3 text-white" />
                                                     </div>
                                                 </label>
                                                 @endforeach
@@ -707,7 +705,7 @@ $tabs = array_merge(...array_values($groups));
                                 <template x-for="(feature, index) in features" :key="index">
                                     <div class="p-4 bg-gray-50 rounded-lg border border-gray-100 relative">
                                         <button type="button" class="absolute top-2 right-2 text-red-400 hover:text-red-600" @click="features.splice(index,1)">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            <x-icon name="x-mark" class="w-4 h-4" />
                                         </button>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pr-6">
                                             <div>
@@ -734,7 +732,7 @@ $tabs = array_merge(...array_values($groups));
                                 <template x-for="(service, index) in services" :key="index">
                                     <div class="p-4 bg-gray-50 rounded-lg border border-gray-100 relative">
                                         <button type="button" class="absolute top-2 right-2 text-red-400 hover:text-red-600" @click="services.splice(index,1)">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            <x-icon name="x-mark" class="w-4 h-4" />
                                         </button>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pr-6">
                                             <div>
@@ -771,7 +769,7 @@ $tabs = array_merge(...array_values($groups));
                                             </div>
                                         </div>
                                         <button type="button" @click="stats.splice(index,1)" class="text-red-400 hover:text-red-600 shrink-0">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            <x-icon name="x-mark" class="w-5 h-5" />
                                         </button>
                                     </div>
                                 </template>
@@ -782,7 +780,7 @@ $tabs = array_merge(...array_values($groups));
                                 <template x-for="(testimonial, index) in testimonials" :key="index">
                                     <div class="p-4 bg-gray-50 rounded-lg border border-gray-100 relative">
                                         <button type="button" class="absolute top-2 right-2 text-red-400 hover:text-red-600" @click="testimonials.splice(index,1)">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                            <x-icon name="x-mark" class="w-4 h-4" />
                                         </button>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pr-6">
                                             <div>
@@ -824,7 +822,7 @@ $tabs = array_merge(...array_values($groups));
                                                 </div>
                                             </div>
                                             <button type="button" @click="faq.splice(index,1)" class="text-red-400 hover:text-red-600 shrink-0 mt-1">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                                <x-icon name="x-mark" class="w-5 h-5" />
                                             </button>
                                         </div>
                                     </div>
@@ -1004,7 +1002,7 @@ $tabs = array_merge(...array_values($groups));
                         </div>
                     </div>
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                        <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>SMTP Configuration</h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"><x-icon name="envelope" class="w-5 h-5 panel-icon" />SMTP Configuration</h2>
                         @php
                             $smtp           = $integrations->get('smtp');
                             $smtpConfig     = $smtp?->config ?? [];
@@ -1079,7 +1077,7 @@ $tabs = array_merge(...array_values($groups));
                         <div class="w-14 h-14 rounded-2xl bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-4">
                             <svg class="w-7 h-7 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                         </div>
-                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>AI Chatbot</h2>
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2"><x-icon name="chat-bubble" class="w-5 h-5 panel-icon" />AI Chatbot</h2>
                         <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">The AI chatbot is available on Pro plans. Upgrade to add an intelligent assistant to your site that can answer visitor questions about your listings.</p>
                         <a href="{{ route('tenant.admin.billing', $tenant->slug) }}" class="inline-flex items-center px-5 py-2.5 bg-amber-500 text-white text-sm font-medium rounded-lg hover:bg-amber-600 transition">
                             Upgrade to Unlock
@@ -1103,7 +1101,7 @@ $tabs = array_merge(...array_values($groups));
                 --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100" x-data="{ provider: '{{ $aiConfig['preferred'] ?? 'anthropic' }}' }">
                     <div class="flex items-center gap-3 mb-5">
-                        <svg class="w-5 h-5 panel-icon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <x-icon name="bolt" class="w-5 h-5 panel-icon shrink-0" />
                         <div class="min-w-0">
                             <h2 class="text-lg font-bold text-gray-900 dark:text-white">AI Provider</h2>
                             <p class="text-xs text-gray-500 dark:text-gray-400">Powers the chatbot, the admin AI assistant and listing description generation. Switch off to keep your keys but stop all AI use.</p>
@@ -1188,7 +1186,7 @@ $tabs = array_merge(...array_values($groups));
 
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                     <div class="flex items-center gap-3 mb-5">
-                        <svg class="w-5 h-5 panel-icon shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        <x-icon name="chat-bubble" class="w-5 h-5 panel-icon shrink-0" />
                         <div class="min-w-0">
                             <h2 class="text-lg font-bold text-gray-900 dark:text-white">Chatbot</h2>
                             <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -1460,7 +1458,7 @@ $tabs = array_merge(...array_values($groups));
                     <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                         <div class="flex items-center gap-3">
                             <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style="background:var(--primary)">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                <x-icon name="bolt" class="w-5 h-5 text-white" />
                             </div>
                             <div class="min-w-0">
                                 <h2 class="text-lg font-bold text-gray-900">Setup Wizard</h2>
@@ -1627,7 +1625,7 @@ $tabs = array_merge(...array_values($groups));
                 <div x-show="activeTab === 'seo'" x-cloak>
                 {{-- SEO TAB --}}
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-                    <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>SEO Settings</h2>
+                    <h2 class="text-lg font-bold text-gray-900 mb-5 flex items-center gap-2"><x-icon name="magnifying-glass" class="w-5 h-5 panel-icon" />SEO Settings</h2>
                     <div class="space-y-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Site Description</label>

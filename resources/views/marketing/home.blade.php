@@ -78,7 +78,7 @@
     <div id="marketing-mobile-menu" style="display:none" class="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-lg">
         <nav class="px-4 py-3 space-y-1">
             <a href="#features" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
-                <svg class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <x-icon name="bolt" class="w-5 h-5 mr-3 text-gray-500" />
                 Features
             </a>
             <a href="#demo" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
@@ -146,7 +146,7 @@ document.addEventListener('click', function(e) {
                     </a>
                     <a href="/demo-realty" target="_blank" class="inline-flex items-center gap-2 text-white font-semibold px-7 py-4 rounded-xl hover:bg-white/10 transition-colors text-base" style="border: 2px solid rgba(147,197,253,0.4);">
                         View Live Demo
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        <x-icon name="external-link" class="w-4 h-4" />
                     </a>
                 </div>
                 <p class="text-blue-300 text-sm hero-animate hero-d5">14-day free trial &nbsp;·&nbsp; No credit card required &nbsp;·&nbsp; Cancel anytime</p>
@@ -173,7 +173,7 @@ document.addEventListener('click', function(e) {
                            style="background: linear-gradient(to top, rgba(30,58,138,0.7) 0%, transparent 50%);">
                             <span class="bg-white text-orange-600 font-bold text-sm px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
                                 Open Full Demo
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                                <x-icon name="external-link" class="w-4 h-4" />
                             </span>
                         </a>
                     </div>
@@ -220,7 +220,7 @@ document.addEventListener('click', function(e) {
                 </div>
                 @if(!$loop->last)
                 <div class="hidden md:flex absolute top-10 -right-5 z-10 items-center justify-center w-10 h-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full shadow-sm text-gray-400 dark:text-gray-500">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <x-icon name="chevron-right" class="w-4 h-4" />
                 </div>
                 @endif
             </div>
@@ -301,14 +301,14 @@ document.addEventListener('click', function(e) {
                         'Request a showing appointment',
                     ] as $item)
                     <li class="flex items-center gap-3 text-gray-700 dark:text-gray-300">
-                        <svg class="w-5 h-5 text-orange-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                        <x-icon name="check-bold" class="w-5 h-5 text-orange-500 shrink-0" />
                         {{ $item }}
                     </li>
                     @endforeach
                 </ul>
                 <a href="/demo-realty" target="_blank" class="inline-flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold px-6 py-3.5 rounded-xl transition-colors shadow-md">
                     Open Live Demo
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    <x-icon name="external-link" class="w-4 h-4" />
                 </a>
             </div>
         </div>
@@ -334,7 +334,7 @@ document.addEventListener('click', function(e) {
                 <a href="/register" class="block text-center bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl mb-7 transition-colors">Start Free Trial</a>
                 <ul class="space-y-3">
                     @foreach(['Up to 10 active listings','Public website with gallery & map','Contact & inquiry forms','Lead capture & messaging','Admin dashboard & analytics','SMTP custom email settings','Custom branding & colors','Email support'] as $item)
-                    <li class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm"><svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>{{ $item }}</li>
+                    <li class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm"><x-icon name="check-bold" class="w-4 h-4 text-gray-400 shrink-0" />{{ $item }}</li>
                     @endforeach
                 </ul>
             </div>
@@ -349,7 +349,7 @@ document.addEventListener('click', function(e) {
                 <a href="/register" class="block text-center text-white font-bold py-3.5 rounded-xl mb-7 transition-colors shadow-md" style="background: #f97316;">Start Free Trial</a>
                 <ul class="space-y-3">
                     @foreach(['Unlimited active listings','Everything in Starter','Appointment scheduling & management','AI-powered chatbot (Claude / OpenAI)','Social media auto-posting (Facebook & X)','Google Maps & Analytics integration','Staff management & profiles','Priority support'] as $item)
-                    <li class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm"><svg class="w-4 h-4 text-orange-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>{{ $item }}</li>
+                    <li class="flex items-center gap-3 text-gray-600 dark:text-gray-300 text-sm"><x-icon name="check-bold" class="w-4 h-4 text-orange-500 shrink-0" />{{ $item }}</li>
                     @endforeach
                 </ul>
             </div>

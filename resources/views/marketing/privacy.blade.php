@@ -143,7 +143,7 @@
                                 ]; @endphp
                                 @foreach($uses as $use)
                                 <li class="flex items-start gap-2">
-                                    <svg class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                    <x-icon name="check-solid" class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
                                     <span>{{ $use }}</span>
                                 </li>
                                 @endforeach
@@ -242,10 +242,10 @@
                         <div class="text-sm leading-relaxed text-gray-700 dark:text-gray-300 space-y-3">
                             <p>We retain your account data and content for as long as your subscription is active. After cancellation or account closure:</p>
                             <ul class="list-none space-y-2 mt-2">
-                                <li class="flex items-start gap-2"><svg class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg><span>Your account is deactivated and your public site is taken offline immediately.</span></li>
-                                <li class="flex items-start gap-2"><svg class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg><span>Your data is retained for 30 days in case you wish to reactivate or export.</span></li>
-                                <li class="flex items-start gap-2"><svg class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg><span>After 30 days, your account data and uploaded files are permanently deleted from our systems.</span></li>
-                                <li class="flex items-start gap-2"><svg class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg><span>Billing records and invoices are retained for 7 years as required by law.</span></li>
+                                <li class="flex items-start gap-2"><x-icon name="chevron-right" class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" /><span>Your account is deactivated and your public site is taken offline immediately.</span></li>
+                                <li class="flex items-start gap-2"><x-icon name="chevron-right" class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" /><span>Your data is retained for 30 days in case you wish to reactivate or export.</span></li>
+                                <li class="flex items-start gap-2"><x-icon name="chevron-right" class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" /><span>After 30 days, your account data and uploaded files are permanently deleted from our systems.</span></li>
+                                <li class="flex items-start gap-2"><x-icon name="chevron-right" class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" /><span>Billing records and invoices are retained for 7 years as required by law.</span></li>
                             </ul>
                             <p class="mt-3">You can export all your data at any time from the <strong>Settings → Data</strong> section of your dashboard.</p>
                         </div>
@@ -328,9 +328,9 @@
                         <div class="text-sm leading-relaxed text-gray-700 dark:text-gray-300 space-y-3">
                             <p>We may update this Privacy Policy from time to time to reflect changes in our practices or applicable law. When we make material changes, we will:</p>
                             <ul class="list-none space-y-2 mt-2">
-                                <li class="flex items-start gap-2"><svg class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span>Update the "Last updated" date at the top of this page</span></li>
-                                <li class="flex items-start gap-2"><svg class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span>Send an email notification to all active Subscribers</span></li>
-                                <li class="flex items-start gap-2"><svg class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg><span>Post a notice in the platform dashboard for 30 days</span></li>
+                                <li class="flex items-start gap-2"><x-icon name="check-solid" class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" /><span>Update the "Last updated" date at the top of this page</span></li>
+                                <li class="flex items-start gap-2"><x-icon name="check-solid" class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" /><span>Send an email notification to all active Subscribers</span></li>
+                                <li class="flex items-start gap-2"><x-icon name="check-solid" class="w-4 h-4 text-blue-400 mt-0.5 flex-shrink-0" /><span>Post a notice in the platform dashboard for 30 days</span></li>
                             </ul>
                             <p>Your continued use of the Service after the effective date of any changes constitutes your acceptance of the updated policy.</p>
                         </div>

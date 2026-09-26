@@ -341,7 +341,7 @@ $activeFilters = collect(['type','status','price_min','price_max','beds','baths'
             <div class="flex-shrink-0 px-4 py-3 flex items-center justify-between border-b">
                 <h2 class="text-lg font-bold text-gray-900">Filter Map</h2>
                 <button @click="mobileOpen = false" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    <x-icon name="x-mark" class="w-5 h-5" />
                 </button>
             </div>
             {{-- Scrollable content --}}

@@ -189,10 +189,10 @@ function initPropertyMap() {
                     </template>
                     @if($images->count() > 1)
                     <button @click.stop="current = current > 0 ? current - 1 : {{ $images->count() - 1 }}" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-sm text-white p-2.5 rounded-full hover:bg-black/60 transition-all hover:scale-110 shadow-lg">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        <x-icon name="chevron-left" class="w-5 h-5" />
                     </button>
                     <button @click.stop="current = current < {{ $images->count() - 1 }} ? current + 1 : 0" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 backdrop-blur-sm text-white p-2.5 rounded-full hover:bg-black/60 transition-all hover:scale-110 shadow-lg">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <x-icon name="chevron-right" class="w-5 h-5" />
                     </button>
 
                     <div class="absolute bottom-14 right-4 bg-black/40 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-full shadow" x-text="`${current + 1} / {{ $images->count() }}`"></div>
@@ -226,22 +226,22 @@ function initPropertyMap() {
                 {{-- Lightbox --}}
                 <div x-show="lightbox" x-cloak @keydown.escape.window="lightbox = false" class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
                     <button @click="lightbox = false" class="absolute top-4 right-4 text-white/70 hover:text-white">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <x-icon name="x-mark" class="w-8 h-8" />
                     </button>
                     <button @click="lightboxIdx = lightboxIdx > 0 ? lightboxIdx - 1 : {{ $images->count() - 1 }}" class="absolute left-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white">
-                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                        <x-icon name="chevron-left" class="w-10 h-10" />
                     </button>
                     <template x-for="(img, idx) in {{ json_encode($imageUrls) }}" :key="idx">
                         <img :src="img" x-show="lightboxIdx === idx" class="max-w-full max-h-screen object-contain rounded-xl">
                     </template>
                     <button @click="lightboxIdx = lightboxIdx < {{ $images->count() - 1 }} ? lightboxIdx + 1 : 0" class="absolute right-4 top-1/2 -translate-y-1/2 text-white/70 hover:text-white">
-                        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        <x-icon name="chevron-right" class="w-10 h-10" />
                     </button>
                 </div>
             </div>
             @else
             <div class="h-72 bg-gray-100 rounded-2xl flex items-center justify-center mb-8">
-                <svg class="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                <x-icon name="home" class="w-20 h-20 text-gray-300" />
             </div>
             @endif
 
@@ -285,7 +285,7 @@ $" . number_format($property->price) : '') . "
                             <svg class="w-4 h-4 text-gray-700" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </a>
                         <a href="mailto:?subject={{ $shareMailSubject }}&amp;body={{ $shareMailBody }}" title="Share via Email" class="p-2 rounded-full bg-green-50 hover:bg-green-100 transition-colors">
-                            <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <x-icon name="envelope" class="w-4 h-4 text-green-600" />
                         </a>
                         <div class="w-px h-5 bg-gray-200 mx-0.5"></div>
                         <button type="button" onclick="window.print()" title="Print property details" class="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
@@ -303,7 +303,7 @@ $" . number_format($property->price) : '') . "
                     <h1 class="text-2xl font-bold text-gray-900 leading-tight">{{ $property->title }}</h1>
                     @if($property->address)
                     <p class="flex items-center gap-1.5 text-gray-500 mt-1.5">
-                        <svg class="w-4 h-4 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        <x-icon name="map-pin" class="w-4 h-4 flex-shrink-0 text-gray-400" />
                         {{ $property->address }}@if($property->address_line_2), {{ $property->address_line_2 }}@endif{{ $property->city ? ', ' . $property->city : '' }}{{ $property->state ? ', ' . $property->state : '' }}{{ $property->zip ? ' ' . $property->zip : '' }}
                     </p>
                     @endif
@@ -567,9 +567,9 @@ $" . number_format($property->price) : '') . "
         @include('tenant.partials.nearby-places', ['nearbyPlaces' => $nearbyPlaces])
     @else
     <div class="bg-white rounded-2xl p-6 shadow border border-gray-200 min-w-0 overflow-hidden">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Nearby Places</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2"><x-icon name="map-pin-light" class="w-5 h-5 text-gray-400" />Nearby Places</h2>
         <div class="flex flex-col items-center justify-center py-6 text-center">
-            <svg class="w-10 h-10 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <x-icon name="map-pin-light" class="w-10 h-10 mb-3 text-gray-300" />
             <p class="text-sm text-gray-400">Nearby places unavailable</p>
         </div>
     </div>
@@ -671,7 +671,7 @@ $" . number_format($property->price) : '') . "
                 }
             }
         }">
-            <h2 class="text-xl font-semibold text-gray-800 mb-1 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>Schedule a Showing</h2>
+            <h2 class="text-xl font-semibold text-gray-800 mb-1 flex items-center gap-2"><x-icon name="calendar" class="w-5 h-5 text-gray-400" />Schedule a Showing</h2>
             <p class="text-sm text-gray-500 mb-6">Fill out the form below and we'll be in touch to confirm your appointment.</p>
 
             {{-- Success state --}}
@@ -771,15 +771,13 @@ $" . number_format($property->price) : '') . "
 
         @else
         {{-- Starter plan: show contact details instead --}}
-        <h2 class="text-xl font-semibold text-gray-800 mb-1 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>Interested in This Property?</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-1 flex items-center gap-2"><x-icon name="envelope" class="w-5 h-5 text-gray-400" />Interested in This Property?</h2>
         <p class="text-sm text-gray-500 mb-6">Contact us directly to schedule a showing or ask any questions.</p>
         <div class="flex flex-col sm:flex-row gap-3">
             <a href="{{ route('tenant.contact', $account) }}"
                class="inline-flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm text-white transition hover:opacity-90"
                style="background-color: var(--primary)">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                </svg>
+                <x-icon name="envelope" class="w-4 h-4" />
                 Contact Us
             </a>
         </div>
@@ -789,7 +787,7 @@ $" . number_format($property->price) : '') . "
     {{-- Location: Map & Street View --}}
     @if($property->latitude && $property->longitude)
     <div id="map-section" class="bg-white rounded-2xl p-6 mt-8 shadow border border-gray-200">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>Location</h2>
+        <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2"><x-icon name="map-pin" class="w-5 h-5 text-gray-400" />Location</h2>
         @if(isset($mapsKey) && $mapsKey)
         <div class="grid md:grid-cols-2 gap-4">
             <div>
@@ -804,7 +802,7 @@ $" . number_format($property->price) : '') . "
         @else
         <div class="h-48 rounded-lg bg-gray-100 flex items-center justify-center">
             <div class="text-center text-gray-500">
-                <svg class="w-10 h-10 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <x-icon name="map-pin" class="w-10 h-10 mx-auto mb-2 text-gray-400" />
                 <p class="font-medium text-sm">{{ $property->address }}</p>
                 @if($property->address_line_2)<p class="text-xs">{{ $property->address_line_2 }}</p>@endif
                 @if($property->city)<p class="text-xs">{{ $property->city }}@if($property->state), {{ $property->state }}@endif</p>@endif
@@ -817,7 +815,7 @@ $" . number_format($property->price) : '') . "
     {{-- Related Properties --}}
     @if($related->count())
     <div id="related-section" class="mt-12">
-        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Similar Properties</h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2"><x-icon name="home" class="w-6 h-6 text-gray-400" />Similar Properties</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach($related as $rel)
             <a href="{{ route('tenant.property', [$account, $rel->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-lg transition-shadow group">
@@ -825,7 +823,7 @@ $" . number_format($property->price) : '') . "
                     @if($rel->primaryImage)
                         <img src="{{ asset('storage/'.$rel->primaryImage->thumb_path) }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                     @else
-                        <div class="w-full h-full flex items-center justify-center bg-gray-100"><svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
+                        <div class="w-full h-full flex items-center justify-center bg-gray-100"><x-icon name="home" class="w-10 h-10 text-gray-400" /></div>
                     @endif
                 </div>
                 <div class="p-4">

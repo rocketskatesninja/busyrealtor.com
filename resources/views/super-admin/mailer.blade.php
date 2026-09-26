@@ -16,7 +16,7 @@
     {{-- Compose Panel --}}
     <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
         <h3 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <x-icon name="envelope" class="w-5 h-5 text-blue-500" />
             Compose Email
         </h3>
         <form method="POST" action="{{ route('super.mailer.send') }}" @submit.prevent="confirmSend($event)">
@@ -84,7 +84,7 @@
                 </select>
                 {{-- Search --}}
                 <div class="relative">
-                    <svg class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <x-icon name="magnifying-glass" class="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input type="text" x-model="search" placeholder="Search..."
                            class="border border-gray-200 rounded-lg pl-9 pr-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48">
                 </div>

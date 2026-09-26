@@ -206,7 +206,7 @@
                 </div>
                 @if($settings->hasGoogle())
                 <div class="flex items-center gap-2 text-green-400 text-xs">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <x-icon name="check" class="w-4 h-4" />
                     Google OAuth is configured. The "Continue with Google" button is active.
                 </div>
                 @else
@@ -255,7 +255,7 @@
                 </div>
                 @if($settings->hasMaps())
                 <div class="flex items-center gap-2 text-green-400 text-xs">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <x-icon name="check" class="w-4 h-4" />
                     Google Maps is configured. All tenant map pages will use this key.
                 </div>
                 @else
@@ -347,7 +347,7 @@
 
                 @if($settings->hasStripe())
                 <div class="flex items-center gap-2 text-green-400 text-xs">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <x-icon name="check" class="w-4 h-4" />
                     Stripe keys are configured.
                 </div>
                 @if(!$settings->stripe_webhook_secret)
@@ -376,9 +376,7 @@
         <div class="bg-gray-800 rounded-xl border border-gray-700 overflow-hidden mb-6">
             <div class="px-6 py-4 border-b border-gray-700">
                 <h2 class="text-base font-semibold text-white flex items-center gap-2">
-                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                    </svg>
+                    <x-icon name="envelope" class="w-5 h-5 text-green-400" />
                     SMTP / Email
                 </h2>
                 <p class="text-gray-400 text-sm mt-1">Configure outbound email for verification emails, password resets, and notifications.</p>
@@ -452,7 +450,7 @@
 
                 @if($settings->hasMail())
                 <div class="flex items-center gap-2 text-green-400 text-xs">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                    <x-icon name="check" class="w-4 h-4" />
                     SMTP is configured. Outbound email is active.
                 </div>
                 @else
@@ -554,9 +552,7 @@
         <div class="flex justify-end">
             <button type="submit"
                     class="inline-flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                </svg>
+                <x-icon name="check" class="w-4 h-4" />
                 Save Settings
             </button>
         </div>

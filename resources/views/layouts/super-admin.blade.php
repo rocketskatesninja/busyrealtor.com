@@ -88,7 +88,7 @@
 {{-- Mobile top bar --}}
 <div class="md:hidden bg-gray-800 border-b border-gray-700 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
     <button @click="open = !open" class="p-1 text-gray-300 hover:text-white">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        <x-icon name="bars" class="w-6 h-6" />
     </button>
     <span class="text-white font-semibold text-sm">Super Admin</span>
     <span class="text-gray-400 text-sm">{{ now()->format('M j, Y') }}</span>
@@ -114,7 +114,7 @@
      class="md:hidden bg-gray-800 border-b border-gray-700 z-40">
     <nav class="px-4 py-3 space-y-1">
         <a href="{{ route('super.dashboard') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium {{ $superIsDash ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} transition-colors">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <x-icon name="home" class="w-5 h-5 mr-3" />
             Dashboard
         </a>
         <a href="{{ route('super.tenants') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium {{ $superIsTenants ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} transition-colors">
@@ -131,7 +131,7 @@
             @endif
         </a>
         <a href="{{ route('super.mailer') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium {{ $superIsMailer ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} transition-colors">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <x-icon name="envelope" class="w-5 h-5 mr-3" />
             Mailer
         </a>
         <a href="{{ route('super.activity') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium {{ $superIsActivity ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} transition-colors">
@@ -164,7 +164,7 @@
     </div>
     <nav class="flex-1 p-4 space-y-1">
         <a href="{{ route('super.dashboard') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('super.dashboard') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} transition-colors">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+            <x-icon name="home" class="w-5 h-5 mr-3" />
             Dashboard
         </a>
         <a href="{{ route('super.tenants') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('super.tenants*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} transition-colors">
@@ -182,7 +182,7 @@
             @endif
         </a>
         <a href="{{ route('super.mailer') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('super.mailer*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} transition-colors">
-            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <x-icon name="envelope" class="w-5 h-5 mr-3" />
             Mailer
         </a>
         <a href="{{ route('super.activity') }}" class="flex items-center px-3 py-2 rounded-lg text-sm font-medium {{ request()->routeIs('super.activity*') ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white' }} transition-colors">
@@ -221,7 +221,7 @@
         <div class="flex items-center gap-4">
             <div class="relative" x-data="tenantSearch()" @click.outside="open = false">
                 <div class="relative">
-                    <svg class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <x-icon name="magnifying-glass" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input type="text" x-model="query" @input.debounce.300ms="search()" @focus="if(results.length) open = true" placeholder="Jump to tenant..." class="w-56 bg-gray-700 border border-gray-600 rounded-lg pr-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" style="padding-left: 2.25rem;">
                 </div>
                 <div x-show="open && results.length > 0" x-cloak class="absolute right-0 mt-1 w-72 bg-gray-800 border border-gray-600 rounded-xl shadow-xl z-50 overflow-hidden">

@@ -91,7 +91,7 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                            autocomplete="off"
                            class="w-full border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] pr-8">
                     <button type="button" x-show="propId" @click="clearProp()" class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        <x-icon name="x-mark" class="w-4 h-4" />
                     </button>
                 </div>
                 <div x-show="propOpen && filteredProps.length" x-cloak
@@ -199,7 +199,7 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
         @endforeach
         <input type="hidden" name="action" value="delete">
         <button type="submit" class="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-lg text-sm font-medium hover:bg-red-100 dark:hover:bg-red-900/30 transition">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            <x-icon name="trash" class="w-4 h-4" />
             Delete all cancelled ({{ $cancelledCount }})
         </button>
     </form>
@@ -223,7 +223,7 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
             {{-- Date/time --}}
             @if($appt->appointment_date)
             <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300 mb-1">
-                <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <x-icon name="calendar" class="w-4 h-4 text-gray-400 shrink-0" />
                 <span>{{ \Carbon\Carbon::parse($appt->appointment_date)->format('M j, Y') }}@if($appt->appointment_time) at {{ \Carbon\Carbon::parse($appt->appointment_time)->format('g:i A') }}@endif</span>
             </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">{{ ucwords(str_replace('_', ' ', $appt->appointment_type ?? 'showing')) }}</p>
@@ -294,7 +294,7 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                     <form method="POST" action="{{ route('tenant.admin.appointments.action', [$account, $appt->id]) }}" class="ml-auto" onsubmit="return confirm('Delete this appointment?')">
                         @csrf <input type="hidden" name="status" value="delete">
                         <button type="submit" class="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 rounded transition" title="Delete">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                            <x-icon name="trash" class="w-4 h-4" />
                         </button>
                     </form>
                 </div>
@@ -312,7 +312,7 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                 <form method="POST" action="{{ route('tenant.admin.appointments.action', [$account, $appt->id]) }}" class="ml-auto" onsubmit="return confirm('Delete this appointment?')">
                     @csrf <input type="hidden" name="status" value="delete">
                     <button type="submit" class="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 rounded transition" title="Delete">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        <x-icon name="trash" class="w-4 h-4" />
                     </button>
                 </form>
             </div>
@@ -321,7 +321,7 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
                 <form method="POST" action="{{ route('tenant.admin.appointments.action', [$account, $appt->id]) }}" class="ml-auto" onsubmit="return confirm('Delete this appointment?')">
                     @csrf <input type="hidden" name="status" value="delete">
                     <button type="submit" class="p-1.5 text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 rounded transition" title="Delete">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        <x-icon name="trash" class="w-4 h-4" />
                     </button>
                 </form>
             </div>
@@ -332,7 +332,7 @@ $staffMembers = \App\Models\StaffMember::where('tenant_id', $tenant->id)->where(
     <div class="mt-6">{{ $appointments->links() }}</div>
     @else
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 text-center py-20">
-        <svg class="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        <x-icon name="calendar" class="w-16 h-16 mx-auto text-gray-300 mb-4" />
         <h3 class="text-lg font-semibold text-gray-700 mb-2">No Appointments</h3>
         <p class="text-gray-400 text-sm">No appointments yet. Click "Make Appointment" to create one, or they'll appear here when visitors submit them.</p>
     </div>
