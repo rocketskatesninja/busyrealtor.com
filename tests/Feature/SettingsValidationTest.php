@@ -88,6 +88,81 @@ class SettingsValidationTest extends TestCase
         $this->assertEquals($originally, $admin->fresh()->unsubscribed_at);
     }
 
+    /**
+     * The landing page is driven entirely by homepage_sections. A post carrying a value that
+     * does not decode used to store an empty array, which renders the public site as a header,
+     * a footer and nothing in between — no listings, no features, no testimonials.
+     *
+     * Found the hard way: a test harness posted the field's HTML-escaped form value back, and
+     * &quot; does not decode as JSON, so the demo tenant's landing page went blank. The five
+     * *_items lists in the same action already fell back to the stored value; this did not.
+     */
+    public function test_an_undecodable_homepage_layout_does_not_blank_the_landing_page(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+
+        $sections = [
+            ['key' => 'hero', 'enabled' => true, 'order' => 0, 'locked' => true],
+            ['key' => 'listings', 'enabled' => true, 'order' => 1, 'locked' => false],
+        ];
+        $this->settingsFor($tenant->id)->update(['homepage_sections' => $sections]);
+
+        foreach ([
+            'html escaped' => '[{&quot;key&quot;:&quot;hero&quot;}]',
+            'truncated' => '[{"key":"hero"',
+            'empty string' => '',
+            'empty array' => '[]',
+            'not json at all' => 'undefined',
+        ] as $label => $posted) {
+            $this->actingAs($admin)
+                ->post("/{$tenant->slug}/admin/settings", $this->profileFields($admin->email) + [
+                    'homepage_sections' => $posted,
+                ]);
+
+            $this->assertCount(2, $this->settingsFor($tenant->id)->homepage_sections,
+                "a {$label} value emptied the homepage");
+        }
+    }
+
+    public function test_a_valid_homepage_layout_still_saves_and_is_renumbered(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+
+        $this->actingAs($admin)
+            ->post("/{$tenant->slug}/admin/settings", $this->profileFields($admin->email) + [
+                'homepage_sections' => json_encode([
+                    ['key' => 'listings', 'enabled' => true, 'order' => 7, 'locked' => false],
+                    ['key' => 'hero', 'enabled' => true, 'order' => 3, 'locked' => true],
+                ]),
+            ])
+            ->assertSessionHasNoErrors();
+
+        $stored = $this->settingsFor($tenant->id)->homepage_sections;
+        $this->assertSame(['listings', 'hero'], array_column($stored, 'key'));
+        $this->assertSame([0, 1], array_column($stored, 'order'), 'order is renumbered from the posted sequence');
+    }
+
+    /** Same hazard on the admin's widget layout: an empty value hid every widget. */
+    public function test_an_empty_dashboard_layout_does_not_wipe_the_stored_one(): void
+    {
+        $tenant = $this->makeTenant();
+        $admin = $this->makeAdmin($tenant);
+
+        $config = ['stat_cards' => ['listings', 'messages'], 'charts' => ['views']];
+        $this->settingsFor($tenant->id)->update(['dashboard_config' => $config]);
+
+        foreach (['', '[]', 'nonsense'] as $posted) {
+            $this->actingAs($admin)
+                ->post("/{$tenant->slug}/admin/settings", $this->profileFields($admin->email) + [
+                    'dashboard_config' => $posted,
+                ]);
+
+            $this->assertSame($config, $this->settingsFor($tenant->id)->dashboard_config);
+        }
+    }
+
     public function test_a_valid_settings_post_still_saves(): void
     {
         $tenant = $this->makeTenant();

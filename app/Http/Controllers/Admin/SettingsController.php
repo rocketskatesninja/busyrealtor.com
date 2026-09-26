@@ -268,16 +268,29 @@ class SettingsController extends Controller
             }
         }
 
+        // A value that does not decode keeps whatever is stored, rather than emptying the
+        // homepage. This is the whole landing page: with no sections the public site renders
+        // its header, its footer and nothing in between. The `?? []` that used to be here
+        // meant any post carrying a malformed value silently blanked the site — which is
+        // exactly what happened while testing this controller, by posting the field's
+        // HTML-escaped form value back (&quot; does not decode as JSON).
+        //
+        // The five *_items lists below already fall back to the stored value; this did not.
         if ($request->has('homepage_sections')) {
-            $sections = json_decode($request->homepage_sections, true) ?? [];
-            foreach ($sections as $i => $s) {
-                $sections[$i]['order'] = $i;
+            $sections = json_decode($request->homepage_sections, true);
+
+            if (is_array($sections) && $sections !== []) {
+                foreach ($sections as $i => $section) {
+                    $sections[$i]['order'] = $i;
+                }
+                $data['homepage_sections'] = $sections;
             }
-            $data['homepage_sections'] = $sections;
         }
 
-        if ($request->has('dashboard_config')) {
-            $data['dashboard_config'] = $request->dashboard_config ?? [];
+        // Same shape of hazard: an empty or non-array value here wipes the admin's whole
+        // widget layout, and every widget is then hidden rather than reset to a default.
+        if ($request->has('dashboard_config') && is_array($request->dashboard_config) && $request->dashboard_config !== []) {
+            $data['dashboard_config'] = $request->dashboard_config;
         }
 
         // Each list is posted as a JSON string; an empty one means "unchanged", which
