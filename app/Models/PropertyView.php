@@ -3,14 +3,24 @@
 namespace App\Models;
 
 use App\Models\Traits\BelongsToTenant;
-use App\Models\Traits\InvalidatesDashboardCache;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PropertyView extends Model
 {
     use BelongsToTenant;
-    use InvalidatesDashboardCache;
+
+    /*
+     * Deliberately NOT using InvalidatesDashboardCache, unlike Property, Message and
+     * Appointment.
+     *
+     * A row is written here on every public property pageview, so flushing the tenant's
+     * dashboard cache from this model meant a single visitor browsing listings invalidated
+     * it repeatedly and the 5-minute TTL never got to do anything: the next dashboard load
+     * re-ran every aggregate. The three models that do invalidate are the ones an admin
+     * changes deliberately and expects to see reflected at once. A view counter that trails
+     * real traffic by up to five minutes is not worth re-running twenty aggregates for.
+     */
 
     public $timestamps = false;
 
