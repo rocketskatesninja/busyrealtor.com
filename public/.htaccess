@@ -5,15 +5,19 @@
     Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' js.stripe.com maps.googleapis.com *.googletagmanager.com *.google-analytics.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com fonts.gstatic.com; font-src 'self' fonts.gstatic.com data:; img-src 'self' data: https: blob:; frame-src 'self' js.stripe.com maps.google.com https://www.google.com; connect-src 'self' api.stripe.com fonts.googleapis.com fonts.gstatic.com maps.googleapis.com maps.google.com *.googletagmanager.com *.google-analytics.com *.analytics.google.com; worker-src blob:; base-uri 'self'; frame-ancestors 'self'; form-action 'self' https://checkout.stripe.com https://billing.stripe.com; object-src 'none'; upgrade-insecure-requests;"
 </IfModule>
 
-<IfModule mod_setenvif.c>
-    # F5 BREACH mitigation: do not gzip-compress text/html responses on this
-    # vhost. CSRF tokens live in HTML; with compression on, an attacker who
-    # can both observe ciphertext sizes and inject reflected content into a
-    # response can recover the token byte-by-byte (BREACH attack). CSS, JS,
-    # and JSON are still compressed by the global mod_deflate config because
-    # they do not carry secrets.
-    SetEnvIfNoCase Content-Type "text/html" no-gzip
-</IfModule>
+# HTML is compressed, deliberately.
+#
+# A BREACH mitigation used to sit here: SetEnvIfNoCase Content-Type "text/html" no-gzip.
+# It never did anything. SetEnvIfNoCase Content-Type tests the *request's* Content-Type,
+# and a GET for a page has none, so the condition never matched and HTML was gzipped
+# throughout. Measured on staging: 119,886 bytes uncompressed against 21,555 gzipped.
+#
+# Removed rather than fixed, which is a choice worth stating. BREACH needs an attacker who
+# can watch response sizes on the wire *and* get their own input reflected into a response
+# that carries the CSRF token. Turning HTML compression off to close that costs every
+# visitor 5.6x the page weight on every request. That trade is not worth making here, and
+# it is not what most of the web does. The worse option was the one we had: a rule that
+# looked like protection, was cited as protection, and was inert.
 
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
