@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use App\Services\AppointmentBooker;
 
 class ChatbotController extends Controller
 {
@@ -263,17 +264,12 @@ class ChatbotController extends Controller
 
     private function createAppointment(array $input, $tenant, $settings, string $lastMessage = ''): string
     {
-        // Max 2 chatbot appointments per email per 24 hours
+        // One limit across every public channel. This used to count only rows whose source
+        // was 'chatbot', and the booking form counted only its own allowance, so the same
+        // visitor could file the chatbot's two and the form's three.
         $email = $input['visitor_email'] ?? '';
-        if ($email) {
-            $apptCount = Appointment::where('tenant_id', $tenant->id)
-                ->where('source', 'chatbot')
-                ->where('visitor_email', $email)
-                ->where('created_at', '>=', now()->subDay())
-                ->count();
-            if ($apptCount >= 2) {
-                return "You've already submitted several appointment requests. Please call or email us directly for additional requests.";
-            }
+        if (AppointmentBooker::floodLimitReached($tenant, $email)) {
+            return "You've already submitted several appointment requests. Please call or email us directly for additional requests.";
         }
 
         try {
@@ -294,20 +290,19 @@ class ChatbotController extends Controller
                 }
             }
 
-            $appt = Appointment::create([
-                'tenant_id' => $tenant->id,
+            $appt = AppointmentBooker::book($tenant, [
                 'property_id' => $property?->id,
-                'staff_member_id' => $property?->staff_member_id,
                 'visitor_name' => $input['visitor_name'] ?? 'Unknown',
                 'visitor_email' => $input['visitor_email'] ?? null,
                 'visitor_phone' => $input['visitor_phone'] ?? null,
-                'appointment_type' => $input['appointment_type'] ?? 'showing',
+                'appointment_type' => $input['appointment_type'] ?? null,
                 'appointment_date' => $date->format('Y-m-d'),
                 // Comes from the language model, so it is not trusted to be HH:MM. "2pm"
                 // became "2pm:00", the insert threw, and the visitor was told only that
-                // the request could not be submitted.
-                'appointment_time' => self::normaliseTime($input['appointment_time'] ?? null) ?? '10:00:00',
-                'status' => 'pending',
+                // the request could not be submitted. A null falls through to the booker's
+                // default, which is the same 09:00 the booking form uses — this path used to
+                // default to 10:00 for no stated reason.
+                'appointment_time' => self::normaliseTime($input['appointment_time'] ?? null),
                 'notes' => $this->buildNotes($input, $lastMessage),
                 'source' => 'chatbot',
             ]);

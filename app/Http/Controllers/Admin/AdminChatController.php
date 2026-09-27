@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use App\Services\AppointmentBooker;
 
 class AdminChatController extends Controller
 {
@@ -506,9 +507,9 @@ class AdminChatController extends Controller
             }
         }
 
-        $validTypes = ['showing', 'consultation', 'follow_up', 'other'];
-        if (! in_array($input['appointment_type'], $validTypes)) {
-            return ['error' => 'Invalid appointment_type. Must be: '.implode(', ', $validTypes)];
+        // The list lives with the column, so the tool cannot offer a type the table rejects.
+        if (! in_array($input['appointment_type'], AppointmentBooker::TYPES, true)) {
+            return ['error' => 'Invalid appointment_type. Must be: '.implode(', ', AppointmentBooker::TYPES)];
         }
 
         // The date was checked but the time went to the column raw, where an unexpected
@@ -523,26 +524,14 @@ class AdminChatController extends Controller
             return ['error' => 'Invalid date format. Use YYYY-MM-DD.'];
         }
 
-        $propertyId = $staffId = null;
-        if (! empty($input['property_id'])) {
-            $prop = Property::where('tenant_id', $tenant->id)->find((int) $input['property_id']);
-            if ($prop) {
-                $propertyId = $prop->id;
-                $staffId = $prop->staff_member_id;
-            }
-        }
-
-        $appt = Appointment::create([
-            'tenant_id' => $tenant->id,
-            'property_id' => $propertyId,
-            'staff_member_id' => $staffId,
+        $appt = AppointmentBooker::book($tenant, [
+            'property_id' => $input['property_id'] ?? null,
             'visitor_name' => $input['visitor_name'],
             'visitor_email' => $input['visitor_email'],
             'visitor_phone' => $input['visitor_phone'] ?? null,
             'appointment_type' => $input['appointment_type'],
             'appointment_date' => $date,
             'appointment_time' => $input['appointment_time'],
-            'status' => 'pending',
             'notes' => $input['notes'] ?? null,
             // 'admin_chat' is not in the source enum ('website','chatbot','phone','other',
             // 'admin'), so every booking the assistant tried to create failed on a strict-mode

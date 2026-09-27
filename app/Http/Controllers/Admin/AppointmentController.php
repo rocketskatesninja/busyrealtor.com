@@ -14,6 +14,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Log;
+use App\Services\AppointmentBooker;
 
 class AppointmentController extends Controller
 {
@@ -48,46 +49,38 @@ class AppointmentController extends Controller
             return response()->json(['success' => false, 'message' => 'Appointment booking is not available for this agency.'], 403);
         }
 
-        // Rate limit: max 3 appointment requests per email per 24 hours
-        $recentAppts = Appointment::where('tenant_id', $tenant->id)
-            ->where('visitor_email', $request->visitor_email)
-            ->where('created_at', '>=', now()->subDay())
-            ->count();
-        if ($recentAppts >= 3) {
+        // One limit for every public channel — see AppointmentBooker::floodLimitReached.
+        if (AppointmentBooker::floodLimitReached($tenant, $request->visitor_email)) {
             return response()->json([
                 'success' => false,
                 'message' => "You've already submitted several appointment requests. Please call or email us directly.",
             ], 429);
         }
 
-        // Resolve assigned staff member from property
-        $property      = null;
-        $staffMemberId = null;
-        $staffEmail    = null;
+        // Resolve the assigned staff member's address for the notification below. The
+        // booker does the same lookup for the row itself; this one is only for the email.
+        $property   = null;
+        $staffEmail = null;
         if ($request->property_id) {
             // Tenant-scoped by the global scope, so this returns null for another tenant's id.
             $property = Property::with('staffMember')->find($request->property_id);
-            if ($property && $property->staff_member_id) {
-                $staffMemberId = $property->staff_member_id;
-                if ($property->staffMember && $property->staffMember->email) {
-                    $staffEmail = $property->staffMember->email;
-                }
+            if ($property?->staffMember?->email) {
+                $staffEmail = $property->staffMember->email;
             }
         }
 
-        $appt = Appointment::create([
-            'tenant_id'            => $tenant->id,
-            // The id that survived the scoped lookup, not the one that was posted.
-            'property_id'          => $property?->id,
-            'staff_member_id'      => $staffMemberId,
-            'visitor_name'         => $request->visitor_name,
-            'visitor_email'        => $request->visitor_email,
-            'visitor_phone'        => $request->visitor_phone,
-            'appointment_date'     => $request->appointment_date,
-            'appointment_time'     => $request->appointment_time ?? '09:00:00',
-            'appointment_type'     => $request->appointment_type ?? 'showing',
-            'notes'                => $request->message,
-            'status'               => 'pending',
+        $appt = AppointmentBooker::book($tenant, [
+            'property_id'      => $property?->id,
+            'visitor_name'     => $request->visitor_name,
+            'visitor_email'    => $request->visitor_email,
+            'visitor_phone'    => $request->visitor_phone,
+            'appointment_date' => $request->appointment_date,
+            'appointment_time' => $request->appointment_time,
+            'appointment_type' => $request->appointment_type,
+            'notes'            => $request->message,
+            // Was left unset, so every website booking stored NULL while the enum has had a
+            // 'website' value for it all along.
+            'source'           => 'website',
         ]);
 
         $fmt = self::formatAppt($appt);
@@ -121,7 +114,7 @@ class AppointmentController extends Controller
             'visitor_phone'    => 'nullable|string|max:30',
             'appointment_date' => 'required|date',
             'appointment_time' => 'nullable|date_format:H:i',
-            'appointment_type' => 'required|string',
+            'appointment_type' => ['required', Rule::in(AppointmentBooker::TYPES)],
             // Scoped to this tenant. A bare `exists:` rule queries the table directly and
             // so ignores the BelongsToTenant global scope — tenant A could post tenant B's
             // property or staff id and have it stored on A's appointment. Nothing leaked
@@ -133,15 +126,14 @@ class AppointmentController extends Controller
             'status'           => 'required|in:pending,confirmed',
         ]);
 
-        $appt = Appointment::create([
-            'tenant_id'        => $tenant->id,
+        $appt = AppointmentBooker::book($tenant, [
             'property_id'      => $request->property_id ?: null,
             'staff_member_id'  => $request->staff_member_id ?: null,
             'visitor_name'     => $request->visitor_name,
             'visitor_email'    => $request->visitor_email,
             'visitor_phone'    => $request->visitor_phone,
             'appointment_date' => $request->appointment_date,
-            'appointment_time' => $request->appointment_time ? $request->appointment_time . ':00' : '09:00:00',
+            'appointment_time' => $request->appointment_time ? $request->appointment_time.':00' : null,
             'appointment_type' => $request->appointment_type,
             'notes'            => $request->notes,
             'status'           => $request->status,
