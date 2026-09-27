@@ -1,8 +1,10 @@
 *.log
 .DS_Store
 .env
-.env.backup
-.env.production
+# Any .env variant, however it is named — a timestamped backup slipped past the three
+# explicit entries that used to be here and reached a public repo.
+.env.*
+!.env.example
 .phpactor.json
 .phpunit.result.cache
 /.fleet
