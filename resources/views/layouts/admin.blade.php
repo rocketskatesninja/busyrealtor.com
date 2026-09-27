@@ -197,7 +197,7 @@
                     <a href="{{ route('tenant.admin.appointments.index', $account) }}" class="relative {{ request()->routeIs('tenant.admin.appointments.*') ? 'nav-active' : 'text-gray-700 hover-primary' }} font-medium transition-colors" title="Appointments">
                         <x-icon name="calendar" class="w-6 h-6" />
                         @if(($pendingAppointments ?? 0) > 0)
-                            <span class="absolute -top-1 -right-1 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" style="background-color: #F59E0B;">{{ $pendingAppointments > 9 ? '9+' : $pendingAppointments }}</span>
+                            <span class="absolute -top-1 -right-1 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center" style="background-color: var(--primary);">{{ $pendingAppointments > 9 ? '9+' : $pendingAppointments }}</span>
                         @endif
                     </a>
                     @endif
@@ -291,7 +291,7 @@
                     Appointments
                 </span>
                 @if(($pendingAppointments ?? 0) > 0)
-                <span class="bg-yellow-500 text-white text-xs rounded-full px-2 py-0.5">{{ $pendingAppointments }}</span>
+                <span class="text-white text-xs rounded-full px-2 py-0.5" style="background-color:var(--primary)">{{ $pendingAppointments }}</span>
                 @endif
             </a>
             @endif
