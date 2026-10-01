@@ -38,8 +38,6 @@ class LabelAssociationTest extends TestCase
     {
         ['ids' => $ids, 'fors' => $fors] = $this->parse($html);
 
-        $this->assertNotEmpty($fors, "{$where} has no associated labels at all");
-
         foreach ($fors as $for) {
             $this->assertArrayHasKey($for, $ids, "{$where}: for=\"{$for}\" points at no element");
             $this->assertSame(1, $ids[$for],
@@ -75,6 +73,28 @@ class LabelAssociationTest extends TestCase
             $html = $this->get("/{$tenant->slug}{$page}")->assertOk()->content();
             $this->assertLabelsResolve($html, "/{$tenant->slug}{$page}");
             $this->assertNoDuplicateFieldIds($html, "/{$tenant->slug}{$page}");
+        }
+    }
+
+    /**
+     * Asserted per page rather than inside the helper, because not every page has labels in
+     * its server-rendered HTML. The tenant home page's only form fields belong to the contact
+     * widget, which builds its own markup in JavaScript — those labels are associated, but in
+     * the bundle rather than in the page source, so a regex over the response cannot see them.
+     *
+     * Until the widget moved to a bundle this test passed on the home page by matching label
+     * tags inside a JS string in an inline <script>, which was never what it meant to check.
+     */
+    public function test_the_pages_that_render_their_own_forms_have_associated_labels(): void
+    {
+        $tenant = $this->makeTenant();
+        $this->makeProperty($tenant);
+
+        foreach (['/gallery', '/map', '/contact'] as $page) {
+            $html = $this->get("/{$tenant->slug}{$page}")->assertOk()->content();
+            preg_match_all('/<label[^>]*\bfor="([^"]+)"/', $html, $m);
+
+            $this->assertNotEmpty($m[1], "/{$tenant->slug}{$page} has no associated labels at all");
         }
     }
 
