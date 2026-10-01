@@ -9,10 +9,20 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 // Run daily at 8am — deactivate expired trials, send trial warning emails
-Schedule::command('app:process-trials')->dailyAt('08:00');
+//
+// withoutOverlapping() on the two mailers specifically: both decide whether to send by
+// checking an alreadySent() marker and only write that marker once the mail has actually
+// left, so two concurrent runs can both read "not sent" and both send. Until 2026-10-01 two
+// crons ran schedule:run every minute — the nope crontab and /etc/cron.d/busyrealtor — which
+// made that a live race rather than a theoretical one. The duplicate is gone, but the guard
+// belongs with the thing it protects, not with the cron configuration.
+//
+// The other tasks below are prunes and a log purge: running one twice deletes rows that are
+// already gone, which is harmless, so they are left plain.
+Schedule::command('app:process-trials')->dailyAt('08:00')->withoutOverlapping();
 
 // Run daily at 8:05am — dunning escalation and account suspension
-Schedule::command('app:process-dunning')->dailyAt('08:05');
+Schedule::command('app:process-dunning')->dailyAt('08:05')->withoutOverlapping();
 
 // Run daily — purge expired chatbot conversation logs per tenant's chatbot_expiration setting
 Schedule::command('app:purge-chat-logs')->daily();
