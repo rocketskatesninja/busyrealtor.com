@@ -60,7 +60,13 @@ class PropertyImagesController extends Controller
     public function setPrimary($account, $id)
     {
         $image = $this->ownedImage((int) $id);
-        PropertyImage::where('property_id', $image->property_id)->update(['is_primary' => false]);
+        // Everything except the target, so re-promoting the image that is already
+        // primary cannot clear it: the mass update used to include the target row, and
+        // the follow-up $image->update() then wrote nothing, because the model had been
+        // loaded while it was still primary and the attribute was not dirty.
+        PropertyImage::where('property_id', $image->property_id)
+            ->whereKeyNot($image->getKey())
+            ->update(['is_primary' => false]);
         $image->update(['is_primary' => true]);
         return response()->json(['success' => true]);
     }

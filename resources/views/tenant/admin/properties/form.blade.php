@@ -2,15 +2,28 @@
 @section('title', isset($property) ? 'Edit Property' : 'Add Property')
 @section('page-subtitle', isset($property) ? 'Update listing details' : 'Create a new listing')
 @section('foot')
-@vite('resources/js/sortable.js')
+@vite('resources/js/property-form.js')
 @endsection
 
 @section('content')
-@php $account = $tenant->slug; $isEdit = isset($property); @endphp
+@php
+$account = $tenant->slug;
+$isEdit = isset($property);
+$formConfig = [
+    'isEdit' => $isEdit,
+    'propertyId' => $isEdit ? $property->id : null,
+    'uploadUrl' => route('tenant.admin.api.property-images.store', $account),
+    'reorderUrlTpl' => route('tenant.admin.api.property-images.reorder', [$account, '__ID__']),
+    'deleteUrlTpl' => route('tenant.admin.api.property-images.destroy', [$account, '__ID__']),
+    'primaryUrlTpl' => route('tenant.admin.api.property-images.primary', [$account, '__ID__']),
+];
+@endphp
 <div class="max-w-5xl mx-auto px-4">
     <form method="POST" enctype="multipart/form-data"
           action="{{ $isEdit ? route('tenant.admin.properties.update', [$account, $property->id]) : route('tenant.admin.properties.store', $account) }}"
-          x-data="propertyForm()"
+          id="property-form"
+          data-config='@json($formConfig, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)'
+          x-data="propertyForm"
           @submit="submitCreate($event)"
           class="space-y-6">
         @csrf
@@ -239,7 +252,7 @@
                         Main
                     </span>
                     <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                        <button type="button" onclick="deleteImage({{ $img->id }}, this)"
+                        <button type="button" data-action="delete-image"
                                 class="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors pointer-events-auto" title="Delete photo">
                             <x-icon name="x-mark" class="w-3.5 h-3.5" />
                         </button>
@@ -258,7 +271,7 @@
                 <label for="images" id="upload-zone" class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors cursor-pointer">
                     <svg id="upload-icon" class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     <span id="upload-label" class="text-gray-500 text-sm">Click to select photos <span class="text-gray-400">(JPG, PNG, WebP — max 10MB each)</span></span>
-                    <input type="file" id="images" multiple accept="image/*" class="sr-only" onchange="handleFileSelect(this.files)">
+                    <input type="file" id="images" multiple accept="image/*" class="sr-only">
                 </label>
             </div>
         </div>
@@ -268,256 +281,3 @@
 </div>
 @endsection
 
-@section('scripts')
-// ─── Shared constants (injected from Blade) ───────────────────────────────
-const _isEdit       = {{ $isEdit ? 'true' : 'false' }};
-const _propertyId   = {{ $isEdit ? $property->id : 'null' }};
-const _uploadUrl    = '{{ route("tenant.admin.api.property-images.store", $account) }}';
-const _reorderUrlTpl= '{{ route("tenant.admin.api.property-images.reorder", [$account, "__ID__"]) }}';
-const _csrf         = '{{ csrf_token() }}';
-
-// ─── Alpine component ─────────────────────────────────────────────────────
-function propertyForm() {
-    return {
-        activeTab: 'basic',
-
-        _sortableReady: false,
-        init() {
-            this.$watch('activeTab', (val) => {
-                if (val === 'media' && !this._sortableReady) {
-                    this._sortableReady = true;
-                    this.$nextTick(() => {
-                        if (_isEdit) {
-                            // Edit: init sortable on the persistent grid
-                            const grid = document.getElementById('image-grid');
-                            if (grid && typeof Sortable !== 'undefined') {
-                                refreshMainBadge();
-                                Sortable.create(grid, {
-                                    animation: 150, ghostClass: 'opacity-30', dragClass: 'shadow-xl',
-                                    onEnd() { refreshMainBadge(); persistOrder(); }
-                                });
-                            }
-                        } else {
-                            // Create: init sortable on preview grid (may be empty initially)
-                            initPreviewSortable();
-                        }
-                    });
-                }
-            });
-        },
-        async submitCreate(e) {
-            if (_isEdit) return true;
-            e.preventDefault();
-            const form = this.$el.closest('form');
-            const btn = form.querySelector('button[type=submit]');
-            const origText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Saving...';
-            try {
-                // 1. Submit form data to create property
-                const fd = new FormData(form);
-                // Remove the file input data (we'll upload via AJAX)
-                fd.delete('images[]');
-                const res = await fetch(form.action, {
-                    method: 'POST',
-                    body: fd,
-                    headers: { 'Accept': 'application/json' }
-                });
-                const data = await res.json();
-                if (!res.ok) {
-                    // Validation errors — reload with errors
-                    if (data.errors) {
-                        let msg = Object.values(data.errors).flat().join('\n');
-                        alert(msg);
-                    }
-                    btn.disabled = false;
-                    btn.innerHTML = origText;
-                    return;
-                }
-                // 2. Upload pending photos
-                const propertyId = data.id;
-                const validFiles = _pendingFiles.filter(f => f !== null);
-                for (const file of validFiles) {
-                    const imgFd = new FormData();
-                    imgFd.append('image', file);
-                    imgFd.append('property_id', propertyId);
-                    await fetch(_uploadUrl, {
-                        method: 'POST',
-                        headers: { 'X-CSRF-TOKEN': _csrf, 'Accept': 'application/json' },
-                        body: imgFd
-                    });
-                }
-                // 3. Redirect to properties index
-                window.location.href = data.redirect || form.action.replace('/store', '');
-            } catch(err) {
-                alert('Error creating property: ' + err.message);
-                btn.disabled = false;
-                btn.innerHTML = origText;
-            }
-        },
-
-    };
-}
-
-// ─── File select handler — unified for both create and edit ──────────────
-function handleFileSelect(files) {
-    if (_isEdit) {
-        // Edit: upload immediately via AJAX
-        Array.from(files).forEach(file => uploadImmediate(file));
-    } else {
-        // Create: store files locally, show preview cards, upload after form submit
-        Array.from(files).forEach(file => {
-            _pendingFiles.push(file);
-            addLocalPreviewCard(file, _pendingFiles.length - 1);
-        });
-    }
-    document.getElementById('images').value = '';
-}
-
-let _pendingFiles = [];
-
-function addLocalPreviewCard(file, idx) {
-    const grid = document.getElementById('image-grid');
-    const hdr  = document.getElementById('photos-header');
-    if (!grid) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const card = document.createElement('div');
-        card.className = 'relative group rounded-xl overflow-hidden aspect-square bg-gray-100 cursor-grab active:cursor-grabbing select-none';
-        card.dataset.localIdx = idx;
-        card.innerHTML =
-            '<img src="' + e.target.result + '" class="w-full h-full object-cover pointer-events-none">' +
-            '<span class="main-badge absolute top-1.5 left-1.5 items-center gap-1 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-md font-semibold shadow" style="display:none">' +
-            '<x-icon name="star-solid" class="w-3 h-3" />' +
-            'Main</span>' +
-            '<div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">' +
-            '<button type="button" onclick="removeLocalPreview(this)" class="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors pointer-events-auto" title="Remove">' +
-            '<x-icon name="x-mark" class="w-3.5 h-3.5" /></button></div>' +
-            '<div class="absolute bottom-1 right-1 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">' +
-            '<svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 6a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm8-16a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4z"/></svg></div>';
-        grid.appendChild(card);
-        refreshMainBadge();
-        if (hdr) hdr.style.removeProperty('display');
-        // Init sortable on first card
-        if (!_localSortable && typeof Sortable !== 'undefined') {
-            _localSortable = Sortable.create(grid, {
-                animation: 150, ghostClass: 'opacity-30', dragClass: 'shadow-xl',
-                onEnd() { refreshMainBadge(); reindexPendingFiles(); }
-            });
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
-let _localSortable = null;
-
-function removeLocalPreview(btn) {
-    const card = btn.closest('[data-local-idx]');
-    const idx = parseInt(card.dataset.localIdx);
-    _pendingFiles[idx] = null;
-    card.remove();
-    refreshMainBadge();
-    if (!document.querySelectorAll('#image-grid [data-local-idx]').length) {
-        const hdr = document.getElementById('photos-header');
-        if (hdr) hdr.style.setProperty('display', 'none', 'important');
-    }
-}
-
-function reindexPendingFiles() {
-    const cards = document.querySelectorAll('#image-grid [data-local-idx]');
-    const reordered = [];
-    cards.forEach(card => {
-        const idx = parseInt(card.dataset.localIdx);
-        if (_pendingFiles[idx]) reordered.push(_pendingFiles[idx]);
-    });
-    _pendingFiles = reordered;
-    cards.forEach((card, i) => card.dataset.localIdx = i);
-}
-
-// ─── EDIT: upload a single file immediately via AJAX ─────────────────────
-function uploadImmediate(file) {
-    const zone  = document.getElementById('upload-zone');
-    const label = document.getElementById('upload-label');
-    if (label) label.textContent = 'Uploading…';
-
-    const fd = new FormData();
-    fd.append('image', file);
-    fd.append('property_id', _propertyId);
-
-    fetch(_uploadUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': _csrf }, body: fd })
-        .then(r => r.json())
-        .then(data => {
-            if (data.id) {
-                const deleteUrl  = '{{ route("tenant.admin.api.property-images.destroy", [$account, "__ID__"]) }}'.replace('__ID__', data.id);
-                const primaryUrl = '{{ route("tenant.admin.api.property-images.primary", [$account, "__ID__"]) }}'.replace('__ID__', data.id);
-                const card = buildGridCard(data.id, data.url, deleteUrl, primaryUrl);
-                document.getElementById('image-grid').appendChild(card);
-                refreshMainBadge();
-                persistOrder();
-            }
-        })
-        .finally(() => {
-            if (label) label.innerHTML = 'Click to select photos <span class="text-gray-400">(JPG, PNG, WebP — max 10MB each)</span>';
-        });
-}
-
-// ─── Build a grid card element (used after AJAX upload on edit) ───────────
-function buildGridCard(id, url, deleteUrl, primaryUrl) {
-    const card = document.createElement('div');
-    card.className = 'relative group rounded-xl overflow-hidden aspect-square bg-gray-100 cursor-grab active:cursor-grabbing select-none';
-    card.dataset.id         = id;
-    card.dataset.deleteUrl  = deleteUrl;
-    card.dataset.primaryUrl = primaryUrl;
-    card.innerHTML = `
-        <img src="${url}" class="w-full h-full object-cover pointer-events-none">
-        <span class="main-badge absolute top-1.5 left-1.5 items-center gap-1 bg-emerald-500 text-white text-xs px-1.5 py-0.5 rounded-md font-semibold shadow" style="display:none">
-            <x-icon name="star-solid" class="w-3 h-3" />
-            Main
-        </span>
-        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-            <button type="button" onclick="deleteImage(${id}, this)" class="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-lg transition-colors pointer-events-auto" title="Delete photo">
-                <x-icon name="x-mark" class="w-3.5 h-3.5" />
-            </button>
-        </div>
-        <div class="absolute bottom-1 right-1 text-white/70 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 6a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm8-16a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4zm0 8a2 2 0 110-4 2 2 0 010 4z"/></svg>
-        </div>`;
-    return card;
-}
-
-
-
-// ─── Badge helpers ────────────────────────────────────────────────────────
-function refreshMainBadge() {
-    document.querySelectorAll('#image-grid > div').forEach(function(card, i) {
-        const b = card.querySelector('.main-badge');
-        if (b) b.style.display = i === 0 ? 'inline-flex' : 'none';
-    });
-}
-
-
-// ─── Persist sort order to server (edit only) ─────────────────────────────
-function persistOrder() {
-    document.querySelectorAll('#image-grid > [data-id]').forEach(function(card, i) {
-        const id  = card.dataset.id;
-        const url = _reorderUrlTpl.replace('__ID__', id);
-        fetch(url, { method: 'POST', headers: { 'X-CSRF-TOKEN': _csrf, 'Content-Type': 'application/json' }, body: JSON.stringify({ sort_order: i }) });
-        if (i === 0) fetch(card.dataset.primaryUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': _csrf } });
-    });
-}
-
-// ─── Delete a saved photo (edit only) ────────────────────────────────────
-function deleteImage(id, btn) {
-    if (!confirm('Delete this photo?')) return;
-    const card = btn.closest('[data-id]');
-    fetch(card.dataset.deleteUrl, { method: 'DELETE', headers: { 'X-CSRF-TOKEN': _csrf } })
-        .then(r => {
-            if (r.ok) {
-                card.remove();
-                refreshMainBadge();
-                persistOrder();
-            }
-        });
-}
-
-@endsection
