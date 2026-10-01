@@ -120,36 +120,7 @@
         html.dark .dark-mode-icon-moon { display: block; }
         @yield('styles')
     </style>
-    <script>
-        function toggleUserMenu() {
-            var d = document.getElementById('user-dropdown');
-            d.style.display = d.style.display === 'none' ? 'block' : 'none';
-        }
-        function toggleMobileMenu() {
-            var m = document.getElementById('mobile-menu');
-            m.style.display = m.style.display === 'none' ? 'block' : 'none';
-        }
-        function toggleDarkMode() {
-            var isDark = document.documentElement.classList.toggle('dark');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateDarkModeLabels();
-        }
-        function updateDarkModeLabels() {
-            var isDark = document.documentElement.classList.contains('dark');
-            document.querySelectorAll('.dark-mode-label').forEach(function(el) {
-                el.textContent = isDark ? 'Light Mode' : 'Dark Mode';
-            });
-        }
-        // Close user dropdown when clicking outside
-        document.addEventListener('click', function(e) {
-            var btn = document.getElementById('user-menu-btn');
-            var dd = document.getElementById('user-dropdown');
-            if (dd && btn && !btn.contains(e.target) && !dd.contains(e.target)) {
-                dd.style.display = 'none';
-            }
-        });
-        document.addEventListener('DOMContentLoaded', updateDarkModeLabels);
-    </script>
+@vite('resources/js/admin-chrome.js')
     @yield('head')
 </head>
 <body class="bg-gray-50 min-h-screen">
@@ -214,7 +185,7 @@
                     @endif
                 </nav>
                 <div class="relative">
-                    <button onclick="toggleUserMenu()" id="user-menu-btn" class="flex items-center space-x-2 text-gray-700 hover-primary focus:outline-none">
+                    <button type="button" data-toggle-user-menu id="user-menu-btn" class="flex items-center space-x-2 text-gray-700 hover-primary focus:outline-none">
                         <span class="font-medium">{{ auth()->user()->first_name }}</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
@@ -227,7 +198,7 @@
                             <svg class="w-4 h-4 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/></svg>
                             Billing
                         </a>
-                        <button onclick="toggleDarkMode()" class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm text-left">
+                        <button type="button" data-toggle-dark-mode class="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-sm text-left">
                             <svg class="w-4 h-4 mr-3 text-gray-500 dark-mode-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                             <svg class="w-4 h-4 mr-3 text-gray-500 dark-mode-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                             <span class="dark-mode-label"></span>
@@ -253,7 +224,7 @@
             </div>
 
             {{-- Mobile menu button --}}
-            <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded text-gray-700">
+            <button type="button" data-toggle-mobile-menu class="md:hidden p-2 rounded text-gray-700">
                 <x-icon name="bars" class="w-6 h-6" />
             </button>
         </div>
@@ -316,7 +287,7 @@
                 Assistant
             </a>
             @endif
-            <button onclick="toggleDarkMode()" class="flex items-center w-full px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+            <button type="button" data-toggle-dark-mode class="flex items-center w-full px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
                 <svg class="w-5 h-5 mr-3 text-gray-500 dark-mode-icon-sun" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                 <svg class="w-5 h-5 mr-3 text-gray-500 dark-mode-icon-moon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 <span class="dark-mode-label"></span>

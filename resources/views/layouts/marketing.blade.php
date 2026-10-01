@@ -284,69 +284,7 @@
 {{-- The cookie banner lives in a bundle; it was duplicated in both layouts. --}}
 @vite('resources/js/cookie-consent.js')
 
-<script>
-(function () {
-    // Scroll reveal
-    var ro = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-            if (e.isIntersecting) { e.target.classList.add('is-visible'); ro.unobserve(e.target); }
-        });
-    }, { threshold: 0.08, rootMargin: '0px 0px -36px 0px' });
-    document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.reveal-scale')
-            .forEach(function (el) { ro.observe(el); });
-
-    // Count-up animation
-    function countUp(el) {
-        var raw = el.dataset.target || el.textContent.trim();
-        var m = raw.match(/^([^0-9]*)([0-9][0-9,]*)(\+?)(.*)$/);
-        if (!m) return;
-        var pre = m[1], numStr = m[2].replace(/,/g,''), plus = m[3], suf = m[4];
-        var target = parseInt(numStr, 10);
-        if (isNaN(target)) return;
-        var dur = 1800, t0 = performance.now();
-        (function tick(now) {
-            var p = Math.min((now - t0) / dur, 1);
-            var ease = 1 - Math.pow(1 - p, 3);
-            el.textContent = pre + Math.round(ease * target).toLocaleString() + (p >= 1 ? plus : '') + suf;
-            if (p < 1) requestAnimationFrame(tick);
-            else el.textContent = raw;
-        })(t0);
-    }
-    var co = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-            if (e.isIntersecting) { countUp(e.target); co.unobserve(e.target); }
-        });
-    }, { threshold: 0.5 });
-    document.querySelectorAll('.count-up').forEach(function (el) {
-        el.dataset.target = el.textContent.trim(); co.observe(el);
-    });
-
-    // Header scroll: pure JS, no Alpine/Tailwind dependency
-    (function() {
-        var header = document.getElementById('main-header');
-        if (!header) return;
-        var isDark = document.documentElement.classList.contains('dark');
-        function updateHeader() {
-            var scrolled = window.scrollY > 40;
-            header.style.backgroundColor = scrolled
-                ? (isDark ? '#1e293b' : '#ffffff')
-                : 'transparent';
-            header.classList.toggle('shadow-md', scrolled);
-            header.classList.toggle('is-scrolled', scrolled);
-            var toggle = document.getElementById('theme-toggle');
-            if (toggle) { toggle.style.opacity = scrolled ? '1' : '0'; toggle.style.pointerEvents = scrolled ? 'auto' : 'none'; }
-        }
-        window.addEventListener('scroll', updateHeader, { passive: true });
-        updateHeader();
-        // React to dark mode toggle widget (class change on <html>)
-        new MutationObserver(function() {
-            isDark = document.documentElement.classList.contains('dark');
-            updateHeader();
-        }).observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    })();
-})();
-
-</script>
+@vite('resources/js/marketing.js')
     {{-- Floating dark mode toggle --}}
     <button id="theme-toggle" @click="$store.theme.toggle()" x-init="$nextTick(() => { let s = window.scrollY > 40; $el.style.opacity = s ? '1' : '0'; $el.style.pointerEvents = s ? 'auto' : 'none'; })" :style="($store.theme.dark ? 'background:#ffffff;border-color:#d1d5db;color:#374151' : 'background:#1e293b;border-color:#475569;color:#e2e8f0') + ';transition:opacity 0.4s ease'" class="fixed bottom-4 right-4 z-50 p-2.5 rounded-full border shadow-lg hover:shadow-xl transition opacity-0 pointer-events-none" title="Toggle dark mode">
         <svg x-show="!$store.theme.dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>

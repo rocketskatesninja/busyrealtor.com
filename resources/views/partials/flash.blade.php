@@ -9,6 +9,7 @@
     elseif (session('status')) { $flashType = 'info'; $flashMessage = session('status'); }
 @endphp
 @if($flashType)
+<style>.flash-dismiss{opacity:.6}.flash-dismiss:hover{opacity:1}</style>
 <div id="flash-banner" style="position:fixed;left:0;right:0;z-index:40;opacity:0;transform:translateX(100%);transition:opacity .4s ease,transform .4s cubic-bezier(.4,0,.2,1);">
     @php
         $lightBg = match($flashType) { 'success' => '#dcfce7', 'error' => '#fee2e2', default => '#dbeafe' };
@@ -31,59 +32,9 @@
                 {!! $icon !!}
             </svg>
             <span style="flex:1;font-size:.875rem;font-weight:500;">{{ $flashMessage }}</span>
-            <button onclick="dismissFlash()" style="margin-left:1rem;opacity:.6;cursor:pointer;font-size:1.25rem;line-height:1;background:none;border:none;color:inherit;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='.6'">&times;</button>
+            <button type="button" data-flash-dismiss class="flash-dismiss" style="margin-left:1rem;cursor:pointer;font-size:1.25rem;line-height:1;background:none;border:none;color:inherit;">&times;</button>
         </div>
     </div>
 </div>
-<script>
-(function(){
-    var el = document.getElementById('flash-banner');
-    var bar = document.getElementById('flash-bar');
-    if (!el || !bar) return;
-
-    // Position just below the header.
-    // Use getBoundingClientRect().bottom (not offsetHeight) so the flash sits
-    // BELOW the header's actual bottom edge in the viewport. This matters when
-    // a banner above the header (e.g. the yellow "you are impersonating X"
-    // banner in admin.blade.php) pushes the header down: offsetHeight only
-    // returns the header's own height and the flash would slide in UNDER it.
-    // Re-run on scroll because the header is `sticky top-0` — once the user
-    // scrolls past the impersonation banner, the header sticks to the top
-    // and .bottom shrinks back to just the header height.
-    var header = document.querySelector('header[id]') || document.querySelector('header');
-    function positionFlash() {
-        if (header) {
-            el.style.top = Math.max(0, header.getBoundingClientRect().bottom) + 'px';
-        } else {
-            el.style.top = '0';
-        }
-    }
-    positionFlash();
-    window.addEventListener('scroll', positionFlash, { passive: true });
-
-    // Dark mode colors
-    if (document.documentElement.classList.contains('dark') || document.body.classList.contains('dark')) {
-        bar.style.background = bar.dataset.darkBg;
-        bar.style.borderColor = bar.dataset.darkBorder;
-        bar.style.color = bar.dataset.darkText;
-    }
-
-    // Slide in from right
-    requestAnimationFrame(function(){ requestAnimationFrame(function(){
-        el.style.opacity = '1';
-        el.style.transform = 'translateX(0)';
-    }); });
-
-    // Auto-dismiss after 8s
-    setTimeout(function(){ dismissFlash(); }, 8000);
-})();
-
-function dismissFlash() {
-    var el = document.getElementById('flash-banner');
-    if (!el) return;
-    el.style.opacity = '0';
-    el.style.transform = 'translateX(100%)';
-    setTimeout(function(){ if (el) el.remove(); }, 400);
-}
-</script>
+@vite('resources/js/flash.js')
 @endif
