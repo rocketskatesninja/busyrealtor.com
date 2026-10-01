@@ -9,4 +9,4 @@
      down. --}}
 @props(['name'])
 @php($icon = config("icons.{$name}"))
-@if ($icon)<svg {!! $icon['attrs'] !!}{{ $attributes }}>{!! $icon['inner'] !!}</svg>@endif
+@if ($icon)<svg {!! $icon['attrs'] !!} {{ $attributes }}>{!! $icon['inner'] !!}</svg>@endif
