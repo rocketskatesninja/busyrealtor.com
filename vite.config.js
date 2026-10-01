@@ -12,6 +12,7 @@ export default defineConfig({
                 // site does not pay for a charting library it never draws with.
                 'resources/js/chart.js',
                 'resources/js/sortable.js',
+                'resources/js/tenant-widgets.js',
             ],
             refresh: true,
         }),
