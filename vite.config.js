@@ -13,6 +13,7 @@ export default defineConfig({
                 'resources/js/chart.js',
                 'resources/js/sortable.js',
                 'resources/js/tenant-widgets.js',
+                'resources/js/cookie-consent.js',
             ],
             refresh: true,
         }),

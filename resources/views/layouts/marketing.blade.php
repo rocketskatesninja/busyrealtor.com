@@ -205,8 +205,8 @@
             <span>We use cookies to improve your experience and analyze traffic. See our <a href="/privacy-policy">Privacy Policy</a>.</span>
         </div>
         <div class="cookie-banner-actions">
-            <button onclick="cookieConsent('false')" class="cookie-btn-decline">Decline</button>
-            <button onclick="cookieConsent('true')" class="cookie-btn-accept">Accept All</button>
+            <button data-cookie-consent="false" class="cookie-btn-decline">Decline</button>
+            <button data-cookie-consent="true" class="cookie-btn-accept">Accept All</button>
         </div>
     </div>
 </div>
@@ -281,34 +281,8 @@
 }
 .cookie-btn-accept:hover { opacity: 0.88; }
 </style>
-<script>
-(function() {
-    var consent = localStorage.getItem('cookie_consent');
-    if (!consent) {
-        var banner = document.getElementById('cookie-banner');
-        if (banner) banner.style.display = '';
-    }
-    document.addEventListener('DOMContentLoaded', updateCookiePrefsLink);
-})();
-function cookieConsent(val) {
-    localStorage.setItem('cookie_consent', val);
-    var banner = document.getElementById('cookie-banner');
-    if (banner) banner.style.display = 'none';
-    updateCookiePrefsLink();
-}
-function openCookiePrefs() {
-    var banner = document.getElementById('cookie-banner');
-    if (banner) { banner.style.display = ''; banner.scrollIntoView({ behavior: 'smooth', block: 'end' }); }
-}
-function updateCookiePrefsLink() {
-    var link = document.getElementById('cookie-prefs-link');
-    if (!link) return;
-    var c = localStorage.getItem('cookie_consent');
-    if (c === 'true')  link.textContent = 'Cookie Preferences ✓';
-    else if (c === 'false') link.textContent = 'Cookie Preferences ✕';
-    else link.textContent = 'Cookie Preferences';
-}
-</script>
+{{-- The cookie banner lives in a bundle; it was duplicated in both layouts. --}}
+@vite('resources/js/cookie-consent.js')
 
 <script>
 (function () {
