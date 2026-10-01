@@ -5,7 +5,14 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
     plugins: [
         laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
+            input: [
+                'resources/css/app.css',
+                'resources/js/app.js',
+                // Loaded only by the handful of screens that need them, so the rest of the
+                // site does not pay for a charting library it never draws with.
+                'resources/js/chart.js',
+                'resources/js/sortable.js',
+            ],
             refresh: true,
         }),
         tailwindcss(),

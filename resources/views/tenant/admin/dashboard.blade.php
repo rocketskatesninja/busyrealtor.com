@@ -25,11 +25,11 @@
 @endsection
 
 @section('head')
-<script src="{{ asset('js/chart.min.js') }}"></script>
+@vite('resources/js/chart.js')
 @endsection
 
 @section('foot')
-<script src="{{ asset('js/Sortable.min.js') }}"></script>
+@vite('resources/js/sortable.js')
 @endsection
 
 @section('content')
@@ -375,6 +375,14 @@
 @endsection
 
 @section('scripts')
+// Chart.js now arrives as a bundled module, and a module runs after the classic inline
+// scripts at the end of the body — so `new Chart()` at the top level would fire before the
+// library existed. Deferred scripts still execute before DOMContentLoaded, so this listener
+// is the earliest point where the library is reliably there.
+//
+// Only the chart block is wrapped. The dashboard's functions below stay at the top level
+// because the markup calls them from onclick attributes, and scoping them would break that.
+document.addEventListener('DOMContentLoaded', () => {
 const isDark = document.documentElement.classList.contains('dark');
 const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3b82f6';
 const chartLegendColor = isDark ? '#94a3b8' : '#6b7280';
@@ -464,6 +472,7 @@ new Chart(document.getElementById('msgSourcesChart'), {
 });
 @endif
 
+});
 // ── Sortable Dashboard ──────────────────────────────────────────────────────
 const LOCK_KEY = 'dashboard_locked';
 const saveUrl  = '{{ route("tenant.admin.dashboard.order", $account) }}';

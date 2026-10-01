@@ -2,7 +2,7 @@
 @section('title', 'Submit Feedback')
 @section('page-subtitle', 'Report a bug, suggest a feature, or share your thoughts')
 @section('foot')
-<script src="{{ asset('js/Sortable.min.js') }}"></script>
+@vite('resources/js/sortable.js')
 @endsection
 
 @section('content')

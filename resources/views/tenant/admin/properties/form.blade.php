@@ -2,7 +2,7 @@
 @section('title', isset($property) ? 'Edit Property' : 'Add Property')
 @section('page-subtitle', isset($property) ? 'Update listing details' : 'Create a new listing')
 @section('foot')
-<script src="{{ asset('js/Sortable.min.js') }}"></script>
+@vite('resources/js/sortable.js')
 @endsection
 
 @section('content')
