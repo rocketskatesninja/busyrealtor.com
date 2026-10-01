@@ -17,6 +17,7 @@ export default defineConfig({
                 'resources/js/flash.js',
                 'resources/js/marketing.js',
                 'resources/js/admin-chrome.js',
+                'resources/js/setup-wizard.js',
             ],
             refresh: true,
         }),

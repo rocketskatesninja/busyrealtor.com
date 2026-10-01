@@ -37,4 +37,11 @@ Alpine.store('theme', {
 });
 
 window.Alpine = Alpine;
-Alpine.start();
+
+// Deliberately on DOMContentLoaded rather than here. Every @vite entry is a deferred
+// module, and the spec runs all of them before the DOMContentLoaded task is queued, so
+// starting on the event gives a page-specific bundle further down the document its one
+// chance to register its Alpine.data() components before Alpine walks the DOM. No
+// readyState guard: during a deferred module readyState already reads "interactive",
+// so a guard looking for "loading" skips the listener and starts Alpine too early.
+document.addEventListener('DOMContentLoaded', () => Alpine.start());

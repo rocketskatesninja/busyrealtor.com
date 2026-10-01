@@ -520,19 +520,25 @@ function applyLockState(locked) {
     if (tableEl) tableSortable = new Sortable(tableEl, opts('tables-container',      'tables'));
 }
 
-const lockBtn = document.getElementById('dash-lock-btn');
-if (lockBtn) {
-    lockBtn.addEventListener('click', () => {
-        const newLocked = !getLocked();
-        setLocked(newLocked);
-        applyLockState(newLocked);
+// applyLockState() constructs the Sortable instances, and Sortable now arrives as a
+// deferred module — which runs after this classic inline script. Calling it at the top
+// level threw a ReferenceError that aborted the rest of this block, so the first call
+// and the listeners that follow it wait for DOMContentLoaded.
+document.addEventListener('DOMContentLoaded', () => {
+    const lockBtn = document.getElementById('dash-lock-btn');
+    if (lockBtn) {
+        lockBtn.addEventListener('click', () => {
+            const newLocked = !getLocked();
+            setLocked(newLocked);
+            applyLockState(newLocked);
+        });
+    }
+
+    const isMobile = window.innerWidth < 768;
+    applyLockState(isMobile ? true : getLocked());
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth < 768 && !getLocked()) applyLockState(true);
     });
-}
-
-const isMobile = window.innerWidth < 768;
-applyLockState(isMobile ? true : getLocked());
-
-window.addEventListener('resize', () => {
-    if (window.innerWidth < 768 && !getLocked()) applyLockState(true);
 });
 @endsection

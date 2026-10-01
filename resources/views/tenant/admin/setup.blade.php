@@ -22,10 +22,64 @@ $heroPresets = [
     'desert'=>'Desert','woods'=>'Woods','river'=>'River',
     'grassland'=>'Grassland','small-town'=>'Marshland','cityscape'=>'Cityscape',
 ];
+$wizardConfig = [
+    'saveUrl' => route('tenant.admin.setup.save', $account),
+    'data' => [
+        // Step 1
+        'favicon_preset' => $settings->favicon_preset ?? '',
+        'primary_color' => $settings->primary_color ?? '#3B82F6',
+        'header_display_mode' => $settings->header_display_mode ?? 'text',
+        // Step 2
+        'owner_name' => $settings->owner_name ?? '',
+        'contact_email' => $settings->contact_email ?? '',
+        'contact_phone' => $settings->contact_phone ?? '',
+        'contact_address' => $settings->contact_address ?? '',
+        'license_number' => $settings->license_number ?? '',
+        'brokerage_name' => $settings->brokerage_name ?? '',
+        // Step 3
+        'hero_title' => $settings->hero_title ?? '',
+        'hero_subtitle' => $settings->hero_subtitle ?? '',
+        'hero_background_type' => $settings->hero_background_type ?? 'preset',
+        'hero_preset' => $settings->hero_preset ?? 'modern-home',
+        'hero_gradient_start' => $settings->hero_gradient_start ?? '#1e3a5f',
+        'hero_gradient_end' => $settings->hero_gradient_end ?? '#7c3aed',
+        // Step 4 — integrations. The secrets are never sent to the browser, so every
+        // key field starts blank and only overwrites what is stored when it is filled in.
+        'ai_preferred' => $aiConfig['preferred'] ?? 'anthropic',
+        'ai_enabled' => (bool) ($aiInteg->is_active ?? true),
+        'ai_anthropic_key' => '',
+        'ai_anthropic_model' => $aiConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001',
+        'ai_openai_key' => '',
+        'ai_openai_model' => $aiConfig['openai_model'] ?? 'gpt-4o-mini',
+        'ga_measurement_id' => $gaInteg->api_key ?? '',
+        'ga_enabled' => (bool) ($gaInteg->is_active ?? false),
+        'fb_access_token' => '',
+        'fb_page_id' => $fbConfig['page_id'] ?? '',
+        'fb_enabled' => (bool) ($fbInteg->is_active ?? false),
+        'tw_api_key' => '',
+        'tw_api_secret' => '',
+        'tw_access_token' => '',
+        'tw_access_token_secret' => '',
+        'tw_enabled' => (bool) ($twInteg->is_active ?? false),
+        // Step 5 — property
+        'prop_title' => '',
+        'prop_type' => '',
+        'prop_price' => '',
+        'prop_address' => '',
+        'prop_city' => '',
+        'prop_state' => '',
+        'prop_zip' => '',
+        'prop_bedrooms' => '',
+        'prop_bathrooms' => '',
+        'prop_sqft' => '',
+    ],
+];
 @endphp
 
 <div class="max-w-3xl mx-auto px-4 pb-12"
-     x-data="setupWizard()"
+     id="setup-wizard"
+     data-wizard='@json($wizardConfig, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)'
+     x-data="setupWizard"
      x-cloak>
 
     {{-- Header: progress + skip --}}
@@ -614,186 +668,5 @@ $heroPresets = [
     </div>
 </div>
 
-<script>
-function setupWizard() {
-    return {
-        step: 1,
-        saving: false,
-        errorMsg: '',
-        completedSteps: [],
-        data: {
-            // Step 1
-            favicon_preset: @json($settings->favicon_preset ?? ''),
-            primary_color: @json($settings->primary_color ?? '#3B82F6'),
-            header_display_mode: @json($settings->header_display_mode ?? 'text'),
-            // Step 2
-            owner_name: @json($settings->owner_name ?? ''),
-            contact_email: @json($settings->contact_email ?? ''),
-            contact_phone: @json($settings->contact_phone ?? ''),
-            contact_address: @json($settings->contact_address ?? ''),
-            license_number: @json($settings->license_number ?? ''),
-            brokerage_name: @json($settings->brokerage_name ?? ''),
-            // Step 3
-            hero_title: @json($settings->hero_title ?? ''),
-            hero_subtitle: @json($settings->hero_subtitle ?? ''),
-            hero_background_type: @json($settings->hero_background_type ?? 'preset'),
-            hero_preset: @json($settings->hero_preset ?? 'modern-home'),
-            hero_gradient_start: @json($settings->hero_gradient_start ?? '#1e3a5f'),
-            hero_gradient_end: @json($settings->hero_gradient_end ?? '#7c3aed'),
-            // Step 4 — integrations
-            ai_preferred: @json($aiConfig['preferred'] ?? 'anthropic'),
-            ai_enabled: @json((bool)($aiInteg->is_active ?? true)),
-            ai_anthropic_key: '',
-            ai_anthropic_model: @json($aiConfig['anthropic_model'] ?? 'claude-haiku-4-5-20251001'),
-            ai_openai_key: '',
-            ai_openai_model: @json($aiConfig['openai_model'] ?? 'gpt-4o-mini'),
-            ga_measurement_id: @json($gaInteg->api_key ?? ''),
-            ga_enabled: @json((bool)($gaInteg->is_active ?? false)),
-            fb_access_token: '',
-            fb_page_id: @json($fbConfig['page_id'] ?? ''),
-            fb_enabled: @json((bool)($fbInteg->is_active ?? false)),
-            tw_api_key: '',
-            tw_api_secret: '',
-            tw_access_token: '',
-            tw_access_token_secret: '',
-            tw_enabled: @json((bool)($twInteg->is_active ?? false)),
-            // Step 5 — property
-            prop_title: '',
-            prop_type: '',
-            prop_price: '',
-            prop_address: '',
-            prop_city: '',
-            prop_state: '',
-            prop_zip: '',
-            prop_bedrooms: '',
-            prop_bathrooms: '',
-            prop_sqft: '',
-        },
-
-        async saveStep() {
-            this.saving = true;
-            this.errorMsg = '';
-
-            try {
-                let body;
-                const headers = { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content, 'Accept': 'application/json' };
-
-                if (this.step === 3 || this.step === 5) {
-                    // Use FormData for file uploads
-                    body = new FormData();
-                    body.append('step', this.step);
-
-                    if (this.step === 3) {
-                        ['hero_title','hero_subtitle','hero_background_type','hero_preset','hero_gradient_start','hero_gradient_end'].forEach(k => body.append(k, this.data[k] || ''));
-                        const heroFile = this.$refs.heroImageInput?.files?.[0];
-                        if (heroFile) body.append('hero_image', heroFile);
-                    }
-
-                    if (this.step === 5) {
-                        if (!this.data.prop_title) {
-                            // Skip — no property to add
-                            this.step++;
-                            this.saving = false;
-                            window.scrollTo({top: 0, behavior: 'smooth'});
-                            return;
-                        }
-                        body.append('title', this.data.prop_title);
-                        body.append('property_type', this.data.prop_type || 'house');
-                        body.append('price', this.data.prop_price);
-                        body.append('address', this.data.prop_address);
-                        body.append('city', this.data.prop_city);
-                        body.append('state', this.data.prop_state);
-                        body.append('zip', this.data.prop_zip);
-                        body.append('bedrooms', this.data.prop_bedrooms);
-                        body.append('bathrooms', this.data.prop_bathrooms);
-                        body.append('sqft', this.data.prop_sqft);
-                        const propFile = this.$refs.propImageInput?.files?.[0];
-                        if (propFile) body.append('images[]', propFile);
-                    }
-                } else {
-                    headers['Content-Type'] = 'application/json';
-                    let payload = { step: this.step };
-
-                    if (this.step === 1) {
-                        Object.assign(payload, {
-                            favicon_preset: this.data.favicon_preset,
-                            primary_color: this.data.primary_color,
-                            header_display_mode: this.data.header_display_mode,
-                        });
-                    } else if (this.step === 2) {
-                        Object.assign(payload, {
-                            owner_name: this.data.owner_name,
-                            contact_email: this.data.contact_email,
-                            contact_phone: this.data.contact_phone,
-                            contact_address: this.data.contact_address,
-                            license_number: this.data.license_number,
-                            brokerage_name: this.data.brokerage_name,
-                        });
-                    } else if (this.step === 4) {
-                        Object.assign(payload, {
-                            ai_preferred: this.data.ai_preferred,
-                            ai_enabled: this.data.ai_enabled ? 1 : 0,
-                            ai_anthropic_key: this.data.ai_anthropic_key,
-                            ai_anthropic_model: this.data.ai_anthropic_model,
-                            ai_openai_key: this.data.ai_openai_key,
-                            ai_openai_model: this.data.ai_openai_model,
-                            ga_measurement_id: this.data.ga_measurement_id,
-                            ga_enabled: this.data.ga_enabled,
-                            fb_access_token: this.data.fb_access_token,
-                            fb_page_id: this.data.fb_page_id,
-                            fb_enabled: this.data.fb_enabled,
-                            tw_api_key: this.data.tw_api_key,
-                            tw_api_secret: this.data.tw_api_secret,
-                            tw_access_token: this.data.tw_access_token,
-                            tw_access_token_secret: this.data.tw_access_token_secret,
-                            tw_enabled: this.data.tw_enabled,
-                        });
-                    }
-                    body = JSON.stringify(payload);
-                }
-
-                const resp = await fetch(@json(route('tenant.admin.setup.save', $account)), { method: 'POST', headers, body });
-
-                if (!resp.ok) {
-                    const err = await resp.json().catch(() => null);
-                    throw new Error(err?.message || Object.values(err?.errors || {}).flat().join(' ') || 'Save failed');
-                }
-
-                if (!this.completedSteps.includes(this.step)) {
-                    this.completedSteps.push(this.step);
-                }
-                this.step++;
-                window.scrollTo({top: 0, behavior: 'smooth'});
-            } catch (e) {
-                this.errorMsg = e.message;
-            } finally {
-                this.saving = false;
-            }
-        },
-
-        async launch() {
-            this.saving = true;
-            this.errorMsg = '';
-            try {
-                const resp = await fetch(@json(route('tenant.admin.setup.save', $account)), {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json',
-                    },
-                    body: JSON.stringify({ step: 'complete' }),
-                });
-                const result = await resp.json();
-                if (result.redirect) {
-                    window.location.href = result.redirect;
-                }
-            } catch (e) {
-                this.errorMsg = e.message;
-                this.saving = false;
-            }
-        },
-    };
-}
-</script>
+@vite('resources/js/setup-wizard.js')
 @endsection
