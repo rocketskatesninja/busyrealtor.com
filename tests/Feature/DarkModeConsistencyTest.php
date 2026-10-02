@@ -36,6 +36,11 @@ class DarkModeConsistencyTest extends TestCase
         foreach (self::SOURCES as $source => $relative) {
             $css = file_get_contents(resource_path($relative));
 
+            // A selector capture runs from the previous closing brace, so a comment sitting
+            // above a rule used to be absorbed into its key — which made that rule unique to
+            // its source and quietly exempt from every comparison below.
+            $css = preg_replace('#/\*.*?\*/#s', '', $css);
+
             preg_match_all('/([^{}]*\.dark[^{}]*)\{([^}]*)\}/s', $css, $matches, PREG_SET_ORDER);
 
             foreach ($matches as $match) {
@@ -89,6 +94,35 @@ class DarkModeConsistencyTest extends TestCase
 
         $this->assertGreaterThan(50, $rules);
         $this->assertGreaterThan($rules * 0.8, $important, 'most rules here need !important to win');
+    }
+
+    /**
+     * A status chip is two classes, and dark mode has to handle both or the chip becomes
+     * unreadable in one direction or the other. Off Market shipped with .dark
+     * .text-orange-700 lightening its text but no .dark .bg-orange-100, so light sat on
+     * near-white at 1.5:1; Pending had the mirror image, dark amber text on a darkened
+     * chip at 2.8:1. Every pair the listing-status map can produce is checked here.
+     */
+    public function test_both_halves_of_every_status_chip_are_handled_in_dark_mode(): void
+    {
+        $pairs = [
+            'Featured' => ['bg-blue-100', 'text-blue-700'],
+            'Active' => ['bg-green-100', 'text-green-700'],
+            'Pending' => ['bg-yellow-100', 'text-yellow-700'],
+            'Sold' => ['bg-gray-100', 'text-gray-600'],
+            'Off Market' => ['bg-orange-100', 'text-orange-700'],
+            'Withdrawn' => ['bg-red-100', 'text-red-600'],
+        ];
+
+        $rules = $this->darkRules();
+
+        foreach ($pairs as $label => $classes) {
+            foreach ($classes as $class) {
+                $this->assertArrayHasKey(".dark .{$class}", $rules,
+                    "the {$label} chip uses .{$class}, which has no dark mode override — "
+                    .'one half of a chip being overridden and the other not is what makes it unreadable');
+            }
+        }
     }
 
     public function test_secondary_text_stays_readable_on_a_dark_background(): void

@@ -98,9 +98,10 @@
         .dark .text-green-700  { color: #86efac !important; }
         .dark .text-purple-700 { color: #c4b5fd !important; }
         .dark .text-orange-700 { color: #fdba74 !important; }
+        .dark .text-yellow-700 { color: #fde047 !important; }
 
         /* Colored hover-bg-100 variants (export button hovers) */
-        .dark .hover\:bg-blue-100:hover   { background-color: rgba(59,130,246,0.22) !important; }
+        .dark .hover\:bg-blue-100:hover   { background-color: rgba(59,130,246,0.25) !important; }
         .dark .hover\:bg-green-100:hover  { background-color: rgba(16,185,129,0.25) !important; }
         .dark .hover\:bg-purple-100:hover { background-color: rgba(168,85,247,0.22) !important; }
         .dark .hover\:bg-orange-100:hover { background-color: rgba(249,115,22,0.22)  !important; }
