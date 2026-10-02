@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Nunito:wght@700&family=DM+Sans:wght@700&family=Urbanist:wght@700&family=Outfit:wght@700&family=Lato:wght@700&family=Open+Sans:wght@700&family=Roboto:wght@700&family=Oswald:wght@700&family=Playfair+Display:wght@700&family=Merriweather:wght@700&family=Lora:wght@700&family=Cormorant+Garamond:wght@700&family=EB+Garamond:wght@700&family=Libre+Baskerville:wght@700&family=Cinzel:wght@700&family=Bebas+Neue&family=Anton&family=Abril+Fatface&family=Righteous&display=swap" rel="stylesheet">
 @endsection
 @section('foot')
-@vite('resources/js/sortable.js')
+@vite('resources/js/settings.js')
 @endsection
 
 @section('content')
@@ -37,6 +37,14 @@ $groups = [
     ],
 ];
 $tabs = array_merge(...array_values($groups));
+$settingsConfig = [
+    'titleDefaults' => \App\Models\SiteSettings::TITLE_DEFAULTS,
+    'testEmailUrl' => route('tenant.admin.api.test-email', $account),
+    'backupUrl' => route('tenant.admin.api.backup', $account),
+    'restoreUrl' => route('tenant.admin.api.restore', $account),
+    'tabOrder' => array_keys($tabs),
+    'activeTab' => $tab,
+];
 @endphp
 <div class="max-w-7xl mx-auto px-4" x-data="{ activeTab: '{{ $tab }}' }" x-effect="const url = new URL(window.location); url.searchParams.set('tab', activeTab); history.replaceState(null, '', url)">
 
@@ -94,7 +102,9 @@ $tabs = array_merge(...array_values($groups));
 
         {{-- Settings Content --}}
         <div class="flex-1">
-            <form id="settings-form" method="POST" action="{{ route('tenant.admin.settings.update', $account) }}" enctype="multipart/form-data" class="space-y-6">
+            <form id="settings-form"
+          data-config='@json($settingsConfig, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)'
+          method="POST" action="{{ route('tenant.admin.settings.update', $account) }}" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 <input type="hidden" name="tab" :value="activeTab">
 
@@ -244,7 +254,7 @@ $tabs = array_merge(...array_values($groups));
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Title Font</label>
                             @php $currentFont = $settings->title_font ?? 'Poppins'; @endphp
-                            <div x-data="{ open: false, selected: '{{ $currentFont }}' }" x-init="$watch('selected', () => typeof updateTitlePreview === 'function' && updateTitlePreview())" class="relative">
+                            <div x-data="{ open: false, selected: '{{ $currentFont }}' }" x-init="$watch('selected', () => $dispatch('title-preview-changed'))" class="relative">
                                 <input type="hidden" name="title_font" value="{{ $currentFont }}" :value="selected">
                                 <button type="button" @click="open = !open"
                                         class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-left flex items-center justify-between bg-white focus:outline-none focus:ring-2 focus:ring-[var(--primary)]/60">
@@ -482,7 +492,7 @@ $tabs = array_merge(...array_values($groups));
                         };
                     }
                     </script>
-                    <div x-data="hpSectionData()" x-init="$nextTick(() => $el._hpReady = true)" x-effect="JSON.stringify([features,services,testimonials,stats,faq]); if($el._hpReady) document.getElementById('settings-save-btn').disabled = false">
+                    <div id="hp-sections" x-data="hpSectionData()" x-init="$nextTick(() => $el._hpReady = true)" x-effect="JSON.stringify([features,services,testimonials,stats,faq]); if($el._hpReady) document.getElementById('settings-save-btn').disabled = false">
                         {{-- Hidden inputs serialized to JSON on submit --}}
                         <input type="hidden" name="homepage_sections" id="hp_sections_input">
                         <input type="hidden" name="features_items"     x-ref="featuresInput"     value='{!! json_encode($settings->features_items ?: []) !!}' :value="JSON.stringify(features)">
@@ -1548,7 +1558,7 @@ $tabs = array_merge(...array_values($groups));
                                 <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
                                 Backup contains sensitive data including SMTP credentials — store it securely.
                             </p>
-                            <button id="backup-btn" type="button" onclick="doBackup()"
+                            <button id="backup-btn" type="button"
                                     class="inline-flex items-center gap-2 px-5 py-2.5 btn-primary rounded-xl text-sm font-semibold hover:opacity-90 transition shrink-0">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                                 Download Backup
@@ -1576,10 +1586,10 @@ $tabs = array_merge(...array_values($groups));
                                 <label class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl text-sm font-semibold cursor-pointer transition">
                                     <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"/></svg>
                                     Choose .zip file
-                                    <input type="file" id="restore-file" accept=".zip" class="sr-only" onchange="updateRestoreFile(this)">
+                                    <input type="file" id="restore-file" accept=".zip" class="sr-only">
                                 </label>
                                 <span id="restore-filename" class="text-sm text-gray-400 italic">No file chosen</span>
-                                <button id="restore-btn" type="button" onclick="doRestore()"
+                                <button id="restore-btn" type="button"
                                         class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-sm font-semibold transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l4-4m0 0l4 4m-4-4v12"/></svg>
                                     Restore Backup
@@ -1597,7 +1607,7 @@ $tabs = array_merge(...array_values($groups));
                                 <span class="w-2.5 h-2.5 rounded-full bg-green-400/70 inline-block"></span>
                                 <span class="ml-2 text-gray-400 text-xs font-mono tracking-wide">output</span>
                             </div>
-                            <button type="button" onclick="clearDataConsole()" class="text-gray-500 hover:text-gray-300 text-xs font-mono transition">clear</button>
+                            <button type="button" id="data-console-clear" class="text-gray-500 hover:text-gray-300 text-xs font-mono transition">clear</button>
                         </div>
                         <div id="data-console" class="bg-gray-950 px-4 py-3 h-40 overflow-y-auto font-mono text-xs leading-5">
                             <div style="color:#6b7280">— No operations yet —</div>
@@ -1661,343 +1671,3 @@ $tabs = array_merge(...array_values($groups));
 </div>
 @endsection
 
-@section('scripts')
-// ── Title Preview ─────────────────────────────────────────────────────────────
-// Same defaults the pickers and the server-rendered preview use, so the title cannot
-// change appearance the first time someone touches a control.
-const TITLE_DEFAULTS  = @json(\App\Models\SiteSettings::TITLE_DEFAULTS);
-const _fontSizeMap    = { 'xl': '1.25rem', '2xl': '1.5rem', '3xl': '1.875rem', '4xl': '2.25rem' };
-const _trackingMap    = { 'tight': '-0.05em', 'wide': '0.05em', 'normal': 'normal' };
-function updateTitlePreview() {
-    const previews = [document.getElementById('title_preview_light'), document.getElementById('title_preview_dark')].filter(Boolean);
-    if (!previews.length) return;
-    const titleText = document.querySelector('input[name="site_title"]')?.value || 'Your Site Title';
-    const font      = document.querySelector('input[name="title_font"]')?.value  || 'Poppins';
-    const size      = document.querySelector('select[name="site_title_font_size"]')?.value     || '3xl';
-    const weight    = document.querySelector('select[name="site_title_font_weight"]')?.value   || '800';
-    const tracking  = document.querySelector('select[name="site_title_letter_spacing"]')?.value || 'normal';
-    const colorType = document.querySelector('select[name="title_color_type"]')?.value         || TITLE_DEFAULTS.title_color_type;
-    previews.forEach(el => {
-        el.textContent           = titleText;
-        el.style.fontFamily      = `'${font}', sans-serif`;
-        el.style.fontSize        = _fontSizeMap[size] || '1.875rem';
-        el.style.fontWeight      = weight;
-        el.style.letterSpacing   = _trackingMap[tracking] || 'normal';
-        if (colorType === 'gradient') {
-            const start = document.querySelector('input[name="title_gradient_start"]')?.value || TITLE_DEFAULTS.title_gradient_start;
-            const via   = document.querySelector('input[name="title_gradient_via"]')?.value   || TITLE_DEFAULTS.title_gradient_via;
-            const end   = document.querySelector('input[name="title_gradient_end"]')?.value   || TITLE_DEFAULTS.title_gradient_end;
-            el.style.background           = `linear-gradient(to right, ${start}, ${via}, ${end})`;
-            el.style.webkitBackgroundClip = 'text';
-            el.style.webkitTextFillColor  = 'transparent';
-            el.style.backgroundClip       = 'text';
-            el.style.color                = 'transparent';
-        } else {
-            const solid = document.querySelector('input[name="title_color_solid"]')?.value || TITLE_DEFAULTS.title_color_solid;
-            el.style.background           = 'none';
-            el.style.webkitBackgroundClip = 'unset';
-            el.style.webkitTextFillColor  = 'unset';
-            el.style.backgroundClip       = 'unset';
-            el.style.color                = solid;
-        }
-    });
-}
-['site_title','title_gradient_start','title_gradient_via','title_gradient_end','title_color_solid'].forEach(n => document.querySelector('[name="'+n+'"]')?.addEventListener('input', updateTitlePreview));
-['site_title_font_size','site_title_font_weight','site_title_letter_spacing','title_color_type'].forEach(n => document.querySelector('[name="'+n+'"]')?.addEventListener('change', updateTitlePreview));
-// Test email
-document.getElementById('test-email-btn')?.addEventListener('click', async () => {
-    const email = prompt('Send test to email:');
-    if (!email) return;
-    const btn = document.getElementById('test-email-btn');
-    const res = document.getElementById('test-email-result');
-    btn.textContent = 'Saving & sending...';
-    // Grab current SMTP values from form so they get saved before test
-    const form = document.getElementById('settings-form');
-    const smtpData = {
-        to: email,
-        smtp_host: form?.querySelector('[name="smtp_host"]')?.value || '',
-        smtp_port: form?.querySelector('[name="smtp_port"]')?.value || '',
-        smtp_encryption: form?.querySelector('[name="smtp_encryption"]')?.value || '',
-        smtp_username: form?.querySelector('[name="smtp_username"]')?.value || '',
-        smtp_password: form?.querySelector('[name="smtp_password"]')?.value || '',
-        smtp_from_email: form?.querySelector('[name="smtp_from_email"]')?.value || '',
-        smtp_from_name: form?.querySelector('[name="smtp_from_name"]')?.value || '',
-    };
-    try {
-        const r = await fetch('{{ route('tenant.admin.api.test-email', $account) }}', {
-            method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
-            body: JSON.stringify(smtpData)
-        });
-        const d = await r.json();
-        res.textContent = d.message;
-        res.className = 'text-sm ml-3 ' + (d.success ? 'text-green-600' : 'text-red-600');
-    } catch(e) { res.textContent = 'Failed'; res.className = 'text-sm ml-3 text-red-600'; }
-    btn.textContent = 'Send Test Email';
-});
-
-// ── Backup & Restore ─────────────────────────────────────────────────────────
-const _buUrl  = '{{ route('tenant.admin.api.backup',  $account) }}';
-const _reUrl  = '{{ route('tenant.admin.api.restore', $account) }}';
-const _csrf   = '{{ csrf_token() }}';
-const _spin   = '<svg class="w-4 h-4 animate-spin inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>';
-
-function dclog(msg, type) {
-    const el   = document.getElementById('data-console');
-    if (!el) return;
-    const dark = document.documentElement.classList.contains('dark');
-    const ts   = new Date().toTimeString().slice(0, 8);
-    const tsColor = dark ? '#4b5563' : '#9ca3af';
-    const cols = dark
-        ? { info: '#94a3b8', success: '#4ade80', error: '#f87171', warn: '#fbbf24' }
-        : { info: '#4b5563', success: '#16a34a', error: '#dc2626', warn: '#d97706' };
-    const col = cols[type || 'info'];
-    const pre = { success: '✓', error: '✗', warn: '⚠', info: '›' }[type || 'info'];
-    const d = document.createElement('div');
-    d.style.marginBottom = '1px';
-    d.innerHTML = `<span style="color:${tsColor};user-select:none">[${ts}]</span> <span style="color:${col}">${pre} ${msg}</span>`;
-    el.appendChild(d);
-    el.scrollTop = el.scrollHeight;
-}
-
-function clearDataConsole() {
-    const el = document.getElementById('data-console');
-    if (el) el.innerHTML = '<div style="color:#9ca3af">— Cleared. —</div>';
-}
-
-function updateRestoreFile(input) {
-    const el = document.getElementById('restore-filename');
-    if (el) el.textContent = input.files[0] ? input.files[0].name : 'No file chosen';
-}
-
-async function doBackup() {
-    const btn = document.getElementById('backup-btn');
-    const orig = btn.innerHTML;
-    btn.disabled = true;
-    btn.innerHTML = _spin + ' Creating...';
-    clearDataConsole();
-    dclog('Starting backup...');
-    try {
-        dclog('Requesting archive from server...');
-        const r = await fetch(_buUrl, { method: 'POST', headers: { 'X-CSRF-TOKEN': _csrf } });
-        if (!r.ok) throw new Error('Server error: ' + r.status);
-        const blob = await r.blob();
-        const kb   = (blob.size / 1024).toFixed(1);
-        dclog('Archive ready — ' + kb + ' KB');
-        const date     = new Date().toISOString().slice(0, 10);
-        const filename = 'backup-' + date + '.zip';
-        const url      = URL.createObjectURL(blob);
-        const a        = document.createElement('a');
-        a.href = url; a.download = filename;
-        document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        dclog('Download started: ' + filename, 'success');
-        dclog('Backup complete.', 'success');
-    } catch (e) {
-        dclog('Backup failed: ' + e.message, 'error');
-    }
-    btn.disabled = false;
-    btn.innerHTML = orig;
-}
-
-async function doRestore() {
-    const fileInput = document.getElementById('restore-file');
-    const btn       = document.getElementById('restore-btn');
-    if (!fileInput.files[0]) { dclog('No file selected — choose a .zip backup first.', 'warn'); return; }
-    const file = fileInput.files[0];
-    const orig = btn.innerHTML;
-    btn.disabled  = true;
-    btn.innerHTML = _spin + ' Restoring...';
-    clearDataConsole();
-    dclog('File: ' + file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)');
-    const fd = new FormData();
-    fd.append('backup', file);
-    fd.append('_token', _csrf);
-    // Lock the settings save button — the form on screen still shows the
-    // pre-restore values; saving it would overwrite the restored data.
-    const saveBtn = document.getElementById('settings-save-btn');
-    if (saveBtn) saveBtn.disabled = true;
-    try {
-        dclog('Uploading to server...');
-        const r = await fetch(_reUrl, { method: 'POST', headers: { 'X-Requested-With': 'XMLHttpRequest' }, body: fd });
-        dclog('Processing archive...');
-        const d = await r.json();
-        if (!r.ok || !d.success) throw new Error(d.message || 'Restore failed');
-        dclog('Properties restored: ' + d.properties, 'success');
-        if (d.images)       dclog('Property images restored: ' + d.images, 'success');
-        if (d.staff)        dclog('Staff members restored: ' + d.staff, 'success');
-        if (d.appointments) dclog('Appointments restored: ' + d.appointments, 'success');
-        if (d.messages)     dclog('Messages restored: ' + d.messages, 'success');
-        if (d.legal_pages)  dclog('Legal pages restored: ' + d.legal_pages, 'success');
-        if (d.settings)     dclog('Site settings restored.', 'success');
-        if (d.files)        dclog('Image files restored: ' + d.files, 'success');
-        dclog('Restore complete — reloading page to show restored values...', 'success');
-        fileInput.value = '';
-        const fn = document.getElementById('restore-filename');
-        if (fn) fn.textContent = 'No file chosen';
-        setTimeout(() => location.reload(), 1500);
-        return; // keep the spinner visible until reload
-    } catch (e) {
-        dclog('Restore failed: ' + e.message, 'error');
-        if (saveBtn) saveBtn.disabled = false; // restore aborted — saving is safe again
-    }
-    btn.disabled  = false;
-    btn.innerHTML = orig;
-}
-
-// ── Homepage section ordering ─────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', function() {
-    // ── Homepage section ordering ──
-    const container = document.getElementById('sections-container');
-    if (container) {
-        updateSectionsData();
-        container.addEventListener('change', function(e) {
-            if (e.target.classList.contains('section-toggle')) updateSectionsData();
-        });
-        if (typeof Sortable !== 'undefined' && window.innerWidth >= 640) {
-            new Sortable(container, {
-                animation: 150,
-                ghostClass: 'opacity-50',
-                handle: '.drag-handle',
-                filter: '.locked-section',
-                preventOnFilter: false,
-                onEnd: updateSectionsData
-            });
-        }
-    }
-
-    function updateSectionsData() {
-        const sections = [];
-        container.querySelectorAll('.section-item').forEach(function(item, i) {
-            const key     = item.dataset.section;
-            const toggle  = item.querySelector('.section-toggle');
-            const locked  = item.dataset.locked === '1';
-            sections.push({ key: key, enabled: locked ? true : (toggle ? toggle.checked : true), order: i, locked: locked });
-        });
-        const input = document.getElementById('hp_sections_input');
-        if (input) input.value = JSON.stringify(sections);
-    }
-
-    // ── Form submit: sync Alpine data to hidden inputs ──
-    var form = document.getElementById('settings-form');
-    var btn  = document.getElementById('settings-save-btn');
-    if (form) {
-        form.addEventListener('submit', function() {
-            var tabInput = form.querySelector('input[name="tab"]');
-            if (tabInput && window.Alpine) {
-                try { tabInput.value = Alpine.$data(form.closest('[x-data]')).activeTab; } catch(e) {}
-            }
-            var hpDiv = form.querySelector('[x-data="hpSectionData()"]');
-            if (hpDiv && window.Alpine) {
-                try {
-                    var data = Alpine.$data(hpDiv);
-                    var map = { 'features_items':'features', 'services_items':'services', 'testimonials_items':'testimonials', 'stats_items':'stats', 'faq_items':'faq' };
-                    Object.entries(map).forEach(function(pair) {
-                        var el = form.querySelector('[name="' + pair[0] + '"]');
-                        if (el && data[pair[1]] !== undefined) el.value = JSON.stringify(data[pair[1]]);
-                    });
-                } catch(e) {}
-            }
-            if (btn) btn.disabled = true;
-        }, true);
-
-        // ── Dirty tracking ──
-        if (btn) {
-            function markDirty() { btn.disabled = false; }
-            form.addEventListener('input',  markDirty, true);
-            form.addEventListener('change', markDirty, true);
-            window.addEventListener('beforeunload', function(e) {
-                if (!btn.disabled) { e.preventDefault(); e.returnValue = ''; }
-            });
-        }
-    }
-});
-
-// ── Mobile swipe navigation ──────────────────────────────────────────────────
-(function() {
-    if (window.innerWidth >= 768) return; // desktop only uses sidebar
-
-    var tabOrder = @json(array_keys($tabs));
-    // Get the Alpine root and track active tab reactively
-    var alpineRoot = document.querySelector('[x-data]');
-    function getActiveTab() {
-        try { return window.Alpine ? Alpine.$data(alpineRoot).activeTab : '{{ $tab }}'; }
-        catch(e) { return '{{ $tab }}'; }
-    }
-    function setActiveTab(tab) {
-        try { if (window.Alpine) Alpine.$data(alpineRoot).activeTab = tab;
-        } catch(e) {
-            var url = new URL(window.location.href);
-            url.searchParams.set('tab', tab);
-            window.location.href = url.toString();
-        }
-    }
-
-    // Scroll active tab into view on load
-    var strip = document.querySelector('.md\\:hidden .flex.overflow-x-auto');
-    if (strip) {
-        var active = strip.querySelector('[data-tab="{{ $tab }}"]');
-        if (active) {
-            strip.scrollLeft = active.offsetLeft - strip.offsetWidth / 2 + active.offsetWidth / 2;
-        }
-    }
-
-    // Swipe detection on the content area
-    var content = document.querySelector('.flex-1 form') || document.body;
-    var startX, startY, startTime;
-
-    content.addEventListener('touchstart', function(e) {
-        startX = e.touches[0].clientX;
-        startY = e.touches[0].clientY;
-        startTime = Date.now();
-    }, { passive: true });
-
-    content.addEventListener('touchend', function(e) {
-        if (!startX) return;
-        var dx = e.changedTouches[0].clientX - startX;
-        var dy = e.changedTouches[0].clientY - startY;
-        var dt = Date.now() - startTime;
-
-        // Must be fast (<400ms), mostly horizontal (2:1 ratio), and >50px
-        if (dt > 400 || Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx) * 0.6) return;
-
-        var currentTab = getActiveTab();
-        var currentIdx = tabOrder.indexOf(currentTab);
-        var nextIdx = dx < 0 ? currentIdx + 1 : currentIdx - 1;
-        if (nextIdx < 0 || nextIdx >= tabOrder.length) return;
-
-        var nextTab = tabOrder[nextIdx];
-        setActiveTab(nextTab);
-
-        // Scroll strip to new active tab
-        if (strip) {
-            var newActive = strip.querySelector('[data-tab="' + nextTab + '"]');
-            if (newActive) strip.scrollLeft = newActive.offsetLeft - strip.offsetWidth / 2 + newActive.offsetWidth / 2;
-        }
-    }, { passive: true });
-})();
-
-// ── Serialise Alpine-managed homepage data just before form submit ───────────────
-
-
-// ── Dirty tracking: enable Save when anything changes ─────────────────────────
-
-
-document.addEventListener('alpine:init', () => {
-    Alpine.data('dashGroup', (id) => ({
-        allChecked: true,
-        init() {
-            this.$nextTick(() => {
-                const boxes = this.$refs.group.querySelectorAll('input[type="checkbox"]');
-                this.allChecked = [...boxes].every(b => b.checked);
-            });
-        },
-        toggleAll() {
-            const boxes = this.$refs.group.querySelectorAll('input[type="checkbox"]');
-            const target = !this.allChecked;
-            boxes.forEach(b => { b.checked = target; });
-            this.allChecked = target;
-        },
-    }));
-});
-
-@endsection

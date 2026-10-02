@@ -19,6 +19,7 @@ export default defineConfig({
                 'resources/js/admin-chrome.js',
                 'resources/js/setup-wizard.js',
                 'resources/js/property-form.js',
+                'resources/js/settings.js',
             ],
             refresh: true,
         }),
