@@ -31,7 +31,7 @@
                 </p>
                 <div class="mt-2 flex flex-wrap items-center gap-2">
                     @if($isTrialing)
-                        <span class="inline-flex items-center gap-1.5 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 px-2.5 py-1 rounded-full">
                             <svg width="12" height="12" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Trial ends {{ $tenant->trial_ends_at->diffForHumans() }}
                         </span>
@@ -41,7 +41,7 @@
                             Trial expired — subscribe to reactivate
                         </span>
                     @elseif($isCanceling)
-                        <span class="inline-flex items-center gap-1.5 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200 px-2.5 py-1 rounded-full">
                             <svg width="12" height="12" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Active until {{ $cancelDate->format('M j, Y') }}
                         </span>
@@ -176,7 +176,7 @@
                         <td class="px-6 py-4">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                 {{ $status === 'paid' ? 'bg-green-50 text-green-700 border border-green-200' : '' }}
-                                {{ $status === 'open' ? 'bg-amber-50 text-amber-700 border border-amber-200' : '' }}
+                                {{ $status === 'open' ? 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-300 border border-amber-200' : '' }}
                                 {{ in_array($status, ['void', 'uncollectible']) ? 'bg-red-50 text-red-700 border border-red-200' : '' }}">
                                 {{ ucfirst($status) }}
                             </span>

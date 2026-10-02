@@ -103,6 +103,59 @@ class DarkModeConsistencyTest extends TestCase
      * near-white at 1.5:1; Pending had the mirror image, dark amber text on a darkened
      * chip at 2.8:1. Every pair the listing-status map can produce is checked here.
      */
+    /**
+     * The status-chip test below pins six known pairs. This one is the general rule it is
+     * a case of: wherever a view puts dark text on a light chip of the same colour, dark
+     * mode has to handle both halves or the element becomes unreadable in one direction.
+     *
+     * Two ways to satisfy it — a dark: variant on the element, or a rule in one of the
+     * override sheets. Both are in use here, deliberately: a global rule is !important
+     * and would overwrite the dark colours some callouts set for themselves, so a colour
+     * only gets one when nothing is already handling it locally.
+     *
+     * Found: the AI warning box shipped as bg-amber-50 + text-amber-800 with no dark
+     * handling at all, which rendered as a glaring near-white slab on a dark page with
+     * the amber signal gone. The same scan then turned up text-red-700, which never got
+     * the treatment text-red-600 has, on chips that *are* darkened.
+     */
+    public function test_no_view_pairs_a_light_chip_with_dark_text_unhandled_in_dark_mode(): void
+    {
+        $sheets = '';
+        foreach (self::SOURCES as $relative) {
+            $sheets .= file_get_contents(resource_path($relative));
+        }
+
+        $hasRule = fn (string $class) => (bool) preg_match('/\.dark\s+\.'.preg_quote($class, '/').'\s*[,{]/', $sheets);
+
+        $unhandled = [];
+
+        foreach (glob(resource_path('views').'/{,*/,*/*/,*/*/*/}*.blade.php', GLOB_BRACE) as $file) {
+            preg_match_all('/class\s*=\s*"([^"]*)"/', file_get_contents($file), $matches);
+
+            foreach ($matches[1] as $classes) {
+                if (! preg_match('/(?:^|\s)bg-(\w+)-(50|100)(?:\s|$)/', $classes, $bg)) {
+                    continue;
+                }
+                if (! preg_match('/(?:^|\s)text-'.$bg[1].'-(700|800)(?:\s|$)/', $classes, $text)) {
+                    continue;
+                }
+
+                $chip = "bg-{$bg[1]}-{$bg[2]}";
+                $ink = "text-{$bg[1]}-{$text[1]}";
+
+                foreach ([[$chip, 'dark:bg-'], [$ink, 'dark:text-']] as [$class, $variant]) {
+                    if (! str_contains($classes, $variant) && ! $hasRule($class)) {
+                        $unhandled[] = str_replace(resource_path('views').'/', '', $file)." — .{$class}";
+                    }
+                }
+            }
+        }
+
+        $this->assertSame([], array_values(array_unique($unhandled)),
+            "these put dark text on a light chip with nothing handling dark mode:\n  "
+            .implode("\n  ", array_unique($unhandled)));
+    }
+
     public function test_both_halves_of_every_status_chip_are_handled_in_dark_mode(): void
     {
         $pairs = [

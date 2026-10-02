@@ -1198,7 +1198,7 @@ $settingsConfig = [
                              it is and both ways out, rather than silently using the other provider
                              and sending visitors' conversations somewhere the agent did not pick. --}}
                         @if($aiWarning)
-                        <div class="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+                        <div class="flex items-start gap-2 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 text-amber-800 dark:text-amber-300 text-sm">
                             <x-icon name="exclamation-triangle" class="w-4 h-4 mt-0.5 shrink-0" />
                             <span>{{ $aiWarning }}</span>
                         </div>
