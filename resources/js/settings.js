@@ -10,6 +10,14 @@ const csrf = () => document.querySelector('meta[name="csrf-token"]').content;
 
 let cfg = {};
 
+function configFor(el) {
+    try {
+        return JSON.parse(el?.dataset.config || '{}');
+    } catch (e) {
+        return {};
+    }
+}
+
 // ── Title Preview ─────────────────────────────────────────────────────────────
 const _fontSizeMap = { 'xl': '1.25rem', '2xl': '1.5rem', '3xl': '1.875rem', '4xl': '2.25rem' };
 const _trackingMap = { 'tight': '-0.05em', 'wide': '0.05em', 'normal': 'normal' };
@@ -322,15 +330,61 @@ function wireSwipeNavigation() {
     }, { passive: true });
 }
 
+// ── Small field mirrors that used to be on* attributes ───────────────────────
+function wireFieldMirrors() {
+    const email = document.getElementById('f-email');
+    const warning = document.getElementById('email-warning');
+    if (email && warning) {
+        email.addEventListener('input', () => {
+            warning.style.display = email.value !== email.defaultValue ? 'flex' : 'none';
+        });
+    }
+
+    const hex = document.getElementById('primary_color_hex');
+    const picker = document.querySelector('[name=primary_color]');
+    if (hex && picker) {
+        hex.addEventListener('input', () => { picker.value = hex.value; });
+    }
+
+    const colorType = document.getElementById('title_color_type');
+    if (colorType) {
+        const applyColorType = () => {
+            const gradient = document.getElementById('gradient-fields');
+            const solid = document.getElementById('solid-color-field');
+            if (gradient) gradient.style.display = colorType.value === 'gradient' ? 'flex' : 'none';
+            if (solid) solid.style.display = colorType.value === 'solid' ? 'flex' : 'none';
+        };
+        colorType.addEventListener('change', applyColorType);
+    }
+
+    const opacity = document.querySelector('[name=hero_fx_overlay_opacity]');
+    const opacityLabel = document.getElementById('overlay-opacity-val');
+    if (opacity && opacityLabel) {
+        opacity.addEventListener('input', () => { opacityLabel.textContent = opacity.value; });
+    }
+
+    // The settings form wraps this button, and a form cannot be nested inside another,
+    // so the POST is still made by building one and submitting it.
+    document.querySelector('[data-action="disconnect-google-calendar"]')?.addEventListener('click', () => {
+        if (!confirm('Disconnect Google Calendar? Future confirmed appointments will no longer be synced.')) return;
+        const f = document.createElement('form');
+        f.method = 'POST';
+        f.action = cfg.gcalDisconnectUrl;
+        const t = document.createElement('input');
+        t.type = 'hidden';
+        t.name = '_token';
+        t.value = csrf();
+        f.appendChild(t);
+        document.body.appendChild(f);
+        f.submit();
+    });
+}
+
 function wire() {
     const f = form();
     if (!f) return;
 
-    try {
-        cfg = JSON.parse(f.dataset.config || '{}');
-    } catch (e) {
-        cfg = {};
-    }
+    cfg = configFor(f);
 
     ['site_title', 'title_gradient_start', 'title_gradient_via', 'title_gradient_end', 'title_color_solid']
         .forEach(n => document.querySelector(`[name="${n}"]`)?.addEventListener('input', updateTitlePreview));
@@ -347,6 +401,7 @@ function wire() {
     const restoreFile = document.getElementById('restore-file');
     restoreFile?.addEventListener('change', () => updateRestoreFile(restoreFile));
 
+    wireFieldMirrors();
     wireSwipeNavigation();
 
     // These two stayed on DOMContentLoaded, where they were before. app.js registers its
@@ -360,6 +415,11 @@ function wire() {
 }
 
 document.addEventListener('alpine:init', () => {
+    Alpine.data('hpSectionData', () => ({
+        expandedSection: null,
+        ...(configFor(document.getElementById('settings-form')).homepageSections || {}),
+    }));
+
     Alpine.data('dashGroup', (id) => ({
         allChecked: true,
         init() {

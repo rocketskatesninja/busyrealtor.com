@@ -44,6 +44,23 @@ $settingsConfig = [
     'restoreUrl' => route('tenant.admin.api.restore', $account),
     'tabOrder' => array_keys($tabs),
     'activeTab' => $tab,
+    'gcalDisconnectUrl' => route('tenant.admin.google-calendar.disconnect', $tenant->slug),
+    'homepageSections' => [
+        'features' => $settings->features_items ?: [
+            ['icon' => 'home', 'title' => 'Smart Search', 'description' => 'Find your perfect home with our advanced search tools.'],
+            ['icon' => 'shield', 'title' => 'Trusted Service', 'description' => 'Licensed professionals dedicated to your success.'],
+        ],
+        'services' => $settings->services_items ?: [
+            ['icon' => 'home', 'title' => 'Home Buying', 'description' => 'Expert guidance through every step of the buying process.'],
+            ['icon' => 'dollar', 'title' => 'Home Selling', 'description' => 'Get maximum value with our proven strategies.'],
+        ],
+        'testimonials' => $settings->testimonials_items ?: [['name' => '', 'rating' => 5, 'text' => '']],
+        'stats' => $settings->stats_items ?: [
+            ['value' => '500+', 'label' => 'Homes Sold'],
+            ['value' => '15+', 'label' => 'Years Experience'],
+        ],
+        'faq' => $settings->faq_items ?: [['question' => '', 'answer' => '']],
+    ],
 ];
 @endphp
 <div class="max-w-7xl mx-auto px-4" x-data="{ activeTab: '{{ $tab }}' }" x-effect="const url = new URL(window.location); url.searchParams.set('tab', activeTab); history.replaceState(null, '', url)">
@@ -153,7 +170,7 @@ $settingsConfig = [
                         </div>
                         <div>
                             <label for="f-email" class="block text-sm font-medium text-gray-700 mb-1">Your Email</label>
-                            <input type="email" id="f-email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]" id="email-input" oninput="document.getElementById('email-warning').style.display = this.value !== this.defaultValue ? 'flex' : 'none'">
+                            <input type="email" id="f-email" name="email" value="{{ auth()->user()->email }}" required class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)]">
                             <div id="email-warning" style="display:none;" class="mt-2 flex items-center gap-2 text-xs text-amber-600 dark:text-amber-400">
                                 <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
                                 <span>Changing your email will require re-verification. A verification link will be sent to the new address.</span>
@@ -233,7 +250,7 @@ $settingsConfig = [
                             <label for="f-primary_color" class="block text-sm font-medium text-gray-700 mb-1">Primary Color</label>
                             <div class="flex gap-2 items-center">
                                 <input type="color" id="f-primary_color" name="primary_color" value="{{ $settings->primary_color ?? '#3B82F6' }}" class="w-12 h-10 border-0 rounded cursor-pointer">
-                                <input type="text" id="primary_color_hex" value="{{ $settings->primary_color ?? '#3B82F6' }}" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono" oninput="document.querySelector('[name=primary_color]').value=this.value">
+                                <input type="text" id="primary_color_hex" value="{{ $settings->primary_color ?? '#3B82F6' }}" class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono">
                             </div>
                         </div>
                         <div>
@@ -316,8 +333,7 @@ $settingsConfig = [
                             <div class="flex items-end gap-3">
                                 {{-- Dropdown: stays at half the row width (3/6) --}}
                                 <div style="width:50%">
-                                    <select name="title_color_type" id="title_color_type" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none"
-                                        onchange="var v=this.value;document.getElementById('gradient-fields').style.display=v==='gradient'?'flex':'none';document.getElementById('solid-color-field').style.display=v==='solid'?'flex':'none';">
+                                    <select name="title_color_type" id="title_color_type" class="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none">
                                         <option value="gradient" {{ $colorType === 'gradient' ? 'selected' : '' }}>Gradient</option>
                                         <option value="solid" {{ $colorType === 'solid' ? 'selected' : '' }}>Solid Color</option>
                                     </select>
@@ -480,19 +496,7 @@ $settingsConfig = [
                     <h2 class="text-lg font-bold text-gray-900 mb-1 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>Homepage Sections</h2>
                     <p class="text-sm text-gray-500 mb-5">Drag to reorder. Click a section to edit its content. Toggle to show/hide.</p>
 
-                    <script>
-                    function hpSectionData() {
-                        return {
-                            expandedSection: null,
-                            features: {!! json_encode($settings->features_items ?: [['icon'=>'home','title'=>'Smart Search','description'=>'Find your perfect home with our advanced search tools.'],['icon'=>'shield','title'=>'Trusted Service','description'=>'Licensed professionals dedicated to your success.']]) !!},
-                            services: {!! json_encode($settings->services_items ?: [['icon'=>'home','title'=>'Home Buying','description'=>'Expert guidance through every step of the buying process.'],['icon'=>'dollar','title'=>'Home Selling','description'=>'Get maximum value with our proven strategies.']]) !!},
-                            testimonials: {!! json_encode($settings->testimonials_items ?: [['name'=>'','rating'=>5,'text'=>'']]) !!},
-                            stats: {!! json_encode($settings->stats_items ?: [['value'=>'500+','label'=>'Homes Sold'],['value'=>'15+','label'=>'Years Experience']]) !!},
-                            faq: {!! json_encode($settings->faq_items ?: [['question'=>'','answer'=>'']]) !!}
-                        };
-                    }
-                    </script>
-                    <div id="hp-sections" x-data="hpSectionData()" x-init="$nextTick(() => $el._hpReady = true)" x-effect="JSON.stringify([features,services,testimonials,stats,faq]); if($el._hpReady) document.getElementById('settings-save-btn').disabled = false">
+                    <div id="hp-sections" x-data="hpSectionData" x-init="$nextTick(() => $el._hpReady = true)" x-effect="JSON.stringify([features,services,testimonials,stats,faq]); if($el._hpReady) document.getElementById('settings-save-btn').disabled = false">
                         {{-- Hidden inputs serialized to JSON on submit --}}
                         <input type="hidden" name="homepage_sections" id="hp_sections_input">
                         <input type="hidden" name="features_items"     x-ref="featuresInput"     value='{!! json_encode($settings->features_items ?: []) !!}' :value="JSON.stringify(features)">
@@ -703,8 +707,7 @@ $settingsConfig = [
                                                 </label>
                                                 <input type="range" name="hero_fx_overlay_opacity" min="10" max="80" step="5"
                                                     value="{{ $hfx['overlay_opacity'] ?? 45 }}"
-                                                    class="w-full accent-[var(--primary)]"
-                                                    oninput="document.getElementById('overlay-opacity-val').textContent=this.value">
+                                                    class="w-full accent-[var(--primary)]">
                                             </div>
                                         </div>
                                     </div>
@@ -1435,8 +1438,7 @@ $settingsConfig = [
                                         <p class="text-xs text-green-600 mt-0.5">Confirmed appointments will be added to your primary Google Calendar.</p>
                                     </div>
                                 </div>
-                                <button type="button"
-                                    onclick="if(confirm('Disconnect Google Calendar? Future confirmed appointments will no longer be synced.')){let f=document.createElement('form');f.method='POST';f.action='{{ route('tenant.admin.google-calendar.disconnect', $tenant->slug) }}';let t=document.createElement('input');t.type='hidden';t.name='_token';t.value='{{ csrf_token() }}';f.appendChild(t);document.body.appendChild(f);f.submit();}"
+                                <button type="button" data-action="disconnect-google-calendar"
                                     class="inline-flex items-center px-4 py-2 border border-red-300 text-red-600 text-sm font-medium rounded-lg hover:bg-red-50 transition">
                                     Disconnect
                                 </button>
