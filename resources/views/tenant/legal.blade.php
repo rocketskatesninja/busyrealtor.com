@@ -1,5 +1,4 @@
 @extends('layouts.tenant')
-@section('hide_header')@endsection
 @section('hide_chatbot')@endsection
 @section('title', ($page->title ?? 'Legal') . ' — ' . ($settings->site_title ?? 'BusyRealtor'))
 @section('content')

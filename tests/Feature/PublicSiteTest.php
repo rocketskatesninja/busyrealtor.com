@@ -164,22 +164,33 @@ class PublicSiteTest extends TestCase
     }
 
     /**
-     * The property page used to declare @section('hide_header'), so it rendered with no
-     * site navigation and no way back. It now takes the sticky default header, the same
-     * one the gallery and map are forced to — hero mode's fixed transparent bar would
-     * sit on top of the photo carousel rather than above it.
+     * The property and legal pages used to declare @section('hide_header'), so they
+     * rendered with no site navigation and no way back. Every page except the homepage
+     * now takes the sticky default header: hero mode's bar is fixed and transparent, so
+     * on a page that opens with a photo carousel or a wall of text it would sit on top
+     * of the content rather than above it.
      */
-    public function test_a_property_page_carries_the_sticky_site_header(): void
+    public function test_every_public_page_but_the_homepage_carries_the_sticky_header(): void
     {
         $tenant = $this->makeTenant([], ['header_mode' => 'hero']);
         $property = $this->makeProperty($tenant);
 
-        $response = $this->get("/{$tenant->slug}/property/{$property->id}");
+        foreach (['/gallery', '/map', '/terms', '/privacy-policy', "/property/{$property->id}"] as $path) {
+            $this->get("/{$tenant->slug}{$path}")
+                ->assertOk()
+                ->assertSee('<header id="tenant-default-header"', false)
+                ->assertDontSee('<header id="tenant-hero-header"', false);
+        }
+    }
 
-        $response->assertOk()
-            ->assertSee('id="tenant-default-header"', false)
-            ->assertDontSee('id="tenant-hero-header"', false)
-            ->assertSee("/{$tenant->slug}/gallery", false);
+    public function test_the_homepage_keeps_the_hero_header_when_that_mode_is_set(): void
+    {
+        $tenant = $this->makeTenant([], ['header_mode' => 'hero']);
+
+        $this->get("/{$tenant->slug}")
+            ->assertOk()
+            ->assertSee('<header id="tenant-hero-header"', false)
+            ->assertDontSee('<header id="tenant-default-header"', false);
     }
 
     public function test_the_properties_api_returns_json_for_this_tenant_only(): void
