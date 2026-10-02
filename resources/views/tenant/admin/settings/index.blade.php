@@ -1099,7 +1099,14 @@ $settingsConfig = [
                 </div>
                 @else
                 @php $ai = $integrations->get('ai_provider'); $aiConfig = $ai?->config ?? []; @endphp
-                @php $hasProvider = $tenant->hasAiProvider(); @endphp
+                @php
+    $hasProvider = $tenant->hasAiProvider();
+    $aiProblem = \App\Services\AiProviderService::problem($tenant);
+    // Warn only when a saved key cannot be used, which is the state that reads as a
+    // contradiction. Someone who has simply not set AI up does not need a warning on a
+    // panel that is visibly empty; the chatbot's own subtitle already says why it is off.
+    $aiWarning = $aiProblem && \App\Services\AiProviderService::status($tenant)['keyed'] ? $aiProblem : null;
+@endphp
                 <div class="space-y-6">
 
                 {{--
@@ -1185,6 +1192,18 @@ $settingsConfig = [
                             </div>
                         </div>
 
+                        {{-- A saved key and a dead chatbot used to sit on the same screen with
+                             nothing connecting them: resolve() reads only the preferred provider's
+                             key, deliberately, so a key for the other one does not count. Say which
+                             it is and both ways out, rather than silently using the other provider
+                             and sending visitors' conversations somewhere the agent did not pick. --}}
+                        @if($aiWarning)
+                        <div class="flex items-start gap-2 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+                            <x-icon name="exclamation-triangle" class="w-4 h-4 mt-0.5 shrink-0" />
+                            <span>{{ $aiWarning }}</span>
+                        </div>
+                        @endif
+
                         {{-- So a key hidden by the selector above is not invisible. --}}
                         @if(filled($aiConfig['anthropic_key'] ?? null) || filled($aiConfig['openai_key'] ?? null))
                         <p class="text-xs text-gray-500 dark:text-gray-400">
@@ -1206,7 +1225,7 @@ $settingsConfig = [
                                 @if($hasProvider)
                                     Answers visitor questions and books viewings on your public site
                                 @else
-                                    Add an AI provider above to switch this on
+                                    {{ $aiProblem }}
                                 @endif
                             </p>
                         </div>
@@ -1222,7 +1241,7 @@ $settingsConfig = [
                             --}}
                             <input type="hidden" name="chatbot_enabled" value="{{ ! $hasProvider && $settings->chatbot_enabled ? 1 : 0 }}">
                             <label class="relative inline-flex items-center {{ $hasProvider ? 'cursor-pointer' : 'cursor-not-allowed' }}"
-                                   @if(! $hasProvider) title="Add an AI provider above to switch this on" @endif>
+                                   @if(! $hasProvider) title="{{ $aiProblem }}" @endif>
                                 <input type="checkbox" name="chatbot_enabled" value="1" class="sr-only peer" @disabled(! $hasProvider) {{ $settings->chatbot_enabled ? 'checked' : '' }}>
                                 <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[var(--primary)] peer-focus:ring-2 peer-focus:ring-[var(--primary)]/60 after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5 peer-disabled:opacity-40 peer-disabled:cursor-not-allowed"></div>
                             </label>
