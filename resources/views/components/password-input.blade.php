@@ -43,7 +43,7 @@
     <input type="password" name="{{ $name }}" class="{{ $class }}"
            @unless($autofill) readonly data-no-autofill @endunless
            {{ $attributes->merge(['autocomplete' => 'off']) }}>
-    <button type="button" onclick="togglePasswordField(this)" aria-label="Show password"
+    <button type="button" data-password-toggle aria-label="Show password"
             class="absolute inset-y-0 right-0 flex items-center px-3 text-[#9ca3af] hover:text-gray-600">
         {{-- Eye — shown when the password is hidden, click to reveal --}}
         <svg width="20" height="20" class="eye-on w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,29 +57,9 @@
     </button>
 </div>
 
-{{-- Toggle JS — emitted only on the first <x-password-input> render per page,
-     even if multiple instances of the component appear. --}}
+{{-- Loaded once per page however many inputs there are, rather than repeating a
+     script block. Both of its listeners are delegated, so this does not have to run
+     before the markup it serves. --}}
 @once
-<script>
-// A field marked data-no-autofill is rendered readonly so the browser will not put a saved
-// password in it. Focusing it releases that, so typing works normally. Delegated rather than an
-// inline onfocus, so this needs no 'unsafe-inline' once the CSP tightens.
-document.addEventListener('focusin', function (e) {
-    if (e.target.matches && e.target.matches('input[data-no-autofill][readonly]')) {
-        e.target.removeAttribute('readonly');
-    }
-});
-
-function togglePasswordField(btn) {
-    const input   = btn.parentElement.querySelector('input');
-    const eyeOn   = btn.querySelector('.eye-on');
-    const eyeOff  = btn.querySelector('.eye-off');
-    const showing = input.type === 'text';
-
-    input.type = showing ? 'password' : 'text';
-    eyeOn.classList.toggle('hidden', !showing);
-    eyeOff.classList.toggle('hidden', showing);
-    btn.setAttribute('aria-label', showing ? 'Show password' : 'Hide password');
-}
-</script>
+@vite('resources/js/password-input.js')
 @endonce

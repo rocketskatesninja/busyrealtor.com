@@ -20,6 +20,7 @@ export default defineConfig({
                 'resources/js/setup-wizard.js',
                 'resources/js/property-form.js',
                 'resources/js/settings.js',
+                'resources/js/password-input.js',
             ],
             refresh: true,
         }),
