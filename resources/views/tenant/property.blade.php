@@ -1,5 +1,4 @@
 @extends('layouts.tenant')
-@section('hide_header')@endsection
 @section('title', $property->title . ' — ' . ($settings->site_title ?? 'BusyRealtor'))
 @section('meta_description', Str::limit(strip_tags($property->description ?? $settings->site_description ?? ''), 155))
 @section('og_image', $property->images->first() ? asset('storage/' . $property->images->first()->image_path) : '')

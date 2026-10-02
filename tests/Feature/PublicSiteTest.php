@@ -163,6 +163,25 @@ class PublicSiteTest extends TestCase
         $this->assertSame(1, PropertyView::withoutGlobalScopes()->where('property_id', $property->id)->count());
     }
 
+    /**
+     * The property page used to declare @section('hide_header'), so it rendered with no
+     * site navigation and no way back. It now takes the sticky default header, the same
+     * one the gallery and map are forced to — hero mode's fixed transparent bar would
+     * sit on top of the photo carousel rather than above it.
+     */
+    public function test_a_property_page_carries_the_sticky_site_header(): void
+    {
+        $tenant = $this->makeTenant([], ['header_mode' => 'hero']);
+        $property = $this->makeProperty($tenant);
+
+        $response = $this->get("/{$tenant->slug}/property/{$property->id}");
+
+        $response->assertOk()
+            ->assertSee('id="tenant-default-header"', false)
+            ->assertDontSee('id="tenant-hero-header"', false)
+            ->assertSee("/{$tenant->slug}/gallery", false);
+    }
+
     public function test_the_properties_api_returns_json_for_this_tenant_only(): void
     {
         $tenant = $this->makeTenant();

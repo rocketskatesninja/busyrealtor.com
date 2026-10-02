@@ -180,8 +180,10 @@
 
 @php
     $headerMode = $settings->header_mode ?? 'default';
-    // Gallery and map always use the sticky default header — only homepage uses hero mode
-    if (request()->routeIs('tenant.gallery') || request()->routeIs('tenant.map')) {
+    // Gallery, map and property pages always use the sticky default header — only the
+    // homepage uses hero mode, whose fixed transparent bar would sit on top of their
+    // content rather than above it.
+    if (request()->routeIs('tenant.gallery') || request()->routeIs('tenant.map') || request()->routeIs('tenant.property')) {
         $headerMode = 'default';
     }
     $headerDisplayMode = $settings->header_display_mode ?? 'both';
