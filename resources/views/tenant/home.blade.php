@@ -269,7 +269,7 @@ $iconPaths = [
             </div>
             <div class="hidden sm:block w-px h-4 bg-white/20"></div>
             <span class="flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                <svg width="16" height="16" class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 Licensed &amp; Insured
             </span>
             <div class="hidden sm:block w-px h-4 bg-white/20"></div>
@@ -283,7 +283,7 @@ $iconPaths = [
     {{-- Scroll cue --}}
     @if($heroEffects['scroll_cue'] ?? true)
     <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-white/35 select-none pointer-events-none">
-        <svg class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="24" height="24" class="w-6 h-6 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 9l-7 7-7-7"/>
         </svg>
     </div>
@@ -302,7 +302,7 @@ $iconPaths = [
             @foreach($featuresItems as $item)
             <div class="text-center group reveal" style="transition-delay: {{ $loop->index * 0.1 }}s">
                 <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-transform group-hover:scale-110" style="background-color: rgba(var(--primary-rgb), 0.1)">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)">
+                    <svg width="32" height="32" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $iconPaths[$item['icon'] ?? 'star'] ?? $iconPaths['star'] }}"/>
                     </svg>
                 </div>
@@ -405,7 +405,7 @@ $iconPaths = [
             @foreach($servicesItems as $item)
             <div class="bg-white rounded-2xl p-8 shadow border border-gray-200 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center group reveal" style="transition-delay: {{ $loop->index * 0.12 }}s">
                 <div class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 transition-all group-hover:scale-110" style="background-color: rgba(var(--primary-rgb), 0.1)">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)">
+                    <svg width="32" height="32" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $iconPaths[$item['icon'] ?? 'star'] ?? $iconPaths['star'] }}"/>
                     </svg>
                 </div>
@@ -434,7 +434,7 @@ $iconPaths = [
                         <img src="{{ asset('storage/' . $member->photo_url) }}" alt="{{ $member->name }}" loading="lazy" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
                     @else
                         <div class="w-full h-full flex items-center justify-center" style="background-color: rgba(var(--primary-rgb), 0.1)">
-                            <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                            <svg width="40" height="40" class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color: var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                         </div>
                     @endif
                 </div>
@@ -477,7 +477,7 @@ $iconPaths = [
                          class="w-44 h-44 rounded-full object-cover shadow-xl ring-4 ring-white transition-transform duration-500 hover:scale-105">
                     @else
                     <div class="w-44 h-44 rounded-full flex items-center justify-center shadow-xl ring-4 ring-white bg-gray-100">
-                        <svg class="w-20 h-20 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
+                        <svg width="80" height="80" class="w-20 h-20 text-gray-300" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
                         </svg>
                     </div>
@@ -505,15 +505,15 @@ $iconPaths = [
                     {{-- Credential badges --}}
                     <div class="flex flex-wrap gap-3 mt-6">
                         <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700 reveal hover:border-[var(--primary)] hover:shadow-sm transition-all duration-300" style="transition-delay: 0.1s">
-                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
                             Licensed &amp; Certified
                         </span>
                         <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700 reveal hover:border-[var(--primary)] hover:shadow-sm transition-all duration-300" style="transition-delay: 0.2s">
-                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             Local Market Expert
                         </span>
                         <span class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-gray-50 border border-gray-200 text-gray-700 reveal hover:border-[var(--primary)] hover:shadow-sm transition-all duration-300" style="transition-delay: 0.3s">
-                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Free Consultation
                         </span>
                     </div>
@@ -523,22 +523,22 @@ $iconPaths = [
                     <div class="flex items-center gap-3 mt-4">
                         @if($settings->social_facebook)
                         <a href="{{ $settings->social_facebook }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 hover:bg-blue-600 hover:text-white text-gray-500 transition-colors">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
                         </a>
                         @endif
                         @if($settings->social_instagram)
                         <a href="{{ $settings->social_instagram }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 hover:bg-pink-500 hover:text-white text-gray-500 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
                         </a>
                         @endif
                         @if($settings->social_linkedin)
                         <a href="{{ $settings->social_linkedin }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 hover:bg-blue-700 hover:text-white text-gray-500 transition-colors">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
                         </a>
                         @endif
                         @if($settings->social_twitter)
                         <a href="{{ $settings->social_twitter }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 hover:bg-gray-900 hover:text-white text-gray-500 transition-colors">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </a>
                         @endif
                     </div>
@@ -589,7 +589,7 @@ $iconPaths = [
                 <button @click="open === {{ $i }} ? open = null : open = {{ $i }}"
                         class="w-full text-left px-6 py-5 flex items-center justify-between font-semibold text-gray-800 hover:bg-gray-50 transition-colors">
                     {{ $faq['question'] ?? '' }}
-                    <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ml-4" :class="open === {{ $i }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <svg width="20" height="20" class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ml-4" :class="open === {{ $i }} ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div x-show="open === {{ $i }}" x-collapse x-cloak>
                     <div class="px-6 pb-5 text-gray-600 leading-relaxed border-t pt-4">{{ $faq['answer'] ?? '' }}</div>
@@ -629,7 +629,7 @@ $iconPaths = [
                     @if($settings->contact_phone)
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(var(--primary-rgb),.15)">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            <svg width="20" height="20" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                         </div>
                         <div><p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Phone</p><p class="font-semibold text-gray-800">{{ $settings->contact_phone }}</p></div>
                     </div>
@@ -637,7 +637,7 @@ $iconPaths = [
                     @if($settings->contact_email)
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(var(--primary-rgb),.15)">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            <svg width="20" height="20" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         </div>
                         <div><p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Email</p><p class="font-semibold text-gray-800 break-all">{{ $settings->contact_email }}</p></div>
                     </div>
@@ -645,7 +645,7 @@ $iconPaths = [
                     @if($settings->contact_address)
                     <div class="flex items-start gap-4">
                         <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style="background:rgba(var(--primary-rgb),.15)">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <svg width="20" height="20" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="color:var(--primary)"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                         </div>
                         <div><p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-0.5">Address</p><p class="font-semibold text-gray-800">{{ $settings->contact_address }}</p></div>
                     </div>
@@ -656,16 +656,16 @@ $iconPaths = [
                     <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Follow Us</p>
                     <div class="flex gap-3">
                         @if($settings->social_facebook)
-                        <a href="{{ $settings->social_facebook }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+                        <a href="{{ $settings->social_facebook }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg width="16" height="16" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
                         @endif
                         @if($settings->social_instagram)
-                        <a href="{{ $settings->social_instagram }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
+                        <a href="{{ $settings->social_instagram }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg width="16" height="16" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg></a>
                         @endif
                         @if($settings->social_twitter)
-                        <a href="{{ $settings->social_twitter }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></a>
+                        <a href="{{ $settings->social_twitter }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg width="16" height="16" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></a>
                         @endif
                         @if($settings->social_linkedin)
-                        <a href="{{ $settings->social_linkedin }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
+                        <a href="{{ $settings->social_linkedin }}" target="_blank" rel="noopener" class="w-9 h-9 rounded-xl flex items-center justify-center hover:opacity-80 transition" style="background:rgba(var(--primary-rgb),.15);color:var(--primary)"><svg width="16" height="16" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></a>
                         @endif
                     </div>
                 </div>
@@ -766,7 +766,7 @@ $iconPaths = [
         </div>
         @else
         <div class="rounded-2xl bg-gray-50 border border-gray-200 shadow flex flex-col items-center justify-center py-20 text-center">
-            <svg class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg width="48" height="48" class="w-12 h-12 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
             </svg>

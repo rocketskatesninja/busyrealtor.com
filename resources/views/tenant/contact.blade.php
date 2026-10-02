@@ -55,7 +55,7 @@
                 {{-- Success --}}
                 <div x-show="success" x-cloak class="text-center py-8">
                     <div class="w-14 h-14 rounded-full mx-auto flex items-center justify-center mb-3" style="background-color: rgba(var(--primary-rgb), 0.1)">
-                        <svg class="w-7 h-7" style="color: var(--primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                        <svg width="28" height="28" class="w-7 h-7" style="color: var(--primary)" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
                     </div>
                     <p class="font-semibold text-gray-800 mb-1">Message Sent!</p>
                     <p class="text-sm text-gray-500">We'll be in touch soon.</p>
@@ -94,7 +94,7 @@
                     <button type="submit" :disabled="submitting || !consent"
                             class="w-full py-3 rounded-xl font-semibold text-white text-sm transition hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             style="background-color: var(--primary)">
-                        <svg x-show="submitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <svg width="16" height="16" x-show="submitting" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
                         </svg>

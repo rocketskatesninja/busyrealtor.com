@@ -312,14 +312,14 @@ $wizardConfig = [
                 <button type="button" @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                         </div>
                         <div>
                             <div class="text-sm font-medium text-gray-900 dark:text-white">AI Chatbot</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">Anthropic or OpenAI for visitor chat</div>
                         </div>
                     </div>
-                    <svg class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <svg width="16" height="16" class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div x-show="open" x-collapse class="px-4 pb-4 space-y-3">
                     {{-- Matches the Enable checkbox the Facebook and X cards carry. Without
@@ -364,14 +364,14 @@ $wizardConfig = [
                 <button type="button" @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                         </div>
                         <div>
                             <div class="text-sm font-medium text-gray-900 dark:text-white">Google Analytics</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">Track visitor behavior</div>
                         </div>
                     </div>
-                    <svg class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <svg width="16" height="16" class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div x-show="open" x-collapse class="px-4 pb-4 space-y-2">
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Measurement ID</label>
@@ -388,14 +388,14 @@ $wizardConfig = [
                 <button type="button" @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         </div>
                         <div>
                             <div class="text-sm font-medium text-gray-900 dark:text-white">Facebook</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">Auto-post listings to your page</div>
                         </div>
                     </div>
-                    <svg class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <svg width="16" height="16" class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div x-show="open" x-collapse class="px-4 pb-4 space-y-2">
                     <label class="block text-xs text-gray-600 dark:text-gray-400 mb-1">Access Token</label>
@@ -415,14 +415,14 @@ $wizardConfig = [
                 <button type="button" @click="open = !open" class="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
-                            <svg class="w-4 h-4 text-gray-900 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                            <svg width="16" height="16" class="w-4 h-4 text-gray-900 dark:text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                         </div>
                         <div>
                             <div class="text-sm font-medium text-gray-900 dark:text-white">X (Twitter)</div>
                             <div class="text-xs text-gray-500 dark:text-gray-400">Auto-post listings to X</div>
                         </div>
                     </div>
-                    <svg class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    <svg width="16" height="16" class="w-4 h-4 text-gray-400 transition" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div x-show="open" x-collapse class="px-4 pb-4 space-y-2">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -545,7 +545,7 @@ $wizardConfig = [
                 <div class="flex items-center justify-between p-3 rounded-lg" :class="completedSteps.includes(1) ? 'bg-green-50 dark:bg-green-900/20' : 'bg-gray-50 dark:bg-gray-700/50'">
                     <div class="flex items-center gap-3">
                         <div class="w-6 h-6 rounded-full flex items-center justify-center" :class="completedSteps.includes(1) ? 'bg-green-500 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400'">
-                            <svg x-show="completedSteps.includes(1)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg width="14" height="14" x-show="completedSteps.includes(1)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             <span x-show="!completedSteps.includes(1)" class="text-xs font-bold">1</span>
                         </div>
                         <span class="text-sm font-medium" :class="completedSteps.includes(1) ? 'text-green-800 dark:text-green-300' : 'text-gray-500 dark:text-gray-400'">Branding</span>
@@ -557,7 +557,7 @@ $wizardConfig = [
                 <div class="flex items-center justify-between p-3 rounded-lg" :class="completedSteps.includes(2) ? 'bg-green-50 dark:bg-green-900/20' : 'bg-gray-50 dark:bg-gray-700/50'">
                     <div class="flex items-center gap-3">
                         <div class="w-6 h-6 rounded-full flex items-center justify-center" :class="completedSteps.includes(2) ? 'bg-green-500 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400'">
-                            <svg x-show="completedSteps.includes(2)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg width="14" height="14" x-show="completedSteps.includes(2)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             <span x-show="!completedSteps.includes(2)" class="text-xs font-bold">2</span>
                         </div>
                         <span class="text-sm font-medium" :class="completedSteps.includes(2) ? 'text-green-800 dark:text-green-300' : 'text-gray-500 dark:text-gray-400'">Contact Info</span>
@@ -569,7 +569,7 @@ $wizardConfig = [
                 <div class="flex items-center justify-between p-3 rounded-lg" :class="completedSteps.includes(3) ? 'bg-green-50 dark:bg-green-900/20' : 'bg-gray-50 dark:bg-gray-700/50'">
                     <div class="flex items-center gap-3">
                         <div class="w-6 h-6 rounded-full flex items-center justify-center" :class="completedSteps.includes(3) ? 'bg-green-500 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400'">
-                            <svg x-show="completedSteps.includes(3)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg width="14" height="14" x-show="completedSteps.includes(3)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             <span x-show="!completedSteps.includes(3)" class="text-xs font-bold">3</span>
                         </div>
                         <span class="text-sm font-medium" :class="completedSteps.includes(3) ? 'text-green-800 dark:text-green-300' : 'text-gray-500 dark:text-gray-400'">Hero Section</span>
@@ -581,7 +581,7 @@ $wizardConfig = [
                 <div class="flex items-center justify-between p-3 rounded-lg" :class="completedSteps.includes(4) ? 'bg-green-50 dark:bg-green-900/20' : 'bg-gray-50 dark:bg-gray-700/50'">
                     <div class="flex items-center gap-3">
                         <div class="w-6 h-6 rounded-full flex items-center justify-center" :class="completedSteps.includes(4) ? 'bg-green-500 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400'">
-                            <svg x-show="completedSteps.includes(4)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg width="14" height="14" x-show="completedSteps.includes(4)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             <span x-show="!completedSteps.includes(4)" class="text-xs font-bold">4</span>
                         </div>
                         <span class="text-sm font-medium" :class="completedSteps.includes(4) ? 'text-green-800 dark:text-green-300' : 'text-gray-500 dark:text-gray-400'">Services</span>
@@ -593,7 +593,7 @@ $wizardConfig = [
                 <div class="flex items-center justify-between p-3 rounded-lg" :class="completedSteps.includes(5) ? 'bg-green-50 dark:bg-green-900/20' : 'bg-gray-50 dark:bg-gray-700/50'">
                     <div class="flex items-center gap-3">
                         <div class="w-6 h-6 rounded-full flex items-center justify-center" :class="completedSteps.includes(5) ? 'bg-green-500 text-white' : 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400'">
-                            <svg x-show="completedSteps.includes(5)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <svg width="14" height="14" x-show="completedSteps.includes(5)" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             <span x-show="!completedSteps.includes(5)" class="text-xs font-bold">5</span>
                         </div>
                         <span class="text-sm font-medium" :class="completedSteps.includes(5) ? 'text-green-800 dark:text-green-300' : 'text-gray-500 dark:text-gray-400'">First Property</span>
@@ -646,7 +646,7 @@ $wizardConfig = [
                 class="btn-primary inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-semibold transition disabled:opacity-50">
             <span x-show="!saving" x-text="step === 5 && !data.prop_title ? 'Skip & Continue' : 'Save & Continue'"></span>
             <span x-show="saving">Saving...</span>
-            <svg x-show="!saving" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <svg width="16" height="16" x-show="!saving" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
         </button>
 
         {{-- Launch button (step 6) --}}
@@ -657,7 +657,7 @@ $wizardConfig = [
                 class="btn-primary inline-flex items-center gap-2 px-8 py-2.5 rounded-xl text-sm font-bold transition disabled:opacity-50">
             <span x-show="!saving">Launch Site</span>
             <span x-show="saving">Launching...</span>
-            <svg x-show="!saving" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <svg width="16" height="16" x-show="!saving" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
         </button>
     </div>
 

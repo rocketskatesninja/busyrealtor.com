@@ -5,7 +5,7 @@
 @php $account = app('tenant')->slug; @endphp
 <div class="max-w-lg mx-auto px-4 text-center py-16">
     <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style="background-color: rgba(var(--primary-rgb), 0.1);">
-        <svg class="w-10 h-10" style="color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="40" height="40" class="w-10 h-10" style="color: var(--primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
     </div>

@@ -39,10 +39,10 @@
     function createWidget() {
         document.getElementById('chatbot-root').innerHTML = `
 <button id="chatbot-btn" class="fixed w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white z-50 cursor-grab active:cursor-grabbing select-none" style="background-color:var(--primary);right:24px;bottom:24px">
-    <svg id="chatbot-icon-chat" class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg width="24" height="24" id="chatbot-icon-chat" class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
     </svg>
-    <svg id="chatbot-icon-x" class="w-6 h-6 pointer-events-none hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg width="24" height="24" id="chatbot-icon-x" class="w-6 h-6 pointer-events-none hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
     </svg>
 </button>
@@ -50,7 +50,7 @@
     <div class="flex items-center justify-between p-4 border-b rounded-t-xl shrink-0" style="background-color:var(--primary)">
         <div class="flex items-center gap-3">
             <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                <svg width="20" height="20" class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
             </div>
             <div class="text-white">
                 <div class="font-semibold text-sm">Chat Assistant</div>
@@ -58,7 +58,7 @@
             </div>
         </div>
         <button id="chatbot-close" class="text-white/80 hover:text-white hover:bg-white/20 rounded p-1 transition-colors">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <svg width="20" height="20" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
     </div>
     <div id="chatbot-messages" class="flex-1 overflow-y-auto p-4 space-y-3" style="background:#f7f8fa"></div>
@@ -259,10 +259,10 @@
     function createWidget() {
         root.innerHTML = `
 <button id="contact-btn" class="fixed w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white z-50 cursor-grab active:cursor-grabbing select-none" style="background-color:var(--primary);left:16px;bottom:16px">
-    <svg id="contact-icon-mail" class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg width="24" height="24" id="contact-icon-mail" class="w-6 h-6 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
     </svg>
-    <svg id="contact-icon-x" class="w-6 h-6 pointer-events-none hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg width="24" height="24" id="contact-icon-x" class="w-6 h-6 pointer-events-none hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
     </svg>
 </button>
@@ -273,7 +273,7 @@
             <div class="text-xs opacity-90">We'll respond within 24 hours</div>
         </div>
         <button id="contact-close" class="text-white hover:bg-white/20 rounded p-1">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <svg width="20" height="20" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
     </div>
     <div class="p-4">

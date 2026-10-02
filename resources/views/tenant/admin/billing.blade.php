@@ -32,7 +32,7 @@
                 <div class="mt-2 flex flex-wrap items-center gap-2">
                     @if($isTrialing)
                         <span class="inline-flex items-center gap-1.5 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg width="12" height="12" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Trial ends {{ $tenant->trial_ends_at->diffForHumans() }}
                         </span>
                         <span class="text-xs text-gray-400">Full Pro access included</span>
@@ -42,7 +42,7 @@
                         </span>
                     @elseif($isCanceling)
                         <span class="inline-flex items-center gap-1.5 text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-1 rounded-full">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <svg width="12" height="12" class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             Active until {{ $cancelDate->format('M j, Y') }}
                         </span>
                     @elseif($tenant->stripe_subscription_status === 'active')
@@ -141,7 +141,7 @@
          Tenant::stripeEmail() override (primary user's login
          email, not the tenant's public contact). --}}
     <div id="billing-email-note" class="flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400 px-1">
-        <svg class="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg width="14" height="14" class="w-3.5 h-3.5 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         <span>
@@ -154,7 +154,7 @@
     {{-- Billing History --}}
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-6 py-4 border-b border-gray-100">
-            <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Billing History</h3>
+            <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Billing History</h3>
         </div>
         @if(count($invoices) > 0)
         <div class="overflow-x-auto">
@@ -184,7 +184,7 @@
                         <td class="px-6 py-4 text-right">
                             <a href="{{ route('tenant.admin.billing.invoice', [$account, $invoice->id]) }}"
                                class="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-800 transition">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <svg width="14" height="14" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                                 Download
                             </a>
                         </td>
@@ -195,7 +195,7 @@
         </div>
         @else
         <div class="px-6 py-12 text-center">
-            <svg class="w-8 h-8 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 14H5a2 2 0 01-2-2V5a2 2 0 012-2h8a2 2 0 012 2v3M9 14a2 2 0 002 2h8a2 2 0 002-2V9a2 2 0 00-2-2h-3M9 14l2 2 4-4"/></svg>
+            <svg width="32" height="32" class="w-8 h-8 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 14H5a2 2 0 01-2-2V5a2 2 0 012-2h8a2 2 0 012 2v3M9 14a2 2 0 002 2h8a2 2 0 002-2V9a2 2 0 00-2-2h-3M9 14l2 2 4-4"/></svg>
             <p class="text-gray-400 text-sm">No invoices yet</p>
         </div>
         @endif

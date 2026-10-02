@@ -25,6 +25,14 @@ export default defineConfig({
         }),
         tailwindcss(),
     ],
+    build: {
+        // A build used to empty public/build/assets, so every hashed file a page already
+        // open in someone's browser referred to stopped existing the moment we deployed.
+        // The stylesheet 404s, the page renders with no CSS at all, and every icon lays
+        // out at viewport size. Old files are left in place instead; they are hashed, so
+        // nothing collides, and they can be pruned deliberately.
+        emptyOutDir: false,
+    },
     server: {
         watch: {
             ignored: ['**/storage/framework/views/**'],

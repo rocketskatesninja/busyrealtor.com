@@ -46,7 +46,7 @@
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <p class="text-sm">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-medium text-xs" style="background: rgba(59,130,246,0.15); color: #93c5fd;">
-                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>
+                            <svg width="14" height="14" class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"/></svg>
                             <span x-text="selectedIds.length"></span> recipients selected
                         </span>
                     </p>
@@ -57,7 +57,7 @@
                         </button>
                         <button type="submit" :disabled="selectedIds.length === 0 || !subject || !body || sending"
                                 class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-semibold transition disabled:opacity-40 flex items-center gap-2">
-                            <svg x-show="sending" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
+                            <svg width="16" height="16" x-show="sending" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                             Send Email
                         </button>
                     </div>
@@ -70,7 +70,7 @@
     <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                <svg width="20" height="20" class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                 Recipients
                 <span class="text-sm font-normal text-gray-400">(<span x-text="visibleCount"></span> shown)</span>
             </h3>
@@ -136,28 +136,28 @@
                         <th @click="setSort('name')" class="text-left py-2 px-3 font-medium text-gray-500 cursor-pointer hover:text-gray-300 select-none">
                             <span class="inline-flex items-center gap-1">Name
                                 <template x-if="sortCol === 'name'">
-                                    <svg class="w-3.5 h-3.5 transition-transform" :class="sortDir === 'desc' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                    <svg width="14" height="14" class="w-3.5 h-3.5 transition-transform" :class="sortDir === 'desc' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                                 </template>
                             </span>
                         </th>
                         <th @click="setSort('email')" class="text-left py-2 px-3 font-medium text-gray-500 cursor-pointer hover:text-gray-300 select-none">
                             <span class="inline-flex items-center gap-1">Email
                                 <template x-if="sortCol === 'email'">
-                                    <svg class="w-3.5 h-3.5 transition-transform" :class="sortDir === 'desc' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                    <svg width="14" height="14" class="w-3.5 h-3.5 transition-transform" :class="sortDir === 'desc' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                                 </template>
                             </span>
                         </th>
                         <th @click="setSort('tenant')" class="text-left py-2 px-3 font-medium text-gray-500 cursor-pointer hover:text-gray-300 select-none">
                             <span class="inline-flex items-center gap-1">Tenant
                                 <template x-if="sortCol === 'tenant'">
-                                    <svg class="w-3.5 h-3.5 transition-transform" :class="sortDir === 'desc' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                    <svg width="14" height="14" class="w-3.5 h-3.5 transition-transform" :class="sortDir === 'desc' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                                 </template>
                             </span>
                         </th>
                         <th @click="setSort('plan')" class="text-left py-2 px-3 font-medium text-gray-500 cursor-pointer hover:text-gray-300 select-none">
                             <span class="inline-flex items-center gap-1">Plan
                                 <template x-if="sortCol === 'plan'">
-                                    <svg class="w-3.5 h-3.5 transition-transform" :class="sortDir === 'desc' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
+                                    <svg width="14" height="14" class="w-3.5 h-3.5 transition-transform" :class="sortDir === 'desc' && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"/></svg>
                                 </template>
                             </span>
                         </th>
@@ -217,7 +217,7 @@
     <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200" x-data="{ historyOpen: false }">
         <button @click="historyOpen = !historyOpen" class="flex items-center justify-between w-full">
             <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <svg width="20" height="20" class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 Campaign History
                 <span class="text-sm font-normal text-gray-400">({{ $campaigns->count() }})</span>
             </h3>

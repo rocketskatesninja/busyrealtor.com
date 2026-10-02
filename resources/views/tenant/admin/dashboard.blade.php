@@ -40,8 +40,8 @@
     <div class="hidden md:flex justify-end mb-6">
         <button id="dash-lock-btn" type="button"
                 class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-semibold px-4 py-2.5 rounded-xl text-sm transition flex items-center gap-2">
-            <svg id="dash-lock-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-            <svg id="dash-unlock-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+            <svg width="16" height="16" id="dash-lock-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <svg width="16" height="16" id="dash-unlock-icon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
             <span id="dash-lock-label">Arrange Cards</span>
         </button>
     </div>
@@ -55,7 +55,7 @@
     @endphp
     @if(count($actionItems) > 0)
     <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-2xl p-4 mb-6 flex items-start gap-3">
-        <svg class="w-5 h-5 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+        <svg width="20" height="20" class="w-5 h-5 text-amber-500 dark:text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
         <div>
             <p class="font-semibold text-amber-800 dark:text-amber-300 text-sm">Action Items</p>
             <p class="text-amber-700 dark:text-amber-400 text-sm mt-0.5">{{ implode(' · ', $actionItems) }}</p>
@@ -90,7 +90,7 @@
         @foreach($cards as $card)
         <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-200" data-widget="{{ $card['key'] }}">
             <div class="stat-icon w-10 h-10 rounded-xl flex items-center justify-center mb-3 bg-{{ $card['color'] }}-50">
-                <svg class="w-5 h-5 text-{{ $card['color'] }}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/></svg>
+                <svg width="20" height="20" class="w-5 h-5 text-{{ $card['color'] }}-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $card['icon'] }}"/></svg>
             </div>
             <p class="text-2xl font-bold text-gray-900">{{ $card['value'] }}</p>
             <p class="text-xs text-gray-500 mt-1">{{ $card['label'] }}</p>
@@ -114,7 +114,7 @@
                     @endif
                 @break
                 @case('status_chart')
-                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>Listing Status</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5a1.99 1.99 0 011.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>Listing Status</h3>
                     @if($propertiesByStatus->isEmpty())
                         <p class="text-gray-400 text-sm text-center py-16">No data yet.</p>
                     @else
@@ -122,7 +122,7 @@
                     @endif
                 @break
                 @case('views_chart')
-                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Views by Property</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Views by Property</h3>
                     @if($viewsByProperty->isEmpty())
                         <p class="text-gray-400 text-sm text-center py-16 flex-1 flex items-center justify-center">No views tracked yet.</p>
                     @else
@@ -132,7 +132,7 @@
                     @endif
                 @break
                 @case('views_30days')
-                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Property Views — Last 30 Days</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Property Views — Last 30 Days</h3>
                     <div class="flex-1 relative min-h-[140px]"><canvas id="views30Chart" class="w-full h-full"></canvas></div>
                 @break
                 @case('messages_7days')
@@ -140,7 +140,7 @@
                     <div class="flex-1 relative min-h-[140px]"><canvas id="msgs7Chart" class="w-full h-full"></canvas></div>
                 @break
                 @case('price_distribution')
-                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Price Range Distribution</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Price Range Distribution</h3>
                     @if($priceDistribution->sum() === 0)
                         <p class="text-gray-400 text-sm text-center py-16 flex-1 flex items-center justify-center">No data yet.</p>
                     @else
@@ -152,11 +152,11 @@
                     <div class="flex-1 relative min-h-[140px]"><canvas id="listingsTimeChart" class="w-full h-full"></canvas></div>
                 @break
                 @case('revenue_trend')
-                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Revenue Trend (12 Months)</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Revenue Trend (12 Months)</h3>
                     <div class="flex-1 relative min-h-[140px]"><canvas id="revenueChart" class="w-full h-full"></canvas></div>
                 @break
                 @case('appt_status')
-                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>Appointment Status</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>Appointment Status</h3>
                     @if($apptByStatus->isEmpty())
                         <p class="text-gray-400 text-sm text-center py-16">No appointments yet.</p>
                     @else
@@ -164,7 +164,7 @@
                     @endif
                 @break
                 @case('message_sources')
-                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>Message Sources</h3>
+                    <h3 class="font-semibold text-gray-800 mb-4 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/></svg>Message Sources</h3>
                     @if($messageSources->isEmpty())
                         <p class="text-gray-400 text-sm text-center py-16">No messages yet.</p>
                     @else
@@ -186,7 +186,7 @@
             @case('top_properties')
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="top_properties">
                 <div class="flex items-center justify-between p-5 dash-header-border">
-                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Top Properties by Views</h3>
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>Top Properties by Views</h3>
                     <a href="{{ route('tenant.admin.properties.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
                 <div class="dash-divide">
@@ -194,7 +194,7 @@
                     @php $img = $p->images->first(); @endphp
                     <div class="flex items-center gap-4 p-4">
                         <div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-600 overflow-hidden flex-shrink-0">
-                            @if($img)<img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">@else<div class="w-full h-full flex items-center justify-center"><svg class="w-5 h-5 text-gray-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>@endif
+                            @if($img)<img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">@else<div class="w-full h-full flex items-center justify-center"><svg width="20" height="20" class="w-5 h-5 text-gray-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>@endif
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="font-medium text-gray-800 text-sm truncate">{{ $p->title }}</p>
@@ -231,7 +231,7 @@
                     </div>
                     @empty
                     <div class="p-8 text-center">
-                        <svg class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <svg width="40" height="40" class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         <p class="text-gray-400 text-sm">No messages yet.</p>
                         <p class="text-gray-300 dark:text-gray-600 text-xs mt-1">Messages from your contact form will appear here.</p>
                     </div>
@@ -243,7 +243,7 @@
             @case('starred_messages')
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="starred_messages">
                 <div class="flex items-center justify-between p-5 dash-header-border">
-                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>Starred Messages</h3>
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>Starred Messages</h3>
                     <a href="{{ route('tenant.admin.messages.index', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">View All</a>
                 </div>
                 <div class="dash-divide">
@@ -260,7 +260,7 @@
                     </div>
                     @empty
                     <div class="p-8 text-center">
-                        <svg class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
+                        <svg width="40" height="40" class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg>
                         <p class="text-gray-400 text-sm">No starred messages.</p>
                         <p class="text-gray-300 dark:text-gray-600 text-xs mt-1">Star important messages to pin them here.</p>
                     </div>
@@ -286,7 +286,7 @@
                     </div>
                     @empty
                     <div class="p-8 text-center">
-                        <svg class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        <svg width="40" height="40" class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                         <p class="text-gray-400 text-sm">No upcoming appointments.</p>
                         <p class="text-gray-300 dark:text-gray-600 text-xs mt-1">Appointment requests will appear here.</p>
                     </div>
@@ -299,7 +299,7 @@
             @php $sc = ['active'=>'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400','pending'=>'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400','sold'=>'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300']; @endphp
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200" data-widget="recent_properties">
                 <div class="flex items-center justify-between p-5 dash-header-border">
-                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Recently Added</h3>
+                    <h3 class="font-semibold text-gray-800 flex items-center gap-2"><svg width="20" height="20" class="w-5 h-5 panel-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Recently Added</h3>
                     <a href="{{ route('tenant.admin.properties.create', $account) }}" class="text-sm hover-primary" style="color:var(--primary)">+ Add New</a>
                 </div>
                 <div class="dash-divide">
@@ -307,7 +307,7 @@
                     @php $img = $p->images->first(); @endphp
                     <a href="{{ route('tenant.admin.properties.edit', [$account, $p->id]) }}" class="flex items-center gap-3 p-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition">
                         <div class="w-12 h-12 rounded-xl bg-gray-100 dark:bg-slate-600 overflow-hidden flex-shrink-0">
-                            @if($img)<img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">@else<div class="w-full h-full flex items-center justify-center"><svg class="w-5 h-5 text-gray-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>@endif
+                            @if($img)<img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">@else<div class="w-full h-full flex items-center justify-center"><svg width="20" height="20" class="w-5 h-5 text-gray-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg></div>@endif
                         </div>
                         <div class="flex-1 min-w-0">
                             <p class="font-medium text-gray-800 text-sm truncate">{{ $p->title }}</p>
@@ -326,7 +326,7 @@
             <div class="bg-white rounded-2xl shadow-sm border border-amber-200 dark:border-amber-700/50" data-widget="needs_attention">
                 <div class="flex items-center justify-between p-5 border-b border-amber-100 dark:border-amber-700/30">
                     <div class="flex items-center gap-2">
-                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                        <svg width="16" height="16" class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
                         <h3 class="font-semibold text-gray-800">Needs Attention</h3>
                     </div>
                     @if($needsAttention->count() > 0)
@@ -342,7 +342,7 @@
                                 <img src="{{ asset('storage/'.$img->image_path) }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center bg-amber-50 dark:bg-amber-900/30">
-                                    <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    <svg width="20" height="20" class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 </div>
                             @endif
                         </div>
@@ -358,7 +358,7 @@
                     </a>
                     @empty
                     <div class="p-8 text-center">
-                        <svg class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <svg width="40" height="40" class="w-10 h-10 text-gray-200 dark:text-gray-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         <p class="text-gray-400 text-sm">All listings look good!</p>
                         <p class="text-gray-300 dark:text-gray-600 text-xs mt-1">Active listings with low views, missing photos, or other issues will appear here.</p>
                     </div>
