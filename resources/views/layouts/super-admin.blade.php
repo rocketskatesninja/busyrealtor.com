@@ -248,9 +248,15 @@
 </div>
 </div>{{-- /desktop flex wrapper --}}
 
+{{-- Bottom-of-body slot for bundles, matching the other layouts. The block below wraps
+     @yield('scripts') in a <script> tag, so a @vite tag cannot be emitted from there. --}}
+@yield('foot')
+
+@hasSection('scripts')
 <script>
 @yield('scripts')
 </script>
+@endif
 <script>
 function tenantSearch() {
     return {

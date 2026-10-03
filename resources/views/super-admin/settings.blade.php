@@ -465,7 +465,7 @@
                      (5.7.1, 5.7.0, etc.) so the operator can diagnose. Save
                      the form first to persist any pending field changes. --}}
                 <div class="flex flex-wrap items-center gap-3">
-                    <button type="button" id="super-test-mail-btn"
+                    <button type="button" id="super-test-mail-btn" data-url="{{ route('super.api.test-mail') }}"
                             class="text-sm px-4 py-2 rounded-lg font-medium transition bg-green-600 hover:bg-green-500 text-white">
                         Send Test Email
                     </button>
@@ -560,43 +560,8 @@
 
 </div>
 
-<script>
-// Super-admin "Send Test Email" — POSTs to /super-admin/api/test-mail and
-// surfaces success or the raw SMTP error inline. Doesn't pre-save the
-// form (different from the per-tenant button) — operator should hit
-// "Save Settings" first if they edited any SMTP fields.
-document.getElementById('super-test-mail-btn')?.addEventListener('click', async () => {
-    const to = prompt('Send test email to:');
-    if (!to) return;
+@endsection
 
-    const btn = document.getElementById('super-test-mail-btn');
-    const out = document.getElementById('super-test-mail-result');
-    btn.disabled = true;
-    btn.textContent = 'Sending...';
-    out.textContent = '';
-    out.className   = 'text-xs text-gray-400';
-
-    try {
-        const resp = await fetch('{{ route('super.api.test-mail') }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type':       'application/json',
-                'Accept':             'application/json',
-                'X-CSRF-TOKEN':       document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                'X-Requested-With':   'XMLHttpRequest',
-            },
-            body: JSON.stringify({ to }),
-        });
-        const data = await resp.json();
-        out.textContent = data.message || (resp.ok ? 'Sent.' : 'Failed.');
-        out.className   = 'text-xs ' + (data.success ? 'text-green-400' : 'text-red-400');
-    } catch (e) {
-        out.textContent = 'Network error: ' + e.message;
-        out.className   = 'text-xs text-red-400';
-    } finally {
-        btn.disabled    = false;
-        btn.textContent = 'Send Test Email';
-    }
-});
-</script>
+@section('foot')
+@vite('resources/js/super-settings.js')
 @endsection
