@@ -177,36 +177,10 @@ $settingsConfig = [
                             </div>
                         </div>
                     </div>
-                    <div class="mt-5 border-t pt-5">
-                        {{-- Change Password --}}
-                        {{-- The backend (SettingsController.update) requires `current_password`
-                             ONLY when `new_password` is filled, so leaving these three fields
-                             blank is fine for users who only want to update their profile
-                             info or other tabs. --}}
-                        <h3 class="font-medium text-gray-800 mb-3">Change Password</h3>
-                        <p class="text-xs text-gray-500 mb-3">Leave all three blank to keep your current password.</p>
-                        {{-- Three equal-width password fields side-by-side on desktop,
-                             stacked on mobile. Each field uses the shared
-                             <x-password-input> component (resources/views/components/
-                             password-input.blade.php) so the eye toggle, icons, colors,
-                             and hover behavior match the login page exactly. --}}
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
-                                <x-password-input name="current_password" autocomplete="current-password" />
-                                @error('current_password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
-                                <x-password-input name="new_password" autocomplete="new-password" />
-                                @error('new_password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-                                <x-password-input name="new_password_confirmation" autocomplete="new-password" />
-                            </div>
-                        </div>
-                    </div>
+                    {{-- Change Password now has its own card and its own form, below this
+                         one. It cannot live here: a <form> holding contact_email next to a
+                         password field is what a browser reads as a login, and Firefox
+                         offered to save that pair as a new credential. --}}
                     <div class="mt-5 border-t pt-5">
                         <h3 class="font-medium text-gray-800 mb-3">Agent Profile</h3>
                         <p class="text-sm text-gray-500 mb-4">This public profile powers the Agent Spotlight section on your homepage and appears on property listings.</p>
@@ -1686,6 +1660,46 @@ $settingsConfig = [
                 </div>
 
 
+            </form>
+
+            {{-- Deliberately outside the form above, not merely a separate <form> tag with
+                 the fields still nested in it: the browser groups candidate credentials by
+                 form, so the only reliable separation is a form of its own with nothing
+                 username-shaped in it. --}}
+            <form id="password-form" method="POST" x-show="activeTab === 'profile'" x-cloak
+                  action="{{ route('tenant.admin.settings.password', $account) }}"
+                  class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 mt-6">
+                @csrf
+                <div class="flex items-center gap-3 mb-5">
+                    <x-icon name="lock-closed" class="w-5 h-5 panel-icon shrink-0" />
+                    <div class="min-w-0">
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-white">Change Password</h2>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Signs you out everywhere else.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="f-current_password" class="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+                        <x-password-input id="f-current_password" name="current_password" autocomplete="current-password" />
+                        @error('current_password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="f-new_password" class="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+                        <x-password-input id="f-new_password" name="new_password" autocomplete="new-password" />
+                        @error('new_password')<p class="text-sm text-red-600 mt-1">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label for="f-new_password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+                        <x-password-input id="f-new_password_confirmation" name="new_password_confirmation" autocomplete="new-password" />
+                    </div>
+                </div>
+
+                <div class="mt-5 flex justify-end">
+                    <button type="submit" class="btn-primary inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition">
+                        Change Password
+                    </button>
+                </div>
             </form>
         </div>
     </div>

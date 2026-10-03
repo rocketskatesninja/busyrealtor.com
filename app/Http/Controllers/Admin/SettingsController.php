@@ -133,6 +133,39 @@ class SettingsController extends Controller
         ];
     }
 
+    /**
+     * Changing the account password, on its own endpoint and in its own form.
+     *
+     * This used to be a branch inside update(), which meant the three password fields
+     * lived in the same <form> as every other setting -- including contact_email. Firefox
+     * read that pairing as a login and offered to save contact_email with the password it
+     * had autofilled into current_password. Nothing short of separating the forms fixes
+     * that, because the grouping is what the browser keys on.
+     */
+    public function updatePassword($account, Request $request)
+    {
+        // Require the user to prove they know the existing password before changing it.
+        // Without this, a hijacked session — or even an unattended browser tab — is enough
+        // to take over an account: the attacker just sets a new password without knowing
+        // the old one. Laravel's `current_password` rule hashes the input and compares
+        // against the authenticated user's password.
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'new_password' => ['required', 'confirmed', Password::defaults()],
+        ], [
+            'current_password.required' => 'Enter your current password to change it.',
+            'current_password.current_password' => 'Your current password is incorrect.',
+        ]);
+
+        Auth::user()->update(['password' => Hash::make($request->new_password)]);
+        // A password change has to end the sessions of whoever else holds one.
+        Auth::user()->endOtherSessions();
+
+        return redirect()
+            ->route('tenant.admin.settings', ['account' => $account, 'tab' => 'profile'])
+            ->with('success', 'Password changed. Any other signed-in sessions have been ended.');
+    }
+
     public function update($account, Request $request)
     {
         $tenant = app('tenant');
@@ -186,27 +219,6 @@ class SettingsController extends Controller
                     ->with('error', 'Email updated but verification email could not be sent. Please configure SMTP settings or contact support.');
             }
         }
-        if ($request->filled('new_password')) {
-            // Require the user to prove they know the existing password
-            // before changing it. Without this, a hijacked session — or
-            // even an unattended browser tab — is enough to take over an
-            // account: the attacker just sets a new password without
-            // knowing the old one.
-            //
-            // Laravel's built-in `current_password` rule hashes the input
-            // and compares against the authenticated user's password.
-            $request->validate([
-                'current_password' => ['required', 'current_password'],
-                'new_password' => ['required', 'confirmed', Password::defaults()],
-            ], [
-                'current_password.required' => 'Enter your current password to change it.',
-                'current_password.current_password' => 'Your current password is incorrect.',
-            ]);
-            Auth::user()->update(['password' => Hash::make($request->new_password)]);
-            // A password change has to end the sessions of whoever else holds one.
-            Auth::user()->endOtherSessions();
-        }
-
         // ── All site_settings columns ─────────────────────────────────────
         //
         // Only the three image uploads were validated here. Every other value went from the

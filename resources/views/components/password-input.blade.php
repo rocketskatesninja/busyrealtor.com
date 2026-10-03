@@ -3,17 +3,19 @@
     'class' => 'w-full border border-gray-300 rounded-lg px-4 py-3 pr-11 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition',
 
     /*
-     | Whether the browser may treat this as a credential to fill.
+     | Whether this field is actually a credential.
      |
-     | Pass :autofill="false" for a field that is type=password but is not this user's
-     | password — an SMTP password, an API key, an access token. Those share a page and a
-     | <form> with the account's email field, and a password manager reads "email input,
-     | then password input, same form" as a login form: it fills the saved site password
-     | into the first password box it finds and then offers to save it back. autocomplete="off"
-     | does not stop that, because browsers deliberately ignore it in login-shaped forms.
+     | Pass :autofill="false" for a secret that is not this user's password — an SMTP
+     | password, an API key, an access token. Those render as a masked text input rather
+     | than type=password, because a password manager pairs any password input with any
+     | username-shaped field in the same form and offers to save the two together. On the
+     | settings screen that produced a Firefox prompt offering to save the site's public
+     | contact_email as a login.
      |
-     | readonly does stop it, and is dropped the moment the field is focused, so the field
-     | is still perfectly editable by hand.
+     | A text input with -webkit-text-security shows dots without being a credential field,
+     | so password managers ignore it completely: no fill, no save prompt, and no need for
+     | the readonly-until-focused trick this used to rely on. Browsers without that property
+     | (Firefox before 119) fall back to type=password plus that trick, in the bundle.
      */
     'autofill' => true,
 ])
@@ -40,9 +42,18 @@
 --}}
 
 <div class="relative">
+    @if($autofill)
     <input type="password" name="{{ $name }}" class="{{ $class }}"
-           @unless($autofill) readonly data-no-autofill @endunless
            {{ $attributes->merge(['autocomplete' => 'off']) }}>
+    @else
+    {{-- Masked by style rather than by input type, so it is not a credential field. The
+         style is inline on purpose: in a stylesheet it would stop masking the moment that
+         file failed to load, and a secret would be on screen in plain text. --}}
+    <input type="text" name="{{ $name }}" class="{{ $class }}" data-secret
+           style="-webkit-text-security: disc"
+           autocapitalize="off" autocorrect="off" spellcheck="false"
+           {{ $attributes->merge(['autocomplete' => 'off']) }}>
+    @endif
     <button type="button" data-password-toggle aria-label="Show password"
             class="absolute inset-y-0 right-0 flex items-center px-3 text-[#9ca3af] hover:text-gray-600">
         {{-- Eye — shown when the password is hidden, click to reveal --}}

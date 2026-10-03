@@ -234,6 +234,12 @@ Route::prefix('{account}')->middleware(['tenant', 'impersonate'])->name('tenant.
         // Settings
         Route::get('/settings', [SettingsController::class, 'show'])->name('settings');
         Route::post('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        // Its own endpoint rather than a branch inside the settings save: a form holding a
+        // username-shaped field next to a password field is what a password manager reads
+        // as a login, and the settings form holds both. Throttled like the super-admin
+        // equivalent, since it accepts the current password.
+        Route::post('/settings/password', [SettingsController::class, 'updatePassword'])
+            ->middleware('throttle:6,1')->name('settings.password');
 
         // Export/Backup/Test Email
         Route::get('/api/export/{type}', [ExportController::class, 'export'])->name('api.export');

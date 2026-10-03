@@ -154,8 +154,18 @@ class PasswordChangeTest extends TestCase
 
     // ── the tenant admin's profile tab ─────────────────────────────────────────
 
-    /** The one form covers the whole settings screen, so a save posts all of it. */
+    /**
+     * The password change posts to its own endpoint and carries only its own three
+     * fields. It used to be a branch inside the settings save, which is why this helper
+     * had to reconstruct the entire settings screen to exercise it.
+     */
     private function tenantSave(Tenant $tenant, User $user, array $extra)
+    {
+        return $this->actingAs($user)->post("/{$tenant->slug}/admin/settings/password", $extra);
+    }
+
+    /** The settings save itself, still posting the whole screen the way the form does. */
+    private function tenantSettingsSave(Tenant $tenant, User $user, array $extra = [])
     {
         $settings = SiteSettings::where('tenant_id', $tenant->id)->firstOrFail();
 
@@ -219,14 +229,66 @@ class PasswordChangeTest extends TestCase
         $this->assertTrue(Hash::check('old-password', $user->fresh()->password));
     }
 
-    /** Saving the settings form without touching the password fields must not disturb it. */
-    public function test_saving_settings_without_a_new_password_leaves_the_password_alone(): void
+    /** Saving the settings form must not disturb the password. */
+    public function test_saving_settings_leaves_the_password_alone(): void
     {
         [$tenant, $user] = $this->tenantAdmin();
 
-        $this->tenantSave($tenant, $user, [])->assertSessionHasNoErrors();
+        $this->tenantSettingsSave($tenant, $user)->assertSessionHasNoErrors();
 
         $this->assertTrue(Hash::check('old-password', $user->fresh()->password));
+    }
+
+    /**
+     * Even handed the fields directly. The settings endpoint has no password branch at
+     * all any more, so a posted new_password is simply ignored rather than acted on.
+     */
+    public function test_the_settings_endpoint_ignores_password_fields_entirely(): void
+    {
+        [$tenant, $user] = $this->tenantAdmin();
+
+        $this->tenantSettingsSave($tenant, $user, [
+            'current_password' => 'old-password',
+            'new_password' => 'a-brand-new-one',
+            'new_password_confirmation' => 'a-brand-new-one',
+        ])->assertSessionHasNoErrors();
+
+        $this->assertTrue(Hash::check('old-password', $user->fresh()->password));
+    }
+
+    /**
+     * The point of the split. A browser offers to save a login when one form holds a
+     * username-shaped field and a password field; the settings form held contact_email
+     * and three password inputs, and Firefox offered to save contact_email as a new
+     * credential. The settings form must now contain no password input at all.
+     */
+    public function test_the_settings_form_contains_no_password_input(): void
+    {
+        [$tenant, $user] = $this->tenantAdmin();
+
+        $html = $this->actingAs($user)->get("/{$tenant->slug}/admin/settings")->assertOk()->getContent();
+
+        $settingsForm = $this->formById($html, 'settings-form');
+        $this->assertStringNotContainsString('type="password"', $settingsForm,
+            'the settings form has a password input again, which is what a password manager pairs with contact_email');
+
+        // And the change-password fields moved rather than vanished.
+        $passwordForm = $this->formById($html, 'password-form');
+        foreach (['current_password', 'new_password', 'new_password_confirmation'] as $field) {
+            $this->assertStringContainsString($field, $passwordForm);
+        }
+        $this->assertStringNotContainsString('contact_email', $passwordForm,
+            'nothing username-shaped belongs in the form that holds the password');
+    }
+
+    /** The markup between a form with this id and its matching close tag. */
+    private function formById(string $html, string $id): string
+    {
+        $start = strpos($html, '<form id="'.$id.'"');
+        $this->assertNotFalse($start, "no form with id {$id} in the page");
+        $end = strpos($html, '</form>', $start);
+
+        return substr($html, $start, $end - $start);
     }
 
     public function test_a_tenant_password_change_ends_that_users_other_sessions(): void
