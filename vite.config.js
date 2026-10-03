@@ -21,6 +21,8 @@ export default defineConfig({
                 'resources/js/property-form.js',
                 'resources/js/settings.js',
                 'resources/js/password-input.js',
+                'resources/js/favourites.js',
+                'resources/js/staff.js',
             ],
             refresh: true,
         }),

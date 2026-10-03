@@ -556,6 +556,10 @@
 @vite('resources/js/tenant-widgets.js')
 @endunless
 
+{{-- Bottom-of-body slot for bundles. The block below wraps @yield('scripts') in a
+     <script> tag, so a @vite tag has to be emitted before it, not inside it. --}}
+@yield('foot')
+
 <script>
 // Mobile nav — pure JS (no Alpine dependency)
 function tenantNavToggle() {

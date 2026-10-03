@@ -6,7 +6,7 @@
 <div class="max-w-7xl mx-auto px-4">
 
     <div class="flex justify-end mb-6">
-        <button onclick="toggleAddStaffForm()"
+        <button data-toggle-add-staff
                 class="btn-primary px-5 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition flex items-center gap-2">
             <svg width="16" height="16" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Add Member
@@ -58,7 +58,7 @@
                     </label>
                 </div>
                 <div class="md:col-span-2 flex justify-end gap-3">
-                    <button type="button" onclick="hideAddStaffPanel()" class="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
+                    <button type="button" data-hide-add-staff class="px-5 py-2.5 border border-gray-200 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50">Cancel</button>
                     <button type="submit" class="btn-primary px-6 py-2.5 rounded-xl font-semibold text-sm hover:opacity-90 transition">Add Member</button>
                 </div>
             </form>
@@ -105,7 +105,7 @@
                             title="Edit">
                         <x-icon name="pencil" class="w-4 h-4" />
                     </button>
-                    <form method="POST" action="{{ route('tenant.admin.staff.destroy', [$account, $member->id]) }}" onsubmit="return confirm('Remove this staff member?')">
+                    <form method="POST" action="{{ route('tenant.admin.staff.destroy', [$account, $member->id]) }}" data-confirm="Remove this staff member?">
                         @csrf @method('DELETE')
                         <button type="submit" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition" title="Delete">
                             <x-icon name="trash" class="w-4 h-4" />
@@ -129,7 +129,9 @@
                         <th class="px-5 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
-                <tbody id="staff-list" class="divide-y divide-gray-100">
+                <tbody id="staff-list"
+                       data-config='@json(["orderUrl" => route("tenant.admin.api.staff-order", $account), "staffBaseUrl" => url("/" . $account . "/admin/staff")], JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)'
+                       class="divide-y divide-gray-100">
                     @foreach($staff as $member)
                     <tr class="hover:bg-gray-50 transition-colors" data-id="{{ $member->id }}">
                         <td class="px-4 py-4">
@@ -181,7 +183,7 @@
                                         title="Edit">
                                     <x-icon name="pencil" class="w-4 h-4" />
                                 </button>
-                                <form method="POST" action="{{ route('tenant.admin.staff.destroy', [$account, $member->id]) }}" onsubmit="return confirm('Remove this staff member?')">
+                                <form method="POST" action="{{ route('tenant.admin.staff.destroy', [$account, $member->id]) }}" data-confirm="Remove this staff member?">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition" title="Delete">
                                         <x-icon name="trash" class="w-4 h-4" />
@@ -223,7 +225,7 @@
                 <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="edit-appts" name="accepts_appointments" class="rounded"> Appointments</label>
             </div>
             <div class="flex justify-end gap-3 pt-2">
-                <button type="button" onclick="document.getElementById('edit-modal').classList.add('hidden')" class="px-5 py-2 border border-gray-200 rounded-xl text-sm font-medium">Cancel</button>
+                <button type="button" data-close-edit-modal class="px-5 py-2 border border-gray-200 rounded-xl text-sm font-medium">Cancel</button>
                 <button type="submit" class="btn-primary px-6 py-2 rounded-xl font-semibold text-sm">Save</button>
             </div>
         </form>
@@ -232,46 +234,6 @@
 
 @endsection
 
-@section('scripts')
-function toggleAddStaffForm() {
-    var p = document.getElementById('add-staff-panel');
-    p.style.display = p.style.display === 'none' ? 'block' : 'none';
-}
-function hideAddStaffPanel() {
-    document.getElementById('add-staff-panel').style.display = 'none';
-}
-// Drag-drop reordering
-const list = document.getElementById('staff-list');
-if (list) {
-    let dragged = null;
-    list.querySelectorAll('[data-id]').forEach(row => {
-        row.draggable = true;
-        row.addEventListener('dragstart', () => { dragged = row; row.style.opacity = '0.5'; });
-        row.addEventListener('dragend', () => { row.style.opacity = ''; saveOrder(); });
-        row.addEventListener('dragover', e => { e.preventDefault(); const after = row.getBoundingClientRect().top + row.offsetHeight / 2 > e.clientY; list.insertBefore(dragged, after ? row : row.nextSibling); });
-    });
-}
-function saveOrder() {
-    const order = [...document.querySelectorAll('#staff-list [data-id]')].map(el => el.dataset.id);
-    fetch('{{ route('tenant.admin.api.staff-order', $account) }}', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }, body: JSON.stringify({ order }) });
-}
-document.querySelectorAll('.edit-member-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const m = JSON.parse(btn.dataset.member);
-        editMember(m.id, m.name, m.title ?? '', m.bio ?? '', m.email ?? '', m.phone ?? '',
-                   m.display_on_homepage, m.accepts_appointments);
-    });
-});
-function editMember(id, name, title, bio, email, phone, homepage, appts) {
-    const form = document.getElementById('edit-form');
-    form.action = `{{ url('/' . $account . '/admin/staff') }}/${id}`;
-    document.getElementById('edit-name').value = name;
-    document.getElementById('edit-title').value = title;
-    document.getElementById('edit-bio').value = bio;
-    document.getElementById('edit-email').value = email;
-    document.getElementById('edit-phone').value = phone;
-    document.getElementById('edit-homepage').checked = homepage;
-    document.getElementById('edit-appts').checked = appts;
-    document.getElementById('edit-modal').classList.remove('hidden');
-}
+@section('foot')
+@vite('resources/js/staff.js')
 @endsection

@@ -124,7 +124,7 @@
                         <a href="{{ route('tenant.admin.properties.edit', [$account, $property->id]) }}" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50" title="Edit">
                             <x-icon name="pencil" class="w-4 h-4" />
                         </a>
-                        <form method="POST" action="{{ route('tenant.admin.properties.destroy', [$account, $property->id]) }}" x-data onsubmit="return confirm('Delete this property?')">
+                        <form method="POST" action="{{ route('tenant.admin.properties.destroy', [$account, $property->id]) }}" x-data data-confirm="Delete this property?">
                             @csrf @method('DELETE')
                             <button type="submit" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50" title="Delete">
                                 <x-icon name="trash" class="w-4 h-4" />
@@ -211,7 +211,7 @@
                                 <a href="{{ route('tenant.admin.properties.edit', [$account, $property->id]) }}" class="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50" title="Edit">
                                     <x-icon name="pencil" class="w-4 h-4" />
                                 </a>
-                                <form method="POST" action="{{ route('tenant.admin.properties.destroy', [$account, $property->id]) }}" x-data onsubmit="return confirm('Delete this property?')">
+                                <form method="POST" action="{{ route('tenant.admin.properties.destroy', [$account, $property->id]) }}" x-data data-confirm="Delete this property?">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50" title="Delete">
                                         <x-icon name="trash" class="w-4 h-4" />

@@ -46,7 +46,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
                     @endif
                 @endforeach
                 <label for="f-sort" class="text-sm text-gray-600">Sort:</label>
-                <select id="f-sort" name="sort" onchange="this.form.submit()" class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+                <select id="f-sort" name="sort" data-submit-on-change class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
                     <option value="newest" {{ request('sort','newest') === 'newest' ? 'selected' : '' }}>Newest</option>
                     <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
                     <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
@@ -56,7 +56,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
         </div>
 
         @if($properties->count())
-        <div id="property-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div id="property-grid" data-fav-key="br_favs_{{ $tenant->slug }}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             @foreach($properties as $property)
             <a data-property-id="{{ $property->id }}" href="{{ route('tenant.property', [$account, $property->id]) }}" class="bg-white rounded-2xl overflow-hidden shadow border border-gray-200 hover:shadow-xl transition-shadow group">
                 <div class="relative h-48 bg-gray-200 overflow-hidden">
@@ -70,7 +70,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
                     <span class="absolute top-3 left-3 text-xs font-semibold text-white px-3 py-1 rounded-full" style="background-color: {{ $property->listing_status === 'active' ? '#10b981' : ($property->listing_status === 'pending' ? '#f59e0b' : '#6b7280') }}">
                         {{ ucfirst($property->listing_status) }}
                     </span>
-                    <button type="button" onclick="favToggle(event, {{ $property->id }})"
+                    <button type="button" data-fav-toggle="{{ $property->id }}"
                             class="absolute top-2 right-2 z-10 p-1 rounded-full bg-white/70 hover:bg-white transition"
                             aria-label="Favorite">
                         <svg id="fav-outline-{{ $property->id }}" xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,49 +178,7 @@ $activeFilters = collect(['search','type','status','price_min','price_max','beds
 </div>
 @endsection
 
-@section('scripts')
-const FAV_KEY = 'br_favs_{{ $tenant->slug }}';
-
-function getFavs() {
-    try { return JSON.parse(localStorage.getItem(FAV_KEY) || '[]'); }
-    catch(e) { return []; }
-}
-function saveFavs(favs) {
-    localStorage.setItem(FAV_KEY, JSON.stringify(favs));
-}
-
-function favToggle(e, id) {
-    e.preventDefault();
-    e.stopPropagation();
-    let favs = getFavs();
-    const idx = favs.indexOf(id);
-    if (idx === -1) favs.push(id); else favs.splice(idx, 1);
-    saveFavs(favs);
-    applyFavsToGrid();
-}
-
-function applyFavsToGrid() {
-    const favs = getFavs();
-    const grid = document.getElementById('property-grid');
-    if (!grid) return;
-
-    grid.querySelectorAll('[data-property-id]').forEach(card => {
-        const id = parseInt(card.dataset.propertyId);
-        const isFav = favs.includes(id);
-        const outline = document.getElementById('fav-outline-' + id);
-        const filled  = document.getElementById('fav-filled-'  + id);
-        if (outline) outline.style.display = isFav ? 'none' : '';
-        if (filled)  filled.style.display  = isFav ? ''     : 'none';
-    });
-
-    const cards = Array.from(grid.querySelectorAll('[data-property-id]'));
-    const favCards    = cards.filter(c => favs.includes(parseInt(c.dataset.propertyId)));
-    const nonFavCards = cards.filter(c => !favs.includes(parseInt(c.dataset.propertyId)));
-    [...favCards, ...nonFavCards].forEach(c => grid.appendChild(c));
-    var hint = document.getElementById('favs-hint');
-    if (hint) hint.style.display = favCards.length ? '' : 'none';
-}
-
-document.addEventListener('DOMContentLoaded', applyFavsToGrid);
+@section('foot')
+@vite('resources/js/favourites.js')
 @endsection
 
