@@ -158,22 +158,7 @@
     @stack('head')
     @if(!empty($ga) && $ga->api_key)
     <!-- Google Analytics (consent-gated) -->
-    <script>
-    window._gaId = '{{ $ga->api_key }}';
-    function loadGA() {
-        if (localStorage.getItem('cookie_consent') !== 'true') return;
-        var s = document.createElement('script');
-        s.async = true;
-        s.src = 'https://www.googletagmanager.com/gtag/js?id=' + window._gaId;
-        document.head.appendChild(s);
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', window._gaId);
-        window.gtag = gtag;
-    }
-    document.addEventListener('DOMContentLoaded', loadGA);
-    </script>
+    <meta name="ga-id" content="{{ $ga->api_key }}">
     @endif
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
@@ -255,12 +240,12 @@
                 <a href="{{ $galleryUrl }}" class="nav-link font-medium transition-colors hover-primary" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
                 <a href="{{ $mapUrl }}" class="nav-link font-medium transition-colors hover-primary" @if($isMap) style="color: var(--primary);" @endif>Map</a>
                 <a href="{{ route('login') }}" class="nav-link font-medium transition-colors hover-primary" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
-                <button id="theme-toggle-btn" onclick="themeToggle()" class="theme-btn p-1 rounded-full">
+                <button id="theme-toggle-btn" data-theme-toggle class="theme-btn p-1 rounded-full">
                     <svg width="20" height="20" id="theme-icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     <svg width="20" height="20" id="theme-icon-sun" class="w-5 h-5" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </button>
             </nav>
-            <button onclick="tenantNavToggle()" id="tenant-hamburger" class="hamburger-btn md:hidden p-2 rounded transition-all duration-300" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))">
+            <button data-nav-toggle id="tenant-hamburger" class="hamburger-btn md:hidden p-2 rounded transition-all duration-300" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))">
                 <x-icon name="bars" class="w-6 h-6" />
             </button>
         </div>
@@ -314,12 +299,12 @@
                 <a href="{{ $galleryUrl }}" class="font-medium transition-colors hover-primary @if(!$isGallery) text-gray-700 @endif" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
                 <a href="{{ $mapUrl }}" class="font-medium transition-colors hover-primary @if(!$isMap) text-gray-700 @endif" @if($isMap) style="color: var(--primary);" @endif>Map</a>
                 <a href="{{ route('login') }}" class="font-medium transition-colors hover-primary @if(!$isLogin) text-gray-700 @endif" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
-                <button onclick="themeToggle()" class="theme-btn p-1 rounded-full text-gray-600 hover:text-gray-900">
+                <button data-theme-toggle class="theme-btn p-1 rounded-full text-gray-600 hover:text-gray-900">
                     <svg width="20" height="20" id="default-theme-icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     <svg width="20" height="20" id="default-theme-icon-sun" class="w-5 h-5" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 </button>
             </nav>
-            <button onclick="tenantNavToggle()" id="tenant-default-hamburger" class="md:hidden p-2 rounded text-gray-700">
+            <button data-nav-toggle id="tenant-default-hamburger" class="md:hidden p-2 rounded text-gray-700">
                 <x-icon name="bars" class="w-6 h-6" />
             </button>
         </div>
@@ -327,7 +312,7 @@
     <div id="tenant-default-mobile-menu" style="display:none"
          class="md:hidden border-t bg-white">
         <nav class="px-4 py-3 space-y-1">
-            <a href="{{ $galleryUrl }}" onclick="tenantNavClose()" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isGallery) @else text-gray-700 hover:bg-gray-100 @endif" @if($isGallery) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+            <a href="{{ $galleryUrl }}" data-nav-close class="flex items-center px-3 py-2 rounded-lg font-medium @if($isGallery) @else text-gray-700 hover:bg-gray-100 @endif" @if($isGallery) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
                 <svg width="20" height="20" class="w-5 h-5 mr-3 @if($isGallery) @else text-gray-500 @endif" style="@if($isGallery) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                 Gallery
             </a>
@@ -347,7 +332,7 @@
             </a>
             @endif
             <div class="border-t my-2"></div>
-            <button onclick="themeToggle()" class="flex items-center w-full px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
+            <button data-theme-toggle class="flex items-center w-full px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">
                 <svg width="20" height="20" id="default-mobile-theme-icon-moon" class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                 <svg width="20" height="20" id="default-mobile-theme-icon-sun" class="w-5 h-5 mr-3 text-gray-500" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
                 <span id="default-mobile-theme-label">Dark Mode</span>
@@ -560,87 +545,14 @@
      <script> tag, so a @vite tag has to be emitted before it, not inside it. --}}
 @yield('foot')
 
+@vite('resources/js/tenant-chrome.js')
+
+{{-- Only for the views that still carry one. Without the guard, every page that has
+     been bundled still emits an empty <script> element. --}}
+@hasSection('scripts')
 <script>
-// Mobile nav — pure JS (no Alpine dependency)
-function tenantNavToggle() {
-    var heroMenu    = document.getElementById('tenant-mobile-menu');
-    var defaultMenu = document.getElementById('tenant-default-mobile-menu');
-    var menu = heroMenu || defaultMenu;
-    if (!menu) return;
-    var opening = menu.style.display === 'none' || menu.style.display === '';
-    menu.style.display = opening ? 'block' : 'none';
-}
-function tenantNavClose() {
-    var heroMenu    = document.getElementById('tenant-mobile-menu');
-    var defaultMenu = document.getElementById('tenant-default-mobile-menu');
-    if (heroMenu)    heroMenu.style.display    = 'none';
-    if (defaultMenu) defaultMenu.style.display = 'none';
-}
-document.addEventListener('click', function(e) {
-    var hero    = document.getElementById('tenant-hero-header');
-    var def     = document.getElementById('tenant-default-header');
-    var header  = hero || def;
-    if (header && !header.contains(e.target)) tenantNavClose();
-});
-
-// Hero header scroll: pure JS, no Alpine dependency
-(function() {
-    var h = document.getElementById('tenant-hero-header');
-    if (!h) return;
-    var nav  = document.getElementById('tenant-nav');
-    var ham  = document.getElementById('tenant-hamburger');
-    var logo = document.getElementById('tenant-logo');
-    function update() {
-        var s = window.scrollY > 50;
-        h.classList.toggle('is-scrolled', s);
-
-        // The nav, the hamburger and the logo stay visible at every scroll position; only
-        // their treatment changes. Over the hero they are white (see the .nav-link rules in
-        // the stylesheet above) and get a drop-shadow so they read against a photograph;
-        // once the header has its solid background they are dark and need neither.
-        //
-        // They used to be set to opacity:0;pointer-events:none until you scrolled, which
-        // meant the links simply were not there on the page people land on. The white-text
-        // rules for the un-scrolled header were written but never reachable.
-        var shadow = s ? '' : 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))';
-        if (nav)  nav.style.filter  = shadow;
-        if (ham)  ham.style.filter  = shadow;
-        if (logo) logo.style.filter = shadow;
-
-        // Close the mobile menu when scrolling back to the top.
-        if (!s) tenantNavClose();
-    }
-    window.addEventListener('scroll', update, { passive: true });
-})();
-
-// Dark mode toggle: pure JS, no Alpine dependency
-function updateThemeIcons() {
-    var dark = document.documentElement.classList.contains('dark');
-    var ids = [
-        ['theme-icon-moon',              'theme-icon-sun'],
-        ['default-theme-icon-moon',      'default-theme-icon-sun'],
-        ['default-mobile-theme-icon-moon','default-mobile-theme-icon-sun'],
-    ];
-    ids.forEach(function(pair) {
-        var moon = document.getElementById(pair[0]);
-        var sun  = document.getElementById(pair[1]);
-        if (moon) moon.style.display = dark ? 'none' : '';
-        if (sun)  sun.style.display  = dark ? '' : 'none';
-    });
-    var lbl = document.getElementById('default-mobile-theme-label');
-    if (lbl) lbl.textContent = dark ? 'Light Mode' : 'Dark Mode';
-}
-function themeToggle() {
-    var dark = !document.documentElement.classList.contains('dark');
-    document.documentElement.classList.toggle('dark', dark);
-    localStorage.setItem('theme', dark ? 'dark' : 'light');
-    updateThemeIcons();
-}
-updateThemeIcons();
-
-
-
 @yield('scripts')
 </script>
+@endif
 </body>
 </html>

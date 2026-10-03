@@ -54,8 +54,11 @@ function setConsent(value) {
     const el = banner();
     if (el) el.style.display = 'none';
 
-    // Defined by the tenant layout only; the marketing site has no analytics.
-    if (value === 'true' && typeof window.loadGA === 'function') window.loadGA();
+    // The tenant site loads analytics on this; the marketing site has no analytics and
+    // nothing listens. Announcing beats calling a global the other file had to define.
+    if (value === 'true') {
+        document.dispatchEvent(new CustomEvent('cookie-consent-granted'));
+    }
 
     updatePrefsLink();
 }

@@ -23,6 +23,7 @@ export default defineConfig({
                 'resources/js/password-input.js',
                 'resources/js/favourites.js',
                 'resources/js/staff.js',
+                'resources/js/tenant-chrome.js',
             ],
             refresh: true,
         }),

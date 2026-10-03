@@ -74,7 +74,7 @@
     <div>
         <label for="f-hoa{{ $filterSuffix ?? '' }}" class="block text-sm font-medium text-gray-700 mb-2">HOA</label>
         <select id="f-hoa{{ $filterSuffix ?? '' }}" name="hoa" class="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onchange="var w=document.getElementById('hoaMaxWrap{{ $filterSuffix ?? '' }}');if(w)w.style.display=this.value==='yes'?'block':'none'">
+                data-hoa-select="hoaMaxWrap{{ $filterSuffix ?? '' }}">
             <option value="">Any</option>
             <option value="yes" {{ request('hoa') === 'yes' ? 'selected' : '' }}>Yes</option>
             <option value="no"  {{ request('hoa') === 'no'  ? 'selected' : '' }}>No</option>
