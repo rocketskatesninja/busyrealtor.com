@@ -22,6 +22,7 @@ export default defineConfig({
                 'resources/js/staff.js',
                 'resources/js/tenant-chrome.js',
                 'resources/js/dashboard.js',
+                'resources/js/assistant.js',
             ],
             refresh: true,
         }),
