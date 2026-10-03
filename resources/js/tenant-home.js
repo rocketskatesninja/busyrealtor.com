@@ -25,7 +25,7 @@ if (fx.parallax) {
         const headroom = () => Math.max(0, (layer.offsetHeight - hero.offsetHeight) / 2);
 
         window.addEventListener('scroll', () => {
-            const shift = Math.min(window.scrollY * 0.2, headroom());
+            const shift = Math.min(window.scrollY * 0.35, headroom());
             layer.style.transform = `translate3d(0, ${shift}px, 0)`;
         }, { passive: true });
     }
