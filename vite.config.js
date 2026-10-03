@@ -8,7 +8,6 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                'resources/js/sortable.js',
                 'resources/js/tenant-widgets.js',
                 'resources/js/cookie-consent.js',
                 'resources/js/flash.js',
@@ -23,6 +22,8 @@ export default defineConfig({
                 'resources/js/tenant-chrome.js',
                 'resources/js/dashboard.js',
                 'resources/js/assistant.js',
+                'resources/js/messages.js',
+                'resources/js/feedback.js',
             ],
             refresh: true,
         }),

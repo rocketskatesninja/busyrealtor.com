@@ -5,8 +5,14 @@
 
 @section('content')
 <style>main{min-height:0!important;overflow:hidden;}body{overflow:hidden;}#user-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px color-mix(in srgb,var(--primary) 20%,transparent);}</style>
+@php
+$assistantConfig = [
+    'sessionId' => $sessionId,
+    'apiUrl' => route('tenant.admin.api.assistant', $account),
+];
+@endphp
 <div id="chat-wrapper"
-     data-config='@json(["sessionId" => $sessionId, "apiUrl" => route("tenant.admin.api.assistant", $account)], JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)' class="mx-auto flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+     data-config='@json($assistantConfig, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)' class="mx-auto flex flex-col bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
      style="max-width:1281px; min-height:500px;">
 
     {{-- Header --}}

@@ -129,8 +129,14 @@
                         <th class="px-5 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
+                @php
+                $staffConfig = [
+                    'orderUrl' => route('tenant.admin.api.staff-order', $account),
+                    'staffBaseUrl' => url('/'.$account.'/admin/staff'),
+                ];
+                @endphp
                 <tbody id="staff-list"
-                       data-config='@json(["orderUrl" => route("tenant.admin.api.staff-order", $account), "staffBaseUrl" => url("/" . $account . "/admin/staff")], JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)'
+                       data-config='@json($staffConfig, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)'
                        class="divide-y divide-gray-100">
                     @foreach($staff as $member)
                     <tr class="hover:bg-gray-50 transition-colors" data-id="{{ $member->id }}">
