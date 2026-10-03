@@ -172,16 +172,23 @@ $iconPaths = [
             $preset = $settings->hero_preset ?? 'modern-home';
             $heroBg = "background: url('/assets/images/hero-presets/{$preset}.jpg') center/cover no-repeat;";
         }
+        if ($heroEffects['parallax'] ?? false) {
+            // After the shorthand above, which resets attachment to scroll.
+            $heroBg .= ' background-attachment: fixed;';
+        }
     @endphp
-    {{-- With parallax on, the background sits inside a taller wrapper so there is room to
-         move it. background-size:cover scales the image to exactly the hero's height
-         whenever the two share an aspect ratio, which leaves a background-position shift
-         with nothing to shift -- the effect simply did not show. The wrapper is only
-         oversized when the effect is on, so the crop is unchanged otherwise, and it is
-         the wrapper that moves rather than the background itself, because Ken Burns
-         animates that element's transform and a CSS animation beats an inline style. --}}
-    <div id="hero-parallax" class="{{ ($heroEffects['parallax'] ?? false) ? 'absolute inset-x-0 -top-1/4 h-[150%]' : 'absolute inset-0' }}">
-        <div id="hero-bg" class="absolute inset-0 {{ ($heroEffects['ken_burns'] ?? false) ? 'hero-ken-burns' : '' }}" style="{{ $heroBg }}"></div>
+    {{-- Background layer — separate div so Ken Burns zoom doesn't scale the text.
+
+         Parallax is background-attachment:fixed rather than a scroll handler. Driving it
+         from JavaScript measured correctly in both headless engines and moved not at all
+         in a real browser: scroll handlers run on the main thread while the page scrolls
+         on the compositor, so the transform lands late enough to be invisible. Pinning
+         the background to the viewport is the same idea with nothing to lag -- the
+         compositor does all of it and there is no listener at all.
+
+         It does not combine with Ken Burns: a transformed element becomes the containing
+         block for a fixed background, so that layer's animation would cancel this. --}}
+    <div id="hero-bg" class="absolute inset-0 {{ ($heroEffects['ken_burns'] ?? false) ? 'hero-ken-burns' : '' }}" style="{{ $heroBg }}"></div>
     </div>
 
     {{-- Dark overlay --}}

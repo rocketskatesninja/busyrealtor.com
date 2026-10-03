@@ -13,23 +13,7 @@ function effects() {
 
 const fx = effects();
 
-if (fx.parallax) {
-    const layer = document.getElementById('hero-parallax');
-    const hero = document.getElementById('hero-section');
-
-    if (layer && hero) {
-        // The wrapper is taller than the hero; half the difference sits above it and half
-        // below. Never move further than that, or an edge shows. Clamping to the measured
-        // slack rather than a hardcoded number means the CSS can change without this
-        // needing to know.
-        const headroom = () => Math.max(0, (layer.offsetHeight - hero.offsetHeight) / 2);
-
-        window.addEventListener('scroll', () => {
-            const shift = Math.min(window.scrollY * 0.35, headroom());
-            layer.style.transform = `translate3d(0, ${shift}px, 0)`;
-        }, { passive: true });
-    }
-}
+// Parallax is CSS now (background-attachment: fixed), set by the view.
 
 if (fx.particles) {
     const container = document.getElementById('hero-particles');
