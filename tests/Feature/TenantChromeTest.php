@@ -40,41 +40,44 @@ class TenantChromeTest extends TestCase
     }
 
     /**
-     * The public header said "Login" whether or not you were signed in, on every public
-     * page, so an agent looking at their own site had no way back to their admin area.
-     * Reported from the property page, but it was never specific to it.
+     * The public header says Login whoever is looking, on purpose.
+     *
+     * It briefly said "Dashboard" to signed-in users, to give an agent viewing their own
+     * site a way back. That was solving a problem that did not exist — see the test below
+     * — at the cost of showing the owner a page that differs from what a visitor sees,
+     * which makes the admin area's "View Website" link a misleading preview.
      */
-    public function test_a_signed_in_agent_gets_a_dashboard_link_not_a_login_link(): void
+    public function test_the_public_header_looks_the_same_to_the_owner_as_to_a_visitor(): void
     {
         $tenant = $this->makeTenant();
         $admin = $this->makeAdmin($tenant);
 
-        foreach (["/{$tenant->slug}", "/{$tenant->slug}/gallery", "/{$tenant->slug}/map"] as $path) {
-            $this->actingAs($admin)->get($path)
-                ->assertOk()
-                ->assertSee('>Dashboard</a>', false)
-                ->assertSee("/{$tenant->slug}/admin", false);
+        $asGuest = $this->get("/{$tenant->slug}")->assertOk()->getContent();
+        $asOwner = $this->actingAs($admin)->get("/{$tenant->slug}")->assertOk()->getContent();
+
+        foreach ([$asGuest, $asOwner] as $html) {
+            $this->assertStringContainsString('>Login</a>', $html);
+            $this->assertStringNotContainsString('>Dashboard</a>', $html);
         }
     }
 
-    public function test_a_guest_still_gets_a_login_link(): void
+    /**
+     * Which is why Login is enough: an agent who clicks it is already signed in and ends
+     * up on their dashboard. The link was never a dead end, it just reads like one.
+     *
+     * It takes two hops — the guest middleware bounces to the site root, and the root
+     * sends a signed-in agent on to their own admin area — so this follows the chain
+     * rather than asserting the first redirect, which lands somewhere uninteresting.
+     */
+    public function test_login_sends_an_already_signed_in_agent_to_their_dashboard(): void
     {
         $tenant = $this->makeTenant();
 
-        $this->get("/{$tenant->slug}")
+        $this->actingAs($this->makeAdmin($tenant))
+            ->followingRedirects()
+            ->get('/login')
             ->assertOk()
-            ->assertSee('>Login</a>', false)
-            ->assertDontSee('>Dashboard</a>', false);
-    }
-
-    public function test_a_super_admin_is_sent_to_the_platform_console(): void
-    {
-        $tenant = $this->makeTenant();
-
-        $this->actingAs($this->makeSuperAdmin())->get("/{$tenant->slug}")
-            ->assertOk()
-            ->assertSee('>Dashboard</a>', false)
-            ->assertSee(route('super.dashboard'), false);
+            ->assertSee('id="dashboard"', false);
     }
 
     public function test_the_public_chrome_is_bundled_rather_than_inline(): void

@@ -195,22 +195,6 @@
     $isGallery = request()->routeIs('tenant.gallery');
     $isMap     = request()->routeIs('tenant.map');
     $isLogin   = request()->routeIs('login');
-
-    // The public header always said "Login", signed in or not, on every public page --
-    // so an agent looking at their own site had no way back to their admin area. Guests
-    // still get Login; anyone signed in gets a link to wherever they actually belong.
-    $viewer = auth()->user();
-    $accountUrl = route('login');
-    $accountLabel = 'Login';
-
-    if ($viewer) {
-        $accountLabel = 'Dashboard';
-        $accountUrl = $viewer->is_super_admin
-            ? route('super.dashboard')
-            : ($viewer->tenant?->slug
-                ? route('tenant.admin.dashboard', $viewer->tenant->slug)
-                : route('login'));
-    }
     // Preserve filters when switching between gallery and map
     $qs = ($isGallery || $isMap) && count(request()->query()) > 0
         ? '?' . http_build_query(request()->query()) : '';
@@ -255,7 +239,7 @@
             <nav id="tenant-nav" class="hidden md:flex items-center space-x-6 transition-all duration-300" style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3))">
                 <a href="{{ $galleryUrl }}" class="nav-link font-medium transition-colors hover-primary" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
                 <a href="{{ $mapUrl }}" class="nav-link font-medium transition-colors hover-primary" @if($isMap) style="color: var(--primary);" @endif>Map</a>
-                <a href="{{ $accountUrl }}" class="nav-link font-medium transition-colors hover-primary" @if($isLogin) style="color: var(--primary);" @endif>{{ $accountLabel }}</a>
+                <a href="{{ route('login') }}" class="nav-link font-medium transition-colors hover-primary" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
                 <button id="theme-toggle-btn" data-theme-toggle class="theme-btn p-1 rounded-full">
                     <svg width="20" height="20" id="theme-icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     <svg width="20" height="20" id="theme-icon-sun" class="w-5 h-5" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
@@ -289,9 +273,9 @@
             </a>
             @endif
             <div class="border-t my-2"></div>
-            <a href="{{ $accountUrl }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isLogin) @else text-gray-700 hover:bg-gray-100 @endif" @if($isLogin) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+            <a href="{{ route('login') }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isLogin) @else text-gray-700 hover:bg-gray-100 @endif" @if($isLogin) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
                 <svg width="20" height="20" class="w-5 h-5 mr-3 @if($isLogin) @else text-gray-500 @endif" style="@if($isLogin) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                {{ $accountLabel }}
+                Login
             </a>
         </nav>
     </div>
@@ -314,7 +298,7 @@
             <nav class="hidden md:flex items-center space-x-6">
                 <a href="{{ $galleryUrl }}" class="font-medium transition-colors hover-primary @if(!$isGallery) text-gray-700 @endif" @if($isGallery) style="color: var(--primary);" @endif>Gallery</a>
                 <a href="{{ $mapUrl }}" class="font-medium transition-colors hover-primary @if(!$isMap) text-gray-700 @endif" @if($isMap) style="color: var(--primary);" @endif>Map</a>
-                <a href="{{ $accountUrl }}" class="font-medium transition-colors hover-primary @if(!$isLogin) text-gray-700 @endif" @if($isLogin) style="color: var(--primary);" @endif>{{ $accountLabel }}</a>
+                <a href="{{ route('login') }}" class="font-medium transition-colors hover-primary @if(!$isLogin) text-gray-700 @endif" @if($isLogin) style="color: var(--primary);" @endif>Login</a>
                 <button data-theme-toggle class="theme-btn p-1 rounded-full text-gray-600 hover:text-gray-900">
                     <svg width="20" height="20" id="default-theme-icon-moon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     <svg width="20" height="20" id="default-theme-icon-sun" class="w-5 h-5" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
@@ -354,9 +338,9 @@
                 <span id="default-mobile-theme-label">Dark Mode</span>
             </button>
             <div class="border-t my-2"></div>
-            <a href="{{ $accountUrl }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isLogin) @else text-gray-700 hover:bg-gray-100 @endif" @if($isLogin) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
+            <a href="{{ route('login') }}" class="flex items-center px-3 py-2 rounded-lg font-medium @if($isLogin) @else text-gray-700 hover:bg-gray-100 @endif" @if($isLogin) style="background-color: rgba({{ $pr }},{{ $pg }},{{ $pb }},0.1); color: var(--primary);" @endif>
                 <svg width="20" height="20" class="w-5 h-5 mr-3 @if($isLogin) @else text-gray-500 @endif" style="@if($isLogin) color: var(--primary); @endif" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
-                {{ $accountLabel }}
+                Login
             </a>
         </nav>
     </div>
@@ -506,7 +490,7 @@
             <div>
                 <h4 class="text-gray-900 font-semibold text-sm mb-4">Quick Links</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="{{ $accountUrl }}" class="footer-link transition-colors">{{ $accountLabel }}</a></li>
+                    <li><a href="{{ route('login') }}" class="footer-link transition-colors">Login</a></li>
                     <li><a href="{{ route('tenant.gallery', $account) }}" class="footer-link transition-colors">Properties</a></li>
                     <li><a href="{{ route('tenant.map', $account) }}" class="footer-link transition-colors">Map Search</a></li>
                 </ul>
