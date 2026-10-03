@@ -69,7 +69,7 @@
                 <a href="/login" class="nav-link text-sm font-medium transition-colors">Sign In</a>
                 <a href="/register" class="bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors shadow-sm">Get Started Free</a>
             </div>
-            <button id="marketing-hamburger" onclick="marketingNavToggle()" class="hamburger-btn md:hidden p-2">
+            <button id="marketing-hamburger" data-marketing-nav-toggle class="hamburger-btn md:hidden p-2">
                 <svg width="24" height="24" id="marketing-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 <svg width="24" height="24" id="marketing-icon-close" class="w-6 h-6" style="display:none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
@@ -77,48 +77,30 @@
     </div>
     <div id="marketing-mobile-menu" style="display:none" class="md:hidden bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shadow-lg">
         <nav class="px-4 py-3 space-y-1">
-            <a href="#features" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
+            <a href="#features" data-marketing-nav-close class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
                 <x-icon name="bolt" class="w-5 h-5 mr-3 text-gray-500" />
                 Features
             </a>
-            <a href="#demo" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
+            <a href="#demo" data-marketing-nav-close class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
                 <svg width="20" height="20" class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
                 Demo
             </a>
-            <a href="#pricing" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
+            <a href="#pricing" data-marketing-nav-close class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
                 <svg width="20" height="20" class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                 Pricing
             </a>
             <div class="border-t my-2"></div>
-            <a href="/login" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
+            <a href="/login" data-marketing-nav-close class="flex items-center px-3 py-2 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 font-medium">
                 <svg width="20" height="20" class="w-5 h-5 mr-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/></svg>
                 Sign In
             </a>
-            <a href="/register" onclick="marketingNavClose()" class="flex items-center px-3 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600 font-semibold">
+            <a href="/register" data-marketing-nav-close class="flex items-center px-3 py-2 rounded-lg text-white bg-orange-500 hover:bg-orange-600 font-semibold">
                 <svg width="20" height="20" class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
                 Get Started Free
             </a>
         </nav>
     </div>
 </header>
-<script>
-function marketingNavToggle() {
-    var menu  = document.getElementById('marketing-mobile-menu');
-    var open  = menu.style.display === 'none' || menu.style.display === '';
-    menu.style.display = open ? 'block' : 'none';
-    document.getElementById('marketing-icon-open').style.display  = open ? 'none'  : '';
-    document.getElementById('marketing-icon-close').style.display = open ? '' : 'none';
-}
-function marketingNavClose() {
-    document.getElementById('marketing-mobile-menu').style.display = 'none';
-    document.getElementById('marketing-icon-open').style.display  = '';
-    document.getElementById('marketing-icon-close').style.display = 'none';
-}
-document.addEventListener('click', function(e) {
-    var header = document.getElementById('main-header');
-    if (header && !header.contains(e.target)) marketingNavClose();
-});
-</script>
 
 {{-- ══════════════════════════════════════════════════════════ HERO ═══ --}}
 <section class="min-h-screen flex items-center pt-16 pb-12 overflow-hidden relative" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #0369a1 75%, #0ea5e9 100%);">
@@ -183,7 +165,7 @@ document.addEventListener('click', function(e) {
     </div>
 
     {{-- Scroll-down arrow (reusable: just copy this block + the @keyframes scrollBounce CSS) --}}
-    <a href="javascript:void(0)" onclick="window.scrollTo({top:window.innerHeight*0.55,behavior:'smooth'})" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-white/60 hover:text-white transition-colors group" aria-label="Scroll down">
+    <a href="javascript:void(0)" data-scroll-down class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-white/60 hover:text-white transition-colors group" aria-label="Scroll down">
         <span class="text-xs font-medium tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity">Scroll</span>
         <svg width="24" height="24" class="w-6 h-6" style="animation: scrollBounce 2s ease-in-out infinite;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
     </a>
@@ -430,7 +412,7 @@ document.addEventListener('click', function(e) {
                 <ul class="space-y-2 text-sm">
                     <li><a href="/privacy-policy" class="hover:text-gray-900 transition-colors">Privacy Policy</a></li>
                     <li><a href="/terms" class="hover:text-gray-900 transition-colors">Terms of Service</a></li>
-                    <li><button onclick="openCookiePrefs()" class="hover:text-gray-900 transition-colors text-left" id="cookie-prefs-link">Cookie Preferences</button></li>
+                    <li><button data-cookie-prefs class="hover:text-gray-900 transition-colors text-left" id="cookie-prefs-link">Cookie Preferences</button></li>
                 </ul>
             </div>
             <div>
