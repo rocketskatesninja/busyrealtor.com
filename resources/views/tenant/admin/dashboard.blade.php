@@ -24,17 +24,57 @@
 .drag-mode #tables-container { outline: 2px dashed var(--primary); outline-offset: 4px; border-radius: 1rem; }
 @endsection
 
-@section('head')
-@vite('resources/js/chart.js')
-@endsection
-
 @section('foot')
-@vite('resources/js/sortable.js')
+@vite('resources/js/dashboard.js')
 @endsection
 
 @section('content')
+@php
+// What to draw. How to draw it lives in resources/js/dashboard.js — these were ten
+// near-identical Chart configurations, each repeating the same options.
+$pieColours = ['#3b82f6', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4'];
+$charts = [];
+
+if ($show('type_chart') && ! $propertiesByType->isEmpty()) {
+    $charts[] = ['el' => 'typeChart', 'kind' => 'doughnut', 'labels' => $typeLabels, 'data' => $typeData, 'colors' => $pieColours];
+}
+if ($show('status_chart') && ! $propertiesByStatus->isEmpty()) {
+    $charts[] = ['el' => 'statusChart', 'kind' => 'pie', 'labels' => $statusLabels, 'data' => $statusData, 'colors' => ['#10b981', '#f59e0b', '#6b7280', '#3b82f6', '#ef4444']];
+}
+if ($show('views_chart') && ! $viewsByProperty->isEmpty()) {
+    $charts[] = ['el' => 'viewsChart', 'kind' => 'bar', 'label' => 'Views', 'labels' => $viewLabels, 'data' => $viewData, 'color' => 'primary'];
+}
+if ($show('views_30days')) {
+    $charts[] = ['el' => 'views30Chart', 'kind' => 'line', 'label' => 'Views', 'labels' => $v30Labels, 'data' => $v30Data, 'color' => 'primary'];
+}
+if ($show('messages_7days')) {
+    $charts[] = ['el' => 'msgs7Chart', 'kind' => 'bar', 'label' => 'Messages', 'labels' => $msg7Labels, 'data' => $msg7Data, 'color' => '#8b5cf6'];
+}
+if ($show('price_distribution') && $priceDistribution->sum() > 0) {
+    $charts[] = ['el' => 'priceChart', 'kind' => 'bar', 'label' => 'Properties', 'labels' => $priceLabels, 'data' => $priceData, 'color' => '#10b981'];
+}
+if ($show('listings_over_time')) {
+    $charts[] = ['el' => 'listingsTimeChart', 'kind' => 'line', 'label' => 'Listings Added', 'labels' => $ltLabels, 'data' => $ltData, 'color' => '#f59e0b'];
+}
+if ($show('revenue_trend')) {
+    $charts[] = ['el' => 'revenueChart', 'kind' => 'bar', 'label' => 'Revenue', 'labels' => $revLabels, 'data' => $revData, 'color' => '#10b981', 'currency' => true];
+}
+if ($show('appt_status') && ! $apptByStatus->isEmpty()) {
+    $charts[] = ['el' => 'apptStatusChart', 'kind' => 'doughnut', 'labels' => $apptLabels, 'data' => $apptData, 'colors' => ['#8b5cf6', '#10b981', '#ef4444', '#f59e0b', '#6b7280']];
+}
+if ($show('message_sources') && ! $messageSources->isEmpty()) {
+    $charts[] = ['el' => 'msgSourcesChart', 'kind' => 'doughnut', 'labels' => $srcLabels, 'data' => $srcData, 'colors' => ['#3b82f6', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6']];
+}
+
+$dashboardConfig = [
+    'saveUrl' => route('tenant.admin.dashboard.order', $tenant->slug),
+    'charts' => $charts,
+];
+@endphp
 @php $account = $tenant->slug; @endphp
-<div class="max-w-7xl mx-auto px-4">
+<div id="dashboard"
+     data-config='@json($dashboardConfig, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)'
+     class="max-w-7xl mx-auto px-4">
 
     {{-- Arrange / Lock button (desktop only) --}}
     <div class="hidden md:flex justify-end mb-6">
@@ -374,171 +414,3 @@
 </div>
 @endsection
 
-@section('scripts')
-// Chart.js now arrives as a bundled module, and a module runs after the classic inline
-// scripts at the end of the body — so `new Chart()` at the top level would fire before the
-// library existed. Deferred scripts still execute before DOMContentLoaded, so this listener
-// is the earliest point where the library is reliably there.
-//
-// Only the chart block is wrapped. The dashboard's functions below stay at the top level
-// because the markup calls them from onclick attributes, and scoping them would break that.
-document.addEventListener('DOMContentLoaded', () => {
-const isDark = document.documentElement.classList.contains('dark');
-const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#3b82f6';
-const chartLegendColor = isDark ? '#94a3b8' : '#6b7280';
-const gridColor = isDark ? '#334155' : '#f3f4f6';
-const tickColor = isDark ? '#94a3b8' : '#6b7280';
-const scaleDefaults = {
-    y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0, color: tickColor } },
-    x: { grid: { display: false }, ticks: { font: { size: 10 }, color: tickColor } }
-};
-
-@if($show('type_chart') && !$propertiesByType->isEmpty())
-new Chart(document.getElementById('typeChart'), {
-    type: 'doughnut',
-    data: { labels: {!! json_encode($typeLabels) !!}, datasets: [{ data: {!! json_encode($typeData) !!}, backgroundColor: ['#3b82f6','#8b5cf6','#10b981','#f59e0b','#ef4444','#06b6d4'] }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, color: chartLegendColor } } } }
-});
-@endif
-@if($show('status_chart') && !$propertiesByStatus->isEmpty())
-new Chart(document.getElementById('statusChart'), {
-    type: 'pie',
-    data: { labels: {!! json_encode($statusLabels) !!}, datasets: [{ data: {!! json_encode($statusData) !!}, backgroundColor: ['#10b981','#f59e0b','#6b7280','#3b82f6','#ef4444'] }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, color: chartLegendColor } } } }
-});
-@endif
-@if($show('views_chart') && !$viewsByProperty->isEmpty())
-new Chart(document.getElementById('viewsChart'), {
-    type: 'bar',
-    data: { labels: {!! json_encode($viewLabels) !!}, datasets: [{ label: 'Views', data: {!! json_encode($viewData) !!}, backgroundColor: primaryColor, borderRadius: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
-});
-@endif
-@if($show('views_30days'))
-new Chart(document.getElementById('views30Chart'), {
-    type: 'line',
-    data: { labels: {!! json_encode($v30Labels) !!}, datasets: [{ label: 'Views', data: {!! json_encode($v30Data) !!}, borderColor: primaryColor, backgroundColor: primaryColor + '22', fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
-});
-@endif
-@if($show('messages_7days'))
-new Chart(document.getElementById('msgs7Chart'), {
-    type: 'bar',
-    data: { labels: {!! json_encode($msg7Labels) !!}, datasets: [{ label: 'Messages', data: {!! json_encode($msg7Data) !!}, backgroundColor: '#8b5cf6', borderRadius: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
-});
-@endif
-@if($show('price_distribution') && $priceDistribution->sum() > 0)
-new Chart(document.getElementById('priceChart'), {
-    type: 'bar',
-    data: { labels: {!! json_encode($priceLabels) !!}, datasets: [{ label: 'Properties', data: {!! json_encode($priceData) !!}, backgroundColor: '#10b981', borderRadius: 6 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
-});
-@endif
-@if($show('listings_over_time'))
-new Chart(document.getElementById('listingsTimeChart'), {
-    type: 'line',
-    data: { labels: {!! json_encode($ltLabels) !!}, datasets: [{ label: 'Listings Added', data: {!! json_encode($ltData) !!}, borderColor: '#f59e0b', backgroundColor: '#f59e0b22', fill: true, tension: 0.4, pointRadius: 2, borderWidth: 2 }] },
-    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: scaleDefaults }
-});
-@endif
-@if($show('revenue_trend'))
-new Chart(document.getElementById('revenueChart'), {
-    type: 'bar',
-    data: { labels: {!! json_encode($revLabels) !!}, datasets: [{ label: 'Revenue', data: {!! json_encode($revData) !!}, backgroundColor: '#10b981', borderRadius: 6 }] },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
-        scales: {
-            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: tickColor, callback: function(v) { return '$' + (v >= 1000000 ? (v/1000000).toFixed(1)+'M' : v >= 1000 ? (v/1000).toFixed(0)+'K' : v); } } },
-            x: { grid: { display: false }, ticks: { font: { size: 10 }, color: tickColor } }
-        }
-    }
-});
-@endif
-@if($show('appt_status') && !$apptByStatus->isEmpty())
-new Chart(document.getElementById('apptStatusChart'), {
-    type: 'doughnut',
-    data: { labels: {!! json_encode($apptLabels) !!}, datasets: [{ data: {!! json_encode($apptData) !!}, backgroundColor: ['#8b5cf6','#10b981','#ef4444','#f59e0b','#6b7280'] }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, color: chartLegendColor } } } }
-});
-@endif
-@if($show('message_sources') && !$messageSources->isEmpty())
-new Chart(document.getElementById('msgSourcesChart'), {
-    type: 'doughnut',
-    data: { labels: {!! json_encode($srcLabels) !!}, datasets: [{ data: {!! json_encode($srcData) !!}, backgroundColor: ['#3b82f6','#f59e0b','#10b981','#ef4444','#8b5cf6'] }] },
-    options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, color: chartLegendColor } } } }
-});
-@endif
-
-});
-// ── Sortable Dashboard ──────────────────────────────────────────────────────
-const LOCK_KEY = 'dashboard_locked';
-const saveUrl  = '{{ route("tenant.admin.dashboard.order", $account) }}';
-const csrfToken = '{{ csrf_token() }}';
-
-let statSortable, chartSortable, tableSortable;
-
-function getLocked() { return localStorage.getItem(LOCK_KEY) !== 'false'; }
-function setLocked(v) { localStorage.setItem(LOCK_KEY, v ? 'true' : 'false'); }
-
-function applyLockState(locked) {
-    document.getElementById('dash-lock-icon').classList.toggle('hidden', !locked);
-    document.getElementById('dash-unlock-icon').classList.toggle('hidden', locked);
-    document.getElementById('dash-lock-label').textContent = locked ? 'Arrange Cards' : 'Lock Layout';
-    document.body.classList.toggle('drag-mode', !locked);
-
-    const opts = (containerId, sectionKey) => ({
-        animation: 150,
-        ghostClass: 'opacity-50',
-        dragClass: 'shadow-2xl',
-        disabled: locked,
-        scroll: false,
-        onEnd() {
-            const order = Array.from(
-                document.getElementById(containerId).querySelectorAll('[data-widget]')
-            ).map(el => el.dataset.widget);
-            fetch(saveUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                body: JSON.stringify({ section: sectionKey, order }),
-            });
-        },
-    });
-
-    if (statSortable)  statSortable.destroy();
-    if (chartSortable) chartSortable.destroy();
-    if (tableSortable) tableSortable.destroy();
-
-    const statEl  = document.getElementById('stat-cards-container');
-    const chartEl = document.getElementById('charts-container');
-    const tableEl = document.getElementById('tables-container');
-
-    if (statEl)  statSortable  = new Sortable(statEl,  opts('stat-cards-container', 'stat_cards'));
-    if (chartEl) chartSortable = new Sortable(chartEl, opts('charts-container',      'charts'));
-    if (tableEl) tableSortable = new Sortable(tableEl, opts('tables-container',      'tables'));
-}
-
-// applyLockState() constructs the Sortable instances, and Sortable now arrives as a
-// deferred module — which runs after this classic inline script. Calling it at the top
-// level threw a ReferenceError that aborted the rest of this block, so the first call
-// and the listeners that follow it wait for DOMContentLoaded.
-document.addEventListener('DOMContentLoaded', () => {
-    const lockBtn = document.getElementById('dash-lock-btn');
-    if (lockBtn) {
-        lockBtn.addEventListener('click', () => {
-            const newLocked = !getLocked();
-            setLocked(newLocked);
-            applyLockState(newLocked);
-        });
-    }
-
-    const isMobile = window.innerWidth < 768;
-    applyLockState(isMobile ? true : getLocked());
-
-    window.addEventListener('resize', () => {
-        if (window.innerWidth < 768 && !getLocked()) applyLockState(true);
-    });
-});
-@endsection

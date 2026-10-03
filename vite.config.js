@@ -8,9 +8,6 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                // Loaded only by the handful of screens that need them, so the rest of the
-                // site does not pay for a charting library it never draws with.
-                'resources/js/chart.js',
                 'resources/js/sortable.js',
                 'resources/js/tenant-widgets.js',
                 'resources/js/cookie-consent.js',
@@ -24,6 +21,7 @@ export default defineConfig({
                 'resources/js/favourites.js',
                 'resources/js/staff.js',
                 'resources/js/tenant-chrome.js',
+                'resources/js/dashboard.js',
             ],
             refresh: true,
         }),
