@@ -219,7 +219,7 @@
             @endif
         </div>
         <div class="flex items-center gap-4">
-            <div class="relative" x-data="tenantSearch()" @click.outside="open = false">
+            <div class="relative" x-data="tenantSearch" @click.outside="open = false">
                 <div class="relative">
                     <x-icon name="magnifying-glass" class="w-4 h-4 text-gray-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                     <input type="text" x-model="query" @input.debounce.300ms="search()" @focus="if(results.length) open = true" placeholder="Jump to tenant..." class="w-56 bg-gray-700 border border-gray-600 rounded-lg pr-3 py-1.5 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" style="padding-left: 2.25rem;">
@@ -250,6 +250,8 @@
 
 {{-- Bottom-of-body slot for bundles, matching the other layouts. The block below wraps
      @yield('scripts') in a <script> tag, so a @vite tag cannot be emitted from there. --}}
+@vite('resources/js/super-chrome.js')
+
 @yield('foot')
 
 @hasSection('scripts')
@@ -257,22 +259,5 @@
 @yield('scripts')
 </script>
 @endif
-<script>
-function tenantSearch() {
-    return {
-        query: '',
-        results: [],
-        open: false,
-        async search() {
-            if (this.query.length < 2) { this.results = []; this.open = false; return; }
-            try {
-                const res = await fetch('/super-admin/api/tenants/search?q=' + encodeURIComponent(this.query));
-                this.results = await res.json();
-                this.open = this.results.length > 0;
-            } catch (e) { this.results = []; this.open = false; }
-        }
-    };
-}
-</script>
 </body>
 </html>

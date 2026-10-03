@@ -316,8 +316,10 @@
      used to load here on every admin page, and twice on the dashboard, which also loaded its
      own copy. Only four screens drag anything. --}}
 @yield('foot')
+@hasSection('scripts')
 <script>
 @yield('scripts')
 </script>
+@endif
 </body>
 </html>
