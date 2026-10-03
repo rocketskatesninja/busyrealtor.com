@@ -24,6 +24,7 @@ export default defineConfig({
                 'resources/js/assistant.js',
                 'resources/js/messages.js',
                 'resources/js/feedback.js',
+                'resources/js/tenant-home.js',
             ],
             refresh: true,
         }),

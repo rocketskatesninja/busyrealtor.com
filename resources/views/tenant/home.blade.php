@@ -155,7 +155,8 @@ $iconPaths = [
 
 {{-- HERO --}}
 @if($key === 'hero')
-<section id="hero-section" class="relative min-h-screen flex items-center justify-center overflow-hidden">
+<section id="hero-section"
+         data-effects='@json($heroEffects, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)' class="relative min-h-screen flex items-center justify-center overflow-hidden">
     {{-- Background layer — separate div so Ken Burns zoom doesn't scale the text --}}
     @php
         $heroBg = '';
@@ -782,82 +783,6 @@ $iconPaths = [
 
 @endsection
 
-@section('scripts')
-@if($heroEffects['parallax'] ?? false)
-(function () {
-    const bg = document.getElementById('hero-bg');
-    if (!bg) return;
-    window.addEventListener('scroll', function () {
-        bg.style.backgroundPositionY = 'calc(50% + ' + (window.scrollY * 0.35) + 'px)';
-    }, { passive: true });
-})();
-@endif
-@if($heroEffects['particles'] ?? false)
-(function () {
-    const container = document.getElementById('hero-particles');
-    if (!container) return;
-    for (let i = 0; i < 22; i++) {
-        const el = document.createElement('div');
-        el.className = 'hero-particle';
-        const size = 2 + Math.random() * 4;
-        el.style.cssText = [
-            'left:'             + (Math.random() * 100) + '%',
-            'bottom:'           + (Math.random() * 40)  + '%',
-            'width:'            + size + 'px',
-            'height:'           + size + 'px',
-            'animation-duration:'+ (10 + Math.random() * 14) + 's',
-            'animation-delay:-' + (Math.random() * 18)  + 's',
-            'opacity:'          + (0.15 + Math.random() * 0.45),
-        ].join(';');
-        container.appendChild(el);
-    }
-})();
-@endif
-// ── Scroll reveal (Intersection Observer) ──────────────────────────────────
-(function () {
-    const targets = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
-    if (!targets.length) return;
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, { threshold: 0.12 });
-    targets.forEach(el => observer.observe(el));
-})();
-
-// ── Count-up animation ─────────────────────────────────────────────────────
-(function () {
-    const els = document.querySelectorAll('.count-up');
-    if (!els.length) return;
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (!entry.isIntersecting) return;
-            observer.unobserve(entry.target);
-            const el = entry.target;
-            const raw = el.textContent.trim();
-            const num = parseFloat(raw.replace(/[^0-9.]/g, ''));
-            const suffix = raw.replace(/[0-9.,]/g, '');
-            if (isNaN(num)) return;
-            const duration = 1600;
-            const start = performance.now();
-            function step(now) {
-                const progress = Math.min((now - start) / duration, 1);
-                const ease = 1 - Math.pow(1 - progress, 3);
-                const value = Math.round(ease * num);
-                el.textContent = value.toLocaleString() + suffix;
-                if (progress < 1) requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-        });
-    }, { threshold: 0.3 });
-    els.forEach(el => observer.observe(el));
-})();
-
-// ── Alpine FAQ collapse helper ─────────────────────────────────────────────
-document.querySelectorAll('[x-collapse]').forEach(el => {
-    el.style.overflow = 'hidden';
-});
+@section('foot')
+@vite('resources/js/tenant-home.js')
 @endsection
