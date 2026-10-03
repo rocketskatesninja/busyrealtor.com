@@ -15,6 +15,10 @@
     <link rel="apple-touch-icon" href="{{ $faviconUrl }}">
     @endif
     <title>@yield('title', 'Admin') — {{ $tenant->name ?? 'BusyRealtor' }}</title>
+    {{-- preconnect before @vite: the hint has to be read before the requests it warms --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         // Apply dark mode immediately to prevent flash
         (function() {
@@ -25,10 +29,6 @@
             }
         })();
     </script>
-    {{-- preconnect before @vite: the hint has to be read before the requests it warms --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @php
         $settings = $settings ?? $tenant->settings();
         $titleFont = $settings->title_font ?? 'Poppins';

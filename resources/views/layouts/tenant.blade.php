@@ -51,6 +51,10 @@
     <meta name="twitter:image" content="{{ $ogImage }}">
     @endif
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- preconnect before @vite: the hint has to be read before the requests it warms --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>
         // Apply dark mode immediately to prevent flash
         (function() {
@@ -61,10 +65,6 @@
             }
         })();
     </script>
-    {{-- preconnect before @vite: the hint has to be read before the requests it warms --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
     @php
         $titleFont = $settings->title_font ?? 'Poppins';
         $primaryColor = $settings->primary_color ?? '#3B82F6';
