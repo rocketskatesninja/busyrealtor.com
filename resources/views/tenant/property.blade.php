@@ -1,4 +1,8 @@
 @extends('layouts.tenant')
+{{-- No site header here. The page opens on a full-bleed photo carousel, and a nav bar
+     above it reads as a different site from the admin area the agent just came from.
+     A breadcrumb back to wherever they were is what this page actually needs. --}}
+@section('hide_header')@endsection
 @section('title', $property->title . ' — ' . ($settings->site_title ?? 'BusyRealtor'))
 @section('meta_description', Str::limit(strip_tags($property->description ?? $settings->site_description ?? ''), 155))
 @section('og_image', $property->images->first() ? asset('storage/' . $property->images->first()->image_path) : '')
@@ -161,8 +165,39 @@ function initPropertyMap() {
 
 
 @section('content')
-@php $account = $tenant->slug; @endphp
+@php
+$account = $tenant->slug;
+
+$back = ['url' => route('tenant.gallery', $account), 'label' => 'Gallery'];
+$referrer = request()->headers->get('referer');
+$home = url('/'.$account);
+
+// The trailing slash matters: without it a tenant called demo-realty would accept a
+// referrer from demo-realty-two, and "Back" would leave the site it belongs to.
+$fromThisSite = $referrer && ($referrer === $home || str_starts_with($referrer, $home.'/') || str_starts_with($referrer, $home.'?'));
+
+if ($fromThisSite) {
+    $path = parse_url($referrer, PHP_URL_PATH) ?? '';
+
+    // Not back to another listing, and not to this one.
+    if (! str_contains($path, '/property/')) {
+        $back = [
+            'url' => $referrer,
+            'label' => match (true) {
+                str_ends_with($path, '/map') => 'Map',
+                str_ends_with($path, '/gallery') => 'Gallery',
+                default => $settings->site_title ?: $tenant->name,
+            },
+        ];
+    }
+}
+@endphp
 <div class="max-w-7xl mx-auto px-4 py-10">
+
+    <a href="{{ $back['url'] }}" class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6 transition">
+        <x-icon name="chevron-left" class="w-4 h-4" />
+        Back to {{ $back['label'] }}
+    </a>
 
 
             {{-- Image Gallery --}}

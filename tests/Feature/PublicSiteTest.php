@@ -164,22 +164,88 @@ class PublicSiteTest extends TestCase
     }
 
     /**
-     * The property and legal pages used to declare @section('hide_header'), so they
-     * rendered with no site navigation and no way back. Every page except the homepage
-     * now takes the sticky default header: hero mode's bar is fixed and transparent, so
-     * on a page that opens with a photo carousel or a wall of text it would sit on top
-     * of the content rather than above it.
+     * The legal pages used to declare @section('hide_header'), so they rendered with no
+     * site navigation and no way back. They take the sticky default header now, as the
+     * gallery and map do: hero mode's bar is fixed and transparent, so on a wall of text
+     * it would sit on top of the content rather than above it.
+     *
+     * The property page is deliberately not in this list. It opens on a full-bleed photo
+     * carousel, where a nav bar reads as a different site from the admin area the agent
+     * just came from, so it keeps hide_header and carries a breadcrumb instead.
      */
     public function test_every_public_page_but_the_homepage_carries_the_sticky_header(): void
     {
         $tenant = $this->makeTenant([], ['header_mode' => 'hero']);
         $property = $this->makeProperty($tenant);
 
-        foreach (['/gallery', '/map', '/terms', '/privacy-policy', "/property/{$property->id}"] as $path) {
+        foreach (['/gallery', '/map', '/terms', '/privacy-policy'] as $path) {
             $this->get("/{$tenant->slug}{$path}")
                 ->assertOk()
                 ->assertSee('<header id="tenant-default-header"', false)
                 ->assertDontSee('<header id="tenant-hero-header"', false);
+        }
+    }
+
+    /**
+     * Back goes to the page they actually came from, so a gallery filtered and sorted a
+     * particular way is still filtered and sorted when they return. A hardcoded link to
+     * the gallery would throw that away.
+     */
+    public function test_the_property_page_has_no_header_and_a_breadcrumb_back(): void
+    {
+        $tenant = $this->makeTenant([], ['header_mode' => 'hero']);
+        $property = $this->makeProperty($tenant);
+
+        $response = $this->get("/{$tenant->slug}/property/{$property->id}");
+
+        $response->assertOk()
+            ->assertDontSee('<header id="tenant-default-header"', false)
+            ->assertDontSee('<header id="tenant-hero-header"', false)
+            ->assertSee('Back to Gallery', false);
+    }
+
+    public function test_the_breadcrumb_follows_the_referring_page_and_keeps_its_query(): void
+    {
+        $tenant = $this->makeTenant();
+        $property = $this->makeProperty($tenant);
+        $from = url("/{$tenant->slug}/gallery").'?sort=price_asc';
+
+        $this->get("/{$tenant->slug}/property/{$property->id}", ['Referer' => $from])
+            ->assertOk()
+            ->assertSee('Back to Gallery', false)
+            ->assertSee('sort=price_asc', false);
+
+        $this->get("/{$tenant->slug}/property/{$property->id}", ['Referer' => url("/{$tenant->slug}/map")])
+            ->assertOk()
+            ->assertSee('Back to Map', false);
+    }
+
+    /**
+     * Three referrers that must not be followed: another listing (which would bounce
+     * between listings rather than going back), a neighbouring tenant whose slug happens
+     * to begin with this one, and anywhere off the site entirely.
+     */
+    public function test_the_breadcrumb_refuses_referrers_it_should_not_follow(): void
+    {
+        $tenant = $this->makeTenant(['slug' => 'acme']);
+        $neighbour = $this->makeTenant(['slug' => 'acme-two']);
+        $property = $this->makeProperty($tenant);
+        $other = $this->makeProperty($tenant);
+
+        foreach ([
+            url("/acme/property/{$other->id}"),
+            url("/acme-two/gallery"),
+            'https://somewhere-else.test/listings',
+        ] as $referrer) {
+            $response = $this->get("/acme/property/{$property->id}", ['Referer' => $referrer]);
+            $response->assertOk()->assertSee('Back to Gallery', false);
+
+            // The breadcrumb's own href, not merely the page's text: a listing's URL can
+            // legitimately appear elsewhere on the page, in the similar-listings strip.
+            preg_match('/<a href="([^"]*)"[^>]*>\s*<svg[^>]*>.*?<\/svg>\s*Back to/s',
+                $response->getContent(), $m);
+            $this->assertSame(url('/acme/gallery'), html_entity_decode($m[1] ?? ''),
+                "the breadcrumb followed {$referrer}");
         }
     }
 
