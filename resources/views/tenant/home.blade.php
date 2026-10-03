@@ -173,7 +173,16 @@ $iconPaths = [
             $heroBg = "background: url('/assets/images/hero-presets/{$preset}.jpg') center/cover no-repeat;";
         }
     @endphp
-    <div id="hero-bg" class="absolute inset-0 {{ ($heroEffects['ken_burns'] ?? false) ? 'hero-ken-burns' : '' }}" style="{{ $heroBg }}"></div>
+    {{-- With parallax on, the background sits inside a taller wrapper so there is room to
+         move it. background-size:cover scales the image to exactly the hero's height
+         whenever the two share an aspect ratio, which leaves a background-position shift
+         with nothing to shift -- the effect simply did not show. The wrapper is only
+         oversized when the effect is on, so the crop is unchanged otherwise, and it is
+         the wrapper that moves rather than the background itself, because Ken Burns
+         animates that element's transform and a CSS animation beats an inline style. --}}
+    <div id="hero-parallax" class="{{ ($heroEffects['parallax'] ?? false) ? 'absolute inset-x-0 -top-1/4 h-[150%]' : 'absolute inset-0' }}">
+        <div id="hero-bg" class="absolute inset-0 {{ ($heroEffects['ken_burns'] ?? false) ? 'hero-ken-burns' : '' }}" style="{{ $heroBg }}"></div>
+    </div>
 
     {{-- Dark overlay --}}
     @if($heroEffects['dark_overlay'] ?? true)

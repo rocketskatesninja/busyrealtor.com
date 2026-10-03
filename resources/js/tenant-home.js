@@ -14,10 +14,19 @@ function effects() {
 const fx = effects();
 
 if (fx.parallax) {
-    const bg = document.getElementById('hero-bg');
-    if (bg) {
+    const layer = document.getElementById('hero-parallax');
+    const hero = document.getElementById('hero-section');
+
+    if (layer && hero) {
+        // The wrapper is taller than the hero; half the difference sits above it and half
+        // below. Never move further than that, or an edge shows. Clamping to the measured
+        // slack rather than a hardcoded number means the CSS can change without this
+        // needing to know.
+        const headroom = () => Math.max(0, (layer.offsetHeight - hero.offsetHeight) / 2);
+
         window.addEventListener('scroll', () => {
-            bg.style.backgroundPositionY = `calc(50% + ${window.scrollY * 0.35}px)`;
+            const shift = Math.min(window.scrollY * 0.2, headroom());
+            layer.style.transform = `translate3d(0, ${shift}px, 0)`;
         }, { passive: true });
     }
 }
