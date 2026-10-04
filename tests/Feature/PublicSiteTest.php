@@ -389,6 +389,25 @@ class PublicSiteTest extends TestCase
         $this->assertStringNotContainsString('cookie-banner-inner', $preview);
     }
 
+    public function test_the_stylesheet_is_inlined_rather_than_linked(): void
+    {
+        // Firefox does not hold the first paint for an external stylesheet: linked, the
+        // marketing page painted ~270ms of browser-default serif text before the CSS
+        // applied. See App\Support\InlineStyles for what was ruled out along the way.
+        $tenant = $this->makeTenant();
+
+        foreach (['/', "/{$tenant->slug}", '/login'] as $path) {
+            $html = $this->get($path)->assertOk()->getContent();
+
+            $this->assertDoesNotMatchRegularExpression(
+                '/<link[^>]+rel="stylesheet"[^>]+build\/assets/',
+                $html,
+                "{$path} links the built stylesheet instead of inlining it"
+            );
+            $this->assertStringContainsString('<style>', $html, "{$path} renders no inline stylesheet");
+        }
+    }
+
     private function heroTenant(array $effects): Tenant
     {
         return $this->makeTenant([], ['hero_effects' => $effects]);

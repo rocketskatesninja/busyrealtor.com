@@ -18,7 +18,8 @@
     {{-- preconnect before @vite: the hint has to be read before the requests it warms --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    {!! \App\Support\InlineStyles::tag() !!}
+    @vite(['resources/js/app.js'])
     <script>
         // Apply dark mode immediately to prevent flash
         (function() {
