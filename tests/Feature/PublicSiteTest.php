@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Tenant;
 use App\Models\PropertyView;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -299,19 +300,48 @@ class PublicSiteTest extends TestCase
 
     public function test_a_preview_request_stills_the_heros_motion_effects(): void
     {
-        $tenant = $this->makeTenant([], ['hero_effects' => [
-            'parallax' => true, 'ken_burns' => true, 'particles' => true,
-        ]]);
+        $tenant = $this->heroTenant(['parallax' => true, 'ken_burns' => true, 'particles' => true]);
 
         $live = $this->get("/{$tenant->slug}")->assertOk()->getContent();
-        $this->assertStringContainsString('hero-ken-burns', $this->heroLayer($live));
-        $this->assertStringContainsString('background-attachment: fixed', $this->heroLayer($live));
+        $this->assertStringContainsString('hero-parallax', $this->heroClasses($live, 'hero-parallax'));
+        $this->assertStringContainsString('hero-ken-burns', $this->heroClasses($live, 'hero-bg'));
         $this->assertStringContainsString('id="hero-particles"', $live);
 
         $preview = $this->get("/{$tenant->slug}?preview=1")->assertOk()->getContent();
-        $this->assertStringNotContainsString('hero-ken-burns', $this->heroLayer($preview));
-        $this->assertStringNotContainsString('background-attachment: fixed', $this->heroLayer($preview));
+        $this->assertStringNotContainsString('hero-parallax', $this->heroClasses($preview, 'hero-parallax'));
+        $this->assertStringNotContainsString('background-attachment: fixed', $this->heroLayer($preview, 'hero-bg'));
+        $this->assertStringNotContainsString('hero-ken-burns', $this->heroClasses($preview, 'hero-bg'));
         $this->assertStringNotContainsString('id="hero-particles"', $preview);
+    }
+
+    public function test_the_hero_picks_a_parallax_mechanism_that_survives_ken_burns(): void
+    {
+        // Parallax alone pins the background to the viewport. That cannot work once Ken
+        // Burns is on, because a transformed layer becomes the containing block for its
+        // own fixed background -- so the pair switches to a transform on the wrapper.
+        $cases = [
+            // [parallax, ken_burns] => [wrapper travels, background pinned, inner zooms]
+            [[false, false], [false, false, false]],
+            [[true,  false], [false, true,  false]],
+            [[false, true],  [false, false, true]],
+            [[true,  true],  [true,  false, true]],
+        ];
+
+        foreach ($cases as [[$parallax, $kenBurns], [$travels, $pinned, $zooms]]) {
+            $tenant = $this->heroTenant(['parallax' => $parallax, 'ken_burns' => $kenBurns]);
+            $html = $this->get("/{$tenant->slug}")->assertOk()->getContent();
+            $label = 'parallax='.var_export($parallax, true).' ken_burns='.var_export($kenBurns, true);
+
+            $wrapper = $this->heroClasses($html, 'hero-parallax');
+            $inner = $this->heroLayer($html, 'hero-bg');
+
+            $this->assertSame($travels, str_contains($wrapper, 'hero-parallax'), "wrapper travels, {$label}");
+            $this->assertSame($pinned, str_contains($inner, 'background-attachment: fixed'), "background pinned, {$label}");
+            $this->assertSame($zooms, str_contains($this->heroClasses($html, 'hero-bg'), 'hero-ken-burns'), "inner zooms, {$label}");
+
+            // Pinning and zooming on one element is the combination that cancels itself.
+            $this->assertFalse($pinned && $zooms, "mechanisms must not collide, {$label}");
+        }
     }
 
     public function test_the_marketing_previews_ask_for_a_stilled_hero(): void
@@ -326,10 +356,24 @@ class PublicSiteTest extends TestCase
         }
     }
 
-    /** The hero background layer's own open tag -- the effect classes live there, the CSS does not. */
-    private function heroLayer(string $html): string
+    private function heroTenant(array $effects): Tenant
     {
-        $this->assertSame(1, preg_match('/<div id="hero-bg"[^>]*>/', $html, $matches), 'the hero background layer should render once');
+        return $this->makeTenant([], ['hero_effects' => $effects]);
+    }
+
+    /** A hero layer's class attribute, which is where the effect switches land -- and not its
+     *  id, which contains the same words and matches whether the effect is on or off. */
+    private function heroClasses(string $html, string $id): string
+    {
+        preg_match('/class="([^"]*)"/', $this->heroLayer($html, $id), $matches);
+
+        return $matches[1] ?? '';
+    }
+
+    /** One hero layer's own open tag -- the effect classes live there, the stylesheet does not. */
+    private function heroLayer(string $html, string $id): string
+    {
+        $this->assertSame(1, preg_match('/<div id="'.$id.'"[^>]*>/', $html, $matches), "#{$id} should render once");
 
         return $matches[0];
     }

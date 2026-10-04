@@ -84,6 +84,23 @@
             100% { transform: scale(1.08) translateX(0)      translateY(-1%); }
         }
         .hero-ken-burns { animation: kenBurns 22s ease-in-out infinite alternate; }
+        /* Parallax, for the case where Ken Burns is on too -- see the hero markup below.
+           A scroll-driven animation rather than a scroll listener: the compositor runs it
+           against the scroll position directly, with nothing on the main thread to lag the
+           pixels it is offsetting. The layer is 120% tall and starts 10% high so there is
+           slack to travel through; 8% of its own height is that 10% of the hero's. */
+        @supports (animation-timeline: scroll()) {
+            @keyframes heroParallax {
+                from { transform: translateY(0); }
+                to   { transform: translateY(8%); }
+            }
+            .hero-parallax {
+                left: 0; right: 0; top: -10%; height: 120%;
+                animation: heroParallax linear both;
+                animation-timeline: scroll(root block);
+                animation-range: 0 100vh;
+            }
+        }
         /* Particles */
         @keyframes particleRise {
             0%   { transform: translateY(0)   translateX(0);   opacity: 0; }
@@ -182,23 +199,36 @@ $iconPaths = [
             $preset = $settings->hero_preset ?? 'modern-home';
             $heroBg = "background: url('/assets/images/hero-presets/{$preset}.jpg') center/cover no-repeat;";
         }
+        $scrollParallax = false;
         if ($heroEffects['parallax'] ?? false) {
-            // After the shorthand above, which resets attachment to scroll.
-            $heroBg .= ' background-attachment: fixed;';
+            if ($heroEffects['ken_burns'] ?? false) {
+                // Ken Burns animates a transform, which makes its layer the containing block
+                // for that layer's own fixed background -- so the two cannot share an element,
+                // and a transformed ancestor would break it just the same. With both on,
+                // parallax moves to a scroll-driven transform on the wrapper instead: separate
+                // elements, two transforms, both composited.
+                $scrollParallax = true;
+            } else {
+                // Alone it keeps background-attachment, the mechanism confirmed working by eye
+                // in real browsers. Set after the shorthand above, which resets attachment.
+                $heroBg .= ' background-attachment: fixed;';
+            }
         }
     @endphp
-    {{-- Background layer — separate div so Ken Burns zoom doesn't scale the text.
+    {{-- Two layers, so the effects stay out of each other's way: the wrapper travels for
+         parallax, the inner one zooms for Ken Burns, and neither touches the hero text.
 
-         Parallax is background-attachment:fixed rather than a scroll handler. Driving it
-         from JavaScript measured correctly in both headless engines and moved not at all
-         in a real browser: scroll handlers run on the main thread while the page scrolls
-         on the compositor, so the transform lands late enough to be invisible. Pinning
-         the background to the viewport is the same idea with nothing to lag -- the
-         compositor does all of it and there is no listener at all.
+         Neither is driven by a scroll listener. One written in JavaScript measured
+         correctly in both headless engines and moved not at all in a real browser --
+         handlers run on the main thread while the page scrolls on the compositor, so the
+         transform lands a frame or more behind the pixels it is offsetting. Both
+         mechanisms here hand the whole thing to the compositor and have no listener.
 
-         It does not combine with Ken Burns: a transformed element becomes the containing
-         block for a fixed background, so that layer's animation would cancel this. --}}
-    <div id="hero-bg" class="absolute inset-0 {{ ($heroEffects['ken_burns'] ?? false) ? 'hero-ken-burns' : '' }}" style="{{ $heroBg }}"></div>
+         Where a browser has no scroll timelines, the wrapper simply does not move: Ken
+         Burns still runs and parallax is absent rather than broken. --}}
+    <div id="hero-parallax" class="absolute {{ $scrollParallax ? 'hero-parallax' : 'inset-0' }}">
+        <div id="hero-bg" class="absolute inset-0 {{ ($heroEffects['ken_burns'] ?? false) ? 'hero-ken-burns' : '' }}" style="{{ $heroBg }}"></div>
+    </div>
 
     {{-- Dark overlay --}}
     @if($heroEffects['dark_overlay'] ?? true)
