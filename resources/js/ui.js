@@ -16,3 +16,8 @@ document.addEventListener('change', (e) => {
         e.target.form?.submit();
     }
 });
+
+// <button data-print> — the browser's print dialog.
+document.addEventListener('click', (e) => {
+    if (e.target.closest?.('[data-print]')) window.print();
+});

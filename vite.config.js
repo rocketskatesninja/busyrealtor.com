@@ -26,6 +26,7 @@ export default defineConfig({
                 'resources/js/feedback.js',
                 'resources/js/tenant-home.js',
                 'resources/js/map.js',
+                'resources/js/property-map.js',
                 'resources/js/super-chrome.js',
                 'resources/js/super-mailer.js',
                 'resources/js/super-settings.js',
