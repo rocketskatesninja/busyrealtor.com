@@ -6,6 +6,60 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
+/* Inter, self-hosted. Google served this as a variable font -- one file covers 100-900 --
+   and the latin subset is all an English site needs, so it is 48KB for every weight.
+
+   It is here rather than linked from fonts.googleapis.com because that was a second
+   render-blocking stylesheet on a third-party origin: a DNS lookup, a TLS handshake and a
+   round trip before the browser even learns which file to fetch, and only then the font
+   itself. The result was a visible shift as text re-set from the fallback. Declared in the
+   stylesheet that is now inlined into the page, the font request starts while the head is
+   still parsing. It also stops every visitor to a realtor's site being announced to a
+   third party, which is not a trade this app should make on their behalf. */
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('/fonts/inter-v20-latin.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+        U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+        U+FEFF, U+FFFD;
+}
+
+/* A fallback scaled to occupy exactly the space Inter will. Text paints immediately in the
+   local face, and when Inter arrives the glyphs change shape without anything moving --
+   rather than the line re-flowing under the reader, which is the shift you can see.
+
+   The three numbers were measured in the engine, not copied: canvas reports each face's real
+   ascent and descent, and the width of a representative string gives the ratio the fallback
+   must be scaled by. Arial and Liberation Sans measured byte-identical, so this holds on
+   Linux as well as on Windows and macOS. Re-derive with busyrealtor-shots/metrics.mjs if the
+   font is ever changed. */
+@font-face {
+    font-family: 'Inter Fallback';
+    font-weight: 100 500;
+    src: local('Arial'), local('Liberation Sans'), local('Helvetica');
+    size-adjust: 104.76%;
+    ascent-override: 92.50%;
+    descent-override: 23.00%;
+    line-gap-override: 0%;
+}
+
+/* A second face for the heavy weights. One ratio cannot serve both ends: Inter gains more
+   width from 400 to 900 than Arial does, so a fallback tuned on body text leaves the
+   headline 2% narrow -- and the headline is the one piece of text large enough for 2% to
+   re-wrap a line. Same local source, so this costs no download. */
+@font-face {
+    font-family: 'Inter Fallback';
+    font-weight: 600 900;
+    src: local('Arial'), local('Liberation Sans'), local('Helvetica');
+    size-adjust: 109.44%;
+    ascent-override: 88.54%;
+    descent-override: 22.02%;
+    line-gap-override: 0%;
+}
+
 @theme {
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';

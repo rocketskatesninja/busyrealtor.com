@@ -19,6 +19,8 @@
     # hash of the contents the way Vite's is. Thirty days rather than a year, and no
     # immutable, so a surprise still corrects itself within the month.
     SetEnvIf Request_URI "^/build/assets/" BR_ASSET_IMMUTABLE
+    # The font carries its version in the filename, so it is immutable in the same way.
+    SetEnvIf Request_URI "^/fonts/" BR_ASSET_IMMUTABLE
     SetEnvIf Request_URI "^/storage/" BR_ASSET_UPLOAD
 
     Header set Cache-Control "public, max-age=31536000, immutable" env=BR_ASSET_IMMUTABLE

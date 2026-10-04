@@ -36,12 +36,15 @@
     </script>
     {!! \App\Support\InlineStyles::tag() !!}
     @vite(['resources/js/app.js'])
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    {{-- Inter is self-hosted (see app.css). Preloaded because a @font-face inside a
+         stylesheet is only fetched once the renderer finds text that needs it; this starts
+         it with the rest of the head. crossorigin is required even same-origin -- fonts are
+         fetched in CORS mode, and without it the preload would not match the real request
+         and the file would be downloaded twice. --}}
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-v20-latin.woff2" crossorigin>
     <style>
         [x-cloak] { display: none !important; }
-        body { font-family: 'Inter', sans-serif; }
+        body { font-family: 'Inter', 'Inter Fallback', sans-serif; }
         .gradient-text {
             background: linear-gradient(135deg, #60a5fa, #a78bfa);
             -webkit-background-clip: text;
