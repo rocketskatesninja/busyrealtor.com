@@ -165,10 +165,10 @@
     </div>
 
     {{-- Scroll-down arrow (reusable: just copy this block + the @keyframes scrollBounce CSS) --}}
-    <a href="javascript:void(0)" data-scroll-down class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-white/60 hover:text-white transition-colors group" aria-label="Scroll down">
+    <button type="button" data-scroll-down class="absolute bottom-6 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-1 text-white/60 hover:text-white transition-colors group" aria-label="Scroll down">
         <span class="text-xs font-medium tracking-wider uppercase opacity-0 group-hover:opacity-100 transition-opacity">Scroll</span>
         <svg width="24" height="24" class="w-6 h-6" style="animation: scrollBounce 2s ease-in-out infinite;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-    </a>
+    </button>
 </section>
 
 {{-- ════════════════════════════════════════════════════════ STATS BAR ═══ --}}
