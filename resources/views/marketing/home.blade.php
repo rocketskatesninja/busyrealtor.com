@@ -136,12 +136,9 @@
             <div class="hidden lg:block">
                 <div class="rounded-2xl overflow-hidden shadow-2xl" style="border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); backdrop-filter: blur(4px);">
                     <div class="flex items-center gap-2 px-4 py-3" style="background: rgba(0,0,0,0.3);">
-                        <div class="flex gap-1.5">
-                            <div class="w-3 h-3 rounded-full" style="background:#ef4444;opacity:0.7;"></div>
-                            <div class="w-3 h-3 rounded-full" style="background:#eab308;opacity:0.7;"></div>
-                            <div class="w-3 h-3 rounded-full" style="background:#22c55e;opacity:0.7;"></div>
-                        </div>
-                        <div class="flex-1 rounded-md px-3 py-1 text-xs font-mono ml-2" style="background:rgba(0,0,0,0.25); color:rgba(147,197,253,0.8);">
+                        {{-- A plain address bar. Three coloured dots in a row read as one
+                             particular vendor's window; this is meant to say "a browser". --}}
+                        <div class="flex-1 rounded-md px-3 py-1 text-xs font-mono" style="background:rgba(0,0,0,0.25); color:rgba(147,197,253,0.8);">
                             busyrealtor.com/demo-realty
                         </div>
                     </div>
@@ -196,8 +193,10 @@
             ] as $s)
             <div class="relative reveal" style="transition-delay: {{ $s['data-delay'] ?? '0' }}s">
                 <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-200 h-full">
-                    <div class="w-12 h-12 bg-orange-500 text-white rounded-xl flex items-center justify-center font-black text-lg mb-5 shadow-md">{{ $s['step'] }}</div>
-                    <h3 class="font-bold text-gray-900 dark:text-white text-lg mb-3">{{ $s['title'] }}</h3>
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-orange-500 text-white rounded-xl flex items-center justify-center font-black text-lg shadow-md shrink-0">{{ $s['step'] }}</div>
+                        <h3 class="font-bold text-gray-900 dark:text-white text-lg min-w-0">{{ $s['title'] }}</h3>
+                    </div>
                     <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ $s['desc'] }}</p>
                 </div>
                 @if(!$loop->last)
@@ -234,15 +233,17 @@
             @endphp
             @foreach($features as $f)
             <div class="bg-white dark:bg-gray-800 border border-gray-300 rounded-2xl p-6 hover:shadow-md hover:-translate-y-0.5 transition-all reveal" style="transition-delay: {{ ($loop->index % 4) * 0.1 }}s">
-                <div class="flex items-start justify-between mb-4">
-                    <div class="{{ $f['bg'] }} w-11 h-11 rounded-xl flex items-center justify-center dark:opacity-80">
+                {{-- Icon beside the heading rather than stacked above it. ml-auto keeps the Pro
+                     badge on the right without taking the title out of the row. --}}
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="{{ $f['bg'] }} w-11 h-11 rounded-xl flex items-center justify-center shrink-0 dark:opacity-80">
                         <svg width="20" height="20" class="w-5 h-5 {{ $f['ic'] }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $f['icon'] }}"/></svg>
                     </div>
+                    <h3 class="font-bold text-gray-900 dark:text-white min-w-0">{{ $f['title'] }}</h3>
                     @if(!empty($f['pro']))
-                    <span class="inline-flex items-center gap-1 text-xs font-semibold bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full dark:bg-orange-900/20 dark:border-orange-700 dark:text-orange-400">Pro</span>
+                    <span class="ml-auto shrink-0 inline-flex items-center gap-1 text-xs font-semibold bg-orange-50 text-orange-600 border border-orange-200 px-2 py-0.5 rounded-full dark:bg-orange-900/20 dark:border-orange-700 dark:text-orange-400">Pro</span>
                     @endif
                 </div>
-                <h3 class="font-bold text-gray-900 dark:text-white mb-2">{{ $f['title'] }}</h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">{{ $f['desc'] }}</p>
             </div>
             @endforeach
@@ -256,12 +257,7 @@
         <div class="grid lg:grid-cols-2 gap-16 items-center">
             <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden reveal-left">
                 <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 flex items-center gap-2 border-b border-gray-200 dark:border-gray-600">
-                    <div class="flex gap-1.5">
-                        <div class="w-3 h-3 rounded-full bg-red-400"></div>
-                        <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
-                        <div class="w-3 h-3 rounded-full bg-green-400"></div>
-                    </div>
-                    <div class="flex-1 bg-white dark:bg-gray-600 rounded-md px-3 py-1 text-xs text-gray-500 dark:text-gray-300 font-mono ml-2 border border-gray-200 dark:border-gray-500">busyrealtor.com/demo-realty</div>
+                    <div class="flex-1 bg-white dark:bg-gray-600 rounded-md px-3 py-1 text-xs text-gray-500 dark:text-gray-300 font-mono border border-gray-200 dark:border-gray-500">busyrealtor.com/demo-realty</div>
                 </div>
                 <div class="relative" style="height:420px; overflow:hidden;">
                     <iframe src="/demo-realty?preview=1" class="border-0"
@@ -310,8 +306,10 @@
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Starter</h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm mb-5">Perfect for solo agents getting started online.</p>
                 <div class="flex items-end gap-1 mb-6">
-                    <span class="text-5xl font-black text-gray-900 dark:text-white">${{ number_format($settings->starter_price ?? 29, 2) }}</span>
-                    <span class="text-gray-500 dark:text-gray-400 mb-2">/month</span>
+                    <span class="text-4xl sm:text-5xl font-black text-gray-900 dark:text-white">${{ number_format($settings->starter_price ?? 29, 2) }}</span>
+                    {{-- nowrap: a slash is a break opportunity, so "/month" was splitting
+                         after the slash and dropping "month" onto its own line. --}}
+                    <span class="text-gray-500 dark:text-gray-400 mb-2 whitespace-nowrap">/month</span>
                 </div>
                 <a href="/register" class="block text-center bg-gray-900 hover:bg-gray-800 text-white font-bold py-3.5 rounded-xl mb-7 transition-colors">Start Free Trial</a>
                 <ul class="space-y-3">
@@ -325,8 +323,8 @@
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1">Pro</h3>
                 <p class="text-gray-500 dark:text-gray-400 text-sm mb-5">For agents ready to scale with AI-powered tools.</p>
                 <div class="flex items-end gap-1 mb-6">
-                    <span class="text-5xl font-black text-blue-600">${{ number_format($settings->pro_price ?? 59, 2) }}</span>
-                    <span class="text-gray-500 dark:text-gray-400 mb-2">/month</span>
+                    <span class="text-4xl sm:text-5xl font-black text-blue-600">${{ number_format($settings->pro_price ?? 59, 2) }}</span>
+                    <span class="text-gray-500 dark:text-gray-400 mb-2 whitespace-nowrap">/month</span>
                 </div>
                 <a href="/register" class="block text-center text-white font-bold py-3.5 rounded-xl mb-7 transition-colors shadow-md" style="background: #f97316;">Start Free Trial</a>
                 <ul class="space-y-3">
