@@ -46,6 +46,24 @@ class SelfHostedFontsTest extends TestCase
         $this->assertMatchesRegularExpression("/font-src 'self' data:;/", $htaccess, 'the CSP still permits a third-party font origin');
     }
 
+    public function test_the_preloaded_font_is_one_the_stylesheet_actually_uses(): void
+    {
+        // The font filenames are regenerated from their source, so a preload left pointing at
+        // an old one is silently wrong twice over: the preloaded file is never used, and the
+        // font it was meant to warm arrives late again.
+        $layout = (string) file_get_contents(resource_path('views/layouts/marketing.blade.php'));
+
+        $this->assertSame(1, preg_match('/<link rel="preload" as="font"[^>]+href="([^"]+)"/', $layout, $preload),
+            'the marketing layout should preload exactly one font');
+
+        $this->assertFileExists(public_path(ltrim($preload[1], '/')));
+        $this->assertStringContainsString(
+            "url('{$preload[1]}')",
+            $this->fontsCss(),
+            'the preloaded file is not the one any @font-face points at -- re-run scripts/fetch-title-fonts.py'
+        );
+    }
+
     /** @return list<string> */
     private function offeredFonts(): array
     {

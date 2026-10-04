@@ -9,10 +9,10 @@ use Illuminate\Foundation\Vite;
  *
  * Firefox does not hold the first paint for an external stylesheet here. Measured on the
  * marketing page in Firefox 140: first contentful paint at 413-445ms, styles not applied
- * until 693-709ms -- so roughly a quarter of a second of completely unstyled page, browser
- * -default serif text and crammed underlined links, which is exactly what it looks like.
- * Chromium paints later than its own stylesheet arrives and so never shows it, which is why
- * this survived several rounds of measurement: every one of them was the wrong engine.
+ * until 693-709ms. That is a quarter of a second of completely unstyled page -- serif text
+ * at browser defaults, links underlined and crammed together, no layout at all. Chromium
+ * paints later than its own stylesheet arrives and so never shows it, which is why this
+ * survived several rounds of measurement: every one of them was the wrong engine.
  *
  * Three things it is NOT, each tested and ruled out: the size of the sheet (an 868-byte one
  * flashed the same), the `rel=preload` tag Vite emits beside the stylesheet, and the
@@ -22,7 +22,7 @@ use Illuminate\Foundation\Vite;
  * It is also why this only shows on a hard refresh: an ordinary reload has the sheet in
  * cache and applies it instantly, leaving no window to see.
  *
- * Cost is about 15KB gzipped per response, against one fewer request. That is worth paying
+ * Cost is about 16KB gzipped per response, against one fewer request. That is worth paying
  * on a first visit and wasteful on the hundredth; the way to make it cheap is to stop one
  * CSS entry scanning all 56 views, which is already on the plan.
  */

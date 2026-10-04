@@ -34,17 +34,18 @@
             }
         })();
     </script>
+    {{-- Inter is self-hosted (see scripts/fetch-title-fonts.py). Preloaded because a
+         @font-face is only fetched once the renderer finds text that needs it, which is
+         after layout: without this the font arrived 150-320ms after the first paint, with
+         it, before. crossorigin is required even same-origin -- fonts are fetched in CORS
+         mode, and without it the preload would not match and the file is fetched twice.
+         The filename is the generator's; SelfHostedFontsTest fails if it goes stale. --}}
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-6ab57b19.woff2" crossorigin>
     {!! \App\Support\InlineStyles::tag() !!}
     @vite(['resources/js/app.js'])
-    {{-- Inter is self-hosted (see app.css). Preloaded because a @font-face inside a
-         stylesheet is only fetched once the renderer finds text that needs it; this starts
-         it with the rest of the head. crossorigin is required even same-origin -- fonts are
-         fetched in CORS mode, and without it the preload would not match the real request
-         and the file would be downloaded twice. --}}
-    <link rel="preload" as="font" type="font/woff2" href="/fonts/inter-v20-latin.woff2" crossorigin>
     <style>
         [x-cloak] { display: none !important; }
-        body { font-family: 'Inter', 'Inter Fallback', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
         .gradient-text {
             background: linear-gradient(135deg, #60a5fa, #a78bfa);
             -webkit-background-clip: text;

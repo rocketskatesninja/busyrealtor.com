@@ -186,18 +186,17 @@ $iconPaths = [
 <section id="hero-section"
          data-effects='@json($heroEffects, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)' class="relative min-h-screen flex items-center justify-center overflow-hidden">
     @php
-        $heroBg = '';
         $heroType = $settings->hero_background_type ?? 'preset';
-        // A colour under the image, so the layer is dark from the first paint rather than
-        // white. The preset JPEGs are ~440 KB and every word of hero text is white, so
-        // without it the hero paints white-on-white until the image lands -- which reads as
-        // a page with no stylesheet. The marketing site embeds this page twice, so it was
-        // showing three times over there.
+        // A colour painted under the image, so the layer is dark from the first frame rather
+        // than white. The presets are ~440KB and every word of hero text is white, so without
+        // it the hero is a white rectangle with invisible words on it until the image lands --
+        // indistinguishable from a page whose stylesheet failed. A gradient needs none: it is
+        // opaque the moment it is parsed.
         $heroFill = '#1e293b';
-        if ($heroType === 'preset') {
-            $preset = $settings->hero_preset ?? 'modern-home';
-            $heroBg = "background: {$heroFill} url('/assets/images/hero-presets/{$preset}.jpg') center/cover no-repeat;";
-        } elseif ($heroType === 'gradient') {
+
+        // A preset is the default and the fallback: an unrecognised type, or 'image' with no
+        // image uploaded, both land here rather than on a blank hero.
+        if ($heroType === 'gradient') {
             $heroBg = "background: linear-gradient(135deg, " . ($settings->hero_gradient_start ?? '#1e3a5f') . ", " . ($settings->hero_gradient_end ?? '#7c3aed') . ");";
         } elseif ($heroType === 'image' && $settings->hero_image) {
             $heroBg = "background: {$heroFill} url('" . asset('storage/'.$settings->hero_image) . "') center/cover no-repeat;";
