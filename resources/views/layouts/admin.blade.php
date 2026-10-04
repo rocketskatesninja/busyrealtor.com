@@ -15,9 +15,6 @@
     <link rel="apple-touch-icon" href="{{ $faviconUrl }}">
     @endif
     <title>@yield('title', 'Admin') — {{ $tenant->name ?? 'BusyRealtor' }}</title>
-    {{-- preconnect before @vite: the hint has to be read before the requests it warms --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {!! \App\Support\InlineStyles::tag() !!}
     @vite(['resources/js/app.js'])
     <script>
@@ -53,7 +50,9 @@
         $headerDisplayMode = $settings->header_display_mode ?? 'both';
         $account = $tenant->slug;
     @endphp
-    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($titleFont) }}:wght@400;600;700;800&display=swap" rel="stylesheet">
+    {{-- The title font is self-hosted: every family the picker offers has its @font-face in
+         the stylesheet, which is inlined, so the one this tenant chose starts loading while
+         the head is still parsing instead of after a round trip to a third party. --}}
     <style>
         [x-cloak] { display: none !important; }
         :root { --primary: {{ $primaryColor }}; --primary-rgb: {{ $r }}, {{ $g }}, {{ $b }}; }

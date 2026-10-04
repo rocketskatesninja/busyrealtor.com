@@ -51,9 +51,6 @@
     <meta name="twitter:image" content="{{ $ogImage }}">
     @endif
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    {{-- preconnect before @vite: the hint has to be read before the requests it warms --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     {!! \App\Support\InlineStyles::tag() !!}
     @vite(['resources/js/app.js'])
     <script>
@@ -73,7 +70,9 @@
         $g = hexdec(substr(ltrim($primaryColor,'#'), 2, 2));
         $b = hexdec(substr(ltrim($primaryColor,'#'), 4, 2));
     @endphp
-    <link href="https://fonts.googleapis.com/css2?family={{ urlencode($titleFont) }}:wght@400;600;700;800&display=swap" rel="stylesheet">
+    {{-- The title font is self-hosted: every family the picker offers has its @font-face in
+         the stylesheet, which is inlined, so the one this tenant chose starts loading while
+         the head is still parsing instead of after a round trip to a third party. --}}
     <style>
         [x-cloak] { display: none !important; }
         .footer-link:hover { color: var(--primary) !important; }

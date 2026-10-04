@@ -6,7 +6,6 @@
 [x-cloak] { display: none !important; }
 @keyframes hpFadeIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
 </style>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@700&family=Montserrat:wght@700&family=Raleway:wght@700&family=Inter:wght@700&family=Nunito:wght@700&family=DM+Sans:wght@700&family=Urbanist:wght@700&family=Outfit:wght@700&family=Lato:wght@700&family=Open+Sans:wght@700&family=Roboto:wght@700&family=Oswald:wght@700&family=Playfair+Display:wght@700&family=Merriweather:wght@700&family=Lora:wght@700&family=Cormorant+Garamond:wght@700&family=EB+Garamond:wght@700&family=Libre+Baskerville:wght@700&family=Cinzel:wght@700&family=Bebas+Neue&family=Anton&family=Abril+Fatface&family=Righteous&display=swap" rel="stylesheet">
 @endsection
 @section('foot')
 @vite('resources/js/settings.js')
