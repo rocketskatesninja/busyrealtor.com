@@ -89,13 +89,19 @@
            against the scroll position directly, with nothing on the main thread to lag the
            pixels it is offsetting. The layer is 120% tall and starts 10% high so there is
            slack to travel through; 8% of its own height is that 10% of the hero's. */
+        /* The box is deliberately NOT inside the feature query below. This wrapper is the
+           only thing giving the background layer a size, so putting its geometry behind
+           @supports collapsed the entire hero to 0x0 in every browser without scroll
+           timelines -- which today includes Firefox. Only the motion is conditional. */
+        .hero-parallax {
+            left: 0; right: 0; top: -10%; height: 120%;
+        }
         @supports (animation-timeline: scroll()) {
             @keyframes heroParallax {
                 from { transform: translateY(0); }
                 to   { transform: translateY(8%); }
             }
             .hero-parallax {
-                left: 0; right: 0; top: -10%; height: 120%;
                 animation: heroParallax linear both;
                 animation-timeline: scroll(root block);
                 animation-range: 0 100vh;

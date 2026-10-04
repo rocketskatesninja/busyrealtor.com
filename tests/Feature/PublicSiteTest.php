@@ -408,6 +408,52 @@ class PublicSiteTest extends TestCase
         }
     }
 
+    public function test_the_parallax_wrapper_is_sized_outside_any_feature_query(): void
+    {
+        // This wrapper is the only thing giving the hero background a size, so declaring its
+        // geometry inside @supports collapsed the entire hero to 0x0 in every browser with no
+        // scroll timelines -- Firefox today. It only happened with BOTH effects on, which is
+        // the one combination staging was not configured for and prod was.
+        // Read the view, not a rendered page: the inlined Tailwind bundle carries @supports
+        // blocks of its own, and stripping those from a whole page tells you nothing about
+        // this rule.
+        $view = (string) file_get_contents(resource_path('views/tenant/home.blade.php'));
+
+        $this->assertStringContainsString('.hero-parallax', $view, 'the parallax wrapper rule has gone');
+        $this->assertMatchesRegularExpression(
+            '/\.hero-parallax\s*\{[^}]*height\s*:/s',
+            $this->withoutFeatureQueries($view),
+            'the parallax wrapper must be sized outside @supports, or the hero collapses wherever scroll timelines are unsupported'
+        );
+    }
+
+    /** The stylesheet with every @supports block removed, braces counted rather than matched. */
+    private function withoutFeatureQueries(string $css): string
+    {
+        // Comments first: the rule this guards is documented in a comment that names
+        // @supports, and scanning for the bare word found that instead of the real block.
+        $css = (string) preg_replace('{/\*.*?\*/}s', '', $css);
+
+        while (($at = strpos($css, '@supports')) !== false) {
+            $open = strpos($css, '{', $at);
+            if ($open === false) {
+                break;
+            }
+
+            $depth = 0;
+            for ($i = $open, $len = strlen($css); $i < $len; $i++) {
+                $depth += ($css[$i] === '{') ? 1 : (($css[$i] === '}') ? -1 : 0);
+                if ($depth === 0) {
+                    break;
+                }
+            }
+
+            $css = substr($css, 0, $at).substr($css, min($i + 1, strlen($css)));
+        }
+
+        return $css;
+    }
+
     private function heroTenant(array $effects): Tenant
     {
         return $this->makeTenant([], ['hero_effects' => $effects]);
