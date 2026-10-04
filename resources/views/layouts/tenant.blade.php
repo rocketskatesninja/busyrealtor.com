@@ -353,7 +353,10 @@
 </main>
 
 {{-- FOOTER --}}
-{{-- Cookie Consent Banner --}}
+{{-- Cookie Consent Banner. Not in a preview frame: it cannot be clicked there, it covers
+     the bottom of the shot, and consent nobody can give should not be asked for -- which
+     also keeps the embedded copies out of the tenant's analytics. --}}
+@unless(\App\Support\Preview::active())
 <div id="cookie-banner" style="display:none">
     <div class="cookie-banner-inner">
         <div class="cookie-banner-icon">🍪</div>
@@ -451,6 +454,7 @@
 </style>
 {{-- The cookie banner lives in a bundle; it was duplicated in both layouts. --}}
 @vite('resources/js/cookie-consent.js')
+@endunless
 
 @if(View::hasSection('show_footer'))
 <footer class="bg-gray-100 text-gray-600 mt-auto">

@@ -136,7 +136,7 @@ $heroEffects = array_merge([
 // the 0.72 scale into a shimmer -- which is what made Ken Burns look rough in the
 // preview and never on the real page. A still hero is the better advert, and the
 // marketing homepage stops running two infinite animations for no one.
-if (request()->boolean('preview')) {
+if (\App\Support\Preview::active()) {
     $heroEffects['ken_burns'] = false;
     $heroEffects['particles'] = false;
     $heroEffects['parallax'] = false;
@@ -188,16 +188,22 @@ $iconPaths = [
     @php
         $heroBg = '';
         $heroType = $settings->hero_background_type ?? 'preset';
+        // A colour under the image, so the layer is dark from the first paint rather than
+        // white. The preset JPEGs are ~440 KB and every word of hero text is white, so
+        // without it the hero paints white-on-white until the image lands -- which reads as
+        // a page with no stylesheet. The marketing site embeds this page twice, so it was
+        // showing three times over there.
+        $heroFill = '#1e293b';
         if ($heroType === 'preset') {
             $preset = $settings->hero_preset ?? 'modern-home';
-            $heroBg = "background: url('/assets/images/hero-presets/{$preset}.jpg') center/cover no-repeat;";
+            $heroBg = "background: {$heroFill} url('/assets/images/hero-presets/{$preset}.jpg') center/cover no-repeat;";
         } elseif ($heroType === 'gradient') {
             $heroBg = "background: linear-gradient(135deg, " . ($settings->hero_gradient_start ?? '#1e3a5f') . ", " . ($settings->hero_gradient_end ?? '#7c3aed') . ");";
         } elseif ($heroType === 'image' && $settings->hero_image) {
-            $heroBg = "background: url('" . asset('storage/'.$settings->hero_image) . "') center/cover no-repeat;";
+            $heroBg = "background: {$heroFill} url('" . asset('storage/'.$settings->hero_image) . "') center/cover no-repeat;";
         } else {
             $preset = $settings->hero_preset ?? 'modern-home';
-            $heroBg = "background: url('/assets/images/hero-presets/{$preset}.jpg') center/cover no-repeat;";
+            $heroBg = "background: {$heroFill} url('/assets/images/hero-presets/{$preset}.jpg') center/cover no-repeat;";
         }
         $scrollParallax = false;
         if ($heroEffects['parallax'] ?? false) {

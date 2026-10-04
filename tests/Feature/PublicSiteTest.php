@@ -356,6 +356,39 @@ class PublicSiteTest extends TestCase
         }
     }
 
+    public function test_the_hero_never_paints_white_while_its_image_loads(): void
+    {
+        // The preset JPEGs are ~440 KB and every word of hero text is white. With no colour
+        // painted under the image the hero is a white rectangle with invisible words on it,
+        // which is indistinguishable from a page whose stylesheet failed to load.
+        foreach (['preset', 'image', 'nonsense'] as $type) {
+            $tenant = $this->makeTenant([], ['hero_background_type' => $type]);
+            $style = $this->heroLayer($this->get("/{$tenant->slug}")->assertOk()->getContent(), 'hero-bg');
+
+            $this->assertMatchesRegularExpression(
+                '/background:\s*#[0-9a-f]{3,8}\s+url\(/i',
+                $style,
+                "hero_background_type={$type} should paint a colour under the image"
+            );
+        }
+    }
+
+    public function test_a_preview_frame_asks_for_no_cookie_consent(): void
+    {
+        $tenant = $this->makeTenant();
+
+        $live = $this->get("/{$tenant->slug}")->assertOk()->getContent();
+        $this->assertStringContainsString('id="cookie-banner"', $live);
+        $this->assertStringContainsString('cookie-consent', $live);
+
+        // Nothing in a preview frame can be clicked, so consent cannot be given there --
+        // and a banner nobody answers still covers the bottom of the shot.
+        $preview = $this->get("/{$tenant->slug}?preview=1")->assertOk()->getContent();
+        $this->assertStringNotContainsString('id="cookie-banner"', $preview);
+        $this->assertStringNotContainsString('cookie-consent', $preview);
+        $this->assertStringNotContainsString('cookie-banner-inner', $preview);
+    }
+
     private function heroTenant(array $effects): Tenant
     {
         return $this->makeTenant([], ['hero_effects' => $effects]);
