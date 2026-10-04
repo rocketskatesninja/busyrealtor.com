@@ -261,9 +261,8 @@ cd "$APP_PATH"
 info "Installing Composer dependencies..."
 COMPOSER_ALLOW_SUPERUSER=1 composer install --no-dev --optimize-autoloader --no-scripts --quiet
 
-info "Installing npm dependencies and building frontend assets..."
+info "Installing npm dependencies..."
 npm install --quiet
-npm run build
 
 # =============================================================================
 # 4. ENVIRONMENT FILE
@@ -362,6 +361,15 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 success "Config, route, and view caches built."
+
+# The CSS build has to come after view:cache, not before. app.css lists
+# storage/framework/views as a @source, so Tailwind scans the COMPILED views as well
+# as the raw ones -- that is where the pagination classes come from, and they are in
+# no .blade.php of ours. Building first means scanning an empty directory and
+# shipping a stylesheet missing them.
+info "Building frontend assets..."
+npm run build
+success "Frontend assets built."
 
 # =============================================================================
 # 8. WEB SERVER CONFIGURATION
