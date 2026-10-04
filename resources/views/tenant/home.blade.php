@@ -113,6 +113,17 @@ $heroEffects = array_merge([
     'ken_burns'          => false,
     'particles'          => false,
 ], (array)($settings->hero_effects ?? []));
+
+// The marketing site embeds this page in a scaled, non-scrolling iframe. Scroll-linked
+// effects have nothing to respond to there, and a continuous animation gets resampled by
+// the 0.72 scale into a shimmer -- which is what made Ken Burns look rough in the
+// preview and never on the real page. A still hero is the better advert, and the
+// marketing homepage stops running two infinite animations for no one.
+if (request()->boolean('preview')) {
+    $heroEffects['ken_burns'] = false;
+    $heroEffects['particles'] = false;
+    $heroEffects['parallax'] = false;
+}
 $ea = $heroEffects['entrance_animation'] ?? true;
 $sections = $settings->homepage_sections ?? [
     ['key' => 'hero', 'enabled' => true, 'order' => 0],
@@ -157,7 +168,6 @@ $iconPaths = [
 @if($key === 'hero')
 <section id="hero-section"
          data-effects='@json($heroEffects, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_TAG)' class="relative min-h-screen flex items-center justify-center overflow-hidden">
-    {{-- Background layer — separate div so Ken Burns zoom doesn't scale the text --}}
     @php
         $heroBg = '';
         $heroType = $settings->hero_background_type ?? 'preset';
@@ -189,7 +199,6 @@ $iconPaths = [
          It does not combine with Ken Burns: a transformed element becomes the containing
          block for a fixed background, so that layer's animation would cancel this. --}}
     <div id="hero-bg" class="absolute inset-0 {{ ($heroEffects['ken_burns'] ?? false) ? 'hero-ken-burns' : '' }}" style="{{ $heroBg }}"></div>
-    </div>
 
     {{-- Dark overlay --}}
     @if($heroEffects['dark_overlay'] ?? true)

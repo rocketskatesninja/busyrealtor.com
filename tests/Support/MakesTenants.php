@@ -39,7 +39,7 @@ trait MakesTenants
             'hero_background_type' => 'gradient',
             'setup_completed' => true,
             'hero_effects' => ['entrance_animation' => true, 'particles' => false, 'overlay_opacity' => 30],
-            'homepage_sections' => [['id' => 'hero', 'order' => 0], ['id' => 'listings', 'order' => 1]],
+            'homepage_sections' => [['key' => 'hero', 'enabled' => true, 'order' => 0], ['key' => 'listings', 'enabled' => true, 'order' => 1]],
         ]);
 
         return $tenant->fresh();

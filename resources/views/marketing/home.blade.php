@@ -146,7 +146,7 @@
                         </div>
                     </div>
                     <div class="relative" style="height:420px; overflow:hidden;">
-                        <iframe src="/demo-realty"
+                        <iframe src="/demo-realty?preview=1"
                                 class="border-0"
                                 style="width:138.89%; height:138.89%; transform:scale(0.72); transform-origin:top left; pointer-events:none;"
                                 loading="lazy" title="BusyRealtor Demo"></iframe>
@@ -264,7 +264,7 @@
                     <div class="flex-1 bg-white dark:bg-gray-600 rounded-md px-3 py-1 text-xs text-gray-500 dark:text-gray-300 font-mono ml-2 border border-gray-200 dark:border-gray-500">busyrealtor.com/demo-realty</div>
                 </div>
                 <div class="relative" style="height:420px; overflow:hidden;">
-                    <iframe src="/demo-realty" class="border-0"
+                    <iframe src="/demo-realty?preview=1" class="border-0"
                             style="width:138.89%; height:138.89%; transform:scale(0.72); transform-origin:top left; pointer-events:none;"
                             loading="lazy" title="Demo Site"></iframe>
                     <a href="/demo-realty" target="_blank" class="absolute inset-0"></a>

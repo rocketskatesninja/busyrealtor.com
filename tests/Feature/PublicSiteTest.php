@@ -296,4 +296,41 @@ class PublicSiteTest extends TestCase
         $this->get('/marketing-sitemap.xml')->assertOk();
         $this->get("/{$tenant->slug}/llms.txt")->assertOk();
     }
+
+    public function test_a_preview_request_stills_the_heros_motion_effects(): void
+    {
+        $tenant = $this->makeTenant([], ['hero_effects' => [
+            'parallax' => true, 'ken_burns' => true, 'particles' => true,
+        ]]);
+
+        $live = $this->get("/{$tenant->slug}")->assertOk()->getContent();
+        $this->assertStringContainsString('hero-ken-burns', $this->heroLayer($live));
+        $this->assertStringContainsString('background-attachment: fixed', $this->heroLayer($live));
+        $this->assertStringContainsString('id="hero-particles"', $live);
+
+        $preview = $this->get("/{$tenant->slug}?preview=1")->assertOk()->getContent();
+        $this->assertStringNotContainsString('hero-ken-burns', $this->heroLayer($preview));
+        $this->assertStringNotContainsString('background-attachment: fixed', $this->heroLayer($preview));
+        $this->assertStringNotContainsString('id="hero-particles"', $preview);
+    }
+
+    public function test_the_marketing_previews_ask_for_a_stilled_hero(): void
+    {
+        $html = $this->get('/')->assertOk()->getContent();
+
+        $frames = preg_match_all('/<iframe[^>]*src="([^"]*demo-realty[^"]*)"/', $html, $matches);
+        $this->assertSame(2, $frames, 'the marketing page should embed two demo previews');
+
+        foreach ($matches[1] as $src) {
+            $this->assertStringContainsString('preview=1', $src);
+        }
+    }
+
+    /** The hero background layer's own open tag -- the effect classes live there, the CSS does not. */
+    private function heroLayer(string $html): string
+    {
+        $this->assertSame(1, preg_match('/<div id="hero-bg"[^>]*>/', $html, $matches), 'the hero background layer should render once');
+
+        return $matches[0];
+    }
 }
