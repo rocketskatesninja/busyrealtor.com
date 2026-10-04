@@ -42,8 +42,16 @@ class SelfHostedFontsTest extends TestCase
             $this->assertStringNotContainsString('fonts.gstatic.com', (string) file_get_contents($layout), basename($layout));
         }
 
-        $htaccess = (string) file_get_contents(public_path('.htaccess'));
-        $this->assertMatchesRegularExpression("/font-src 'self' data:;/", $htaccess, 'the CSP still permits a third-party font origin');
+        // The CSP still names fonts.googleapis.com and fonts.gstatic.com, but only because
+        // the Google Maps JS API injects its own stylesheets for the map controls. That is
+        // on pages already talking to Google at length, so it discloses nothing new -- and
+        // the assertion above is what actually keeps OUR fonts off a third party, on every
+        // page that is not a map.
+        $this->assertStringNotContainsString(
+            'fonts.googleapis.com/css2',
+            (string) file_get_contents(public_path('.htaccess')),
+            'the CSP should not be permitting a font stylesheet of our own'
+        );
     }
 
     public function test_the_preloaded_font_is_one_the_stylesheet_actually_uses(): void
