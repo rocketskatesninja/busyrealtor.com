@@ -254,8 +254,8 @@
 {{-- ══════════════════════════════════════════════════════════ DEMO ═══ --}}
 <section id="demo" class="py-16 bg-gray-50 dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-            <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden reveal-left">
+        <div class="grid lg:grid-cols-8 gap-16 items-center">
+            <div class="lg:col-span-5 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-xl overflow-hidden reveal-left">
                 <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 flex items-center gap-2 border-b border-gray-200 dark:border-gray-600">
                     <div class="flex-1 bg-white dark:bg-gray-600 rounded-md px-3 py-1 text-xs text-gray-500 dark:text-gray-300 font-mono border border-gray-200 dark:border-gray-500">busyrealtor.com/demo-realty</div>
                 </div>
@@ -266,7 +266,7 @@
                     <a href="/demo-realty" target="_blank" class="absolute inset-0"></a>
                 </div>
             </div>
-            <div>
+            <div class="lg:col-span-3">
                 <p class="text-orange-500 font-semibold text-sm uppercase tracking-widest mb-3 reveal">Live preview</p>
                 <h2 class="text-4xl font-black text-gray-900 dark:text-white mb-5 reveal" style="transition-delay:0.1s">See it in action</h2>
                 <p class="text-gray-500 dark:text-gray-400 text-lg leading-relaxed mb-6 reveal" style="transition-delay:0.2s">Explore Demo Realty Group — a fully working BusyRealtor site with real listings, an interactive map, AI chatbot, and everything your future clients will experience.</p>
