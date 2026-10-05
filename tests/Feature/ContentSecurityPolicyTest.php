@@ -95,6 +95,37 @@ class ContentSecurityPolicyTest extends TestCase
             'the super-admin layout gained an inline script; the CSP will refuse to run it');
     }
 
+    public static function standalonePageProvider(): array
+    {
+        return [
+            'registrations closed' => ['auth.registrations-closed', []],
+            'tenant locked' => ['tenant.locked', ['message' => 'Back shortly.']],
+        ];
+    }
+
+    /**
+     * Two pages render without a layout, so they carry their own copy of the pre-paint
+     * theme block. It is byte-identical to the tenant layout's deliberately: that is what
+     * keeps it covered by a hash that already exists rather than needing a fourth one.
+     * Reindent it here and the browser silently refuses it, and the page is stuck light.
+     *
+     * @dataProvider standalonePageProvider
+     */
+    public function test_every_inline_script_a_standalone_page_renders_is_allowed_by_hash(string $view, array $data): void
+    {
+        $html = view($view, $data)->render();
+        $hashes = $this->hashesIn($html);
+
+        $this->assertNotEmpty($hashes,
+            "{$view} renders no inline theme script, so it cannot set the dark class before the first paint");
+
+        foreach ($hashes as $hash) {
+            $this->assertStringContainsString($hash, $this->scriptSrc(),
+                "{$view} renders an inline script the CSP will refuse to run:\n  '{$hash}'\n"
+                .'Keep it byte-identical to the tenant layout\'s block, or add this hash to script-src.');
+        }
+    }
+
     private function htmlFor(string $layout): string
     {
         $tenant = $this->makeTenant();
