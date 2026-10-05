@@ -142,7 +142,7 @@
                             busyrealtor.com/demo-realty
                         </div>
                     </div>
-                    <div class="relative" style="height:420px; overflow:hidden;">
+                    <div class="relative" style="height:525px; overflow:hidden;">
                         <iframe src="/demo-realty?preview=1"
                                 class="border-0"
                                 style="width:138.89%; height:138.89%; transform:scale(0.72); transform-origin:top left; pointer-events:none;"
@@ -259,7 +259,7 @@
                 <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 flex items-center gap-2 border-b border-gray-200 dark:border-gray-600">
                     <div class="flex-1 bg-white dark:bg-gray-600 rounded-md px-3 py-1 text-xs text-gray-500 dark:text-gray-300 font-mono border border-gray-200 dark:border-gray-500">busyrealtor.com/demo-realty</div>
                 </div>
-                <div class="relative" style="height:420px; overflow:hidden;">
+                <div class="relative" style="height:525px; overflow:hidden;">
                     <iframe src="/demo-realty?preview=1" class="border-0"
                             style="width:138.89%; height:138.89%; transform:scale(0.72); transform-origin:top left; pointer-events:none;"
                             loading="lazy" title="Demo Site"></iframe>
