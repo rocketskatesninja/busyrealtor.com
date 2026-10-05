@@ -348,8 +348,10 @@ class PublicSiteTest extends TestCase
     {
         $html = $this->get('/')->assertOk()->getContent();
 
+        // One frame, in the demo section. The hero used to carry a second copy of the same
+        // page; it is the site mark now, which is why this is 1 and not 2.
         $frames = preg_match_all('/<iframe[^>]*src="([^"]*demo-realty[^"]*)"/', $html, $matches);
-        $this->assertSame(2, $frames, 'the marketing page should embed two demo previews');
+        $this->assertSame(1, $frames, 'the marketing page should embed exactly one demo preview');
 
         foreach ($matches[1] as $src) {
             $this->assertStringContainsString('preview=1', $src);

@@ -133,29 +133,11 @@
                 </div>
                 <p class="text-blue-300 text-sm hero-animate hero-d5">14-day free trial &nbsp;·&nbsp; No credit card required &nbsp;·&nbsp; Cancel anytime</p>
             </div>
-            <div class="hidden lg:block">
-                <div class="rounded-2xl overflow-hidden shadow-2xl" style="border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05); backdrop-filter: blur(4px);">
-                    <div class="flex items-center gap-2 px-4 py-3" style="background: rgba(0,0,0,0.3);">
-                        {{-- A plain address bar. Three coloured dots in a row read as one
-                             particular vendor's window; this is meant to say "a browser". --}}
-                        <div class="flex-1 rounded-md px-3 py-1 text-xs font-mono" style="background:rgba(0,0,0,0.25); color:rgba(147,197,253,0.8);">
-                            busyrealtor.com/demo-realty
-                        </div>
-                    </div>
-                    <div class="relative" style="height:525px; overflow:hidden;">
-                        <iframe src="/demo-realty?preview=1"
-                                class="border-0"
-                                style="width:138.89%; height:138.89%; transform:scale(0.72); transform-origin:top left; pointer-events:none;"
-                                loading="lazy" title="BusyRealtor Demo"></iframe>
-                        <a href="/demo-realty" target="_blank"
-                           class="absolute inset-0 flex items-end justify-center pb-5"
-                           style="background: linear-gradient(to top, rgba(30,58,138,0.7) 0%, transparent 50%);">
-                            <span class="bg-white text-orange-600 font-bold text-sm px-4 py-2 rounded-lg shadow-lg flex items-center gap-2">
-                                Open Full Demo
-                                <x-icon name="external-link" class="w-4 h-4" />
-                            </span>
-                        </a>
-                    </div>
+            <div class="hidden lg:flex items-center justify-center hero-animate hero-d3">
+                {{-- The same glyph as the header logo, at size. Decorative, so it is
+                     hidden from assistive technology -- the name is already in the h1. --}}
+                <div class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/></svg>
                 </div>
             </div>
         </div>

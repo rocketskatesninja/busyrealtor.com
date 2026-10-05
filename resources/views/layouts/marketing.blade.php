@@ -98,6 +98,39 @@
             background-image: radial-gradient(circle, rgba(255,255,255,0.12) 1px, transparent 1px);
             background-size: 28px 28px;
         }
+        /* The site mark writ large -- the header's own house glyph, given depth and a slow
+           drift. It stands in the footprint the hero's demo iframe had (574 by 570), and
+           replaces it outright: that frame showed what the demo section shows two sections
+           later, only smaller, while loading a whole second copy of a tenant site. */
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 22%;
+            color: #fff;
+            background: linear-gradient(145deg, #fdba74 0%, #fb923c 45%, #ea580c 100%);
+            /* Lift off the gradient, a warm glow into it, then a top highlight and a floor
+               shadow inside it so it reads as an object rather than a swatch. */
+            box-shadow:
+                0 30px 60px -15px rgba(234,88,12,0.55),
+                0 0 90px rgba(251,146,60,0.30),
+                inset 0 2px 0 rgba(255,255,255,0.45),
+                inset 0 -12px 30px rgba(124,45,18,0.35);
+            animation: markFloat 7s ease-in-out infinite;
+        }
+        .brand-mark svg {
+            width: 54%;
+            height: 54%;
+            filter: drop-shadow(0 4px 10px rgba(124,45,18,0.45));
+        }
+        @keyframes markFloat {
+            0%, 100% { transform: translateY(-10px) rotate(-2deg); }
+            50%      { transform: translateY(10px)  rotate(2deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .brand-mark { animation: none; }
+        }
         /* Hero entrance (fires on page load) */
         .hero-animate { animation: heroIn 0.75s cubic-bezier(.22,1,.36,1) both; opacity: 0; }
         .hero-d1 { animation-delay: 0.05s; }
