@@ -6,7 +6,7 @@
      outcome over in the query string. The safety copy's name is the thing worth showing:
      it is what undoes a restore of the wrong archive. --}}
 @if(request('restored'))
-<div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+<div class="mb-6 rounded-xl border border-gray-200 bg-green-100 px-4 py-3 text-sm text-green-800">
     <p class="font-semibold">Platform restored</p>
     <p class="mt-1 text-xs leading-relaxed">
         Restored from <span class="font-mono">{{ request('restored') }}</span>. You were signed out

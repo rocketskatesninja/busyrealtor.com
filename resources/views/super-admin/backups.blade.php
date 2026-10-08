@@ -12,10 +12,10 @@
 <div class="space-y-6">
 
     @if(session('success'))
-        <div class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm">{{ session('success') }}</div>
+        <div class="bg-green-100 border border-gray-200 text-green-800 rounded-xl px-4 py-3 text-sm">{{ session('success') }}</div>
     @endif
     @if(session('error'))
-        <div class="bg-red-50 border border-red-200 text-red-800 rounded-xl px-4 py-3 text-sm">{{ session('error') }}</div>
+        <div class="bg-red-100 border border-gray-200 text-red-800 rounded-xl px-4 py-3 text-sm">{{ session('error') }}</div>
     @endif
 
     {{-- At a glance: the question this page exists to answer is "is there a recent one". --}}
@@ -93,8 +93,8 @@
                                         <div @click.outside="open = false"
                                              class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-4">
                                             <div class="flex items-start gap-3">
-                                                <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
-                                                    <svg width="20" height="20" class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/></svg>
+                                                <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center shrink-0">
+                                                    <svg width="20" height="20" class="w-5 h-5 text-yellow-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/></svg>
                                                 </div>
                                                 <div>
                                                     <h3 class="font-bold text-gray-900">Restore the whole platform?</h3>
@@ -109,7 +109,7 @@
                                                 <li>The site goes into maintenance mode while it runs, and you are signed out at the end because the session table is replaced.</li>
                                             </ul>
 
-                                            <p class="text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                                            <p class="text-sm text-gray-600 bg-gray-100 border border-gray-200 rounded-lg px-3 py-2">
                                                 A fresh backup is taken first, automatically, so this is reversible.
                                             </p>
 
@@ -160,9 +160,9 @@
 
     {{-- Restoring is not a button. Saying so here is the point: an operator who needs it
          in an emergency should not have to go looking for whether one exists. --}}
-    <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
-        <h3 class="font-bold text-amber-900 text-sm mb-1">Restoring</h3>
-        <p class="text-xs text-amber-800 leading-relaxed">
+    <div class="bg-yellow-100 border border-gray-200 rounded-2xl p-5">
+        <h3 class="font-bold text-yellow-800 text-sm mb-1">Restoring</h3>
+        <p class="text-xs text-yellow-800 leading-relaxed">
             Restore replaces every tenant, user and setting with what the archive held, and mirrors
             uploaded files to match. A fresh backup is taken first automatically, the site is in
             maintenance mode while it runs, and you are signed out at the end because the session table
