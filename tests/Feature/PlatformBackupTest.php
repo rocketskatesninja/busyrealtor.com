@@ -90,6 +90,44 @@ class PlatformBackupTest extends TestCase
         }
     }
 
+    public function test_a_tenant_admin_cannot_restore(): void
+    {
+        $admin = $this->makeAdmin($this->makeTenant());
+
+        $this->actingAs($admin)
+            ->post('/super-admin/backups/busyrealtor-20260101-000000.tar.gz/restore')
+            ->assertRedirect('/login');
+    }
+
+    public function test_restoring_requires_the_filename_typed_back(): void
+    {
+        // Only the guard is exercised: it returns before maintenance mode and before
+        // anything touches the database, which is exactly why it is worth a test. Driving
+        // a real restore belongs in a manual check, not in a suite.
+        $this->makeTenant();   // so the count below means something
+        $dir = PlatformBackup::directory();
+        $name = 'busyrealtor-20260101-000000.tar.gz';
+        file_put_contents($dir.'/'.$name, 'not a real archive');
+
+        try {
+            $this->actingAs($this->makeSuperAdmin())
+                ->post('/super-admin/backups/'.$name.'/restore', ['confirm' => 'wrong'])
+                ->assertSessionHas('error');
+
+            $this->assertFileExists($dir.'/'.$name);
+            $this->assertDatabaseCount('tenants', 1);   // nothing was replaced
+        } finally {
+            @unlink($dir.'/'.$name);
+        }
+    }
+
+    public function test_restoring_an_unknown_backup_is_a_404(): void
+    {
+        $this->actingAs($this->makeSuperAdmin())
+            ->post('/super-admin/backups/busyrealtor-20991231-235959.tar.gz/restore', ['confirm' => 'x'])
+            ->assertNotFound();
+    }
+
     public function test_the_nightly_backup_is_scheduled(): void
     {
         // The whole point is that it runs without anyone remembering to run it.

@@ -29,12 +29,28 @@ class PlatformBackup
     /** Matches what make() writes, and nothing else -- used to police the download path. */
     public const PATTERN = '/^busyrealtor-\d{8}-\d{6}\.tar\.gz$/';
 
+    /**
+     * Two users write here: the web process (www-data) when someone uses the console, and
+     * whoever the scheduler runs as. Whichever creates the directory first owns it, so it
+     * is made group-writable and handed to the web group explicitly -- mkdir's mode alone
+     * is filtered by umask, which is how this first went wrong.
+     */
     public static function directory(): string
     {
         $dir = storage_path('app/backups');
 
         if (! is_dir($dir)) {
             mkdir($dir, 0775, true);
+            @chmod($dir, 0775);
+            @chgrp($dir, 'www-data');
+        }
+
+        if (! is_writable($dir)) {
+            throw new \RuntimeException(
+                "The backup directory is not writable by ".(function_exists('posix_getpwuid')
+                    ? posix_getpwuid(posix_geteuid())['name'] : 'this user')
+                .": {$dir}. Fix with: sudo chgrp -R www-data {$dir} && sudo chmod -R g+w {$dir}"
+            );
         }
 
         return $dir;
@@ -129,6 +145,104 @@ class PlatformBackup
         }
 
         return $removed;
+    }
+
+    /**
+     * Replace the database and every tenant's uploads with the contents of a backup.
+     *
+     * Takes a fresh backup first, always. The thing being overwritten is the only record
+     * of what was there, and the most likely reason to restore the wrong archive is being
+     * in a hurry. The safety copy is returned so the caller can name it.
+     *
+     * @return array{safety:string,tables:int,files:int}
+     *
+     * @throws \RuntimeException leaving the database untouched if anything before the
+     *                           import fails; once the import starts it runs to the end.
+     */
+    public static function restore(string $name): array
+    {
+        $archive = self::path($name);
+
+        if ($archive === null) {
+            throw new \RuntimeException("No such backup: {$name}");
+        }
+
+        $safety = self::make();
+
+        $work = self::directory().'/.restore-'.Carbon::now()->format('Ymd-His');
+        mkdir($work, 0775, true);
+
+        try {
+            $extract = Process::timeout(600)->run(['tar', '-xzf', $archive, '-C', $work]);
+            if (! $extract->successful()) {
+                throw new \RuntimeException('could not extract: '.trim($extract->errorOutput()));
+            }
+
+            $sql = $work.'/database.sql';
+            if (! is_file($sql) || filesize($sql) === 0) {
+                throw new \RuntimeException('archive holds no usable database.sql');
+            }
+
+            self::importDatabase($sql);
+            $files = self::restoreUploads($work.'/uploads');
+
+            $tables = (int) \Illuminate\Support\Facades\DB::scalar(
+                'SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = DATABASE()'
+            );
+
+            return ['safety' => $safety, 'tables' => $tables, 'files' => $files];
+        } finally {
+            Process::run(['rm', '-rf', $work]);
+        }
+    }
+
+    private static function importDatabase(string $sql): void
+    {
+        $db = config('database.connections.'.config('database.default'));
+
+        $import = Process::timeout(900)->env(['MYSQL_PWD' => (string) ($db['password'] ?? '')])
+            ->input(file_get_contents($sql) ?: '')
+            ->run([
+                'mysql',
+                '--host='.($db['host'] ?? '127.0.0.1'),
+                '--port='.($db['port'] ?? 3306),
+                '--user='.($db['username'] ?? ''),
+                (string) ($db['database'] ?? ''),
+            ]);
+
+        if (! $import->successful()) {
+            throw new \RuntimeException('mysql import failed: '.trim($import->errorOutput()));
+        }
+    }
+
+    /** Mirror the archive's uploads over the live ones; returns how many files resulted. */
+    private static function restoreUploads(string $from): int
+    {
+        if (! is_dir($from)) {
+            return 0;
+        }
+
+        $to = storage_path('app/public/tenants');
+        if (! is_dir($to)) {
+            mkdir($to, 0775, true);
+        }
+
+        // Trailing slashes and --delete: the live directory should end up matching the
+        // archive, including files the archive does not have.
+        $sync = Process::timeout(600)->run(['rsync', '-a', '--delete', $from.'/', $to.'/']);
+
+        if (! $sync->successful()) {
+            throw new \RuntimeException('restoring uploads failed: '.trim($sync->errorOutput()));
+        }
+
+        $count = 0;
+        foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($to, \RecursiveDirectoryIterator::SKIP_DOTS)) as $file) {
+            if ($file->isFile()) {
+                $count++;
+            }
+        }
+
+        return $count;
     }
 
     private static function dumpDatabase(string $to): void

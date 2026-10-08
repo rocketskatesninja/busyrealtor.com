@@ -134,12 +134,13 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin', 'no.cache'])->n
     // Send a test email through the saved platform SMTP — surfaces the
     // raw SMTP error so the operator can diagnose without trawling logs.
     Route::post('/api/test-mail', [SuperTestMailController::class, 'send'])->middleware('throttle:10,1')->name('api.test-mail');
-    // Backups. No restore route: see the controller docblock for why, and
-    // App\Console\Commands\RunBackup for the procedure that replaces it.
+    // Backups. Restore is throttled hardest of the four: it is the one that cannot be
+    // undone by repeating it, and nothing legitimate needs it twice a minute.
     Route::get('/backups', [SuperBackupController::class, 'index'])->name('backups');
     Route::post('/backups', [SuperBackupController::class, 'store'])->middleware('throttle:4,1')->name('backups.store');
     Route::get('/backups/{name}/download', [SuperBackupController::class, 'download'])->name('backups.download');
     Route::delete('/backups/{name}', [SuperBackupController::class, 'destroy'])->name('backups.destroy');
+    Route::post('/backups/{name}/restore', [SuperBackupController::class, 'restore'])->middleware('throttle:2,1')->name('backups.restore');
 
     Route::get('/feedback', [SuperFeedbackController::class, 'index'])->name('feedback');
     Route::get('/feedback/{id}', [SuperFeedbackController::class, 'show'])->name('feedback.show');

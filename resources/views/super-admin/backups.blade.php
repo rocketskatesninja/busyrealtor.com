@@ -78,6 +78,61 @@
                             <div class="flex items-center justify-end gap-3">
                                 <a href="{{ route('super.backups.download', $backup['name']) }}"
                                    class="text-blue-600 hover:text-blue-700 font-medium">Download</a>
+
+                                {{-- Restore is behind a modal rather than an inline panel: it is not the
+                                     same class of action as the other three, and it should not be
+                                     reachable by the same flick of the wrist. The submit stays disabled
+                                     until the filename is typed back exactly. --}}
+                                <div x-data="{ open: false, typed: '' }" class="inline">
+                                    <button type="button" @click="open = true"
+                                            class="text-amber-600 hover:text-amber-700 font-medium">Restore</button>
+
+                                    <div x-show="open" x-cloak @keydown.escape.window="open = false"
+                                         class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                                         style="background: rgba(0,0,0,0.65);">
+                                        <div @click.outside="open = false"
+                                             class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 space-y-4">
+                                            <div class="flex items-start gap-3">
+                                                <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center shrink-0">
+                                                    <svg width="20" height="20" class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M5.07 19h13.86c1.54 0 2.5-1.67 1.73-3L13.73 4a2 2 0 00-3.46 0L3.34 16c-.77 1.33.19 3 1.73 3z"/></svg>
+                                                </div>
+                                                <div>
+                                                    <h3 class="font-bold text-gray-900">Restore the whole platform?</h3>
+                                                    <p class="text-xs text-gray-500 font-mono mt-0.5">{{ $backup['name'] }}</p>
+                                                </div>
+                                            </div>
+
+                                            <ul class="text-sm text-gray-700 space-y-1.5 list-disc pl-5">
+                                                <li>Every tenant, user and setting is replaced by what this archive held. Anything created since is gone.</li>
+                                                <li>Uploaded files are mirrored to match it, including deletions.</li>
+                                                <li>Platform credentials come back as they were, so a recently changed SMTP or Stripe key reverts.</li>
+                                                <li>The site goes into maintenance mode while it runs, and you are signed out at the end because the session table is replaced.</li>
+                                            </ul>
+
+                                            <p class="text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2">
+                                                A fresh backup is taken first, automatically, so this is reversible.
+                                            </p>
+
+                                            <form method="POST" action="{{ route('super.backups.restore', $backup['name']) }}" class="space-y-3">
+                                                @csrf
+                                                <div>
+                                                    <label class="block text-xs font-medium text-gray-700 mb-1">Type the filename to confirm</label>
+                                                    <input type="text" name="confirm" x-model="typed" autocomplete="off"
+                                                           placeholder="{{ $backup['name'] }}"
+                                                           class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-amber-200">
+                                                </div>
+                                                <div class="flex gap-2">
+                                                    <button type="button" @click="open = false"
+                                                            class="flex-1 border border-gray-200 text-gray-700 text-sm font-semibold px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">Cancel</button>
+                                                    <button type="submit" :disabled="typed !== @js($backup['name'])"
+                                                            class="flex-1 bg-amber-600 hover:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors">
+                                                        Restore
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                                 {{-- <details> rather than a confirm dialog: no script, and the
                                      filename has to be typed, which a misclick cannot do. --}}
                                 <details class="relative">
@@ -108,10 +163,11 @@
     <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
         <h3 class="font-bold text-amber-900 text-sm mb-1">Restoring</h3>
         <p class="text-xs text-amber-800 leading-relaxed">
-            There is deliberately no restore button. A restore replaces every tenant, every user and
-            the platform's own credentials, so it is done on the server where it can be taken one step
-            at a time. Download the archive, then follow the procedure in
-            <span class="font-mono">app/Console/Commands/RunBackup.php</span>. Take a fresh backup first.
+            Restore replaces every tenant, user and setting with what the archive held, and mirrors
+            uploaded files to match. A fresh backup is taken first automatically, the site is in
+            maintenance mode while it runs, and you are signed out at the end because the session table
+            is replaced. The same thing can be done by hand on the server — the procedure is in
+            <span class="font-mono">app/Console/Commands/RunBackup.php</span>.
         </p>
     </div>
 </div>

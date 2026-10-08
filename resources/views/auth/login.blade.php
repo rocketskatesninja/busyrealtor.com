@@ -1,6 +1,20 @@
 @extends('layouts.auth')
 @section('title', 'Login')
 @section('content')
+
+{{-- A restore signs the operator out by replacing the session table, so it hands the
+     outcome over in the query string. The safety copy's name is the thing worth showing:
+     it is what undoes a restore of the wrong archive. --}}
+@if(request('restored'))
+<div class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+    <p class="font-semibold">Platform restored</p>
+    <p class="mt-1 text-xs leading-relaxed">
+        Restored from <span class="font-mono">{{ request('restored') }}</span>. You were signed out
+        because the session table was replaced. The state from just before the restore was saved as
+        <span class="font-mono">{{ request('safety') }}</span>.
+    </p>
+</div>
+@endif
 <div class="mb-6 text-center"><span style="font-size:1.875rem;font-weight:800;line-height:1;"><span style="color:#7dd3fc;">Busy</span><span style="color:#fb923c;">Realtor</span></span><p class="text-gray-500 dark:text-gray-400 text-sm font-normal mt-1">Sign in to your account</p></div>
 
 <div class="flex flex-col gap-2">
