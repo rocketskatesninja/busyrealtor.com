@@ -29,7 +29,15 @@ step() { printf '\n\033[1m== %s\033[0m\n' "$1"; }
 
 if [ "$PULL" = 1 ]; then
     step "pull"
+    # bash reads a script as it goes, so a pull that changes this file leaves the old
+    # version running -- which is how the storage step below shipped and then did not run
+    # on the deploy that introduced it. Re-exec when the pull moved it.
+    was=$(sha256sum "$0" | cut -d' ' -f1)
     git pull --ff-only origin main
+    if [ "$was" != "$(sha256sum "$0" | cut -d' ' -f1)" ]; then
+        echo "deploy script changed in that pull; re-running the new one"
+        exec "$0" --no-pull
+    fi
 fi
 echo "at $(git log --oneline -1)"
 
