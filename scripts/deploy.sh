@@ -66,6 +66,15 @@ if [ "$PENDING" -gt 0 ]; then
     "$PHP" artisan migrate --force
 fi
 
+step "storage"
+# Two users write backups: the web process when someone uses the console, and whoever the
+# scheduler runs as. Whichever creates this first owns it, so make it explicitly shared --
+# otherwise the first click of "Back up now" fails with a bare mkdir permission error.
+mkdir -p storage/app/backups
+chgrp -R www-data storage/app/backups 2>/dev/null || sudo -n chgrp -R www-data storage/app/backups
+chmod -R g+w storage/app/backups 2>/dev/null || sudo -n chmod -R g+w storage/app/backups
+ls -ld storage/app/backups
+
 step "views"
 "$PHP" artisan view:clear -q
 "$PHP" artisan view:cache -q
