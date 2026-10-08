@@ -205,8 +205,10 @@
             </div>
 
             @if($errors->any())
-            <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3">
-                <ul class="text-sm text-red-600 space-y-1">
+            {{-- text-red-800 rather than -600: this sheet remaps the former and not the
+                 latter, so -600 would sit unchanged on the now-dark tint. --}}
+            <div class="bg-red-50 border border-gray-200 rounded-xl px-4 py-3">
+                <ul class="text-sm text-red-800 space-y-1">
                     @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                     @endforeach
