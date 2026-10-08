@@ -42,3 +42,8 @@ Schedule::call(function () {
 // what makes its dashboard charts look alive to anyone evaluating the product, and the
 // charts read 30 days, so this keeps a comfortable margin behind them.
 Schedule::command('app:prune-page-views')->dailyAt('03:10');
+
+// Before the prunes, so a night's backup still holds what they are about to remove.
+// withoutOverlapping because a dump that is still running when the next one starts would
+// have them fighting over the same staging directory.
+Schedule::command('app:backup')->dailyAt('02:30')->withoutOverlapping();

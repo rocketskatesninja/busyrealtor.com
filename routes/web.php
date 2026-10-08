@@ -8,6 +8,7 @@ use App\Http\Controllers\SuperAdmin\SuperAdminController;
 use App\Http\Controllers\SuperAdmin\ImpersonationController;
 use App\Http\Controllers\SuperAdmin\SystemSettingsController;
 use App\Http\Controllers\SuperAdmin\FeedbackController as SuperFeedbackController;
+use App\Http\Controllers\SuperAdmin\BackupController as SuperBackupController;
 use App\Http\Controllers\SuperAdmin\ActivityLogController;
 use App\Http\Controllers\SuperAdmin\TestMailController as SuperTestMailController;
 use App\Http\Controllers\Admin\FeedbackController;
@@ -133,6 +134,13 @@ Route::prefix('super-admin')->middleware(['auth', 'super.admin', 'no.cache'])->n
     // Send a test email through the saved platform SMTP — surfaces the
     // raw SMTP error so the operator can diagnose without trawling logs.
     Route::post('/api/test-mail', [SuperTestMailController::class, 'send'])->middleware('throttle:10,1')->name('api.test-mail');
+    // Backups. No restore route: see the controller docblock for why, and
+    // App\Console\Commands\RunBackup for the procedure that replaces it.
+    Route::get('/backups', [SuperBackupController::class, 'index'])->name('backups');
+    Route::post('/backups', [SuperBackupController::class, 'store'])->middleware('throttle:4,1')->name('backups.store');
+    Route::get('/backups/{name}/download', [SuperBackupController::class, 'download'])->name('backups.download');
+    Route::delete('/backups/{name}', [SuperBackupController::class, 'destroy'])->name('backups.destroy');
+
     Route::get('/feedback', [SuperFeedbackController::class, 'index'])->name('feedback');
     Route::get('/feedback/{id}', [SuperFeedbackController::class, 'show'])->name('feedback.show');
     Route::get('/feedback/{id}/screenshot/{index?}', [SuperFeedbackController::class, 'screenshot'])->name('feedback.screenshot');
