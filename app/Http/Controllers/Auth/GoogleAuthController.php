@@ -58,6 +58,17 @@ class GoogleAuthController extends Controller
                     ->withErrors(['email' => 'Please verify your email address first. Check your inbox for the verification link, or use the email + password sign-in form.']);
             }
 
+            // A super admin does not sign in here. Google would authenticate them without
+            // the emailed code, which is a second door around the second factor -- and
+            // the account behind it reaches every tenant and the decrypted platform
+            // credentials. They use the password form, and therefore the challenge.
+            if ($user->is_super_admin) {
+                return redirect()->route('login')->with(
+                    'error',
+                    'Platform administrators sign in with email and password.'
+                );
+            }
+
             // OAuth-only user without prior verification — Google's sign-in
             // counts as verification.
             if (!$user->email_verified_at) {

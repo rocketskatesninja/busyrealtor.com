@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\TwoFactorController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\Auth\PasswordResetController;
@@ -59,6 +60,13 @@ Route::get('/email/unsubscribe/{user}', function (\App\Models\User $user) {
 Route::middleware('guest')->group(function () {
     Route::get('/login', [LoginController::class, 'showForm'])->name('login');
     Route::post('/login', [LoginController::class, 'login'])->middleware('throttle:login')->name('login.submit');
+
+    // The second factor. Guest routes on purpose: between a correct password and an
+    // accepted code the visitor is not logged in, so every authenticated route refuses
+    // them. Throttled separately -- the code is six digits, which is worth guessing.
+    Route::get('/two-factor', [TwoFactorController::class, 'show'])->name('two-factor.show');
+    Route::post('/two-factor', [TwoFactorController::class, 'verify'])->middleware('throttle:6,1')->name('two-factor.verify');
+    Route::post('/two-factor/resend', [TwoFactorController::class, 'resend'])->middleware('throttle:3,1')->name('two-factor.resend');
     Route::get('/forgot-password', [PasswordResetController::class, 'showForm'])->name('password.request');
     Route::post('/forgot-password', [PasswordResetController::class, 'sendLink'])->middleware('throttle:password.email')->name('password.email');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'showReset'])->name('password.reset');

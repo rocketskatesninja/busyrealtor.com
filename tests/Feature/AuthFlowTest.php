@@ -59,12 +59,19 @@ class AuthFlowTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
-    public function test_a_super_admin_lands_on_the_super_admin_console(): void
+    /**
+     * Changed deliberately, not absorbed: a super admin used to land on the console
+     * straight from the password form. They now land on the second-factor challenge and
+     * are NOT authenticated until a code is accepted. TwoFactorTest covers the rest.
+     */
+    public function test_a_super_admin_is_sent_to_the_second_factor_not_the_console(): void
     {
         $super = $this->makeSuperAdmin(['password' => bcrypt(self::GOOD_PASSWORD)]);
 
         $this->post('/login', ['email' => $super->email, 'password' => self::GOOD_PASSWORD])
-            ->assertRedirect('/super-admin');
+            ->assertRedirect('/two-factor');
+
+        $this->assertGuest('web');
     }
 
     public function test_wrong_credentials_are_refused_and_counted(): void

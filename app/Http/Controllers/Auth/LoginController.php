@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\TwoFactorController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Carbon;
@@ -50,11 +51,23 @@ class LoginController extends Controller
                 'failed_login_attempts' => 0,
                 'locked_until' => null,
             ]);
-            logActivity('login', "User logged in: {$user->email}");
-
             if ($user->is_super_admin) {
-                return redirect()->route('super.dashboard')->with('success', 'Welcome back, ' . $user->first_name . '!');
+                // The password was right, which is the first factor and not the session.
+                // Drop the authentication and hand them to the challenge; the login is
+                // logged there, once it is actually a login.
+                Auth::logout();
+
+                $sent = TwoFactorController::begin($request, $user, $request->boolean('remember'));
+
+                return redirect()->route('two-factor.show')->with(
+                    $sent ? 'success' : 'error',
+                    $sent
+                        ? 'We sent a sign-in code to your email.'
+                        : 'We could not send your code. On the server: php artisan admin:2fa-code '.$user->email
+                );
             }
+
+            logActivity('login', "User logged in: {$user->email}");
 
             $tenant = Tenant::where('id', $user->tenant_id)->first();
             if ($tenant) {
