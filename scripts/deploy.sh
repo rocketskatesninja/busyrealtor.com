@@ -109,8 +109,13 @@ echo "route, event cached"
 
 step "services"
 sudo -n systemctl reload "$FPM" && echo "reloaded $FPM" || echo "!! could not reload $FPM -- do it by hand"
-if systemctl list-units --type=service --all 2>/dev/null | grep -q "$QUEUE"; then
+# `systemctl cat`, not `list-units | grep -q`. Under pipefail that pipeline always read as failed:
+# grep -q exits at the first match, systemctl dies of SIGPIPE writing the rest (exit 141), and the
+# restart was skipped without a word -- on every deploy, on both boxes. Say so when it is skipped.
+if systemctl cat "$QUEUE" >/dev/null 2>&1; then
     sudo -n systemctl restart "$QUEUE" && echo "restarted $QUEUE" || echo "!! could not restart $QUEUE"
+else
+    echo "no $QUEUE on this box; not restarted"
 fi
 
 [ "$DOWN" = 1 ] && "$PHP" artisan up
