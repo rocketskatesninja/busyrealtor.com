@@ -94,6 +94,12 @@ Laravel · Blade · Alpine.js · Tailwind CSS · MySQL/MariaDB · Laravel Cashie
 (Stripe) · Laravel Socialite · Google Maps & Calendar APIs · Anthropic & OpenAI
 (BYOK)
 
+## Contributors
+
+- [rocketskatesninja](https://github.com/rocketskatesninja): creator and maintainer
+- Claude, by [Anthropic](https://www.anthropic.com): code, tests and documentation,
+  written with [Claude Code](https://claude.com/claude-code)
+
 ## License
 
 **All rights reserved.** This repository is public for demonstration and
